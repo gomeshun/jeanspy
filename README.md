@@ -1,4 +1,4 @@
-# jeanspy
+# JeansPy
 JeansPy is a Python library for the Jeans analysis. This library is designed to help researchers and astrophysicists analyze and understand the dynamics of a given system.
 
 
