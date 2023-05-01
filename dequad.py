@@ -63,9 +63,10 @@ def generate_x_w(a,b,n,xp=np):
 
 
 def dequad(func,a,b,n,
-           axis=None,xp=np,
+           axis=-1,xp=np,
            replace_inf_to_zero=False,
            replace_nan_to_zero=False,
+           reshape_ws = None,
            verbose=False):
     '''
     func: func(ndarray_in) = ndarray_out
@@ -78,9 +79,14 @@ def dequad(func,a,b,n,
           Similarly, funcions like: array(n,) -> array(m1,m2,...,n),
               f(x) * w ~ (m1,m2,...,n) * (n,) ~ (m1,m2,...,n) * (1,1,...,n)
           then works well (axis should set to be last axis). 
+
+          Integration axis of func should be the last axis by default, but you can change it by "axis" argument.
     '''
     xs,ws = generate_x_w(a,b,n,xp)
-    wsfs = ws*func(xs)
+    fs = func(xs)
+    ws = ws if reshape_ws is None else ws.reshape(reshape_ws)
+    wsfs = ws * func(xs)
+
      
     if replace_inf_to_zero:
         wsfs[np.isinf(wsfs)] = 0
