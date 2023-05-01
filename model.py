@@ -528,8 +528,12 @@ class ZhaoModel(DMModel):
         r_t_pc = self.params.r_t_pc
         
         # truncation
-        r_pc_trunc = copy(r_pc)
-        r_pc_trunc[r_pc > r_t_pc] = r_t_pc
+        # r_pc_trunc = copy(r_pc)
+        # larger_than_r_t = r_pc > r_t_pc
+        # r_pc_trunc = np.broadcast_to(r_pc_trunc,larger_than_r_t.shape)
+        # r_pc_trunc = np.array(r_pc_trunc)    
+        # r_pc_trunc[larger_than_r_t] = r_t_pc
+        r_pc_trunc = np.where(r_pc>r_t_pc,r_t_pc,r_pc)
         
         x = power(r_pc_trunc/rs_pc,a)
         argbeta0 = (3-g)/a
@@ -555,8 +559,12 @@ class NFWModel(DMModel):
         r_t_pc = self.params.r_t_pc
         # truncation
         if isinstance(r_pc,np.ndarray):
-            r_pc_trunc = copy(r_pc)
-            r_pc_trunc[r_pc > r_t_pc] = r_t_pc
+            # r_pc_trunc = copy(r_pc)
+            # larger_than_r_t = r_pc > r_t_pc
+            # r_pc_trunc = np.broadcast_to(r_pc_trunc,larger_than_r_t.shape)
+            # r_pc_trunc = np.array(r_pc_trunc)
+            # r_pc_trunc[larger_than_r_t] = r_t_pc
+            r_pc_trunc = np.where(r_pc>r_t_pc,r_t_pc,r_pc)
         else:
             r_pc_trunc = min(r_pc,r_t_pc)
         x = r_pc_trunc/rs_pc
@@ -622,6 +630,10 @@ class NFWModel(DMModel):
 class AnisotropyModel(Model):
     name = "AnisotropyModel"
 
+    @abstractmethod
+    def kernel(self,u,R,**kwargs):
+        pass
+
     
 class ConstantAnisotropyModel(AnisotropyModel):
     name = "ConstantAnisotropyModel"
@@ -650,8 +662,8 @@ class OsipkovMerrittModel(AnisotropyModel):
         """
         u, R: 1d array
         """
-        R = R[:,np.newaxis]  # axis = 0
-        u = u[np.newaxis, :] # axis = 1
+        # R = R[:,np.newaxis]  # axis = 0
+        # u = u[np.newaxis, :] # axis = 1
         u_a = self.params.r_a / R
         u2_a = u_a**2
         u2 = u**2
@@ -693,8 +705,8 @@ class BaesAnisotropyModel(AnisotropyModel):
         
             sigmalos2(R) = 2 * \int_1^\infty du \nu_\ast(uR)/\Sigma_\ast(R) * GM(uR) * K(u)/u.
             
-        u: ndarray, shape = (n_u,)
-        R: ndarray, shape = (n_R,)
+        # u: ndarray, shape = (n_u,)
+        # R: ndarray, shape = (n_R,)
         
         return: ndarray, shape = (n_R,n_u)
         """
@@ -713,7 +725,6 @@ class BaesAnisotropyModel(AnisotropyModel):
         return integration * self.f(R_expanded[...,0]*u_expanded[...,0])/u_expanded[...,0]
 
     
-
 
 
 class DSphModel(Model):
@@ -767,7 +778,7 @@ class DSphModel(Model):
         # If you convert m -> pc,      ... var[m] * [1 pc/ parsec m] = var/parsec[pc].
         #                pc^1 -> m^pc, ... var[pc^1] * parsec(=[pc/m]) = var[m^-1]
         # Here var[m^3 pc^-1 s^-2] /parsec[m/pc] * 1e-6[km^2/m^2] = var[km^2/s^2]
-        return 2.0 * kernel(u[0,:],R_pc[:,0],n=n_kernel)/u *  density_3d(r)/density_2d(R_pc)*GMsun_m3s2 * enclosure_mass(r) / parsec * 1e-6
+        return 2.0 * kernel(u,R_pc,n=n_kernel)/u *  density_3d(r)/density_2d(R_pc)*GMsun_m3s2 * enclosure_mass(r) / parsec * 1e-6
 
     
     def sigmalos2_dequad(self,R_pc,n=1024,n_kernel=128,ignore_RuntimeWarning=True):
@@ -781,7 +792,7 @@ class DSphModel(Model):
         with warnings.catch_warnings():
             if ignore_RuntimeWarning:
                 warnings.simplefilter('ignore',RuntimeWarning)
-            integ = dequad(func,1,np.inf,axis=1,n=n,replace_inf_to_zero=True,replace_nan_to_zero=True)
+            integ = dequad(func,1,np.inf,axis=-1,n=n,replace_inf_to_zero=True,replace_nan_to_zero=True)
             return integ 
     
     
