@@ -18,6 +18,8 @@ from functools import cached_property
 import warnings
 
 from .dequad import dequad
+import dsph_database.spectroscopy
+import dsph_database.photometry
 
 GMsun_m3s2 = 1.32712440018e20
 R_trunc_pc = 1866.
@@ -952,6 +954,7 @@ class FlatPriorModel(Model):
         super().__init__(show_init, submodels, **params)
         self.load_config(config)
 
+
     def load_config(self, config):
         """ load the upper and lower limits of each parameter from config.
         config: file name of the config file or pandas.DataFrame.
@@ -962,7 +965,14 @@ class FlatPriorModel(Model):
             self.data = pd.read_csv(config, index_col=0)
         else:
             self.data = config
-        
+
+        self._sample = lambda size: np.random.uniform(self.data["lower"].values, self.data["upper"].values, size=size)
+
+
+    def sample(self,size=None):
+        return self._sample(size=size)
+
+
     def _lnprior(self,p):
         """ return a dictionary of natural logarithm of the prior probability of each parameter.
 
@@ -978,11 +988,34 @@ class FlatPriorModel(Model):
             return 0
         else:
             return -np.inf
+
         
         
 
+class PhotometryPriorModel(Model):
+    """ prior model for photometry.
+    """
+    required_param_names = []
+    required_models = {}
 
-import dsph_database.spectroscopy
+    def __init__(self, dsph_name, show_init=False, submodels={}, **params):
+        super().__init__(show_init, submodels, **params)
+        self._dsph_name = dsph_name
+        self.load_config(dsph_name)
+
+    @property
+    def dsph_name(self):
+        return self._dsph_name
+    
+    def load_config(self,dsph_name):
+        database = dsph_database.photometry.load_prior()
+        loc,scale = database.set_index("name").T[dsph_name]
+        print(f"{self.__class__.__name__}:log10_re_pc:{loc}\te_log10_re_pc:{scale}")
+        self._lnprior = norm(loc=loc,scale=scale).logpdf
+        self._sample = norm(loc=loc,scale=scale).rvs
+
+    def sample(self,size):
+        return self._sample(size=size)
 
 
 
@@ -993,14 +1026,15 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     required_param_names = []
     required_models = {
         "DSphModel": DSphModel,
-        "PriorModel": FlatPriorModel,
+        "FlatPriorModel": FlatPriorModel,
+        "PhotometryPriorModel": PhotometryPriorModel,
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         print("Please check the consistensy of model parameters and config file.")
         comparison = {
-            "config": self.submodels["PriorModel"].data.index.tolist(),
+            "config": self.submodels["FlatPriorModel"].data.index.tolist(),
             "params": self.required_param_names_combined,
         }
         try:
@@ -1022,7 +1056,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         Here, required_param_names_combined of this model is
             []
         """
-        p_names = self.submodels["PriorModel"].data.index.tolist()
+        p_names = self.submodels["FlatPriorModel"].data.index.tolist()
         param_names = self.required_param_names_combined
         def convert_param(name,p):
             if name[5] == "log10":
@@ -1035,6 +1069,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         d = { param_name:convert_param(p_name,p) for p_name,param_name,p in zip(p_names,param_names,p)}
         return pd.Series(d)
 
+
     def load_data(self, dsph_type,dsph_name):
         """ load dataset required for parameter fitting or estimation.
         data must be stored in self.data, as a pd.DataFrame.
@@ -1044,6 +1079,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         self.data = dsph_database.spectroscopy.load_kinematic_data(dsph_type,dsph_name)
         self.data["R_pc"] = np.sqrt(self.data.x_pc**2 + self.data.y_pc**2)
 
+
     def _lnlikelihoods(self):
         """ define natural logarithm of the likelihood function. """
         s2 = self.submodels["DSphModel"].sigmalos2_dequad(self.data.R_pc)
@@ -1051,11 +1087,26 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         vmem_kms = self.submodels["DSphModel"].params.vmem_kms
         return norm.logpdf(self.data.vlos_kms,loc=vmem_kms,scale=np.sqrt(s2+err2))
         
+
     def _lnpriors(self,p_before_conversion):
         """ define natural logarithm of the prior function. """
-        return [self.submodels["PriorModel"]._lnprior(p_before_conversion)]
+        idx_log10_re_pc = self.submodels["FlatPriorModel"].data.index.tolist().index("log10_re_pc")
+        log10_re_pc = p_before_conversion[idx_log10_re_pc]
+        return [
+            self.submodels["FlatPriorModel"]._lnprior(p_before_conversion),
+            self.submodels["PhotometryPriorModel"]._lnprior(log10_re_pc)
+            ]
 
-    prior_names = ["flat_prior"]
+    prior_names = ["flat_prior","photometry_prior"]
+
+
+    def sample(self,size=None):
+        """ sample from the model. """
+        p = self.submodels["FlatPriorModel"].sample(size)
+        idx_log10_re_pc = self.submodels["FlatPriorModel"].data.index.tolist().index("log10_re_pc")
+        p[idx_log10_re_pc] = self.submodels["PhotometryPriorModel"].sample(size)
+        return p
+    
 
 class KI17_Model:
     def __init__(self,params_KI17_Model):
