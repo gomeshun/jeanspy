@@ -216,13 +216,12 @@ class DSphSimulatior(swyft.Simulator):
     def build(self,graph):
         """ build the simulator.
         """
-        p_lower = self.model.submodels["PriorModel"].data["lower"]
-        p_upper = self.model.submodels["PriorModel"].data["upper"]
-        p = graph.node("p", lambda: np.random.uniform(p_lower,p_upper))
+        p = graph.node("p", lambda: self.model.sample())
         # find "vmem_kms" in model.submodels["PriorModel"].data (pandas.Series)
         # and get the index
-        vmem_kms_index = self.model.submodels["PriorModel"].data.index.get_loc("vmem_kms")
+        vmem_kms_index = self.model.submodels["FlatPriorModel"].data.index.get_loc("vmem_kms")
         vmem_kms = graph.node("vmem_kms", lambda p: p[vmem_kms_index], p)
+
         slos = graph.node("slos_kms", self.get_slos, p)  # shape: (nstars,)
         v_kms = graph.node("vlos_kms", lambda vmem_kms,slos: vmem_kms + slos * np.random.randn(len(self.R_pc)), vmem_kms, slos)
         
