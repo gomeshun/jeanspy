@@ -795,6 +795,14 @@ class DSphModel(Model):
             if ignore_RuntimeWarning:
                 warnings.simplefilter('ignore',RuntimeWarning)
             integ = dequad(func,1,np.inf,axis=-1,n=n,replace_inf_to_zero=True,replace_nan_to_zero=True)
+            # sanity check: sigmalos2 should be positive.
+            # If not, raise ValueError with the value of R_pc and sigmalos2
+            # and with current model parameters.
+            if np.any(integ<0):
+                errmes = "sigmalos2 is negative at R_pc = {} pc.".format(R_pc[integ<0])
+                errmes += "with sigmalos2 = {}".format(integ[integ<0])
+                errmes += "with current model parameters: {}".format(self.params_all)
+                raise ValueError(errmes)
             return integ 
     
     
@@ -965,12 +973,16 @@ class FlatPriorModel(Model):
             self.data = pd.read_csv(config, index_col=0)
         else:
             self.data = config
+            
+        self.lower = self.data["lower"].values
+        self.upper = self.data["upper"].values
 
-        self._sample = lambda size: np.random.uniform(self.data["lower"].values, self.data["upper"].values, size=size)
+        # self._sample = lambda size: np.random.uniform(self.data["lower"].values, self.data["upper"].values, size=size)
 
 
     def sample(self,size=None):
-        return self._sample(size=size)
+        # return self._sample(size=size)
+        return np.random.uniform(self.lower, self.upper, size=size)
 
 
     def _lnprior(self,p):
@@ -1008,9 +1020,23 @@ class PhotometryPriorModel(Model):
         return self._dsph_name
     
     def load_config(self,dsph_name):
-        database = dsph_database.photometry.load_prior()
-        loc,scale = database.set_index("name").T[dsph_name]
+        if type(dsph_name) == str:
+            if dsph_name == "Mock":
+                print("WARNING: dsph_name is 'Mock'. loc and scale must be set manually by 'reset_prior'.")
+                loc,scale = np.nan, np.nan
+            else:
+                database = dsph_database.photometry.load_prior()
+                loc,scale = database.set_index("name").T[dsph_name]
+        else:
+            # check if dsph_name is tuple of (loc,scale)
+            print("WARNING: dsph_name is not a string. Check if it is a tuple of (loc,scale).")
+            loc,scale = dsph_name
+            print("loc:",loc)
+            print("scale:",scale)
         print(f"{self.__class__.__name__}:log10_re_pc:{loc}\te_log10_re_pc:{scale}")
+        self.reset_prior(loc,scale)
+
+    def reset_prior(self,loc,scale):
         self._lnprior = norm(loc=loc,scale=scale).logpdf
         self._sample = norm(loc=loc,scale=scale).rvs
 
@@ -1049,7 +1075,8 @@ class SimpleDSphEstimationModel(FittableModel,Model):
             print(comparison)
             print(consistencies)
             raise(e)
-
+        
+        
 
     def convert_params(self, p):
         """ convert parameters from p to params. 
@@ -1059,9 +1086,10 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         p_names = self.submodels["FlatPriorModel"].data.index.tolist()
         param_names = self.required_param_names_combined
         def convert_param(name,p):
-            if name[5] == "log10":
+            # check if "log10_" is in name by using a method of string
+            if "log10_" in name:
                 return 10**p
-            elif name[5] == "bfunc":
+            elif "bfunc_" in name:
                 # Inverse function of b -> log10(1-b)
                 return 1 - 10**p
             else:
@@ -1070,15 +1098,37 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         return pd.Series(d)
 
 
-    def load_data(self, dsph_type,dsph_name):
+    def load_data(self, dsph_type, dsph_name):
         """ load dataset required for parameter fitting or estimation.
         data must be stored in self.data, as a pd.DataFrame.
         additional data must be stored in self.additional_data, as a dict.
         """
-        
-        self.data = dsph_database.spectroscopy.load_kinematic_data(dsph_type,dsph_name)
-        self.data["R_pc"] = np.sqrt(self.data.x_pc**2 + self.data.y_pc**2)
+        self.dsph_name = dsph_name
+        self.dsph_type = dsph_type
+        if self.dsph_type == "Mock":
+            print("WARNING: dsph_type is 'Mock'. 'data' attribute must be reset manually by 'reset_data'.")
 
+        else:
+            data = dsph_database.spectroscopy.load_kinematic_data(dsph_type,dsph_name)
+            self.reset_data(data)
+
+    def reset_data(self, data):
+        """ reset data attribute and update FlatPriorModel.
+        """
+        self.data = data
+        # override FlatPriorModel config by data
+        # for vmem_kms
+        print(self.__class__.__name__+":override FlatPriorModel config by data")
+        print(self.__class__.__name__+":before:")
+        print(self.submodels["FlatPriorModel"].data.loc["vmem_kms"])
+        lower = self.data["vlos_kms"].values.min()
+        upper = self.data["vlos_kms"].values.max()
+        self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
+        self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
+        print(self.__class__.__name__+":after:")
+        print(self.submodels["FlatPriorModel"].data.loc["vmem_kms"])
+
+        
 
     def _lnlikelihoods(self):
         """ define natural logarithm of the likelihood function. """
@@ -1097,16 +1147,35 @@ class SimpleDSphEstimationModel(FittableModel,Model):
             self.submodels["PhotometryPriorModel"]._lnprior(log10_re_pc)
             ]
 
+
     prior_names = ["flat_prior","photometry_prior"]
 
 
     def sample(self,size=None):
         """ sample from the model. """
         p = self.submodels["FlatPriorModel"].sample(size)
+        # override log10_re_pc
         idx_log10_re_pc = self.submodels["FlatPriorModel"].data.index.tolist().index("log10_re_pc")
         p[idx_log10_re_pc] = self.submodels["PhotometryPriorModel"].sample(size)
         return p
     
+
+
+def get_default_estimation_model(dsph_type,dsph_name,config="priorconfig.csv"):
+    mdl = SimpleDSphEstimationModel(
+        args_load_data=[dsph_type, dsph_name],
+        submodels={
+            "DSphModel" : DSphModel(submodels={
+                "StellarModel" : PlummerModel(),
+                "DMModel" : NFWModel(),
+                "AnisotropyModel" : ConstantAnisotropyModel(),
+            }),
+            "FlatPriorModel": FlatPriorModel(config=config),
+            "PhotometryPriorModel": PhotometryPriorModel(dsph_name)
+        })
+    return mdl
+
+
 
 class KI17_Model:
     def __init__(self,params_KI17_Model):
