@@ -970,7 +970,11 @@ class FlatPriorModel(Model):
         """
         # if config is a file name, load it as a pandas.DataFrame.
         if isinstance(config,str):
-            self.data = pd.read_csv(config, index_col=0)
+            try:
+                self.data = pd.read_csv(config, index_col=0)
+            except FileNotFoundError as e:
+                print(f"config file '{config}' is not found.")
+                raise(e)
         else:
             self.data = config
             
@@ -1001,7 +1005,16 @@ class FlatPriorModel(Model):
         else:
             return -np.inf
 
-        
+    @staticmethod
+    def generate_default_config_file(fname,param_names,lower=-np.inf,upper=np.inf):
+        """ generate a default config file for FlatPriorModel.
+        """
+        df = pd.DataFrame({"lower":lower,"upper":upper},index=param_names)
+        df.to_csv(fname)
+        print(f"generated {fname}.")
+        return df
+
+
         
 
 class PhotometryPriorModel(Model):
@@ -1162,6 +1175,21 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
 
 def get_default_estimation_model(dsph_type,dsph_name,config="priorconfig.csv"):
+    """ return a default estimation model. 
+    """
+
+    dsph_model = DSphModel(submodels={
+        "StellarModel" : PlummerModel(),
+        "DMModel" : NFWModel(),
+        "AnisotropyModel" : ConstantAnisotropyModel(),
+    })
+
+    # Check if config file exists.
+    if not os.path.exists(config):
+        print(f"config file '{config}' is not found.")
+        print("generate a default config file.")
+        FlatPriorModel.generate_default_config_file(config,dsph_model.params_all.index)
+
     mdl = SimpleDSphEstimationModel(
         args_load_data=[dsph_type, dsph_name],
         submodels={
