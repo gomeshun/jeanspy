@@ -110,14 +110,14 @@ class Model(metaclass=ABCMeta):
             self.name += "_" + '+'.join((model.name for model in self.submodels.values))
 
         # check the consistency of params_all and required_param_names_combined
-        params_all_index = [ pname.split(":")[-1] for pname in self.params_all.index]
+        params_all_index = self.params_all.index  #[ pname.split(":")[-1] for pname in self.params_all.index]
         required_param_names_combined = self.required_param_names_combined 
         if not np.all(params_all_index == required_param_names_combined):
             raise ValueError("params_all and required_param_names_combined are inconsistent: "+str(params_all_index)+" vs "+str(required_param_names_combined))
             
         if show_init:
             print("initialized:")
-            print(self.params_all)
+            print(self)
 
     def __repr__(self):
         """ show model name and parameters.
@@ -142,11 +142,27 @@ class Model(metaclass=ABCMeta):
             for model_name,model in self.submodels.items():
                 _params = model.params_all.copy()
                 # add submodels' name to the index of _params
+                # _params.index = [model_name+":"+index for index in _params.index]
+                ret.append(_params)
+            return pd.concat(ret)
+
+    @property
+    def params_all_with_model_name(self):
+        """ show all parameters as a pd.Series.
+        """
+        if len(self.submodels) == 0:
+            return self.params
+        else:
+            # load submodels' parameters
+            ret = [self.params]
+            for model_name,model in self.submodels.items():
+                _params = model.params_all_with_model_name.copy()
+                # add submodels' name to the index of _params
                 _params.index = [model_name+":"+index for index in _params.index]
                 ret.append(_params)
             return pd.concat(ret)
 
-
+    
 
     @property
     def required_param_names_combined(self):
