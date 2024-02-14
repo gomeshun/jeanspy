@@ -132,7 +132,19 @@ class Sampler:
         self.p0_generator = p0_generator
         self.kwargs = kwargs
         blobs_dtype = [ ("lnl",float), *[ (name, float) for name in self.model.prior_names ]]
-        print(blobs_dtype)
+        print("blobs_dtype:",blobs_dtype)
+
+        # Show some message to check the definition of the 'convert_params' 
+        print("Sampler: Please check the following lines to see your parameters are properly converted:")
+        if p0_generator is None:
+            print("Sampler: p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself.")
+        else:
+            p0 = p0_generator(1)
+            params = self.model.convert_params(p0[0])
+            print(f"Sampler: p0: {p0}")
+            print(f"---->")
+            print(f"Sampler: params: ")
+            print(params)
         
         # define filename as a comination of model name and current time
         # NOTE: replace "+" in the model name
