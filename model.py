@@ -144,7 +144,9 @@ class Model(metaclass=ABCMeta):
                 # add submodels' name to the index of _params
                 # _params.index = [model_name+":"+index for index in _params.index]
                 ret.append(_params)
-            return pd.concat(ret)
+            # NOTE: The behavior of array concatenation with empty entries is deprecated. In a future version, this will no longer exclude empty items when determining the result dtype. To retain the old behavior, exclude the empty entries before the concat operation.
+            # return pd.concat(ret)
+            return pd.concat([p for p in ret if len(p) > 0])
 
     @property
     def params_all_with_model_name(self):
