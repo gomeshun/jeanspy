@@ -141,7 +141,7 @@ class Sampler:
         else:
             p0 = p0_generator(1)
             params = self.model.convert_params(p0[0])
-            print(f"Sampler: p0: {p0}")
+            print(f"Sampler: p0: {p0[0]}")
             print(f"---->")
             print(f"Sampler: params: ")
             print(params)
@@ -149,7 +149,7 @@ class Sampler:
         # define filename as a comination of model name and current time
         # NOTE: replace "+" in the model name
         import time
-        filename = self.model.name.replace("+","_") + ".h5"
+        filename = "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
         self.backend = emcee.backends.HDFBackend(filename)
         if reset:
             self.backend.reset(self.nwalkers, self.ndim)
