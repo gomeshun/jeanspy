@@ -118,7 +118,7 @@ class Sampler:
     """ wrapper class for emcee.EnsembleSampler
     """
 
-    def __init__(self,model,p0_generator,nwalkers=None,reset=False,pool=None,**kwargs):
+    def __init__(self,model,p0_generator,nwalkers=None,prefix="",reset=False,pool=None,**kwargs):
         """ initialize the sampler.
         
         model: a model class
@@ -149,7 +149,7 @@ class Sampler:
         # define filename as a comination of model name and current time
         # NOTE: replace "+" in the model name
         import time
-        filename = "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
+        filename = prefix + "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
         self.backend = emcee.backends.HDFBackend(filename)
         if reset:
             self.backend.reset(self.nwalkers, self.ndim)
