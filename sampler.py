@@ -208,6 +208,38 @@ class Sampler:
                 print(f"tau:{tau}\titeration:{self.sampler.iteration}")
                 old_tau = tau
 
+    def get_blobs(self,flat=False,thin=1,discard=0):
+        """ get blobs from the backend.
+        """
+        return self.backend.get_blobs(flat=flat,thin=thin,discard=discard)
+    
+    def get_chain(self,flat=False,thin=1,discard=0):
+        """ get chain from the backend.
+        """
+        return self.backend.get_chain(flat=flat,thin=thin,discard=discard)
+    
+    def get_log_prob(self,flat=False,thin=1,discard=0):
+        """ get log_prob from the backend.
+        """
+        return self.backend.get_log_prob(flat=flat,thin=thin,discard=discard)
+    
+    def get_last_sample(self):
+        """ get the last sample from the backend.
+        """
+        return self.backend.get_last_sample()
+    
+    def get_dataframe(self,thin=1,discard=0,with_lnprob=True):
+        """ get the dataframe from the backend.
+        """
+        chain = self.backend.get_chain(flat=True,thin=thin,discard=discard)
+        columns = self.model.submodels["FlatPriorModel"].data.index.tolist()
+        df = pd.DataFrame(chain,columns=columns)
+        if with_lnprob:
+            log_prob = self.backend.get_log_prob(flat=True,thin=thin,discard=discard)
+            df["lnprob"] = log_prob
+        return df
+
+
         
 
 import swyft
