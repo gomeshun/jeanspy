@@ -1001,6 +1001,8 @@ class FlatPriorModel(Model):
 
         # self._sample = lambda size: np.random.uniform(self.data["lower"].values, self.data["upper"].values, size=size)
 
+    def get_index(self,param_name):
+        return self.data.index.get_loc(param_name)
 
     def sample(self,size=None):
         # return self._sample(size=size)
@@ -1171,7 +1173,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
     def _lnpriors(self,p_before_conversion):
         """ define natural logarithm of the prior function. """
-        idx_log10_re_pc = self.submodels["FlatPriorModel"].data.index.tolist().index("log10_re_pc")
+        idx_log10_re_pc = self.submodels["FlatPriorModel"].get_index("log10_re_pc")
         log10_re_pc = p_before_conversion[idx_log10_re_pc]
         return [
             self.submodels["FlatPriorModel"]._lnprior(p_before_conversion),
@@ -1186,7 +1188,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         """ sample from the model. """
         p = self.submodels["FlatPriorModel"].sample(size)
         # override log10_re_pc
-        idx_log10_re_pc = self.submodels["FlatPriorModel"].data.index.tolist().index("log10_re_pc")
+        idx_log10_re_pc = self.submodels["FlatPriorModel"].get_index("log10_re_pc")
         p[idx_log10_re_pc] = self.submodels["PhotometryPriorModel"].sample(size)
         return p
     
