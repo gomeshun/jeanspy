@@ -124,6 +124,7 @@ class Sampler:
         model: a model class
         p0_generator: a function to generate p0
         nwalkers: number of walkers. default is 2*ndim
+        prefix: prefix of the filename
         **kwargs: keyword arguments for emcee.EnsembleSampler
         """
         self.model = model
