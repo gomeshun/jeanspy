@@ -229,7 +229,7 @@ class Model(metaclass=ABCMeta):
             for model_name,model in self.submodels.items():
                 new_params_in_model = new_params[new_params.index.isin(model.required_param_names_combined)]
                 if len(new_params_in_model) > 0:
-                    model.update("all",new_params_in_model)
+                    model.update(new_params_in_model)
         else:
             raise ValueError("target must be 'this' or 'all'")
 
