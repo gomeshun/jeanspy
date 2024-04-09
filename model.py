@@ -99,7 +99,7 @@ class Model(metaclass=ABCMeta):
 
         # initialize parameters of this model
         self.params = pd.Series({ p:np.nan for p in self.required_param_names})
-        self.update("this",params)
+        self.update(params,target="this")
 
         # # check if all required parameters are given.
         # if set(params.keys()) != set(self.required_param_names):
@@ -182,7 +182,7 @@ class Model(metaclass=ABCMeta):
         return [ (p in self.required_param_names) for p in param_names_candidates ]
 
 
-    def update(self,target='all',new_params_dict=None,**kwargs):
+    def update(self,new_params=None,target='all',**kwargs):
         """ update model parameters recurrently. 
         If target is 'this', update parameters of this model.
         If target is 'all', update parameters of this model and submodels (sub-parameters).
@@ -200,11 +200,11 @@ class Model(metaclass=ABCMeta):
         **kwargs: new parameters' name and value. If both of new_params_dict and kwargs are given, raise ValueError.
         """
         # check if both of new_params_dict and kwargs are given
-        if new_params_dict is not None and len(kwargs) > 0:
+        if new_params is not None and len(kwargs) > 0:
             raise ValueError("new_params_dict and kwargs cannot be given at the same time.")
         
         # convert new_params_dict to pd.Series if it is dict
-        new_params = pd.Series(new_params_dict) if new_params_dict is not None else pd.Series(kwargs)
+        new_params = pd.Series(new_params) if new_params is not None else pd.Series(kwargs)
         
         # chech if new_params has unknown parameters
         if not np.all(np.isin(new_params.index,self.required_param_names_combined)):
@@ -951,7 +951,7 @@ class FittableModel(Model,metaclass=ABCMeta):
         p: ndarray: shape = (n_params,)
         """
         params = self.convert_params(p)
-        self.update("all",params)
+        self.update(params)
         lnl = self._lnlikelihoods(*args,**kwargs)
         return lnl
     
@@ -971,7 +971,7 @@ class FittableModel(Model,metaclass=ABCMeta):
         p: ndarray: shape = (n_params,)
         """
         params = self.convert_params(p)
-        self.update("all",params)
+        self.update(params)
         lnl = self._lnlikelihood(*args,**kwargs)
         return lnl
     
@@ -991,14 +991,14 @@ class FittableModel(Model,metaclass=ABCMeta):
         p: ndarray: shape = (n_params,)
         """
         params = self.convert_params(p)
-        self.update("all",params)
+        self.update(params)
         lnp = self._lnpriors(*args,**kwargs)
         return lnp
         
     
     def lnposterior(self,p,*args,**kwargs):
         params = self.convert_params(p)
-        self.update("all",params)
+        self.update(params)
         lnl = -np.inf
         lnp_list = self._lnpriors(p,*args,**kwargs)
         if np.all([lnp > -np.inf for lnp in lnp_list]):
@@ -1008,7 +1008,7 @@ class FittableModel(Model,metaclass=ABCMeta):
     
     def lnposterior_wbic(self,p,*args,**kwargs):
         params = self.convert_params(p)
-        self.update("all",params)
+        self.update(params)
         lnl = -np.inf
         lnp_list = self._lnpriors(p,*args,**kwargs)
         if np.all([lnp > -np.inf for lnp in lnp_list]):
