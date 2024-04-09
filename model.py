@@ -651,7 +651,26 @@ class AnisotropyModel(Model):
     name = "AnisotropyModel"
 
     @abstractmethod
+    def beta(self,r):
+        pass
+    
+
+    @abstractmethod
+    def f(self,r):
+        pass
+
+
+    @abstractmethod
     def kernel(self,u,R,**kwargs):
+        """ Integrand of the LOSVD kernel function K(u).
+        
+        Parameters
+        ----------
+        u: float, 1d array
+            u = r/R
+        R: float, 1d array
+            R: projected radius
+        """
         pass
 
     
@@ -659,6 +678,14 @@ class ConstantAnisotropyModel(AnisotropyModel):
     name = "ConstantAnisotropyModel"
     required_param_names = ['beta_ani']
     required_models = {}
+    
+    def beta(self,r):
+        return self.params.beta_ani
+    
+
+    def f(self,r):
+        beta_ani = self.params.beta_ani
+        return r ** (2*beta_ani)
     
     
     def kernel(self,u,R,**kwargs):
@@ -672,11 +699,23 @@ class ConstantAnisotropyModel(AnisotropyModel):
         kernel = sqrt(1-1/u2)*((1.5-b)*u2*hyp2f1(1.0,1.5-b,1.5,1-u2)-0.5)
         return kernel
     
+
+
 class OsipkovMerrittModel(AnisotropyModel):
     name = "OsipkovMerrittModel"
     required_param_names = ["r_a"]
     required_models = {}
     
+
+    def beta(self, r):
+        r_a = self.params.r_a
+        return r**2/(r**2+r_a**2)
+    
+
+    def f(self,r):
+        r_a = self.params.r_a
+        return (r_a**2+r**2)/r_a**2
+
     
     def kernel(self,u,R,**kwargs):
         """
@@ -766,7 +805,7 @@ class DSphModel(Model):
 #        self.name = ' and '.join((model.name for model in self.submodels))
 
 
-    def sigmar2(self,r_pc):
+    def _sigmar2(self,r_pc):
         RELERROR_INTEG = 1e-6
         density_3d = self.submodels["StellarModel"].density_3d
         enclosure_mass = self.submodels["DMModel"].enclosure_mass
@@ -774,6 +813,19 @@ class DSphModel(Model):
         integrand = lambda r: density_3d(r)*f(r)*GMsun_m3s2*enclosure_mass(r)/r**2/f(r_pc)/density_3d(r_pc)*1e-6/parsec
         integ, abserr = integrate.quad(integrand,r_pc,np.inf)
         return integ
+    
+
+    def sigmar2(self,r_pc):
+        ''' Return the radial velocity dispersion squared at r_pc. '''
+        return np.vectorize(self._sigmar2)(r_pc)
+    
+
+    def sigmat2(self,r_pc):
+        ''' Return the tangential velocity dispersion squared at r_pc. '''
+        beta = self.submodels["AnisotropyModel"].beta(r_pc)
+        sigmar2 = self.sigmar2(r_pc)
+        return sigmar2*(1-beta)
+
 
     
     def integrand_sigmalos2(self,u,R_pc,n_kernel=128):
