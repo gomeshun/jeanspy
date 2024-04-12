@@ -129,6 +129,66 @@ class Model(metaclass=ABCMeta):
         return f"{class_name}(submodels={{{submodels_repr}}}, **{{{params_repr}}})"
     
 
+    def __str__(self):
+        return self._generate_yaml_representation(0)
+
+    def _generate_yaml_representation(self, depth):
+        indent = "  " * depth  # YAMLでは通常2スペースのインデントを使用
+        output = ""
+
+        if depth == 0:
+            output += f"Model Name: {self.name}\n"
+            output += "Parameters:\n"
+
+        for param, value in self.params.items():
+            output += f"{indent}- {param}: {value}\n"
+
+        if not self.submodels.empty:
+            if depth == 0:
+                output += "Submodels:\n"
+            for submodel_name, submodel in self.submodels.items():
+                output += f"{indent}{submodel_name}:\n"
+                output += f"{indent}  Model Name: {submodel.name}\n"
+                output += submodel._generate_yaml_representation(depth + 1)
+
+        return output
+
+
+    def _repr_html_(self):
+        return self._generate_html_tree_representation(0)
+
+
+    def _generate_html_tree_representation(self, depth):
+        indent = "&nbsp;" * 4 * depth
+        branch_style = "color: #DDDDDD;"  # light gray
+        node_style = "color: #FFFFFF; font-weight: bold; background-color: #333333; padding: 3px;"  # white, bold, dark gray background
+        param_style = "color: #BBBBBB; background-color: #222222; padding: 2px;"  # light gray, dark gray background
+        submodel_style = "color: #FFA500; background-color: #444444; padding: 2px;"  # orange, dark gray background
+
+        output = "<ul style='list-style-type: none; padding-left: 0; margin: 0;'>"
+        if depth == 0:
+            output += f"<li style='{node_style}'>Model Name: {self.name}</li>"
+        else:
+            connector = "└─" if depth > 0 else ""
+            output += f"<li style='{node_style}'>{indent}{connector} Model Name: {self.name}</li>"
+
+        output += f"<li style='{branch_style}'>{indent}   ├─ Parameters:<ul>"
+        for param, value in self.params.items():
+            output += f"<li style='{param_style}'>{indent}   │   {param}: {value}</li>"
+        output += "</ul></li>"
+        
+        if not self.submodels.empty:
+            output += f"<li style='{branch_style}'>{indent}   └─ Submodels:<ul>"
+            for i, (submodel_name, submodel) in enumerate(self.submodels.items()):
+                output += f"<li style='{submodel_style}'>{indent}   {submodel_name}:"
+                output += submodel._generate_html_tree_representation(depth + 1)
+                output += "</li>"
+            output += "</ul></li>"
+
+        output += "</ul>"
+        return output
+
+
     @property
     def params_all(self):
         """ show all parameters as a pd.Series.
