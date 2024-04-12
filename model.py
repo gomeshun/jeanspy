@@ -99,7 +99,7 @@ class Model(metaclass=ABCMeta):
 
         # initialize parameters of this model
         self.params = pd.Series({ p:np.nan for p in self.required_param_names})
-        self.update(params,target="this")
+        self.update(params,target="all")
 
         # # check if all required parameters are given.
         # if set(params.keys()) != set(self.required_param_names):
@@ -122,12 +122,11 @@ class Model(metaclass=ABCMeta):
     def __repr__(self):
         """ show model name and parameters.
         """
-        ret = self.name + ":\n" + self.params_all.__repr__()
-        #if len(self.submodels) > 0:
-        #    ret += '\n'
-        #    for model in self.submodels.values():
-        #        ret += model.__repr__() + '\n'
-        return ret
+        class_name = self.__class__.__name__
+        submodels_repr = ", ".join(f"'{key}': {value!r}" for key, value in self.submodels.items())
+        params_repr = ", ".join(f"'{key}': {value!r}" for key, value in self.params.items())
+
+        return f"{class_name}(submodels={{{submodels_repr}}}, **{{{params_repr}}})"
     
 
     @property
@@ -191,7 +190,7 @@ class Model(metaclass=ABCMeta):
 
         Parameters
         ----------
-        new_params_dict: dict or pd.Series, its key must be in self.required_param_names_combined.
+        new_params: dict or pd.Series, its key must be in self.required_param_names_combined.
             If it is None, new parameters are given by kwargs.
             If it is not None, kwargs are ignored.
         target: 'this' or 'all'.
@@ -199,7 +198,7 @@ class Model(metaclass=ABCMeta):
             If 'all', update parameters of this model and submodels (sub-parameters).
         **kwargs: new parameters' name and value. If both of new_params_dict and kwargs are given, raise ValueError.
         """
-        # check if both of new_params_dict and kwargs are given
+        # check if both of new_params and kwargs are given
         if new_params is not None and len(kwargs) > 0:
             raise ValueError("new_params_dict and kwargs cannot be given at the same time.")
         
