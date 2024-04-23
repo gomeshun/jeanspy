@@ -958,13 +958,11 @@ class FittableModel(Model,metaclass=ABCMeta):
     def __init__(self,args_load_data=None,kwargs_load_data={},*args,**kwargs):
         """ initialize FittableModel. """
         super().__init__(*args,**kwargs)
-        print("Fittable Model: args_load_data:")
-        print(args_load_data)
+        print(f"Fittable Model: args_load_data: {args_load_data}")
         # check if args_load_data is a list.
         if not isinstance(args_load_data,list):
             raise TypeError('args_load_data must be a list.')
-        print("Fittable Model: kwargs_load_data:")
-        print(kwargs_load_data)
+        print(f"Fittable Model: kwargs_load_data: {kwargs_load_data}")
         # check if kwargs_load_data is a dict.
         if not isinstance(kwargs_load_data,dict):
             raise TypeError('kwargs_load_data must be a dict.')
@@ -1177,7 +1175,8 @@ class PhotometryPriorModel(Model):
             loc,scale = dsph_name
             print("loc:",loc)
             print("scale:",scale)
-        print(f"{self.__class__.__name__}:log10_re_pc:{loc}\te_log10_re_pc:{scale}")
+        print_dict = {"log10_re_pc":loc,"e_log10_re_pc":scale}
+        print(f"{self.__class__.__name__}:{print_dict}")
         self.reset_prior(loc,scale)
 
     def reset_prior(self,loc,scale):
@@ -1203,12 +1202,14 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         print("Please check the consistensy of model parameters and config file.")
+        print("="*32)
         comparison = {
             "config": self.submodels["FlatPriorModel"].data.index.tolist(),
             "params": self.required_param_names_combined,
         }
         try:
             print(pd.DataFrame(comparison))
+            print("="*32)
             # check if comparison["config"] is consistent with comparison["params"] by backward matching.
             consistencies = [ (param in p) for p,param in zip(comparison["config"],comparison["params"])]
             assert all(consistencies)  # NOTE: We can find substring in string by using "in" operator.
@@ -1262,15 +1263,18 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         self.data = data
         # override FlatPriorModel config by data
         # for vmem_kms
-        print(self.__class__.__name__+":override FlatPriorModel config by data")
-        print(self.__class__.__name__+":before:")
+        print(self.__class__.__name__+": Override FlatPriorModel config by data")
+        print("="*32)
         print(self.submodels["FlatPriorModel"].data.loc["vmem_kms"])
         lower = self.data["vlos_kms"].values.min()
         upper = self.data["vlos_kms"].values.max()
-        self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
-        self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
-        print(self.__class__.__name__+":after:")
+        # self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
+        # self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
+        self.submodels["FlatPriorModel"].data.loc["vmem_kms","lower"] = lower
+        self.submodels["FlatPriorModel"].data.loc["vmem_kms","upper"] = upper
+        print("-"*8+">")
         print(self.submodels["FlatPriorModel"].data.loc["vmem_kms"])
+        print("="*32)
 
         
 

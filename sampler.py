@@ -11,6 +11,7 @@ from tqdm import tqdm as tqdm
 from multiprocessing import Pool, cpu_count
 import itertools
 import os
+from pprint import pprint
 
 ############################################
 # # How to use blobs in emcee
@@ -133,7 +134,8 @@ class Sampler:
         self.p0_generator = p0_generator
         self.kwargs = kwargs
         blobs_dtype = [ ("lnl",float), *[ (name, float) for name in self.model.prior_names ]]
-        print("blobs_dtype:",blobs_dtype)
+        print("blobs_dtype:")
+        pprint(blobs_dtype)
 
         # Show some message to check the definition of the 'convert_params' 
         print("Sampler: Please check the following lines to see your parameters are properly converted:")
