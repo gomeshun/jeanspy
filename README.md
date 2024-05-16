@@ -9,13 +9,15 @@ JeansPy is a Python library for the Jeans analysis. This library is designed to 
 
 ## Installation
 
+Clone this repository and install the required modules in `requirements.txt`.
+
 
 ## Usage
 
 ```python
 import jeanspy as jpy
 
-# define your model or load preset model
+# define your model or load the preset model
 mdl = jpy.model.get_default_estimation_model(
     dsph_type = "Classical",  # "Classical" or "UFD"
     dsph_name = "Sculptor",
@@ -26,6 +28,3 @@ mdl = jpy.model.get_default_estimation_model(
 sampler = jpy.sampler.Sampler(mdl)
 
 ```
-
-
-## Licence
