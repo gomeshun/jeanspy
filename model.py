@@ -1115,6 +1115,17 @@ class FlatPriorModel(Model):
 
     def sample(self,size=None):
         # return self._sample(size=size)
+        # return np.random.uniform(self.lower, self.upper, size=size)
+        # if size is None:
+        #     return np.random.uniform(self.lower, self.upper)
+        # elif isinstance(size,int):
+        #     size = (size,len(self.lower))
+        #     return np.random.uniform(self.lower, self.upper, size=size)
+        # elif isinstance(size,tuple):
+        #     size = size + (len(self.lower),)
+        #     return np.random.uniform(self.lower, self.upper, size=size)
+        size = (size,) if isinstance(size,int) else size
+        size = size + (len(self.lower),) if isinstance(size,tuple) else size
         return np.random.uniform(self.lower, self.upper, size=size)
 
 
@@ -1302,9 +1313,13 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     def sample(self,size=None):
         """ sample from the model. """
         p = self.submodels["FlatPriorModel"].sample(size)
+        # NOTE: p is ndarray with shape = 
+        #       - (n_params,) when size is None
+        #       - (size, n_params) when size is int
+        #       - (*size, n_params) when size is tuple
         # override log10_re_pc
         idx_log10_re_pc = self.submodels["FlatPriorModel"].get_index("log10_re_pc")
-        p[idx_log10_re_pc] = self.submodels["PhotometryPriorModel"].sample(size)
+        p[ ..., idx_log10_re_pc ] = self.submodels["PhotometryPriorModel"].sample(size)
         return p
     
 

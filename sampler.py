@@ -142,12 +142,18 @@ class Sampler:
         if p0_generator is None:
             print("Sampler: p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself.")
         else:
-            p0 = p0_generator(1)
-            params = self.model.convert_params(p0[0])
-            print(f"Sampler: p0: {p0[0]}")
-            print(f"---->")
-            print(f"Sampler: params: ")
-            print(params)
+            # p0 = p0_generator(1)
+            # params = self.model.convert_params(p0[0])
+            p0 = p0_generator(None)
+            params = self.model.convert_params(p0)
+            # print(f"Sampler: p0: {p0[0]}")
+            # print(f"---->")
+            # print(f"Sampler: params: ")
+            # print(params)
+            # NOTE: Instead of above lines, we use comparison dataframe
+            # Here we note that params is a pandas.Series and p0 is a numpy.ndarray
+            conparison = pd.DataFrame({"p0":p0,"params":params})
+            print(conparison)
         
         # define filename as a comination of model name and current time
         # NOTE: replace "+" in the model name
