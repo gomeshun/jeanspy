@@ -146,10 +146,10 @@ class Sampler:
             # params = self.model.convert_params(p0[0])
             p0 = p0_generator(None)
             params = self.model.convert_params(p0)
-            # print(f"Sampler: p0: {p0[0]}")
-            # print(f"---->")
-            # print(f"Sampler: params: ")
-            # print(params)
+            print(f"Sampler: p0: {p0}")
+            print(f"---->")
+            print(f"Sampler: params: ")
+            print(params)
             # NOTE: Instead of above lines, we use comparison dataframe
             # Here we note that params is a pandas.Series and p0 is a numpy.ndarray
             conparison = pd.DataFrame({"p0":p0,"params":params})
