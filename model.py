@@ -1126,7 +1126,12 @@ class FlatPriorModel(Model):
         #     return np.random.uniform(self.lower, self.upper, size=size)
         size = (size,) if isinstance(size,int) else size
         size = size + (len(self.lower),) if isinstance(size,tuple) else size
-        return np.random.uniform(self.lower, self.upper, size=size)
+        try:
+            return np.random.uniform(self.lower, self.upper, size=size)
+        except OverflowError as e:
+            mes = f"OverflowError: lower:{self.lower}, upper:{self.upper}, size:{size}"
+            e.args = (mes,) + e.args
+            raise(e)
 
 
     def _lnprior(self,p):
