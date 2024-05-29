@@ -1217,7 +1217,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
-        print("Please check the consistensy of model parameters and config file.")
+        print(f"{self.__class__}: Please check the consistensy of model parameters and config file.")
         print("="*32)
         comparison = {
             "config": self.submodels["FlatPriorModel"].data.index.tolist(),
