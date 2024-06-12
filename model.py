@@ -1220,7 +1220,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         print(f"{self.__class__}: Please check the consistensy of model parameters and config file.")
         print("="*32)
         comparison = {
-            "config": self.submodels["FlatPriorModel"].data.index.tolist(),
+            "config": self.p_names_lnprob,
             "params": self.required_param_names_combined,
         }
         try:
@@ -1237,14 +1237,20 @@ class SimpleDSphEstimationModel(FittableModel,Model):
             print(consistencies)
             raise(e)
         
-        
+    
+    @property
+    def p_names_lnprob(self):
+        """ return a list of parameter names used as an input of lnprob.
+        """
+        return self.submodels["FlatPriorModel"].data.index.tolist()
+
 
     def convert_params(self, p):
         """ convert parameters from p to params. 
         Here, required_param_names_combined of this model is
             []
         """
-        p_names = self.submodels["FlatPriorModel"].data.index.tolist()
+        p_names = self.p_names_lnprob
         param_names = self.required_param_names_combined
         def convert_param(name,p):
             # check if "log10_" is in name by using a method of string
