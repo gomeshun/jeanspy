@@ -1098,6 +1098,7 @@ class FlatPriorModel(Model):
         # if config is a file name, load it as a pandas.DataFrame.
         if isinstance(config,str):
             try:
+                self.fname_config = config
                 self.data = pd.read_csv(config, index_col=0)
             except FileNotFoundError as e:
                 print(f"config file '{config}' is not found.")
@@ -1217,12 +1218,16 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
-        print(f"{self.__class__}: Please check the consistensy of model parameters and config file.")
+        fname_config = self.submodels["FlatPriorModel"].fname_config
+        print(f"{self.__class__}: Please check the consistensy of model parameters and config file: {fname_config}.")
         print("="*32)
         comparison = {
             "config": self.p_names_lnprob,
             "params": self.required_param_names_combined,
         }
+        if len(comparison["config"]) != len(comparison["params"]):
+            mes = f"Length of comparison['config'] and comparison['params'] are different."
+            mes += f"config: {len(comparison['config'])}, params: {len(comparison['params'])}"
         try:
             print(pd.DataFrame(comparison))
             print("="*32)
