@@ -1060,7 +1060,15 @@ class FittableModel(Model,metaclass=ABCMeta):
         lnp_list = self._lnpriors(p,*args,**kwargs)
         if np.all([lnp > -np.inf for lnp in lnp_list]):
             lnl = self._lnlikelihood(*args,**kwargs)
-        return (lnl + np.sum(lnp_list), lnl, *lnp_list)
+        ret = (lnl + np.sum(lnp_list), lnl, *lnp_list)
+        if np.isnan(ret[0]):
+            mes = f"lnposterior is nan. lnl:{lnl}, lnp_list:{lnp_list}"
+            mes += f"\np:{p}"
+            mes += f"\nargs:{args}"
+            mes += f"\nkwargs:{kwargs}"
+            mes += f"\nparams:{params}"
+            raise ValueError(mes)
+        return ret
 
     
     def lnposterior_wbic(self,p,*args,**kwargs):
@@ -1147,7 +1155,7 @@ class FlatPriorModel(Model):
         lower = self.data["lower"].values
         upper = self.data["upper"].values
         if np.all((lower <= p) & (p <= upper)):
-            return 0
+            return 0.0
         else:
             return -np.inf
 
