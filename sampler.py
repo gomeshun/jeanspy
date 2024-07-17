@@ -159,6 +159,7 @@ class Sampler:
         # NOTE: replace "+" in the model name
         import time
         filename = prefix + "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
+        print("Sampler: filename:",filename)
         self.backend = emcee.backends.HDFBackend(filename)
         if reset:
             self.backend.reset(self.nwalkers, self.ndim)
