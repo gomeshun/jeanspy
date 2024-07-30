@@ -202,6 +202,15 @@ class Sampler:
         for i_loop in range(loops):
             # start mcmc sampling with self.sampler.run_mcmc and pool
             initial_state = self.p0_generator(self.nwalkers) if self.backend.iteration == 0 else None
+            # check if initial_state returns finite log_prob
+            # if not, raise an error
+            if (initial_state is not None) and (not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state]))):
+                mes = []
+                mes.append("Sampler: initial_state has non-finite log_prob")
+                mes.append(f"initial_state:{initial_state}")
+                mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")
+                raise RuntimeError("\n".join(mes))
+            # run mcmc
             self.sampler.run_mcmc(initial_state,iterations,
                                     progress=True,
                                     **kwargs)
