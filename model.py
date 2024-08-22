@@ -1053,6 +1053,11 @@ class FittableModel(Model,metaclass=ABCMeta):
         return lnp
         
     
+    @property
+    def blobs_dtype(self):
+        return [ ("lnl",float), *[ (name, float) for name in self.model.prior_names ]]
+    
+    
     def lnposterior(self,p,*args,**kwargs):
         params = self.convert_params(p)
         self.update(params)
@@ -1266,7 +1271,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         p_names = self.p_names_lnprob
         param_names = self.required_param_names_combined
         def convert_param(name,p):
-            # check if "log10_" is in name by using a method of string
+            # zif "log10_" is in name by using a method of string
             if "log10_" in name:
                 return 10**p
             elif "bfunc_" in name:
