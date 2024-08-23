@@ -131,6 +131,12 @@ class Model(metaclass=ABCMeta):
 
     def __str__(self):
         return self._generate_yaml_representation(0)
+    
+
+    def __getitem__(self,key):
+        """ syntax sugar for self.submodels[key] """
+        return self.submodels[key]
+    
 
     def _generate_yaml_representation(self, depth):
         indent = "  " * depth  # YAMLでは通常2スペースのインデントを使用
