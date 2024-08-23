@@ -962,7 +962,19 @@ class FittableModel(Model,metaclass=ABCMeta):
     """
 
     def __init__(self,args_load_data=None,kwargs_load_data={},*args,**kwargs):
-        """ initialize FittableModel. """
+        """ initialize FittableModel. 
+        
+        Parameters
+        ----------
+        args_load_data: list
+            arguments for load_data method.
+        kwargs_load_data: dict
+            keyword arguments for load_data method.
+        args: list
+            arguments for the parent class.
+        kwargs: dict
+            keyword arguments for the parent class.
+        """
         super().__init__(*args,**kwargs)
         print(f"Fittable Model: args_load_data: {args_load_data}")
         # check if args_load_data is a list.
