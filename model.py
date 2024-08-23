@@ -872,9 +872,9 @@ class DSphModel(Model):
 
     def _sigmar2(self,r_pc):
         RELERROR_INTEG = 1e-6
-        density_3d = self.submodels["StellarModel"].density_3d
-        enclosure_mass = self.submodels["DMModel"].enclosure_mass
-        f = self.submodels["AnisotropyModel"].f
+        density_3d = self["StellarModel"].density_3d
+        enclosure_mass = self["DMModel"].enclosure_mass
+        f = self["AnisotropyModel"].f
         integrand = lambda r: density_3d(r)*f(r)*GMsun_m3s2*enclosure_mass(r)/r**2/f(r_pc)/density_3d(r_pc)*1e-6/parsec
         integ, abserr = integrate.quad(integrand,r_pc,np.inf)
         return integ
@@ -887,7 +887,7 @@ class DSphModel(Model):
 
     def sigmat2(self,r_pc):
         ''' Return the tangential velocity dispersion squared at r_pc. '''
-        beta = self.submodels["AnisotropyModel"].beta(r_pc)
+        beta = self["AnisotropyModel"].beta(r_pc)
         sigmar2 = self.sigmar2(r_pc)
         return sigmar2*(1-beta)
 
@@ -906,10 +906,10 @@ class DSphModel(Model):
         R_pc = np.array(R_pc)[:,np.newaxis] # axis = 0
         u = np.array(u)[np.newaxis,:]  # axis = 1
         
-        density_3d = self.submodels["StellarModel"].density_3d
-        density_2d = self.submodels["StellarModel"].density_2d
-        enclosure_mass = self.submodels["DMModel"].enclosure_mass
-        kernel = self.submodels["AnisotropyModel"].kernel
+        density_3d = self["StellarModel"].density_3d
+        density_2d = self["StellarModel"].density_2d
+        enclosure_mass = self["DMModel"].enclosure_mass
+        kernel = self["AnisotropyModel"].kernel
         r = R_pc*u
         # Note that parsec = parsec/m.
         # If you convert m -> pc,      ... var[m] * [1 pc/ parsec m] = var/parsec[pc].
@@ -1237,7 +1237,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
-        fname_config = self.submodels["FlatPriorModel"].fname_config
+        fname_config = self["FlatPriorModel"].fname_config
         print(f"{self.__class__}: Please check the consistensy of model parameters and config file: {fname_config}.")
         print("="*32)
         comparison = {
@@ -1266,7 +1266,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     def p_names_lnprob(self):
         """ return a list of parameter names used as an input of lnprob.
         """
-        return self.submodels["FlatPriorModel"].data.index.tolist()
+        return self["FlatPriorModel"].data.index.tolist()
 
 
     def convert_params(self, p):
@@ -1311,34 +1311,34 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         # for vmem_kms
         print(self.__class__.__name__+": Override FlatPriorModel config by data")
         print("="*32)
-        print(self.submodels["FlatPriorModel"].data.loc["vmem_kms"])
+        print(self["FlatPriorModel"].data.loc["vmem_kms"])
         lower = self.data["vlos_kms"].values.min()
         upper = self.data["vlos_kms"].values.max()
-        # self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
-        # self.submodels["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
-        self.submodels["FlatPriorModel"].data.loc["vmem_kms","lower"] = lower
-        self.submodels["FlatPriorModel"].data.loc["vmem_kms","upper"] = upper
+        # self["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
+        # self["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
+        self["FlatPriorModel"].data.loc["vmem_kms","lower"] = lower
+        self["FlatPriorModel"].data.loc["vmem_kms","upper"] = upper
         print("-"*8+">")
-        print(self.submodels["FlatPriorModel"].data.loc["vmem_kms"])
+        print(self["FlatPriorModel"].data.loc["vmem_kms"])
         print("="*32)
 
         
 
     def _lnlikelihoods(self):
         """ define natural logarithm of the likelihood function. """
-        s2 = self.submodels["DSphModel"].sigmalos2_dequad(self.data.R_pc)
+        s2 = self["DSphModel"].sigmalos2_dequad(self.data.R_pc)
         err2 = self.data.e_vlos_kms**2
-        vmem_kms = self.submodels["DSphModel"].params.vmem_kms
+        vmem_kms = self["DSphModel"].params.vmem_kms
         return norm.logpdf(self.data.vlos_kms,loc=vmem_kms,scale=np.sqrt(s2+err2))
         
 
     def _lnpriors(self,p_before_conversion):
         """ define natural logarithm of the prior function. """
-        idx_log10_re_pc = self.submodels["FlatPriorModel"].get_index("log10_re_pc")
+        idx_log10_re_pc = self["FlatPriorModel"].get_index("log10_re_pc")
         log10_re_pc = p_before_conversion[idx_log10_re_pc]
         return [
-            self.submodels["FlatPriorModel"]._lnprior(p_before_conversion),
-            self.submodels["PhotometryPriorModel"]._lnprior(log10_re_pc)
+            self["FlatPriorModel"]._lnprior(p_before_conversion),
+            self["PhotometryPriorModel"]._lnprior(log10_re_pc)
             ]
 
 
@@ -1347,14 +1347,14 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
     def sample(self,size=None):
         """ sample from the model. """
-        p = self.submodels["FlatPriorModel"].sample(size)
+        p = self["FlatPriorModel"].sample(size)
         # NOTE: p is ndarray with shape = 
         #       - (n_params,) when size is None
         #       - (size, n_params) when size is int
         #       - (*size, n_params) when size is tuple
         # override log10_re_pc
-        idx_log10_re_pc = self.submodels["FlatPriorModel"].get_index("log10_re_pc")
-        p[ ..., idx_log10_re_pc ] = self.submodels["PhotometryPriorModel"].sample(size)
+        idx_log10_re_pc = self["FlatPriorModel"].get_index("log10_re_pc")
+        p[ ..., idx_log10_re_pc ] = self["PhotometryPriorModel"].sample(size)
         return p
     
 
