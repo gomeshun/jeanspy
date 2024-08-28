@@ -126,6 +126,7 @@ class Sampler:
         p0_generator: a function to generate p0
         nwalkers: number of walkers. default is 2*ndim
         prefix: prefix of the filename
+        reset: reset the backend
         **kwargs: keyword arguments for emcee.EnsembleSampler
         """
         self.model = model
@@ -161,6 +162,7 @@ class Sampler:
         filename = prefix + "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
         print("Sampler: filename:",filename)
         self.backend = emcee.backends.HDFBackend(filename)
+        # self.backend = emcee.backends.Backend()
         if reset:
             self.backend.reset(self.nwalkers, self.ndim)
         
@@ -207,8 +209,12 @@ class Sampler:
             if (initial_state is not None) and (not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state]))):
                 mes = []
                 mes.append("Sampler: initial_state has non-finite log_prob")
-                mes.append(f"initial_state:{initial_state}")
-                mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")
+                for p in initial_state:
+                    if not np.all(np.isfinite(self.model.lnposterior(p))):
+                        mes.append(f"p:{p}")
+                        mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
+                # mes.append(f"initial_state:{initial_state}")
+                # mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")
                 raise RuntimeError("\n".join(mes))
             # run mcmc
             self.sampler.run_mcmc(initial_state,iterations,
