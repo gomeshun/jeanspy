@@ -1073,7 +1073,7 @@ class FittableModel(Model,metaclass=ABCMeta):
     
     @property
     def blobs_dtype(self):
-        return [ ("lnl",float), *[ (name, float) for name in self.model.prior_names ]]
+        return [ ("lnl",float), *[ (name, float) for name in self.prior_names ]]
     
     
     def lnposterior(self,p,*args,**kwargs):
