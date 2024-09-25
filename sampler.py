@@ -134,6 +134,7 @@ class Sampler:
         self.nwalkers = model.ndim * 2 if nwalkers is None else nwalkers
         self.p0_generator = p0_generator
         self.kwargs = kwargs
+        self.pool = pool
         blobs_dtype = [ ("lnl",float), *[ (name, float) for name in self.model.prior_names ]]
         print("blobs_dtype:")
         pprint(blobs_dtype)
@@ -166,11 +167,11 @@ class Sampler:
         if reset:
             self.backend.reset(self.nwalkers, self.ndim)
         
-        log_prob = self.model.lnposterior
+        self.log_prob = self.model.lnposterior
 
         self.sampler = emcee.EnsembleSampler(self.nwalkers,
                                              self.ndim,
-                                             log_prob_fn=log_prob,
+                                             log_prob_fn=self.log_prob,
                                              blobs_dtype=blobs_dtype,
                                              backend=self.backend,
                                              pool=pool,
