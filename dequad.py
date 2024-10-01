@@ -85,7 +85,7 @@ def dequad(func,a,b,n,
     xs,ws = generate_x_w(a,b,n,xp)
     fs = func(xs)
     ws = ws if reshape_ws is None else ws.reshape(reshape_ws)
-    wsfs = ws * func(xs)
+    wsfs = ws * fs
 
      
     if replace_inf_to_zero:

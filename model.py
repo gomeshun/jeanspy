@@ -11,9 +11,9 @@ from scipy.constants import parsec, degree, physical_constants # parsec in meter
 from scipy.integrate import quad
 from scipy.interpolate import interp1d,Akima1DInterpolator
 
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from abc import ABCMeta, abstractmethod
-from functools import cached_property
+from functools import cached_property, partial
 
 import warnings
 
@@ -919,7 +919,6 @@ class DSphModel(Model):
 
     
     def sigmalos2_dequad(self,R_pc,n=1024,n_kernel=128,ignore_RuntimeWarning=True):
-        
         def func(u):
             '''
             shape: (n_u,) -> (n_R,n_u)
