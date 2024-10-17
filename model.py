@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import multiprocessing as multi
+from multiprocessing.shared_memory import SharedMemory
 from copy import copy
 import os
 from numpy import array,pi,sqrt,exp,power,log,log10,log1p,cos,tan,sin, sort,argsort, inf, isnan
@@ -1135,7 +1136,7 @@ class FlatPriorModel(Model):
                 raise(e)
         else:
             self.data = config
-            
+        
         self.lower = self.data["lower"].values
         self.upper = self.data["upper"].values
 
@@ -1234,6 +1235,32 @@ class PhotometryPriorModel(Model):
         return self._sample(size=size)
 
 
+class DotDict(dict):
+    """ Almost same as dict, but can be accessed by dot notation.
+    """
+    def __getattr__(self,key):
+        # check if key is in self.
+        if key in self:
+            return self[key]
+        else:
+            super().__getattr__(key)
+    
+    def __setattr__(self,key,value):
+        # check if key is in self.
+        if key in self:
+            self[key] = value
+        else:
+            super().__setattr__(key,value)
+
+    def __delattr__(self,key):
+        # check if key is in self.
+        if key in self:
+            del self[key]
+        else:
+            super().__delattr__(key)
+    
+
+
 
 class SimpleDSphEstimationModel(FittableModel,Model):
     """ A Simple model for dwarf spheroidal galaxy, considering only kinematical dataset.
@@ -1300,19 +1327,21 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         return pd.Series(d)
 
 
-    def load_data(self, dsph_type, dsph_name):
+    def load_data(self, dsph_type, dsph_name,shared=False):
         """ load dataset required for parameter fitting or estimation.
         data must be stored in self.data, as a pd.DataFrame.
         additional data must be stored in self.additional_data, as a dict.
         """
         self.dsph_name = dsph_name
         self.dsph_type = dsph_type
+        self.shared = shared
         if self.dsph_type == "Mock":
             print("WARNING: dsph_type is 'Mock'. 'data' attribute must be reset manually by 'reset_data'.")
 
         else:
             data = dsph_database.spectroscopy.load_kinematic_data(dsph_type,dsph_name)
             self.reset_data(data)
+
 
     def reset_data(self, data):
         """ reset data attribute and update FlatPriorModel.
@@ -1323,8 +1352,8 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         print(self.__class__.__name__+": Override FlatPriorModel config by data")
         print("="*32)
         print(self["FlatPriorModel"].data.loc["vmem_kms"])
-        lower = self.data["vlos_kms"].values.min()
-        upper = self.data["vlos_kms"].values.max()
+        lower = self.data["vlos_kms"].min()
+        upper = self.data["vlos_kms"].max()
         # self["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
         # self["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
         self["FlatPriorModel"].data.loc["vmem_kms","lower"] = lower
@@ -1333,6 +1362,133 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         print(self["FlatPriorModel"].data.loc["vmem_kms"])
         print("="*32)
 
+
+    @property
+    def shared_memory_basename(self):
+        if not self.shared:
+            # raise ValueError("shared_memory_name is not available when shared is False.")
+            return None
+        return f"{self.dsph_type}_{self.dsph_name}"
+    
+    
+    @property
+    def data(self):
+        if not self.shared:
+            return self._data
+        else:
+            try:
+                # If shared memory is already initialized, return the data.
+                # print("debug: try to get shared memory.")
+                return DotDict({
+                    "R_pc": np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_R_pc.buf),
+                    "vlos_kms": np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_vlos_kms.buf),
+                    "e_vlos_kms": np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_e_vlos_kms.buf)
+                })
+            except FileNotFoundError as e:
+                # if shared memory is not initialized, raise an error.
+                print(f"{self.__class__.__name__}: SharedMemory '{self.shared_memory_basename}' is not initialized yet.")
+                raise(e)
+            except AttributeError as e:
+                # if shared memory is not initialized, raise an error.
+                print(f"{self.__class__.__name__}: SharedMemory '{self.shared_memory_basename}' is not initialized yet.")
+                raise(e)
+            
+            
+
+    # def get_shared_memory(self,suffix,size):
+    #     if self.shared:
+    #         name = self.shared_memory_basename+suffix
+    #         try:
+    #             # check if shared memory is already allocated.
+    #             shm = SharedMemory(name=name,create=False)
+    #             print(f"{self.__class__.__name__}: shared memory '{name}' is already allocated.")
+    #             return shm
+    #         except FileNotFoundError as e:
+    #             # if shared memory is not allocated, allocate it.
+    #             print(f"{self.__class__.__name__}: shared memory '{name}' is not allocated yet.")
+    #             shm = SharedMemory(name=name,create=True, size=size)
+    #             print(f"{self.__class__.__name__}: shared memory '{name}' is allocated.")
+    #             return shm    
+    #     else:
+    #         raise ValueError("shared memory is not available when shared is False.")
+            
+    
+    @data.setter
+    def data(self,data: pd.DataFrame):
+        if not self.shared:
+            # self._data = data
+            self._data = DotDict({
+                "R_pc": data["R_pc"].values,
+                "vlos_kms": data["vlos_kms"].values,
+                "e_vlos_kms": data["e_vlos_kms"].values
+            })
+        else:
+            print(f"{self.__class__.__name__}: Initialize shared memory '{self.shared_memory_basename}'")
+            self.shared_shape = data["R_pc"].shape
+            assert self.shared_shape == data["vlos_kms"].shape
+            assert self.shared_shape == data["e_vlos_kms"].shape
+            self.buffer_size = data["R_pc"].values.nbytes
+            assert self.buffer_size == data["vlos_kms"].values.nbytes
+            assert self.buffer_size == data["e_vlos_kms"].values.nbytes
+            # If shared memory is not initialized, initialize it.
+            try:
+                self.shm_R_pc = SharedMemory(name=self.shared_memory_basename+"_R_pc",create=True, size=self.buffer_size)
+                R_pc = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_R_pc.buf)
+                R_pc[:] = data["R_pc"].values
+            except FileExistsError as e:
+                self.shm_R_pc = SharedMemory(name=self.shared_memory_basename+"_R_pc",create=False)
+                R_pc = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_R_pc.buf)
+            try:
+                self.shm_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_vlos_kms",create=True, size=self.buffer_size)
+                vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_vlos_kms.buf)
+                vlos_kms[:] = data["vlos_kms"].values
+            except FileExistsError as e:
+                self.shm_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_vlos_kms",create=False)
+                vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_vlos_kms.buf)
+            try:
+                self.shm_e_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_e_vlos_kms",create=True, size=self.buffer_size)
+                e_vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_e_vlos_kms.buf)
+                e_vlos_kms[:] = data["e_vlos_kms"].values
+            except FileExistsError as e:
+                self.shm_e_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_e_vlos_kms",create=False)
+                e_vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_e_vlos_kms.buf)
+            data = {
+                "R_pc": R_pc,
+                "vlos_kms": vlos_kms,
+                "e_vlos_kms": e_vlos_kms
+            }
+            data = DotDict(data)
+            return data
+            
+            
+    
+    def _release_shared_memory(self,suffix):
+        if self.shared:
+            name = self.shared_memory_basename+suffix
+            if not hasattr(self,"shared_shape"):
+                raise ValueError(f"{self.__class__.__name__}: try to release shared memory {name} before initialization.")
+            try:
+                # access to the atrtibute of the instance self.shm{suffix}
+                shm = getattr(self,f"shm{suffix}")
+                shm.close()
+                shm.unlink()  # raise FileNotFoundError if the shared memory is already unlinked.
+                print(f"{self.__class__.__name__}: shared memory '{name}' is released.")
+                print(f"id(self):{id(self)}")
+            except FileNotFoundError as e:
+                # alreadly unlinked. Do nothing.
+                print(f"{self.__class__.__name__}: shared memory '{name}' is already released.")
+                print(f"id(self):{id(self)}")
+
+    
+    def release_shared_memory(self):
+        self._release_shared_memory("_R_pc")
+        self._release_shared_memory("_vlos_kms")
+        self._release_shared_memory("_e_vlos_kms")
+            
+    
+    # def __del__(self):
+    #     if self.shared:
+    #         self.release_shared_memory()
         
 
     def _lnlikelihoods(self):
@@ -1370,7 +1526,9 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     
 
 
-def get_default_estimation_model(dsph_type,dsph_name,config="priorconfig.csv"):
+def get_default_estimation_model(dsph_type,dsph_name,
+                                 config="priorconfig.csv",
+                                 kwargs_load_data={}):
     """ return a default estimation model. 
     """
 
@@ -1388,6 +1546,7 @@ def get_default_estimation_model(dsph_type,dsph_name,config="priorconfig.csv"):
 
     mdl = SimpleDSphEstimationModel(
         args_load_data=[dsph_type, dsph_name],
+        kwargs_load_data=kwargs_load_data,
         submodels={
             "DSphModel" : DSphModel(submodels={
                 "StellarModel" : PlummerModel(),
