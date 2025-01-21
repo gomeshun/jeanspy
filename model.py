@@ -1009,7 +1009,9 @@ class FittableModel(Model,metaclass=ABCMeta):
     def inverse_temparature(self,):
         """ inverse temparature of the model, given by 1/np.log(len(self.data))
         """
-        return 1/np.log(len(self.data))
+        # return 1/np.log(len(self.data))
+        n_data = self.n_data if hasattr(self,'n_data') else len(self.data)
+        return 1/np.log(n_data)
     
 
     @abstractmethod
@@ -1100,8 +1102,17 @@ class FittableModel(Model,metaclass=ABCMeta):
         lnl = -np.inf
         lnp_list = self._lnpriors(p,*args,**kwargs)
         if np.all([lnp > -np.inf for lnp in lnp_list]):
-            lnl = self.lnlikelihood(*args,**kwargs) * self.inverse_temparature
-        return (lnl + np.sum(lnp_list), lnl, *lnp_list)
+            lnl = self._lnlikelihood(*args,**kwargs) * self.inverse_temparature
+        ret = (lnl + np.sum(lnp_list), lnl, *lnp_list)
+        # return (lnl + np.sum(lnp_list), lnl, *lnp_list)
+        if np.isnan(ret[0]):
+            mes = f"lnposterior_wbic is nan. lnl:{lnl}, lnp_list:{lnp_list}"
+            mes += f"\np:{p}"
+            mes += f"\nargs:{args}"
+            mes += f"\nkwargs:{kwargs}"
+            mes += f"\nparams:{params}"
+            raise ValueError(mes)
+        return ret
 
     
     @cached_property
@@ -1411,10 +1422,14 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     #             return shm    
     #     else:
     #         raise ValueError("shared memory is not available when shared is False.")
-            
+    
+    @property
+    def n_data(self):
+        return self._n_data
     
     @data.setter
     def data(self,data: pd.DataFrame):
+        self._n_data = len(data)
         if not self.shared:
             # self._data = data
             self._data = DotDict({

@@ -119,7 +119,7 @@ class Sampler:
     """ wrapper class for emcee.EnsembleSampler
     """
 
-    def __init__(self,model,p0_generator,nwalkers=None,prefix="",reset=False,pool=None,**kwargs):
+    def __init__(self,model,p0_generator,nwalkers=None,prefix="",reset=False,pool=None,wbic=False,**kwargs):
         """ initialize the sampler.
         
         model: a model class
@@ -162,12 +162,18 @@ class Sampler:
         import time
         filename = prefix + "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
         print("Sampler: filename:",filename)
-        self.backend = emcee.backends.HDFBackend(filename)
+        if wbic:
+            self.backend = emcee.backends.HDFBackend(filename,name="mcmc_wbic")
+        else:
+            self.backend = emcee.backends.HDFBackend(filename)
         # self.backend = emcee.backends.Backend()
         if reset:
             self.backend.reset(self.nwalkers, self.ndim)
         
-        self.log_prob = self.model.lnposterior
+        if wbic:
+            self.log_prob = self.model.lnposterior_wbic
+        else:
+            self.log_prob = self.model.lnposterior
 
         self.sampler = emcee.EnsembleSampler(self.nwalkers,
                                              self.ndim,
