@@ -163,10 +163,19 @@ class Sampler:
         filename = prefix + "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
         print("Sampler: filename:",filename)
         if wbic:
-            self.backend = emcee.backends.HDFBackend(filename,name="mcmc_wbic")
+            self.backend_name = "mcmc_wbic"
+            # self.backend = emcee.backends.HDFBackend(filename,name="mcmc_wbic")
         else:
-            self.backend = emcee.backends.HDFBackend(filename)
+            self.backend_name = "mcmc"
+            # self.backend = emcee.backends.HDFBackend(filename)
+        self.backend = emcee.backends.HDFBackend(filename,name=self.backend_name)
         # self.backend = emcee.backends.Backend()
+        file = self.backend.open()
+        print("Sampler: backend file", file)
+        print("Sampler: backend file.keys", file.keys())
+        print(f"Sampler: backend file[{self.backend_name}].keys", file[self.backend_name].keys())
+        file.close()
+        print
         if reset:
             self.backend.reset(self.nwalkers, self.ndim)
         
