@@ -1,3 +1,8 @@
+from __future__ import annotations
+# from collections.abc import MutableMapping
+from typing import Dict, Iterator, Any, Mapping, Optional
+from collections.abc import MutableMapping
+
 import pandas as pd
 import numpy as np
 import multiprocessing as multi
@@ -19,8 +24,8 @@ from functools import cached_property, partial
 import warnings
 
 from .dequad import dequad
-import dsph_database.spectroscopy
-import dsph_database.photometry
+# import dsph_database.spectroscopy
+# import dsph_database.photometry
 
 GMsun_m3s2 = 1.32712440018e20
 R_trunc_pc = 1866.
@@ -32,6 +37,108 @@ C0 = (solar_mass_kg*kg_eV)**2*((1./parsec)*im_eV)**5
 C1 = (1e9)**2 * (1e2*im_eV)**5
 C_J = C0/C1
 
+
+class Parameters(MutableMapping):
+    """
+    Lightweight substitute for `pd.Series` used in Model.params.
+    * Dot access           : p.re_pc
+    * Dict compatibility    : p['re_pc']
+    * update method support : p.update({...} or pd.Series)
+    * Conversion with pandas: p.to_series()
+    """
+
+    __slots__ = ("_data",)
+
+    # ---------- Basic ----------
+    def __init__(self,
+                 data: Optional[Mapping[str, Any]] = None,
+                 **kw: Any) -> None:
+        object.__setattr__(self, "_data", dict())
+        if data is not None:
+            if isinstance(data, pd.Series):
+                self._data.update(data.to_dict())
+            elif isinstance(data, Parameters):
+                self._data.update(data._data)
+            else:
+                self._data.update(data)
+        if kw:
+            self._data.update(kw)
+
+    # ---------- MutableMapping ----------
+    def __getitem__(self, key: str) -> Any:
+        return self._data[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self._data[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self._data[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._data)
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    # ---------- Python conventions ----------
+    def __repr__(self) -> str:
+        kv = ", ".join(f"{k}={v!r}" for k, v in self._data.items())
+        return f"Parameters({kv})"
+
+    # ---------- Dot access ----------
+    def __getattr__(self, name: str) -> Any:
+        try:
+            return self._data[name]
+        except KeyError as exc:
+            raise AttributeError(name) from exc
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        # _data is in __slots__, so set it directly
+        if name == "_data":
+            object.__setattr__(self, name, value)
+        else:
+            self._data[name] = value
+
+    # ---------- Compatibility utilities ----------
+    def update(self, other: Mapping[str, Any] | "Parameters" | pd.Series,
+               **kw: Any) -> None:
+        """
+        Accepts dict, Parameters, or pd.Series as input.
+        Does not return a value (mimics pandas' surface API).
+        """
+        if isinstance(other, pd.Series):
+            self._data.update(other.to_dict())
+        elif isinstance(other, Parameters):
+            self._data.update(other._data)
+        else:
+            self._data.update(dict(other))
+        if kw:
+            self._data.update(kw)
+
+    # Used for conversion with pandas (intended for internal use in Model)
+    def to_series(self) -> pd.Series:
+        return pd.Series(self._data, name="params")
+
+    # Series compatibility properties (minimum required)
+    @property
+    def index(self):
+        return list(self._data.keys())
+
+    @property
+    def values(self):
+        return list(self._data.values())
+    
+    def copy(self) -> "Parameters":
+        """
+        Return a shallow copy of the Parameters object.
+        """
+        return Parameters(self._data)  
+    
+    def __deepcopy__(self, memo):
+        """
+        Return a deep copy of the Parameters object.
+        """
+        return Parameters(copy.deepcopy(self._data, memo=memo))
 
 class Model(metaclass=ABCMeta):
     #params, required_param_names = pd.Series(), ['',]
@@ -99,7 +206,9 @@ class Model(metaclass=ABCMeta):
             self.submodels = pd.Series(submodels)
 
         # initialize parameters of this model
-        self.params = pd.Series({ p:np.nan for p in self.required_param_names})
+        self.params = Parameters({ p:np.nan for p in self.required_param_names})
+        self._parammap: Dict[str, "Model"] = {}
+        self._build_parammap()
         self.update(params,target="all")
 
         # # check if all required parameters are given.
@@ -119,116 +228,82 @@ class Model(metaclass=ABCMeta):
         if show_init:
             print("initialized:")
             print(self)
+    
+
+    def _as_dataframe(self):                           # ← 上書き
+        """ Convert the model parameters to a DataFrame for better readability.
+        """
+        # 1) (<path>, <param>) → value の辞書を作る --------------------
+        tuples = []
+        values = []
+        for full_key, val in self.params_all_with_model_name.items():
+            # full_key = "StellarModel:re_pc" など
+            if ":" in full_key:
+                path, param = full_key.split(":", 1)
+            else:
+                path, param = self.__class__.__name__, full_key
+            tuples.append((path, param))
+            values.append(val)
+
+        # 2) MultiIndex DataFrame に変換 ------------------------------
+        idx = pd.MultiIndex.from_tuples(tuples, names=["model", "param"])
+        df = pd.DataFrame({"value": values}, index=idx)
+
+        # 3) 見やすさ調整（Optional）----------------------------------
+        with pd.option_context("display.max_rows", None,
+                            "display.max_colwidth", 20,
+                            "display.precision", 6):
+            return df
+        
 
     def __repr__(self):
-        """ show model name and parameters.
-        """
-        class_name = self.__class__.__name__
-        submodels_repr = ", ".join(f"'{key}': {value!r}" for key, value in self.submodels.items())
-        params_repr = ", ".join(f"'{key}': {value!r}" for key, value in self.params.items())
+        return self._as_dataframe().to_string()  # __str__() を上書きしているので、print() で表示される  
 
-        return f"{class_name}(submodels={{{submodels_repr}}}, **{{{params_repr}}})"
-    
 
     def __str__(self):
-        return self._generate_yaml_representation(0)
-    
+        return self._as_dataframe().to_string()
+        
 
     def __getitem__(self,key):
         """ syntax sugar for self.submodels[key] """
         return self.submodels[key]
-    
-
-    def _generate_yaml_representation(self, depth):
-        indent = "  " * depth  # YAMLでは通常2スペースのインデントを使用
-        output = ""
-
-        if depth == 0:
-            output += f"Model Name: {self.name}\n"
-            output += "Parameters:\n"
-
-        for param, value in self.params.items():
-            output += f"{indent}- {param}: {value}\n"
-
-        if not self.submodels.empty:
-            if depth == 0:
-                output += "Submodels:\n"
-            for submodel_name, submodel in self.submodels.items():
-                output += f"{indent}{submodel_name}:\n"
-                output += f"{indent}  Model Name: {submodel.name}\n"
-                output += submodel._generate_yaml_representation(depth + 1)
-
-        return output
 
 
     def _repr_html_(self):
-        return self._generate_html_tree_representation(0)
+        return self._as_dataframe().to_html()  # __str__() を上書きしているので、print() で表示される
+    
 
-
-    def _generate_html_tree_representation(self, depth):
-        indent = "&nbsp;" * 4 * depth
-        branch_style = "color: #DDDDDD;"  # light gray
-        node_style = "color: #FFFFFF; font-weight: bold; background-color: #333333; padding: 3px;"  # white, bold, dark gray background
-        param_style = "color: #BBBBBB; background-color: #222222; padding: 2px;"  # light gray, dark gray background
-        submodel_style = "color: #FFA500; background-color: #444444; padding: 2px;"  # orange, dark gray background
-
-        output = "<ul style='list-style-type: none; padding-left: 0; margin: 0;'>"
-        if depth == 0:
-            output += f"<li style='{node_style}'>Model Name: {self.name}</li>"
-        else:
-            connector = "└─" if depth > 0 else ""
-            output += f"<li style='{node_style}'>{indent}{connector} Model Name: {self.name}</li>"
-
-        output += f"<li style='{branch_style}'>{indent}   ├─ Parameters:<ul>"
-        for param, value in self.params.items():
-            output += f"<li style='{param_style}'>{indent}   │   {param}: {value}</li>"
-        output += "</ul></li>"
-        
-        if not self.submodels.empty:
-            output += f"<li style='{branch_style}'>{indent}   └─ Submodels:<ul>"
-            for i, (submodel_name, submodel) in enumerate(self.submodels.items()):
-                output += f"<li style='{submodel_style}'>{indent}   {submodel_name}:"
-                output += submodel._generate_html_tree_representation(depth + 1)
-                output += "</li>"
-            output += "</ul></li>"
-
-        output += "</ul>"
-        return output
+    def _build_parammap(self):
+        """ build a map of parameters and models.
+        """
+        for p in self.required_param_names:
+            self._parammap[p] = self
+        for mdl in self.submodels.values:
+            mdl._build_parammap()
+            self._parammap.update(mdl._parammap)
 
 
     @property
     def params_all(self):
         """ show all parameters as a pd.Series.
         """
-        if len(self.submodels) == 0:
-            return self.params
-        else:
-            # load submodels' parameters
-            ret = [self.params]
-            for model_name,model in self.submodels.items():
-                _params = model.params_all.copy()
-                # add submodels' name to the index of _params
-                # _params.index = [model_name+":"+index for index in _params.index]
-                ret.append(_params)
-            # NOTE: The behavior of array concatenation with empty entries is deprecated. In a future version, this will no longer exclude empty items when determining the result dtype. To retain the old behavior, exclude the empty entries before the concat operation.
-            # return pd.concat(ret)
-            return pd.concat([p for p in ret if len(p) > 0])
+        merged = Parameters(self.params)
+        for mdl in self.submodels.values:
+            merged.update(mdl.params_all)
+        return merged
 
     @property
     def params_all_with_model_name(self):
         """ show all parameters as a pd.Series.
         """
-        if len(self.submodels) == 0:
-            return self.params
-        else:
-            # load submodels' parameters
-            ret = [self.params]
-            for model_name,model in self.submodels.items():
-                _params = model.params_all_with_model_name.copy()
-                # add submodels' name to the index of _params
-                _params.index = [model_name+":"+index for index in _params.index]
-                ret.append(_params)
-            return pd.concat(ret)
+        merged = Parameters()
+        merged.update(self.params)        # 自分はそのまま
+
+        for name, mdl in self.submodels.items():
+            tmp = Parameters({f"{name}:{k}": v for k, v in mdl.params_all_with_model_name.items()})
+            merged.update(tmp)
+
+        return merged
 
     
 
@@ -248,58 +323,27 @@ class Model(metaclass=ABCMeta):
         return [ (p in self.required_param_names) for p in param_names_candidates ]
 
 
-    def update(self,new_params=None,target='all',**kwargs):
-        """ update model parameters recurrently. 
-        If target is 'this', update parameters of this model.
-        If target is 'all', update parameters of this model and submodels (sub-parameters).
-        
-        If there are unknown parameters in the new parameters, raise ValueError.
+    def update(self,
+            new_params=None,
+            target: str = "all",  # No target means all, just for compatibility with other models
+            **kwargs):
+        merged: Dict[str, Any] = {}
 
-        Parameters
-        ----------
-        new_params: dict or pd.Series, its key must be in self.required_param_names_combined.
-            If it is None, new parameters are given by kwargs.
-            If it is not None, kwargs are ignored.
-        target: 'this' or 'all'.
-            If 'this', update parameters of this model.
-            If 'all', update parameters of this model and submodels (sub-parameters).
-        **kwargs: new parameters' name and value. If both of new_params_dict and kwargs are given, raise ValueError.
-        """
-        # check if both of new_params and kwargs are given
-        if new_params is not None and len(kwargs) > 0:
-            raise ValueError("new_params_dict and kwargs cannot be given at the same time.")
-        
-        # convert new_params_dict to pd.Series if it is dict
-        new_params = pd.Series(new_params) if new_params is not None else pd.Series(kwargs)
-        
-        # chech if new_params has unknown parameters
-        if not np.all(np.isin(new_params.index,self.required_param_names_combined)):
-            raise ValueError("new params has unknown parameters.\nunknown parameters:{}".format(new_params.index[~np.isin(new_params.index,self.required_param_names_combined)]))
-
-        if target == 'this':
-            # check if there are unknown parameters in the new parameters, not in self.required_param_names
-            # if not np.all(self.is_required_param_names(new_params.index)):
-            if not np.all(np.isin(new_params.index,self.required_param_names)):
-                #raise ValueError("new params has unknown parameters.\nunknown parameters:{}".format(new_params.index[~self.is_required_param_names(new_params.index)]))
-                raise ValueError("new params has unknown parameters.\nunknown parameters:{}".format(new_params.index[~np.isin(new_params.index,self.required_param_names)]))
+        if new_params is not None:
+            if isinstance(new_params, Parameters):
+                merged.update(new_params._data)
+            elif isinstance(new_params, pd.Series):
+                merged.update(new_params.to_dict())
             else:
-                # update parameters of this model
-                self.params.update(new_params)  # NOTE: self.params is a pd.Series
-        elif target == 'all':
-            # update parameters of this model and submodels
-            # update parameters of this model
-            new_params_in_this = new_params[new_params.index.isin(self.required_param_names)]
-            if len(new_params_in_this) > 0:
-                self.params.update(new_params_in_this)
-            # update parameters of submodels
-            for model_name,model in self.submodels.items():
-                new_params_in_model = new_params[new_params.index.isin(model.required_param_names_combined)]
-                if len(new_params_in_model) > 0:
-                    model.update(new_params_in_model)
-        else:
-            raise ValueError("target must be 'this' or 'all'")
-
-            
+                merged.update(dict(new_params))
+        if kwargs:
+            merged.update(kwargs)
+        for key, val in merged.items():
+            try:
+                owner = self._parammap[key]
+            except KeyError:
+                raise ValueError(f"Unknown parameter '{key}' for model '{self.name}'.")
+            owner.params[key] = val
 
 class StellarModel(Model):
     """Base class of StellarModel objects.
