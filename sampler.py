@@ -173,7 +173,10 @@ class Sampler:
         file = self.backend.open()
         print("Sampler: backend file", file)
         print("Sampler: backend file.keys", file.keys())
-        print(f"Sampler: backend file[{self.backend_name}].keys", file[self.backend_name].keys())
+        try:
+            print(f"Sampler: backend file[{self.backend_name}].keys", file[self.backend_name].keys())
+        except:
+            pass
         file.close()
         print
         if reset:
