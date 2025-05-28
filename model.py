@@ -24,8 +24,13 @@ from functools import cached_property, partial
 import warnings
 
 from .dequad import dequad
-# import dsph_database.spectroscopy
-# import dsph_database.photometry
+# check if dsph_database is installed
+try:
+    import dsph_database.spectroscopy
+    import dsph_database.photometry
+except ImportError:
+    dsph_database = None
+    warnings.warn("dsph_database is not installed. Some functionalities may not work.")
 
 GMsun_m3s2 = 1.32712440018e20
 R_trunc_pc = 1866.
@@ -1350,6 +1355,8 @@ class SimpleDSphEstimationModel(FittableModel,Model):
             print(comparison)
             raise(e)
         except AssertionError as e:
+            print("ERROR: config and params are not consistent.")
+            print("config file:",self["FlatPriorModel"].fname_config)
             print(comparison)
             print(consistencies)
             raise(e)
