@@ -158,7 +158,7 @@ class Model(metaclass=ABCMeta):
         
     
     methods:
-        __init__(show_init=False,submodels={},**params):
+        __init__(show_init=False, submodels=None, **params):
             Load parameters and check if all required parameters are given.
             Load submodels and check if all required models are given.
             Set model name as a combination submodels' names.
@@ -182,7 +182,7 @@ class Model(metaclass=ABCMeta):
     '''
     
 
-    def __init__(self,show_init=False,submodels={},**params):
+    def __init__(self,show_init=False,submodels=None,**params):
         """
         Load parameters and check if all required parameters are given.
         Load submodels and check if all required models are given.
@@ -195,6 +195,8 @@ class Model(metaclass=ABCMeta):
         params: dict of {name: value}, parameters' names and values
         """
         self.name = self.__class__.__name__
+        if submodels is None:
+            submodels = {}
 
         # check if the model has "required_param_names" and "params" attributes.
         if not hasattr(self,'required_param_names'):
@@ -1010,7 +1012,7 @@ class FittableModel(Model,metaclass=ABCMeta):
         blobs_dtype: dictionary like {lnl: float, lnp1: float, lnp2: float, ...}. Where lnp1, lnp2, ... are obtained by self.lnpriors.keys().
     """
 
-    def __init__(self,args_load_data=None,kwargs_load_data={},*args,**kwargs):
+    def __init__(self,args_load_data=None,kwargs_load_data=None,*args,**kwargs):
         """ initialize FittableModel. 
         
         Parameters
@@ -1029,6 +1031,8 @@ class FittableModel(Model,metaclass=ABCMeta):
         # check if args_load_data is a list.
         if not isinstance(args_load_data,list):
             raise TypeError('args_load_data must be a list.')
+        if kwargs_load_data is None:
+            kwargs_load_data = {}
         print(f"Fittable Model: kwargs_load_data: {kwargs_load_data}")
         # check if kwargs_load_data is a dict.
         if not isinstance(kwargs_load_data,dict):
@@ -1176,8 +1180,8 @@ class FlatPriorModel(Model):
     required_param_names = []
     required_models = {}
 
-    def __init__(self, config, show_init=False, submodels={}, **params):
-        super().__init__(show_init, submodels, **params)
+    def __init__(self, config, show_init=False, submodels=None, **params):
+        super().__init__(show_init, submodels or {}, **params)
         self.load_config(config)
 
 
@@ -1260,8 +1264,8 @@ class PhotometryPriorModel(Model):
     required_param_names = []
     required_models = {}
 
-    def __init__(self, dsph_name, show_init=False, submodels={}, **params):
-        super().__init__(show_init, submodels, **params)
+    def __init__(self, dsph_name, show_init=False, submodels=None, **params):
+        super().__init__(show_init, submodels or {}, **params)
         self._dsph_name = dsph_name
         self.load_config(dsph_name)
 
@@ -1594,7 +1598,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
 def get_default_estimation_model(dsph_type,dsph_name,
                                  config="priorconfig.csv",
-                                 kwargs_load_data={}):
+                                 kwargs_load_data=None):
     """ return a default estimation model. 
     """
 
@@ -1612,7 +1616,7 @@ def get_default_estimation_model(dsph_type,dsph_name,
 
     mdl = SimpleDSphEstimationModel(
         args_load_data=[dsph_type, dsph_name],
-        kwargs_load_data=kwargs_load_data,
+        kwargs_load_data=kwargs_load_data or {},
         submodels={
             "DSphModel" : DSphModel(submodels={
                 "StellarModel" : PlummerModel(),
