@@ -170,6 +170,10 @@ class Sampler:
             # self.backend = emcee.backends.HDFBackend(filename)
         self.backend = emcee.backends.HDFBackend(filename,name=self.backend_name)
         # self.backend = emcee.backends.Backend()
+
+        if reset:
+            self.backend.reset(self.nwalkers, self.ndim)
+
         file = self.backend.open()
         print("Sampler: backend file", file)
         print("Sampler: backend file.keys", file.keys())
@@ -178,9 +182,7 @@ class Sampler:
         except:
             pass
         file.close()
-        print
-        if reset:
-            self.backend.reset(self.nwalkers, self.ndim)
+        
         
         if wbic:
             self.log_prob = self.model.lnposterior_wbic

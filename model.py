@@ -61,40 +61,48 @@ class Parameters(MutableMapping):
         object.__setattr__(self, "_data", dict())
         if data is not None:
             if isinstance(data, pd.Series):
-                self._data.update(data.to_dict())
+                object.__getattribute__(self, "_data").update(data.to_dict())
             elif isinstance(data, Parameters):
-                self._data.update(data._data)
+                object.__getattribute__(self, "_data").update(data._data)
             else:
-                self._data.update(data)
+                object.__getattribute__(self, "_data").update(data)
         if kw:
-            self._data.update(kw)
+            object.__getattribute__(self, "_data").update(kw)
 
     # ---------- MutableMapping ----------
     def __getitem__(self, key: str) -> Any:
-        return self._data[key]
+        data = object.__getattribute__(self, "_data")
+        return data[key]
 
     def __setitem__(self, key: str, value: Any) -> None:
-        self._data[key] = value
+        data = object.__getattribute__(self, "_data")
+        data[key] = value
 
     def __delitem__(self, key: str) -> None:
-        del self._data[key]
+        data = object.__getattribute__(self, "_data")
+        del data[key]
 
     def __iter__(self) -> Iterator[str]:
-        return iter(self._data)
+        data = object.__getattribute__(self, "_data")
+        return iter(data)
 
     def __len__(self) -> int:
-        return len(self._data)
+        data = object.__getattribute__(self, "_data")
+        return len(data)
 
     # ---------- Python conventions ----------
     def __repr__(self) -> str:
-        kv = ", ".join(f"{k}={v!r}" for k, v in self._data.items())
+        data = object.__getattribute__(self, "_data")
+        kv = ", ".join(f"{k}={v!r}" for k, v in data.items())
         return f"Parameters({kv})"
 
     # ---------- Dot access ----------
     def __getattr__(self, name: str) -> Any:
         try:
-            return self._data[name]
-        except KeyError as exc:
+            # Use object.__getattribute__ to avoid triggering __getattr__ recursively
+            data = object.__getattribute__(self, "_data")
+            return data[name]
+        except (KeyError, AttributeError) as exc:
             raise AttributeError(name) from exc
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -102,7 +110,20 @@ class Parameters(MutableMapping):
         if name == "_data":
             object.__setattr__(self, name, value)
         else:
-            self._data[name] = value
+            # Use object.__getattribute__ to avoid triggering __getattr__
+            try:
+                data = object.__getattribute__(self, "_data")
+                data[name] = value
+            except AttributeError:
+                # _data hasn't been initialized yet
+                object.__setattr__(self, "_data", {name: value})
+
+    # ---------- Pickling support ----------
+    def __getstate__(self):
+        return {"_data": self._data}
+    
+    def __setstate__(self, state):
+        self._data = state["_data"]
 
     # ---------- Compatibility utilities ----------
     def update(self, other: Mapping[str, Any] | "Parameters" | pd.Series,
@@ -111,39 +132,45 @@ class Parameters(MutableMapping):
         Accepts dict, Parameters, or pd.Series as input.
         Does not return a value (mimics pandas' surface API).
         """
+        data = object.__getattribute__(self, "_data")
         if isinstance(other, pd.Series):
-            self._data.update(other.to_dict())
+            data.update(other.to_dict())
         elif isinstance(other, Parameters):
-            self._data.update(other._data)
+            data.update(other._data)
         else:
-            self._data.update(dict(other))
+            data.update(dict(other))
         if kw:
-            self._data.update(kw)
+            data.update(kw)
 
     # Used for conversion with pandas (intended for internal use in Model)
     def to_series(self) -> pd.Series:
-        return pd.Series(self._data, name="params")
+        data = object.__getattribute__(self, "_data")
+        return pd.Series(data, name="params")
 
     # Series compatibility properties (minimum required)
     @property
     def index(self):
-        return list(self._data.keys())
+        data = object.__getattribute__(self, "_data")
+        return list(data.keys())
 
     @property
     def values(self):
-        return list(self._data.values())
+        data = object.__getattribute__(self, "_data")
+        return list(data.values())
     
     def copy(self) -> "Parameters":
         """
         Return a shallow copy of the Parameters object.
         """
-        return Parameters(self._data)  
+        data = object.__getattribute__(self, "_data")
+        return Parameters(data)  
     
     def __deepcopy__(self, memo):
         """
         Return a deep copy of the Parameters object.
         """
-        return Parameters(copy.deepcopy(self._data, memo=memo))
+        data = object.__getattribute__(self, "_data")
+        return Parameters(copy.deepcopy(data, memo=memo))
 
 class Model(metaclass=ABCMeta):
     #params, required_param_names = pd.Series(), ['',]
