@@ -1364,6 +1364,8 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         "PhotometryPriorModel": PhotometryPriorModel,
     }
 
+    dtype = np.float32
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         fname_config = self["FlatPriorModel"].fname_config
@@ -1433,6 +1435,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
         else:
             data = dsph_database.spectroscopy.load_kinematic_data(dsph_type,dsph_name)
+            data = data.astype(self.dtype)  # decrease memory usage
             self.reset_data(data)
 
 
@@ -1473,9 +1476,9 @@ class SimpleDSphEstimationModel(FittableModel,Model):
                 # If shared memory is already initialized, return the data.
                 # print("debug: try to get shared memory.")
                 return DotDict({
-                    "R_pc": np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_R_pc.buf),
-                    "vlos_kms": np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_vlos_kms.buf),
-                    "e_vlos_kms": np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_e_vlos_kms.buf)
+                    "R_pc": np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_R_pc.buf),
+                    "vlos_kms": np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_vlos_kms.buf),
+                    "e_vlos_kms": np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_e_vlos_kms.buf)
                 })
             except FileNotFoundError as e:
                 # if shared memory is not initialized, raise an error.
@@ -1530,25 +1533,25 @@ class SimpleDSphEstimationModel(FittableModel,Model):
             # If shared memory is not initialized, initialize it.
             try:
                 self.shm_R_pc = SharedMemory(name=self.shared_memory_basename+"_R_pc",create=True, size=self.buffer_size)
-                R_pc = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_R_pc.buf)
+                R_pc = np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_R_pc.buf)
                 R_pc[:] = data["R_pc"].values
             except FileExistsError as e:
                 self.shm_R_pc = SharedMemory(name=self.shared_memory_basename+"_R_pc",create=False)
-                R_pc = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_R_pc.buf)
+                R_pc = np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_R_pc.buf)
             try:
                 self.shm_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_vlos_kms",create=True, size=self.buffer_size)
-                vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_vlos_kms.buf)
+                vlos_kms = np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_vlos_kms.buf)
                 vlos_kms[:] = data["vlos_kms"].values
             except FileExistsError as e:
                 self.shm_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_vlos_kms",create=False)
-                vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_vlos_kms.buf)
+                vlos_kms = np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_vlos_kms.buf)
             try:
                 self.shm_e_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_e_vlos_kms",create=True, size=self.buffer_size)
-                e_vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_e_vlos_kms.buf)
+                e_vlos_kms = np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_e_vlos_kms.buf)
                 e_vlos_kms[:] = data["e_vlos_kms"].values
             except FileExistsError as e:
                 self.shm_e_vlos_kms = SharedMemory(name=self.shared_memory_basename+"_e_vlos_kms",create=False)
-                e_vlos_kms = np.ndarray(self.shared_shape,dtype=np.float64,buffer=self.shm_e_vlos_kms.buf)
+                e_vlos_kms = np.ndarray(self.shared_shape,dtype=self.dtype,buffer=self.shm_e_vlos_kms.buf)
             data = {
                 "R_pc": R_pc,
                 "vlos_kms": vlos_kms,
