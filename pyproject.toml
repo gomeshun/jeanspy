@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jeanspy"
+version = "0.1.0"
+description = "Python library for Jeans analysis"
+readme = "README.md"
+authors = [{name="Shunichi Horigome"}]
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+dependencies = [
+    "pandas",
+    "scipy",
+    "tqdm",
+    "astropy",
+    "emcee",
+    "swyft",
+    "pytorch-lightning<2.0.0",
+    "torch-tb-profiler",
+]
+
+[tool.setuptools.package-data]
+jeanspy = ["data/*"]

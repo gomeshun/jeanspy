@@ -354,18 +354,24 @@ class DSphSimulator(swyft.Simulator):
         return f"zarr_{self.model.__class__.__name__}_{self.model.dsph_name}"
     
 
-    def init_zarrstore(self, N, chunk_size, targets={}, zarr_filename=None):
+    def init_zarrstore(self, N, chunk_size, targets=None, zarr_filename=None):
         """ initialize zarr store.
         """
+        if targets is None:
+            targets = {}
         zarr_filename = self.default_zarr_filename if zarr_filename is None else zarr_filename
         self.store[zarr_filename] = swyft.ZarrStore(self.get_store_path(zarr_filename))
         shapes, dtypes = self.get_shapes_and_dtypes(targets)
         self.store[zarr_filename].init(N, chunk_size, shapes, dtypes)
 
     
-    def simulate_in_zarrstore(self,N, chunk_size, batch_size, targets=None, conditions={}, exclude=[], parallel=True, zarr_filename=None):
+    def simulate_in_zarrstore(self,N, chunk_size, batch_size, targets=None, conditions=None, exclude=None, parallel=True, zarr_filename=None):
         """ simulate in store.
         """
+        if conditions is None:
+            conditions = {}
+        if exclude is None:
+            exclude = []
         self.init_zarrstore(N, chunk_size, targets, zarr_filename)
 
         # if (targets is not None) or (conditions is not None):
