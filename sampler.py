@@ -189,12 +189,42 @@ class Sampler:
         else:
             self.log_prob = self.model.lnposterior
 
+
         self.sampler = emcee.EnsembleSampler(self.nwalkers,
                                              self.ndim,
                                              log_prob_fn=self.log_prob,
                                              blobs_dtype=blobs_dtype,
                                              backend=self.backend,
                                              pool=pool,
+                                             **self.kwargs)
+    def set_wrapper_function(self):
+        # NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.
+        # Without the wrapper function, multiprocessing.pool will repeat the pickling/unpickling of the model
+        # and it will be very slow.
+        # Once we define the wrapper function, pool will only pickle/unpickle the wrapper function
+        # and the model will be pickled only once. 
+        # Note that the global variable/function will be copied to each worker process,
+        # so it will not be shared among the workers, so it is safe to use.
+        global log_prob_fn_wrapper
+        def log_prob_fn_wrapper(p):
+            """ wrapper function for log_prob to accelarate the sampling.
+            """
+            return self.log_prob(p)
+        print("Sampler: log_prob_fn_wrapper defined.")
+
+
+    def reset_pool(self,pool):
+        """ reset the pool.
+        """
+        if self.pool is not None:
+            raise RuntimeError("Sampler: pool is already set. Please reset the pool before setting a new one.")
+        self.pool = pool
+        self.sampler = emcee.EnsembleSampler(self.nwalkers,
+                                             self.ndim,
+                                             log_prob_fn=log_prob_fn_wrapper,
+                                             blobs_dtype=self.sampler.blobs_dtype,
+                                             backend=self.backend,
+                                             pool=self.pool,
                                              **self.kwargs)
 
 
@@ -237,6 +267,17 @@ class Sampler:
                 # mes.append(f"initial_state:{initial_state}")
                 # mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")
                 raise RuntimeError("\n".join(mes))
+            # check if already converged
+            if self.sampler.iteration > 0:
+                tau = self.sampler.get_autocorr_time(tol=0)
+                converged = np.all(tau * 100 < self.sampler.iteration)
+                converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
+                if converged:
+                    print(f"Sampler: Already converged after {self.sampler.iteration} iterations.")
+                    break
+                else:
+                    print(f"Sampler: Not converged yet. tau:{tau}\titeration:{self.sampler.iteration}")
+                    old_tau = tau
             # run mcmc
             self.sampler.run_mcmc(initial_state,iterations,
                                     progress=True,
@@ -253,6 +294,7 @@ class Sampler:
             converged = np.all(tau * 100 < self.sampler.iteration)
             converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
             if converged:
+                print(f"Sampler: Converged after {self.sampler.iteration} iterations.")
                 break
             else:
                 print(f"tau:{tau}\titeration:{self.sampler.iteration}")
