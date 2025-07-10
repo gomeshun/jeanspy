@@ -170,15 +170,15 @@ class Sampler:
             # self.backend = emcee.backends.HDFBackend(filename)
         self.backend = emcee.backends.HDFBackend(filename,name=self.backend_name)
         # self.backend = emcee.backends.Backend()
-
-        if reset:
+        # reset file if "reset" is True or if the file does not exist
+        if reset or not os.path.exists(filename):
             self.backend.reset(self.nwalkers, self.ndim)
 
         file = self.backend.open()
         print("Sampler: backend file", file)
         print("Sampler: backend file.keys", file.keys())
         try:
-            print(f"Sampler: backend file[{self.backend_name}].keys", file[self.backend_name].keys())
+            print(f"Sampler: backend file[{self.backend_name}].keys", file[self.backend_name].keys())  # type: ignore
         except:
             pass
         file.close()
