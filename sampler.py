@@ -251,24 +251,41 @@ class Sampler:
         # This will be useful to testing convergence
         old_tau = np.inf
 
+        
+
         # Now we'll sample for up to  steps
         for i_loop in range(loops):
             # start mcmc sampling with self.sampler.run_mcmc and pool
-            initial_state = self.p0_generator(self.nwalkers) if self.backend.iteration == 0 else None
-            # check if initial_state returns finite log_prob
-            # if not, raise an error
-            if (initial_state is not None) and (not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state]))):
-                mes = []
-                mes.append("Sampler: initial_state has non-finite log_prob")
-                for p in initial_state:
-                    if not np.all(np.isfinite(self.model.lnposterior(p))):
-                        mes.append(f"p:{p}")
-                        mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
-                # mes.append(f"initial_state:{initial_state}")
-                # mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")
-                raise RuntimeError("\n".join(mes))
+            initial_state = None
+            if self.backend.iteration == 0:
+                # generate initial state
+                initial_state = self.p0_generator(self.nwalkers)
+                # check if initial_state returns finite log_prob
+                # if not, raise an error
+                if not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state])):
+                    mes = []
+                    mes.append("Sampler: initial_state has non-finite log_prob")
+                    for p in initial_state:
+                        if not np.all(np.isfinite(self.model.lnposterior(p))):
+                            mes.append(f"p:{p}")
+                            mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
+                    raise RuntimeError("\n".join(mes))
+            # initial_state = self.p0_generator(self.nwalkers) if self.backend.iteration == 0 else None
+            # # check if initial_state returns finite log_prob
+            # # if not, raise an error
+            # if (initial_state is not None) and (not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state]))):
+            #     mes = []
+            #     mes.append("Sampler: initial_state has non-finite log_prob")
+            #     for p in initial_state:
+            #         if not np.all(np.isfinite(self.model.lnposterior(p))):
+            #             mes.append(f"p:{p}")
+            #             mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
+            #     # mes.append(f"initial_state:{initial_state}")
+            #     # mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")
+            #     raise RuntimeError("\n".join(mes))
             # check if already converged
-            if self.sampler.iteration > 0:
+            # if self.sampler.iteration > 0:
+            else:
                 tau = self.sampler.get_autocorr_time(tol=0)
                 converged = np.all(tau * 100 < self.sampler.iteration)
                 converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
