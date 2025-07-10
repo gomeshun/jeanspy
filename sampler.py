@@ -139,23 +139,6 @@ class Sampler:
         print("blobs_dtype:")
         pprint(blobs_dtype)
 
-        # Show some message to check the definition of the 'convert_params' 
-        print("Sampler: Please check the following lines to see your parameters are properly converted:")
-        if p0_generator is None:
-            print("Sampler: p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself.")
-        else:
-            # p0 = p0_generator(1)
-            # params = self.model.convert_params(p0[0])
-            p0 = p0_generator(None)
-            params = self.model.convert_params(p0)
-            print(f"Sampler: p0: {p0}")
-            print(f"---->")
-            print(f"Sampler: params: ")
-            print(params)
-            # NOTE: Instead of above lines, we use comparison dataframe
-            # Here we note that params is a pandas.Series and p0 is a numpy.ndarray
-            conparison = pd.DataFrame({"p0":p0,"params":params})
-            print(conparison)
         
         # define filename as a comination of model name and current time
         # NOTE: replace "+" in the model name
@@ -197,6 +180,30 @@ class Sampler:
                                              backend=self.backend,
                                              pool=pool,
                                              **self.kwargs)
+
+    def check_parameter_conversion(self):
+        """ check the conversion of parameters.
+        This is useful to check if the parameters are properly converted from p0 to params.
+        It will print the p0 and params and their comparison.
+        """
+        # Show some message to check the definition of the 'convert_params' 
+        print("Sampler: Please check the following lines to see your parameters are properly converted:")
+        if self.p0_generator is None:
+            print("Sampler: p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself.")
+        else:
+            # p0 = p0_generator(1)
+            # params = self.model.convert_params(p0[0])
+            p0 = self.p0_generator(None)
+            params = self.model.convert_params(p0)
+            print(f"Sampler: p0: {p0}")
+            print(f"---->")
+            print(f"Sampler: params: ")
+            print(params)
+            # NOTE: Instead of above lines, we use comparison dataframe
+            # Here we note that params is a pandas.Series and p0 is a numpy.ndarray
+            conparison = pd.DataFrame({"p0":p0,"params":params})
+            print(conparison)    
+    
     def set_wrapper_function(self):
         # NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.
         # Without the wrapper function, multiprocessing.pool will repeat the pickling/unpickling of the model
@@ -258,6 +265,7 @@ class Sampler:
             # start mcmc sampling with self.sampler.run_mcmc and pool
             initial_state = None
             if self.backend.iteration == 0:
+                self.check_parameter_conversion()
                 # generate initial state
                 initial_state = self.p0_generator(self.nwalkers)
                 # check if initial_state returns finite log_prob
