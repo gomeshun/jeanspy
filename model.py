@@ -23,6 +23,17 @@ from functools import cached_property, partial
 
 import warnings
 
+# logger
+from logging import getLogger, StreamHandler, Formatter
+# initialize logger
+logger = getLogger(__name__)
+handler = StreamHandler()
+formatter = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+if not logger.hasHandlers():
+    logger.addHandler(handler)
+logger.setLevel("INFO")
+
 from .dequad import dequad
 # check if dsph_database is installed
 try:
@@ -222,6 +233,7 @@ class Model(metaclass=ABCMeta):
         params: dict of {name: value}, parameters' names and values
         """
         self.name = self.__class__.__name__
+        self.logger = logger.getChild(self.name)
         if submodels is None:
             submodels = {}
 
