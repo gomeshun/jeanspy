@@ -238,6 +238,45 @@ class Sampler:
     @property
     def filename(self):
         return self.backend.filename
+    
+
+    def burn_in(self, nsteps, p0_generator, **kwargs):
+        """ burn-in the sampler: run MCMC for nsteps and reset the current state by 
+        sampling from the posterior distribution.
+        """
+        initial_state = None
+        if self.backend.iteration == 0:
+            self.check_parameter_conversion(p0_generator)
+            # generate initial state
+            initial_state = p0_generator(self.nwalkers)  # type: ignore
+            # check if initial_state returns finite log_prob
+            # if not, raise an error
+            if not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state])):
+                mes = []
+                mes.append("Sampler: initial_state has non-finite log_prob")
+                for p in initial_state:
+                    if not np.all(np.isfinite(self.model.lnposterior(p))):
+                        mes.append(f"p:{p}")
+                        mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
+                raise RuntimeError("\n".join(mes))
+        self.sampler.run_mcmc(initial_state, nsteps,
+                              progress=True,
+                              **kwargs)
+        p0 = self.sampler.get_chain(flat=True)
+        prob = np.exp(self.sampler.get_log_prob(flat=True))  # type: ignore
+        prob /= np.sum(prob)
+        p0, indices, counts = np.unique(p0, axis=0, return_index=True, return_counts=True)
+        prob = prob[indices] * counts
+        try:
+            idx_p0 = np.random.choice(len(p0), size=self.nwalkers, p=prob, replace=False)
+        except ValueError as e:
+            print("Sampler: Error in choosing initial state for burn-in.")
+            print('prob:', prob)
+            raise e
+        p0 = p0[idx_p0]
+        # reset the current state
+        self.sampler.run_mcmc(p0, 1, progress=True, **kwargs)
+
 
     def run_mcmc(self,
                  iterations,loops,
@@ -262,26 +301,26 @@ class Sampler:
         # This will be useful to testing convergence
         old_tau = np.inf
 
-        
+        initial_state = None
+        if self.backend.iteration == 0:
+            self.check_parameter_conversion(p0_generator)
+            # generate initial state
+            initial_state = p0_generator(self.nwalkers)  # type: ignore
+            # check if initial_state returns finite log_prob
+            # if not, raise an error
+            if not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state])):
+                mes = []
+                mes.append("Sampler: initial_state has non-finite log_prob")
+                for p in initial_state:
+                    if not np.all(np.isfinite(self.model.lnposterior(p))):
+                        mes.append(f"p:{p}")
+                        mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
+                raise RuntimeError("\n".join(mes))
 
         # Now we'll sample for up to  steps
         for i_loop in range(loops):
             # start mcmc sampling with self.sampler.run_mcmc and pool
-            initial_state = None
-            if self.backend.iteration == 0:
-                self.check_parameter_conversion(p0_generator)
-                # generate initial state
-                initial_state = p0_generator(self.nwalkers)  # type: ignore
-                # check if initial_state returns finite log_prob
-                # if not, raise an error
-                if not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state])):
-                    mes = []
-                    mes.append("Sampler: initial_state has non-finite log_prob")
-                    for p in initial_state:
-                        if not np.all(np.isfinite(self.model.lnposterior(p))):
-                            mes.append(f"p:{p}")
-                            mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
-                    raise RuntimeError("\n".join(mes))
+            
             # initial_state = self.p0_generator(self.nwalkers) if self.backend.iteration == 0 else None
             # # check if initial_state returns finite log_prob
             # # if not, raise an error
@@ -297,17 +336,18 @@ class Sampler:
             #     raise RuntimeError("\n".join(mes))
             # check if already converged
             # if self.sampler.iteration > 0:
-            else:
-                tau = self.sampler.get_autocorr_time(tol=0)
-                converged = np.all(tau * 100 < self.sampler.iteration)
-                converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
-                if converged:
-                    print(f"Sampler: Already converged after {self.sampler.iteration} iterations.")
-                    break
-                else:
-                    print(f"Sampler: Not converged yet. tau:{tau}\titeration:{self.sampler.iteration}")
-                    old_tau = tau
+            # else:
+            #     tau = self.sampler.get_autocorr_time(tol=0)
+            #     converged = np.all(tau * 100 < self.sampler.iteration)
+            #     converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
+            #     if converged:
+            #         print(f"Sampler: Already converged after {self.sampler.iteration} iterations.")
+            #         break
+            #     else:
+            #         print(f"Sampler: Not converged yet. tau:{tau}\titeration:{self.sampler.iteration}")
+            #         old_tau = tau
             # run mcmc
+            initial_state = None if self.backend.iteration > 0 else initial_state
             self.sampler.run_mcmc(initial_state,iterations,
                                     progress=True,
                                     **kwargs)
@@ -326,7 +366,7 @@ class Sampler:
                 print(f"Sampler: Converged after {self.sampler.iteration} iterations.")
                 break
             else:
-                print(f"tau:{tau}\titeration:{self.sampler.iteration}")
+                print(f"tau:{tau}\niteration:{self.sampler.iteration}")
                 old_tau = tau
 
     def get_blobs(self,flat=False,thin=1,discard=0):
