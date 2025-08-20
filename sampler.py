@@ -242,6 +242,7 @@ class Sampler:
         """ burn-in the sampler: run MCMC for nsteps and reset the current state by 
         sampling from the posterior distribution.
         """
+        self.logger.info("Burn-in the sampler for %d steps.", nsteps)
         initial_state = None
         if self.backend.iteration == 0:
             self.check_parameter_conversion(p0_generator)
@@ -260,6 +261,7 @@ class Sampler:
         self.sampler.run_mcmc(initial_state, nsteps,
                               progress=True,
                               **kwargs)
+        self.logger.info("Burn-in completed.")
         p0 = self.sampler.get_chain(flat=True)
         prob = np.exp(self.sampler.get_log_prob(flat=True))  # type: ignore
         prob /= np.sum(prob)
@@ -273,6 +275,7 @@ class Sampler:
             raise e
         p0 = p0[idx_p0]
         # reset the current state
+        self.logger.info("Resetting the current state with %d samples.", len(p0))
         self.sampler.run_mcmc(p0, 1, progress=True, **kwargs)
 
 
@@ -291,6 +294,8 @@ class Sampler:
         """
         # Set up the backend
         # Don't forget to clear it in case the file already exists
+
+        self.logger.info("Running MCMC for %d iterations in %d loops.", iterations, loops)
 
         # We'll track how the average autocorrelation time estimate changes
         index = 0
@@ -316,6 +321,7 @@ class Sampler:
                 raise RuntimeError("\n".join(mes))
 
         # Now we'll sample for up to  steps
+        self.logger.info("iteration: %d", self.sampler.iteration)
         for i_loop in range(loops):
             # start mcmc sampling with self.sampler.run_mcmc and pool
             
