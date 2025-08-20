@@ -364,7 +364,8 @@ class Sampler:
                 self.logger.info("Converged after %d iterations.", self.sampler.iteration)
                 break
             else:
-                self.logger.info("tau: %s iteration: %s", tau, self.sampler.iteration)
+                self.logger.info("tau: %s", tau)
+                self.logger.info("iteration: %d", self.sampler.iteration)
                 old_tau = tau
 
     def get_blobs(self,flat=False,thin=1,discard=0):
