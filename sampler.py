@@ -4,6 +4,7 @@ import numpy as np
 import emcee 
 import emcee.backends
 import torch
+import logging
 from astropy.io import ascii
 from astropy.coordinates import SkyCoord,Distance
 import astropy.units as u
@@ -11,7 +12,16 @@ from tqdm import tqdm as tqdm
 from multiprocessing import Pool, cpu_count
 import itertools
 import os
-from pprint import pprint
+from pprint import pprint  # kept for comments above; no longer used in code
+
+# Module-level logger
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    _handler.setFormatter(_formatter)
+    logger.addHandler(_handler)
+logger.setLevel(logging.INFO)
 
 ############################################
 # # How to use blobs in emcee
@@ -118,8 +128,7 @@ from pprint import pprint
 class Sampler:
     """ wrapper class for emcee.EnsembleSampler
     """
-
-    def __init__(self,model,p0_generator,nwalkers=None,prefix="",reset=False,pool=None,wbic=False,**kwargs):
+    def __init__(self, model, p0_generator, nwalkers=None, prefix="", reset=False, pool=None, wbic=False, **kwargs):
         """ initialize the sampler.
         
         model: a model class
@@ -135,51 +144,42 @@ class Sampler:
         # self.p0_generator = p0_generator  # deprecated, moved as an argument of run_mcmc
         self.kwargs = kwargs
         self.pool = pool
-        blobs_dtype = [ ("lnl",float), *[ (name, float) for name in self.model.prior_names ]]
-        print("blobs_dtype:")
-        pprint(blobs_dtype)
+        self.logger = logger.getChild(self.__class__.__name__)
+        blobs_dtype = [("lnl", float), *[(name, float) for name in self.model.prior_names]]
+        self.logger.info("blobs_dtype: %s", blobs_dtype)
 
-        
         # define filename as a comination of model name and current time
         # NOTE: replace "+" in the model name
-        import time
-        filename = prefix + "_".join([self.model.name.replace("+","_"),model.dsph_name]) + ".h5"
-        print("Sampler: filename:",filename)
-        if wbic:
-            self.backend_name = "mcmc_wbic"
-            # self.backend = emcee.backends.HDFBackend(filename,name="mcmc_wbic")
-        else:
-            self.backend_name = "mcmc"
-            # self.backend = emcee.backends.HDFBackend(filename)
-        self.backend = emcee.backends.HDFBackend(filename,name=self.backend_name)
-        # self.backend = emcee.backends.Backend()
+        import time  # noqa: F401
+        filename = prefix + "_".join([self.model.name.replace("+", "_"), model.dsph_name]) + ".h5"
+        self.logger.info("filename: %s", filename)
+        self.backend_name = "mcmc_wbic" if wbic else "mcmc"
+        self.backend = emcee.backends.HDFBackend(filename, name=self.backend_name)
         # reset file if "reset" is True or if the file does not exist
         if reset or not os.path.exists(filename):
             self.backend.reset(self.nwalkers, self.ndim)
 
         file = self.backend.open()
-        print("Sampler: backend file", file)
-        print("Sampler: backend file.keys", file.keys())
         try:
-            print(f"Sampler: backend file[{self.backend_name}].keys", file[self.backend_name].keys())  # type: ignore
-        except:
-            pass
-        file.close()
-        
-        
-        if wbic:
-            self.log_prob = self.model.lnposterior_wbic
-        else:
-            self.log_prob = self.model.lnposterior
+            self.logger.debug("backend file: %s", file)
+            self.logger.debug("backend file.keys: %s", list(file.keys()))
+            self.logger.debug("backend file[%s].keys: %s", self.backend_name, list(file[self.backend_name].keys()))  # type: ignore
+        except Exception as e:
+            self.logger.debug("backend group %s not available yet: %s", self.backend_name, e)
+        finally:
+            file.close()
 
+        self.log_prob = self.model.lnposterior_wbic if wbic else self.model.lnposterior
 
-        self.sampler = emcee.EnsembleSampler(self.nwalkers,
-                                             self.ndim,
-                                             log_prob_fn=self.log_prob,
-                                             blobs_dtype=blobs_dtype,
-                                             backend=self.backend,
-                                             pool=pool,
-                                             **self.kwargs)
+        self.sampler = emcee.EnsembleSampler(
+            self.nwalkers,
+            self.ndim,
+            log_prob_fn=self.log_prob,
+            blobs_dtype=blobs_dtype,
+            backend=self.backend,
+            pool=pool,
+            **self.kwargs,
+        )
 
     def check_parameter_conversion(self,p0_generator=None):
         """ check the conversion of parameters.
@@ -187,22 +187,20 @@ class Sampler:
         It will print the p0 and params and their comparison.
         """
         # Show some message to check the definition of the 'convert_params' 
-        print("Sampler: Please check the following lines to see your parameters are properly converted:")
+        self.logger.info("Please check the following lines to see your parameters are properly converted:")
         if p0_generator is None:
-            print("Sampler: p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself.")
+            self.logger.info("p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself.")
         else:
             # p0 = p0_generator(1)
             # params = self.model.convert_params(p0[0])
             p0 = p0_generator(None)
             params = self.model.convert_params(p0)
-            print(f"Sampler: p0: {p0}")
-            print(f"---->")
-            print(f"Sampler: params: ")
-            print(params)
+            self.logger.info("p0: %s", p0)
+            self.logger.info("params:\n%s", params)
             # NOTE: Instead of above lines, we use comparison dataframe
             # Here we note that params is a pandas.Series and p0 is a numpy.ndarray
-            conparison = pd.DataFrame({"p0":p0,"params":params})
-            print(conparison)    
+            comparison = pd.DataFrame({"p0":p0,"params":params})
+            self.logger.info("comparison:\n%s", comparison)
     
     def set_wrapper_function(self):
         # NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.
@@ -217,7 +215,7 @@ class Sampler:
             """ wrapper function for log_prob to accelarate the sampling.
             """
             return self.log_prob(p)
-        print("Sampler: log_prob_fn_wrapper defined.")
+        self.logger.info("log_prob_fn_wrapper defined.")
 
 
     def reset_pool(self,pool):
@@ -270,8 +268,8 @@ class Sampler:
         try:
             idx_p0 = np.random.choice(len(p0), size=self.nwalkers, p=prob, replace=False)
         except ValueError as e:
-            print("Sampler: Error in choosing initial state for burn-in.")
-            print('prob:', prob)
+            self.logger.error("Error in choosing initial state for burn-in.")
+            self.logger.error("prob: %s", prob)
             raise e
         p0 = p0[idx_p0]
         # reset the current state
@@ -363,10 +361,10 @@ class Sampler:
             converged = np.all(tau * 100 < self.sampler.iteration)
             converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
             if converged:
-                print(f"Sampler: Converged after {self.sampler.iteration} iterations.")
+                self.logger.info("Converged after %d iterations.", self.sampler.iteration)
                 break
             else:
-                print(f"tau:{tau}\niteration:{self.sampler.iteration}")
+                self.logger.info("tau: %s iteration: %s", tau, self.sampler.iteration)
                 old_tau = tau
 
     def get_blobs(self,flat=False,thin=1,discard=0):
@@ -412,6 +410,7 @@ class DSphSimulator(swyft.Simulator):
         super().__init__()
         self.transform_samples = swyft.to_numpy32  # convert samples to numpy array
         self.model = model  # model class for dSph
+        self.logger = logger.getChild(self.__class__.__name__)
         self.R_pc = self.model.data["R_pc"].values  # Position of observed stars in pc
         self.dsph_model = self.model.submodels["DSphModel"]  # model class for dSph
         self.vmem_kms_index = self.model.submodels["FlatPriorModel"].data.index.get_loc("vmem_kms")  # index of "vmem_kms" in model.submodels["PriorModel"].data (pandas.Series)
@@ -421,8 +420,8 @@ class DSphSimulator(swyft.Simulator):
         self.store = {}
 
     def printlog(self,*txt):
-        prefix = self.__class__.__name__ + ":"
-        print(prefix,*txt)
+        # Join parts into a single string for logging
+        self.logger.info("%s", " ".join(map(str, txt)))
 
     def get_store_path(self,fname):
         return os.path.join(self.store_dir,fname)

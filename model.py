@@ -272,8 +272,7 @@ class Model(metaclass=ABCMeta):
             raise ValueError("params_all and required_param_names_combined are inconsistent: "+str(params_all_index)+" vs "+str(required_param_names_combined))
             
         if show_init:
-            print("initialized:")
-            print(self)
+            self.logger.info("initialized:\n%s", self)
     
 
     def _as_dataframe(self):                           # ← 上書き
@@ -1066,13 +1065,13 @@ class FittableModel(Model,metaclass=ABCMeta):
             keyword arguments for the parent class.
         """
         super().__init__(*args,**kwargs)
-        print(f"Fittable Model: args_load_data: {args_load_data}")
+        self.logger.info("Fittable Model: args_load_data: %r", args_load_data)
         # check if args_load_data is a list.
         if not isinstance(args_load_data,list):
             raise TypeError('args_load_data must be a list.')
         if kwargs_load_data is None:
             kwargs_load_data = {}
-        print(f"Fittable Model: kwargs_load_data: {kwargs_load_data}")
+        self.logger.info("Fittable Model: kwargs_load_data: %r", kwargs_load_data)
         # check if kwargs_load_data is a dict.
         if not isinstance(kwargs_load_data,dict):
             raise TypeError('kwargs_load_data must be a dict.')
@@ -1235,7 +1234,7 @@ class FlatPriorModel(Model):
                 self.fname_config = config
                 self.data = pd.read_csv(config, index_col=0)
             except FileNotFoundError as e:
-                print(f"config file '{config}' is not found.")
+                logger.error("config file '%s' is not found.", config)
                 raise(e)
         else:
             self.data = config
@@ -1291,7 +1290,7 @@ class FlatPriorModel(Model):
         """
         df = pd.DataFrame({"lower":lower,"upper":upper},index=param_names)
         df.to_csv(fname)
-        print(f"generated {fname}.")
+        logger.info("generated %s.", fname)
         return df
 
 
@@ -1315,19 +1314,19 @@ class PhotometryPriorModel(Model):
     def load_config(self,dsph_name):
         if type(dsph_name) == str:
             if dsph_name == "Mock":
-                print("WARNING: dsph_name is 'Mock'. loc and scale must be set manually by 'reset_prior'.")
+                self.logger.warning("dsph_name is 'Mock'. loc and scale must be set manually by 'reset_prior'.")
                 loc,scale = np.nan, np.nan
             else:
                 database = dsph_database.photometry.load_prior()
                 loc,scale = database.set_index("name").T[dsph_name]
         else:
             # check if dsph_name is tuple of (loc,scale)
-            print("WARNING: dsph_name is not a string. Check if it is a tuple of (loc,scale).")
+            self.logger.warning("dsph_name is not a string. Check if it is a tuple of (loc,scale).")
             loc,scale = dsph_name
-            print("loc:",loc)
-            print("scale:",scale)
+            self.logger.info("loc: %r", loc)
+            self.logger.info("scale: %r", scale)
         print_dict = {"log10_re_pc":loc,"e_log10_re_pc":scale}
-        print(f"{self.__class__.__name__}:{print_dict}")
+        self.logger.info("%s:%r", self.__class__.__name__, print_dict)
         self.reset_prior(loc,scale)
 
     def reset_prior(self,loc,scale):
@@ -1381,8 +1380,8 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         fname_config = self["FlatPriorModel"].fname_config
-        print(f"{self.__class__}: Please check the consistensy of model parameters and config file: {fname_config}.")
-        print("="*32)
+        self.logger.info("%s: Please check the consistensy of model parameters and config file: %s.", self.__class__, fname_config)
+        self.logger.info("%s", "="*32)
         comparison = {
             "config": self.p_names_lnprob,
             "params": self.required_param_names_combined,
@@ -1391,19 +1390,19 @@ class SimpleDSphEstimationModel(FittableModel,Model):
             mes = f"Length of comparison['config'] and comparison['params'] are different."
             mes += f"config: {len(comparison['config'])}, params: {len(comparison['params'])}"
         try:
-            print(pd.DataFrame(comparison))
-            print("="*32)
+            self.logger.info("%s", pd.DataFrame(comparison))
+            self.logger.info("%s", "="*32)
             # check if comparison["config"] is consistent with comparison["params"] by backward matching.
             consistencies = [ (param in p) for p,param in zip(comparison["config"],comparison["params"])]
             assert all(consistencies)  # NOTE: We can find substring in string by using "in" operator.
         except ValueError as e:
-            print(comparison)
+            self.logger.error("%r", comparison)
             raise(e)
         except AssertionError as e:
-            print("ERROR: config and params are not consistent.")
-            print("config file:",self["FlatPriorModel"].fname_config)
-            print(comparison)
-            print(consistencies)
+            self.logger.error("ERROR: config and params are not consistent.")
+            self.logger.error("config file: %s", self["FlatPriorModel"].fname_config)
+            self.logger.error("%r", comparison)
+            self.logger.error("%r", consistencies)
             raise(e)
         
     
@@ -1443,7 +1442,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         self.dsph_type = dsph_type
         self.shared = shared
         if self.dsph_type == "Mock":
-            print("WARNING: dsph_type is 'Mock'. 'data' attribute must be reset manually by 'reset_data'.")
+            self.logger.warning("dsph_type is 'Mock'. 'data' attribute must be reset manually by 'reset_data'.")
 
         else:
             data = dsph_database.spectroscopy.load_kinematic_data(dsph_type,dsph_name)
@@ -1457,18 +1456,18 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         self.data = data
         # override FlatPriorModel config by data
         # for vmem_kms
-        print(self.__class__.__name__+": Override FlatPriorModel config by data")
-        print("="*32)
-        print(self["FlatPriorModel"].data.loc["vmem_kms"])
+        self.logger.info("%s: Override FlatPriorModel config by data", self.__class__.__name__)
+        self.logger.info("%s", "="*32)
+        self.logger.info("%r", self["FlatPriorModel"].data.loc["vmem_kms"])
         lower = self.data["vlos_kms"].min()
         upper = self.data["vlos_kms"].max()
         # self["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
         # self["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
         self["FlatPriorModel"].data.loc["vmem_kms","lower"] = lower
         self["FlatPriorModel"].data.loc["vmem_kms","upper"] = upper
-        print("-"*8+">")
-        print(self["FlatPriorModel"].data.loc["vmem_kms"])
-        print("="*32)
+        self.logger.info("%s", "-"*8+">")
+        self.logger.info("%r", self["FlatPriorModel"].data.loc["vmem_kms"])
+        self.logger.info("%s", "="*32)
 
 
     @property
@@ -1494,11 +1493,11 @@ class SimpleDSphEstimationModel(FittableModel,Model):
                 })
             except FileNotFoundError as e:
                 # if shared memory is not initialized, raise an error.
-                print(f"{self.__class__.__name__}: SharedMemory '{self.shared_memory_basename}' is not initialized yet.")
+                self.logger.error("%s: SharedMemory '%s' is not initialized yet.", self.__class__.__name__, self.shared_memory_basename)
                 raise(e)
             except AttributeError as e:
                 # if shared memory is not initialized, raise an error.
-                print(f"{self.__class__.__name__}: SharedMemory '{self.shared_memory_basename}' is not initialized yet.")
+                self.logger.error("%s: SharedMemory '%s' is not initialized yet.", self.__class__.__name__, self.shared_memory_basename)
                 raise(e)
             
             
@@ -1535,7 +1534,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
                 "e_vlos_kms": data["e_vlos_kms"].values
             })
         else:
-            print(f"{self.__class__.__name__}: Initialize shared memory '{self.shared_memory_basename}'")
+            self.logger.info("%s: Initialize shared memory '%s'", self.__class__.__name__, self.shared_memory_basename)
             self.shared_shape = data["R_pc"].shape
             assert self.shared_shape == data["vlos_kms"].shape
             assert self.shared_shape == data["e_vlos_kms"].shape
@@ -1584,12 +1583,12 @@ class SimpleDSphEstimationModel(FittableModel,Model):
                 shm = getattr(self,f"shm{suffix}")
                 shm.close()
                 shm.unlink()  # raise FileNotFoundError if the shared memory is already unlinked.
-                print(f"{self.__class__.__name__}: shared memory '{name}' is released.")
-                print(f"id(self):{id(self)}")
+                self.logger.info("%s: shared memory '%s' is released.", self.__class__.__name__, name)
+                self.logger.info("id(self):%s", id(self))
             except FileNotFoundError as e:
                 # alreadly unlinked. Do nothing.
-                print(f"{self.__class__.__name__}: shared memory '{name}' is already released.")
-                print(f"id(self):{id(self)}")
+                self.logger.info("%s: shared memory '%s' is already released.", self.__class__.__name__, name)
+                self.logger.info("id(self):%s", id(self))
 
     
     def release_shared_memory(self):
@@ -1652,8 +1651,8 @@ def get_default_estimation_model(dsph_type,dsph_name,
 
     # Check if config file exists.
     if not os.path.exists(config):
-        print(f"config file '{config}' is not found.")
-        print("generate a default config file.")
+        logger.warning("config file '%s' is not found.", config)
+        logger.info("generate a default config file.")
         FlatPriorModel.generate_default_config_file(config,dsph_model.params_all.index)
 
     mdl = SimpleDSphEstimationModel(
@@ -1691,8 +1690,8 @@ if __name__ == '__main__':
     ss = draco_model.sigmalos2(Rs)
     ss2 = [draco_model.sigmar2(R) for R in Rs]
     ss3 = [draco_model.naive_sigmalos2(R) for R in Rs]
-    print(draco_model)
-    print(draco_model.integrand_sigmalos2(1,1))
+    logger.info("%s", draco_model)
+    logger.info("%r", draco_model.integrand_sigmalos2(1,1))
     plt.plot(Rs,np.sqrt(ss))
     plt.plot(Rs,np.sqrt(ss2))
     plt.plot(Rs,np.sqrt(ss3))
