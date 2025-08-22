@@ -1178,11 +1178,23 @@ class FittableModel(Model,metaclass=ABCMeta):
             lnl = self._lnlikelihood(*args,**kwargs)
         ret = (lnl + np.sum(lnp_list), lnl, *lnp_list)
         if np.isnan(ret[0]):
-            mes = f"lnposterior is nan. lnl:{lnl}, lnp_list:{lnp_list}"
-            mes += f"\np:{p}"
-            mes += f"\nargs:{args}"
-            mes += f"\nkwargs:{kwargs}"
-            mes += f"\nparams:{params}"
+            # mes = f"lnposterior is nan. lnl:{lnl}, lnp_list:{lnp_list}"
+            # mes += f"\np:{p}"
+            # mes += f"\nargs:{args}"
+            # mes += f"\nkwargs:{kwargs}"
+            # mes += f"\nparams:{params}"
+            mes = [
+                f"lnposterior is nan. lnl:%s, lnp_list:%s" % (lnl, lnp_list),
+                "p:%s" % p,
+                "args:%s" % args,
+                "kwargs:%s" % kwargs,
+                "params:%s" % params
+            ]
+            self.logger.error("lnposterior is nan. lnl:%s, lnp_list:%s", lnl, lnp_list)
+            self.logger.error("p:%s", p)
+            self.logger.error("args:%s", args)
+            self.logger.error("kwargs:%s", kwargs)
+            self.logger.error("params:%s", params)
             raise ValueError(mes)
         return ret
 

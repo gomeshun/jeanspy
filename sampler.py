@@ -12,6 +12,7 @@ from tqdm import tqdm as tqdm
 from multiprocessing import Pool, cpu_count
 import itertools
 import os
+from scipy.special import logsumexp
 from pprint import pprint  # kept for comments above; no longer used in code
 
 # Module-level logger
@@ -263,8 +264,15 @@ class Sampler:
                               **kwargs)
         self.logger.info("Burn-in completed.")
         p0 = self.sampler.get_chain(flat=True)
-        prob = np.exp(self.sampler.get_log_prob(flat=True))  # type: ignore
-        prob /= np.sum(prob)
+        self.logger.debug("p0:%s", p0)
+        log_prob = self.sampler.get_log_prob(flat=True)  # type: ignore
+        prob = np.exp(log_prob)  # type: ignore
+        log_prob_tot = logsumexp(log_prob)
+        self.logger.debug("log_prob:%s", log_prob)
+        self.logger.debug("prob:%s", prob)
+        # prob /= np.sum(prob)
+        prob = np.exp(log_prob - log_prob_tot)  # normalize the probabilities
+        self.logger.info("prob:%s", prob)
         p0, indices, counts = np.unique(p0, axis=0, return_index=True, return_counts=True)
         prob = prob[indices] * counts
         try:
