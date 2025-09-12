@@ -1362,8 +1362,12 @@ class PhotometryPriorModel(Model):
         self.reset_prior(loc,scale)
 
     def reset_prior(self,loc,scale):
-        self._lnprior = norm(loc=loc,scale=scale).logpdf
+        self._lnprior_func = norm(loc=loc,scale=scale).logpdf
         self._sample = norm(loc=loc,scale=scale).rvs
+
+
+    def _lnprior(self,log10_re_pc):
+        return self._lnprior_func(log10_re_pc)
 
     def sample(self,size):
         return self._sample(size=size)
