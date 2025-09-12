@@ -1260,7 +1260,7 @@ class FlatPriorModel(Model):
         return self.data.index.get_loc(param_name)
     
 
-    def extract_value_by_name(self,param,param_name):
+    def extract_value_by_name(self,params,param_name):
         """get the value of the parameter from param (ndarray) based on the name of the parameter.
 
         Parameters
@@ -1275,8 +1275,8 @@ class FlatPriorModel(Model):
         value: float
             value of the parameter
         """
-        assert len(param) == len(self.data), f"len(param)={len(param)} != len(self.data)={len(self.data)}"
-        return param[self.get_index(param_name)]
+        assert len(params) == len(self.data), f"len(param)={len(params)} != len(self.data)={len(self.data)}"
+        return params[self.get_index(param_name)]
 
 
     def sample(self,size=None):
