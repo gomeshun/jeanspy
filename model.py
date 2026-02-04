@@ -1260,14 +1260,14 @@ class FlatPriorModel(Model):
         return self.data.index.get_loc(param_name)
     
 
-    def extract_value_by_name(self,params,param_name):
+    def extract_value_by_name(self,params,name):
         """get the value of the parameter from param (ndarray) based on the name of the parameter.
 
         Parameters
         ----------
         param: ndarray
             array of parameter values
-        param_name: str
+        name: str
             name of the parameter
 
         Returns
@@ -1276,7 +1276,7 @@ class FlatPriorModel(Model):
             value of the parameter
         """
         assert len(params) == len(self.data), f"len(param)={len(params)} != len(self.data)={len(self.data)}"
-        return params[self.get_index(param_name)]
+        return params[self.get_index(name)]
 
 
     def sample(self,size=None):
@@ -1670,6 +1670,15 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         idx_log10_re_pc = self["FlatPriorModel"].get_index("log10_re_pc")
         p[ ..., idx_log10_re_pc ] = self["PhotometryPriorModel"].sample(size)
         return p
+    
+
+    def sample_data(self,size=None):
+        """ sample data from the model. """
+        s2 = self["DSphModel"].sigmalos2_dequad(self.data.R_pc)
+        err2 = self.data.e_vlos_kms**2
+        vmem_kms = self["DSphModel"].params.vmem_kms
+        sampled_vlos_kms = norm.rvs(loc=vmem_kms,scale=np.sqrt(s2+err2),size=size)
+        return sampled_vlos_kms
     
 
 
