@@ -2,9 +2,88 @@ from __future__ import annotations
 
 from typing import Any, Dict, Mapping, Optional
 
+# IMPORTANT: these env vars must be set before importing JAX.
+import os
+
+os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")
+# A small default safety fraction; users can override via env.
+os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.75")
+os.environ.setdefault("XLA_PYTHON_CLIENT_ALLOCATOR", "platform")
+
 import jax
 import jax.numpy as jnp
 import jax.scipy.special as jsp
+from jeanspy.hyp2f1_jax import hyp2f1_1b_3half
+
+# Optional logger (used by callers/tests; kept lightweight)
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+_HYP2F1_BACKEND = os.environ.get("JEANSPY_HYP2F1_BACKEND", "scipy").strip().lower()
+_HYP2F1_JAX_METHOD = os.environ.get("JEANSPY_HYP2F1_JAX_METHOD", "auto").strip().lower()
+_HYP2F1_JAX_N_TERMS = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_TERMS", "192"))
+_HYP2F1_JAX_N_QUAD = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_QUAD", "128"))
+_HYP2F1_JAX_QUAD_RULE = os.environ.get("JEANSPY_HYP2F1_JAX_QUAD_RULE", "tanh_sinh").strip().lower()
+
+if _HYP2F1_BACKEND not in {"scipy", "jax"}:
+    raise ValueError(
+        "JEANSPY_HYP2F1_BACKEND must be one of {'scipy','jax'} "
+        f"but got {_HYP2F1_BACKEND!r}"
+    )
+
+if _HYP2F1_JAX_QUAD_RULE not in {"tanh_sinh", "gauss_kronrod"}:
+    raise ValueError(
+        "JEANSPY_HYP2F1_JAX_QUAD_RULE must be one of {'tanh_sinh','gauss_kronrod'} "
+        f"but got {_HYP2F1_JAX_QUAD_RULE!r}"
+    )
+
+
+def _hyp2f1_1_b_3half_scipy(z: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarray:
+        """Compute hyp2f1(1, b; 3/2; z) using SciPy via jax.pure_callback.
+
+        Rationale:
+        - jax.scipy.special.hyp2f1 can be inaccurate/unstable for some parameter
+            regimes relevant to Jeans kernels.
+        - Our default MCMC for these models is gradient-free (AIES), so a host
+            callback is acceptable and more robust.
+        """
+        import numpy as _np
+        from scipy.special import hyp2f1 as _scipy_hyp2f1
+
+        z = jnp.asarray(z)
+        b = jnp.asarray(b)
+
+        out_spec = jax.ShapeDtypeStruct(z.shape, z.dtype)
+
+        def _cb(z_np, b_np):
+                # b is expected to be scalar in our current usage.
+                b_val = float(_np.asarray(b_np).reshape(()))
+                z_arr = _np.asarray(z_np)
+                return _scipy_hyp2f1(1.0, b_val, 1.5, z_arr).astype(z_arr.dtype, copy=False)
+
+        return jax.pure_callback(_cb, out_spec, z, b, vmap_method="sequential")
+
+
+def _hyp2f1_1_b_3half_jax(z: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarray:
+        """Compute hyp2f1(1, b; 3/2; z) using jeanspy JAX implementation."""
+        z = jnp.asarray(z)
+        b = jnp.asarray(b)
+        return hyp2f1_1b_3half(
+            b,
+            z,
+            method=_HYP2F1_JAX_METHOD,
+            n_terms=_HYP2F1_JAX_N_TERMS,
+            n_quad=_HYP2F1_JAX_N_QUAD,
+            quad_rule=_HYP2F1_JAX_QUAD_RULE,
+        )
+
+
+def _hyp2f1_1_b_3half(z: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarray:
+        if _HYP2F1_BACKEND == "jax":
+            return _hyp2f1_1_b_3half_jax(z, b)
+        return _hyp2f1_1_b_3half_scipy(z, b)
 
 
 # Physical constants (floats are fine in JAX computations)
@@ -65,7 +144,7 @@ class StellarModel(Model):
 
 
 class PlummerModel(StellarModel):
-    """Plummer surface/volume density normalized so that \int 2πR Σ(R) dR = 1."""
+    r"""Plummer surface/volume density normalized so that \int 2πR Σ(R) dR = 1."""
 
     required_param_names = ("re_pc",)
 
@@ -126,6 +205,9 @@ class NFWModel(DMModel):
 class AnisotropyModel(Model):
     required_models: Mapping[str, type[Model]] = {}
 
+    def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        raise NotImplementedError
+
     def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         raise NotImplementedError
 
@@ -133,18 +215,32 @@ class AnisotropyModel(Model):
 class ConstantAnisotropyModel(AnisotropyModel):
     required_param_names = ("beta_ani",)
 
+    def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        return jnp.asarray(params["beta_ani"])
+
     def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         """LOSVD kernel K(u) for constant anisotropy.
 
         This is JAX-compatible via jax.scipy.special.hyp2f1.
         """
-        b = jnp.asarray(params["beta_ani"])
+        beta_ani = jnp.asarray(params["beta_ani"])
+
+        # The original expression (as in model.py) uses
+        #   hyp2f1(1, 1.5-beta, 1.5, 1-u^2)
+        # where (1-u^2) can be a large negative number for large u.
+        # jax.scipy.special.hyp2f1 is numerically unstable in that regime.
+        #
+        # Use the exact hypergeometric transformation:
+        #   2F1(a,b;c;z) = (1-z)^(-a) * 2F1(a, c-b; c; z/(z-1))
+        # with a=1, b=1.5-beta, c=1.5, z=1-u^2.
+        # Then (1-z)=u^2 and z/(z-1)=1-1/u^2 in (0,1) for u>1.
         u2 = u**2
-        z = 1.0 - u2
+        z_stable = 1.0 - 1.0 / u2
+        hyp_stable = _hyp2f1_1_b_3half(z_stable, beta_ani)
+
         # sqrt term is well-defined for u>1. We avoid u=1 exactly in integration grids.
         pref = jnp.sqrt(1.0 - 1.0 / u2)
-        hyp = jsp.hyp2f1(1.0, 1.5 - b, 1.5, z)
-        return pref * ((1.5 - b) * u2 * hyp - 0.5)
+        return pref * ((1.5 - beta_ani) * hyp_stable - 0.5)
 
 
 class DSphModel(Model):
@@ -216,7 +312,7 @@ class DSphModel(Model):
         # Numerical safety: sigma_los^2 should be >=0, but coarse quadrature / edge params
         # can produce tiny negatives or NaNs during MCMC initialization.
         out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
-        return jnp.clip(out, a_min=0.0, a_max=1e12)
+        return jnp.clip(out, min=0.0, max=1e12)
 
 
 __all__ = [
