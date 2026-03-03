@@ -25,8 +25,17 @@ import matplotlib.pyplot as plt
 import arviz as az
 
 from scipy.special import hyp2f1 as scipy_hyp2f1
+import jeanspy.model_numpyro as model_numpyro_mod
 
-from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, Model, NFWModel, PlummerModel
+from jeanspy.model_numpyro import (
+    BaesAnisotropyModel,
+    ConstantAnisotropyModel,
+    DSphModel,
+    Model,
+    NFWModel,
+    OsipkovMerrittModel,
+    PlummerModel,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -50,6 +59,121 @@ def _log_runtime():
 
 
 class TestModelNumPyro(unittest.TestCase):
+    def _anisotropy_param_cases(self):
+        """Parameter sets used for generic anisotropy consistency checks."""
+        return {
+            "ConstantAnisotropyModel": [
+                {"beta_ani": -10.0},
+                {"beta_ani": -2.0},
+                {"beta_ani": 0.2},
+                {"beta_ani": 1.0},
+            ],
+            "OsipkovMerrittModel": [
+                {"r_a": 0.7},
+                {"r_a": 1.5},
+            ],
+            "BaesAnisotropyModel": [
+                {"beta_0": -10.0, "beta_inf": -10.0, "r_a": 1.2, "eta": 2.0},
+                {"beta_0": -10.0, "beta_inf": 0.8, "r_a": 1.0, "eta": 2.0},
+                {"beta_0": 0.0, "beta_inf": 1.0, "r_a": 1.5, "eta": 2.0},
+                {"beta_0": 0.2, "beta_inf": 0.8, "r_a": 1.3, "eta": 3.0},
+            ],
+        }
+
+    def _kernel_from_note_definition(self, model, R_values, u_values, params, n_quad=512):
+        r"""Reference K(u) from the note definition used in model.py/model_numpyro.
+
+        K(u_s) = f(Ru_s)/u_s * \int_1^{u_s} du [u/sqrt(u^2-1)]
+                 * (1 - beta(Ru)/u^2) / f(Ru)
+        """
+        R_values = np.asarray(R_values, dtype=np.float64)
+        u_values = np.asarray(u_values, dtype=np.float64)
+        out = np.empty((R_values.shape[0], u_values.shape[0]), dtype=np.float64)
+
+        for i, R in enumerate(R_values):
+            for j, u_s in enumerate(u_values):
+                y_max = np.sqrt(max(u_s * u_s - 1.0, 0.0))
+                y = np.linspace(0.0, y_max, int(n_quad), dtype=np.float64)
+                u_int = np.sqrt(1.0 + y * y)
+                r_int = R * u_int
+
+                beta_int = np.asarray(model.beta(jnp.asarray(r_int), params=params), dtype=np.float64)
+                f_int = np.asarray(model.f(jnp.asarray(r_int), params=params), dtype=np.float64)
+                integrand_y = (1.0 - beta_int / (u_int * u_int)) / f_int
+                inner = np.trapezoid(integrand_y, y)
+
+                f_s = float(np.asarray(model.f(jnp.asarray(R * u_s), params=params), dtype=np.float64))
+                out[i, j] = (f_s / u_s) * inner
+
+        return out
+
+    def test_all_anisotropy_models_beta_f_kernel_consistency(self):
+        """Check beta-f-kernel consistency for all AnisotropyModel subclasses.
+
+        Consistency checks based on the note:
+        1) d ln f / d ln r = 2 beta(r)
+        2) kernel K(u) matches numerical reconstruction from beta and f.
+        """
+        subclasses = model_numpyro_mod.AnisotropyModel.__subclasses__()
+        self.assertGreater(len(subclasses), 0)
+
+        param_cases = self._anisotropy_param_cases()
+        r_grid = np.geomspace(0.8, 2.5, 64).astype(np.float64)
+        q = 1.0005
+        u_grid = np.geomspace(1.0 + 1e-4, 4.0, 48).astype(np.float64)
+        R_grid = np.array([0.9, 1.8], dtype=np.float64)
+
+        for cls in subclasses:
+            cls_name = cls.__name__
+            self.assertIn(cls_name, param_cases, msg=f"Missing test parameter cases for {cls_name}")
+
+            model = cls()
+            for params in param_cases[cls_name]:
+                # --- beta-f consistency: d ln f / d ln r = 2 beta ---
+                r_plus = r_grid * q
+                r_minus = r_grid / q
+
+                f_plus = np.asarray(model.f(jnp.asarray(r_plus), params=params), dtype=np.float64)
+                f_minus = np.asarray(model.f(jnp.asarray(r_minus), params=params), dtype=np.float64)
+                beta_mid = np.asarray(model.beta(jnp.asarray(r_grid), params=params), dtype=np.float64)
+
+                self.assertTrue(np.isfinite(f_plus).all(), msg=f"f_plus non-finite for {cls_name}, {params}")
+                self.assertTrue(np.isfinite(f_minus).all(), msg=f"f_minus non-finite for {cls_name}, {params}")
+                self.assertTrue(np.isfinite(beta_mid).all(), msg=f"beta non-finite for {cls_name}, {params}")
+
+                dlogf_dlogr = (np.log(f_plus) - np.log(f_minus)) / (2.0 * np.log(q))
+                np.testing.assert_allclose(
+                    dlogf_dlogr,
+                    2.0 * beta_mid,
+                    rtol=4e-2,
+                    atol=2e-3,
+                    err_msg=f"beta-f mismatch for {cls_name}, params={params}",
+                )
+
+                # --- kernel consistency with note-based reconstruction ---
+                k_model = np.asarray(
+                    model.kernel(
+                        jnp.asarray(u_grid)[None, :],
+                        jnp.asarray(R_grid)[:, None],
+                        params=params,
+                    ),
+                    dtype=np.float64,
+                )
+                k_ref = self._kernel_from_note_definition(model, R_grid, u_grid, params, n_quad=512)
+
+                if k_model.shape != k_ref.shape:
+                    k_model = np.broadcast_to(k_model, k_ref.shape)
+
+                self.assertTrue(np.isfinite(k_model).all(), msg=f"kernel non-finite for {cls_name}, {params}")
+                self.assertTrue(np.isfinite(k_ref).all(), msg=f"kernel ref non-finite for {cls_name}, {params}")
+                np.testing.assert_allclose(
+                    k_model,
+                    k_ref,
+                    rtol=3e-2,
+                    atol=2e-4,
+                    err_msg=f"kernel mismatch for {cls_name}, params={params}",
+                )
+
     def test_constant_anisotropy_kernel_matches_scipy(self):
         """Kernel is the core of sigma_los; it must remain numerically stable.
 
@@ -89,6 +213,136 @@ class TestModelNumPyro(unittest.TestCase):
         hyp_st = scipy_hyp2f1(1.0, beta_ani, 1.5, 1.0 - 1.0 / u2s)
         k_st = pref_s * ((1.5 - beta_ani) * hyp_st - 0.5)
         np.testing.assert_allclose(k_orig, k_st, rtol=1e-6, atol=0.0)
+
+    def test_constant_anisotropy_kernel_matches_scipy_wide_beta_range(self):
+        """Constant-anisotropy kernel stays accurate over the practical beta range."""
+        beta_values = np.array([-10.0, -5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 0.9, 1.0])
+        u_np = np.geomspace(1.0 + 1e-4, 5e2, 220).astype(np.float64)
+        u = jnp.asarray(u_np)[None, :]
+        R_dummy = jnp.asarray([100.0])[:, None]
+        ani = ConstantAnisotropyModel()
+
+        for beta_ani in beta_values:
+            params = {"beta_ani": float(beta_ani)}
+            k_jax = np.asarray(ani.kernel(u, R_dummy, params=params)).reshape(-1)
+
+            u2 = u_np**2
+            pref = np.sqrt(1.0 - 1.0 / u2)
+            hyp_stable = scipy_hyp2f1(1.0, float(beta_ani), 1.5, 1.0 - 1.0 / u2)
+            k_ref = pref * ((1.5 - float(beta_ani)) * hyp_stable - 0.5)
+
+            self.assertTrue(np.isfinite(k_jax).all())
+            self.assertTrue(np.isfinite(k_ref).all())
+            np.testing.assert_allclose(
+                k_jax,
+                k_ref,
+                rtol=1e-2,
+                atol=1e-8,
+                err_msg=f"failed at beta_ani={beta_ani}",
+            )
+
+    def test_baes_kernel_reduces_to_constant_anisotropy(self):
+        """BAES with beta_0=beta_inf reduces to the constant-anisotropy kernel."""
+        beta_const = 0.2
+        params_baes = {
+            "beta_0": beta_const,
+            "beta_inf": beta_const,
+            "r_a": 300.0,
+            "eta": 2.0,
+        }
+        params_const = {"beta_ani": beta_const}
+
+        u = jnp.asarray(np.geomspace(1.0 + 1e-4, 300.0, 192), dtype=jnp.float32)[None, :]
+        R = jnp.asarray([50.0, 200.0, 700.0], dtype=jnp.float32)[:, None]
+
+        k_baes = np.asarray(BaesAnisotropyModel().kernel(u, R, params=params_baes, n_kernel=256))
+        k_const = np.asarray(ConstantAnisotropyModel().kernel(u, R, params=params_const))
+        k_const = np.broadcast_to(k_const, k_baes.shape)
+
+        self.assertTrue(np.isfinite(k_baes).all())
+        self.assertTrue(np.isfinite(k_const).all())
+        np.testing.assert_allclose(k_baes, k_const, rtol=7e-3, atol=1e-6)
+
+    def test_baes_kernel_reduces_to_constant_anisotropy_wide_beta_range(self):
+        """BAES(beta_0=beta_inf) reproduces constant anisotropy for wide beta values."""
+        beta_values = np.array([-10.0, -5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 0.9, 1.0])
+        u = jnp.asarray(np.geomspace(1.0 + 1e-4, 120.0, 160), dtype=jnp.float32)[None, :]
+        R = jnp.asarray([80.0, 250.0, 900.0], dtype=jnp.float32)[:, None]
+
+        baes = BaesAnisotropyModel()
+        const = ConstantAnisotropyModel()
+        for beta_const in beta_values:
+            params_baes = {
+                "beta_0": float(beta_const),
+                "beta_inf": float(beta_const),
+                "r_a": 350.0,
+                "eta": 2.0,
+            }
+            params_const = {"beta_ani": float(beta_const)}
+
+            k_baes = np.asarray(baes.kernel(u, R, params=params_baes, n_kernel=320))
+            k_const = np.asarray(const.kernel(u, R, params=params_const))
+            k_const = np.broadcast_to(k_const, k_baes.shape)
+
+            self.assertTrue(np.isfinite(k_baes).all())
+            self.assertTrue(np.isfinite(k_const).all())
+            np.testing.assert_allclose(
+                k_baes,
+                k_const,
+                rtol=1.5e-2,
+                atol=3e-6,
+                err_msg=f"failed at beta={beta_const}",
+            )
+
+    def test_baes_kernel_matches_om_special_case(self):
+        """BAES(beta_0=0,beta_inf=1,eta=2) matches the Osipkov-Merritt analytic kernel."""
+        r_a = 500.0
+        params_baes = {
+            "beta_0": 0.0,
+            "beta_inf": 1.0,
+            "r_a": r_a,
+            "eta": 2.0,
+        }
+
+        u = jnp.asarray(np.geomspace(1.0 + 1e-4, 80.0, 160), dtype=jnp.float32)[None, :]
+        R = jnp.asarray([80.0, 200.0, 600.0], dtype=jnp.float32)[:, None]
+        k_baes = np.asarray(BaesAnisotropyModel().kernel(u, R, params=params_baes, n_kernel=320))
+
+        u_np = np.asarray(u)
+        R_np = np.asarray(R)
+        u2 = u_np**2
+        u_a = r_a / R_np
+        u2_a = u_a**2
+        k_om = (
+            (u2 + u2_a) * (u2_a + 0.5) / (u_np * (u2_a + 1.0) ** 1.5)
+            * np.arctan(np.sqrt((u2 - 1.0) / (u2_a + 1.0)))
+            - np.sqrt(1.0 - 1.0 / u2) / (2.0 * (u2_a + 1.0))
+        )
+
+        self.assertTrue(np.isfinite(k_baes).all())
+        self.assertTrue(np.isfinite(k_om).all())
+        np.testing.assert_allclose(k_baes, k_om, rtol=8e-3, atol=2e-6)
+
+    def test_baes_om_special_case_matches_osipkov_merritt_model(self):
+        """BAES OM-special-case kernel agrees with OsipkovMerrittModel implementation."""
+        r_a = 450.0
+        params_baes = {
+            "beta_0": 0.0,
+            "beta_inf": 1.0,
+            "r_a": r_a,
+            "eta": 2.0,
+        }
+        params_om = {"r_a": r_a}
+
+        u = jnp.asarray(np.geomspace(1.0 + 1e-4, 120.0, 200), dtype=jnp.float32)[None, :]
+        R = jnp.asarray([60.0, 180.0, 500.0, 1200.0], dtype=jnp.float32)[:, None]
+
+        k_baes = np.asarray(BaesAnisotropyModel().kernel(u, R, params=params_baes, n_kernel=320))
+        k_om_model = np.asarray(OsipkovMerrittModel().kernel(u, R, params=params_om))
+
+        self.assertTrue(np.isfinite(k_baes).all())
+        self.assertTrue(np.isfinite(k_om_model).all())
+        np.testing.assert_allclose(k_baes, k_om_model, rtol=8e-3, atol=2e-6)
 
     def test_sigmalos2_matches_modelpy_reference(self):
         """Compare sigma_los^2 against the existing (SciPy/dequad) implementation.

@@ -171,7 +171,7 @@ class PlummerModel(StellarModel):
 
     def sample_R(self, key: jax.Array, n: int, *, re_pc: Any) -> jnp.ndarray:
         """Sample projected radii using the analytic inverse CDF.
-
+torch
         CDF(R) = R^2 / (R^2 + re^2)  ->  R = re * sqrt(u/(1-u)).
         """
         u = jax.random.uniform(key, shape=(n,), minval=0.0, maxval=1.0)
@@ -218,6 +218,11 @@ class ConstantAnisotropyModel(AnisotropyModel):
     def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         return jnp.asarray(params["beta_ani"])
 
+    def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        beta_ani = jnp.asarray(params["beta_ani"])
+        r = jnp.asarray(r_pc)
+        return r ** (2.0 * beta_ani)
+
     def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         """LOSVD kernel K(u) for constant anisotropy.
 
@@ -241,6 +246,118 @@ class ConstantAnisotropyModel(AnisotropyModel):
         # sqrt term is well-defined for u>1. We avoid u=1 exactly in integration grids.
         pref = jnp.sqrt(1.0 - 1.0 / u2)
         return pref * ((1.5 - beta_ani) * hyp_stable - 0.5)
+
+
+class BaesAnisotropyModel(AnisotropyModel):
+    r"""Baes & van Hese anisotropy model with numerical LOS kernel integration.
+
+    Notes
+    -----
+    This follows the same kernel normalization used in `model.py`:
+
+        sigma_los^2(R) = 2 * \int du [nu(uR)/Sigma(R)] * GM(uR) * K(u)/u
+
+    so `K(u)` itself is computed without an extra prefactor 2 in the inner integral.
+    """
+
+    required_param_names = ("beta_0", "beta_inf", "r_a", "eta")
+
+    def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        beta_0 = jnp.asarray(params["beta_0"])
+        beta_inf = jnp.asarray(params["beta_inf"])
+        r_a = jnp.asarray(params["r_a"])
+        eta = jnp.asarray(params["eta"])
+
+        x = (jnp.asarray(r_pc) / r_a) ** eta
+        return (beta_0 + beta_inf * x) / (1.0 + x)
+
+    def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        beta_0 = jnp.asarray(params["beta_0"])
+        beta_inf = jnp.asarray(params["beta_inf"])
+        r_a = jnp.asarray(params["r_a"])
+        eta = jnp.asarray(params["eta"])
+
+        r = jnp.asarray(r_pc)
+        x = (r / r_a) ** eta
+        return r ** (2.0 * beta_0) * (1.0 + x) ** (2.0 * (beta_inf - beta_0) / eta)
+
+    def _log_f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        beta_0 = jnp.asarray(params["beta_0"])
+        beta_inf = jnp.asarray(params["beta_inf"])
+        r_a = jnp.asarray(params["r_a"])
+        eta = jnp.asarray(params["eta"])
+
+        r = jnp.asarray(r_pc)
+        x = (r / r_a) ** eta
+        return 2.0 * beta_0 * jnp.log(r) + (2.0 * (beta_inf - beta_0) / eta) * jnp.log1p(x)
+
+    def kernel(
+        self,
+        u: jnp.ndarray,
+        R_pc: jnp.ndarray,
+        *,
+        params: Mapping[str, Any],
+        n_kernel: int = 192,
+    ) -> jnp.ndarray:
+        """LOSVD kernel K(u) for general BAES anisotropy via numerical integration.
+
+        A JAX-friendly fixed-grid quadrature is used. To remove the integrable
+        singularity at u=1, the integration variable is changed to
+
+            y = sqrt(u_int^2 - 1),  u_int = sqrt(1 + y^2).
+        """
+        u_arr, R_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(R_pc))
+
+        # Upper limit in transformed variable y = sqrt(u^2-1)
+        y_max = jnp.sqrt(jnp.maximum(u_arr**2 - 1.0, 0.0))
+
+        # Fixed quadrature grid on [0, y_max]
+        y01 = jnp.linspace(0.0, 1.0, int(n_kernel))
+        y = y_max[..., None] * y01[None, ...]
+        u_int = jnp.sqrt(1.0 + y**2)
+        r_int = R_arr[..., None] * u_int
+
+        beta_int = self.beta(r_int, params=params)
+        log_f_int = self._log_f(r_int, params=params)
+        log_f_s = self._log_f(R_arr * u_arr, params=params)
+
+        log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)
+        integ_y = (1.0 - beta_int / (u_int**2)) * jnp.exp(log_ratio)
+        inner = _trapz(integ_y, y, axis=-1)
+
+        K = inner / u_arr
+        return jnp.nan_to_num(K, nan=0.0, neginf=0.0, posinf=1e12)
+
+
+class OsipkovMerrittModel(AnisotropyModel):
+    """Osipkov-Merritt anisotropy model."""
+
+    required_param_names = ("r_a",)
+
+    def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        r_a = jnp.asarray(params["r_a"])
+        r = jnp.asarray(r_pc)
+        return r**2 / (r**2 + r_a**2)
+
+    def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        r_a = jnp.asarray(params["r_a"])
+        r = jnp.asarray(r_pc)
+        return (r_a**2 + r**2) / r_a**2
+
+    def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        r_a = jnp.asarray(params["r_a"])
+        u_arr, R_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(R_pc))
+
+        u_a = r_a / R_arr
+        u2_a = u_a**2
+        u2 = u_arr**2
+        sqrt_term = jnp.sqrt((u2 - 1.0) / (u2_a + 1.0))
+        arctan_term = jnp.arctan(sqrt_term)
+        sqrt_term2 = jnp.sqrt(1.0 - 1.0 / u2)
+        return (
+            (u2 + u2_a) * (u2_a + 0.5) / (u_arr * (u2_a + 1.0) ** 1.5) * arctan_term
+            - sqrt_term2 / (2.0 * (u2_a + 1.0))
+        )
 
 
 class DSphModel(Model):
@@ -320,5 +437,7 @@ __all__ = [
     "PlummerModel",
     "NFWModel",
     "ConstantAnisotropyModel",
+    "BaesAnisotropyModel",
+    "OsipkovMerrittModel",
     "DSphModel",
 ]
