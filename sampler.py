@@ -419,12 +419,22 @@ class Sampler:
 
         
 
-import swyft
+swyft = None
+_SWYFT_IMPORT_ERROR = RuntimeError("swyft import is disabled in this codebase")
 
-class DSphSimulator(swyft.Simulator):
+
+def _raise_swyft_unavailable():
+    raise ImportError(
+        "swyft is currently disabled/unavailable in this environment. "
+        "Install a compatible swyft version to use DSphSimulator/Network features."
+    ) from _SWYFT_IMPORT_ERROR
+
+class DSphSimulator(swyft.Simulator if swyft is not None else object):
     """ Simulator class for dSph model.
     """
     def __init__(self,model):
+        if swyft is None:
+            _raise_swyft_unavailable()
         super().__init__()
         self.transform_samples = swyft.to_numpy32  # convert samples to numpy array
         self.model = model  # model class for dSph
@@ -534,8 +544,10 @@ class Worker:
         return self.sampler.sample(size,self.targets,self.conditions,self.exclude)
 
 
-class Network(swyft.SwyftModule):
+class Network(swyft.SwyftModule if swyft is not None else object):
     def __init__(self,model,enable_1dim=True,enable_ndim=False,enable_embedding=False,dropout=0.1):
+        if swyft is None:
+            _raise_swyft_unavailable()
         """ Define the network architecture 
 
         NOTE: When using LogRatioEstimator_Ndim, it prepares internal networks for each marginal.

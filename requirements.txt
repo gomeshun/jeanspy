@@ -2,6 +2,8 @@ pandas
 scipy
 tqdm
 
+pytest
+
 astropy
 emcee
 
@@ -9,3 +11,5 @@ swyft
 pytorch-lightning < 2.0.0
 
 torch-tb-profiler
+
+arviz
