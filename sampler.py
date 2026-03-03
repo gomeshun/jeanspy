@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import emcee 
 import emcee.backends
-import torch
+# import torch
 import logging
 from astropy.io import ascii
 from astropy.coordinates import SkyCoord,Distance

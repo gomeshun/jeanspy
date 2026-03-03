@@ -1,15 +1,16 @@
 pandas
 scipy
 tqdm
+matplotlib
 
 pytest
 
 astropy
 emcee
 
-swyft
-pytorch-lightning < 2.0.0
-
-torch-tb-profiler
+# pytorch-lightning < 2.0.0
+# torch-tb-profiler
 
 arviz
+
+numpyro
