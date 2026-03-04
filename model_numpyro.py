@@ -136,10 +136,10 @@ class Model:
 class StellarModel(Model):
     required_models: Mapping[str, type[Model]] = {}
 
-    def surface_density_2d(self, R_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
+    def density_2d(self, R_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
         raise NotImplementedError
 
-    def volume_density_3d(self, r_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
+    def density_3d(self, r_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
         raise NotImplementedError
 
 
@@ -148,12 +148,12 @@ class PlummerModel(StellarModel):
 
     required_param_names = ("re_pc",)
 
-    def surface_density_2d(self, R_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
+    def density_2d(self, R_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
         re = jnp.asarray(re_pc)
         x2 = (R_pc / re) ** 2
         return 1.0 / (jnp.pi * re**2) * (1.0 + x2) ** (-2.0)
 
-    def volume_density_3d(self, r_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
+    def density_3d(self, r_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
         re = jnp.asarray(re_pc)
         x2 = (r_pc / re) ** 2
         return (3.0 / (4.0 * jnp.pi * re**3)) * (1.0 + x2) ** (-2.5)
@@ -408,8 +408,8 @@ class DSphModel(Model):
         rhos = params["rhos_Msunpc3"]
         r_t = params["r_t_pc"]
 
-        nu3 = stellar.volume_density_3d(r, re_pc=re_pc)
-        sig2 = stellar.surface_density_2d(R2d, re_pc=re_pc)
+        nu3 = stellar.density_3d(r, re_pc=re_pc)
+        sig2 = stellar.density_2d(R2d, re_pc=re_pc)
         M = dm.enclosed_mass(r, rs_pc=rs_pc, rhos_Msunpc3=rhos, r_t_pc=r_t)
 
         K = ani.kernel(u2d, R2d, params=params)
