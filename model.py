@@ -688,6 +688,15 @@ class DMModel(Model):
         
 
 class ZhaoModel(DMModel):
+    """ DM model whose 3D (deprojected) density is given by the Zhao model, 
+    which is a generalization of the NFW model.
+    
+    The Zhao model is given by the following formula:
+    \rho(r) = \rho_s (r/r_s)^{-g} (1+(r/r_s)^a)^{-(b-g)/a}
+
+    where r_s is the scale radius, \rho_s is the scale density, a is the transition sharpness, b is the outer slope and g is the inner slope.
+    NFW model is a special case of the Zhao model with (a,b,g) = (1,3,1).
+    """
     name = "Zhao Model"
     required_param_names = ['rs_pc','rhos_Msunpc3','a','b','g','r_t_pc']
     required_models = {}

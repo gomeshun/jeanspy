@@ -386,14 +386,84 @@ torch
 class DMModel(Model):
     required_models: Mapping[str, type[Model]] = {}
 
-    def enclosed_mass(self, r_pc: jnp.ndarray, *, rs_pc: Any, rhos_Msunpc3: Any, r_t_pc: Any) -> jnp.ndarray:
+    def mass_density_3d(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         raise NotImplementedError
+
+    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        raise NotImplementedError
+
+    def enclosed_mass_numeric(
+        self,
+        r_pc: jnp.ndarray,
+        *,
+        params: Mapping[str, Any],
+        n_steps: int = 256,
+        t_min: float = 1e-6,
+    ) -> jnp.ndarray:
+        """Numerically compute enclosed mass via 4π∫ρ(r)r²dr.
+
+        This default path is AD-friendly and avoids special-function gradient issues.
+        If `r_t_pc` exists in `params`, radius is truncated at that value.
+        """
+        r = jnp.asarray(r_pc)
+        dtype = jnp.result_type(r)
+
+        if "r_t_pc" in params:
+            r_t = jnp.asarray(params["r_t_pc"], dtype=dtype)
+            r = jnp.minimum(r.astype(dtype), r_t)
+        else:
+            r = r.astype(dtype)
+
+        r_pos = jnp.maximum(r, jnp.asarray(0.0, dtype=dtype))
+        t = jnp.linspace(jnp.asarray(t_min, dtype=dtype), jnp.asarray(1.0, dtype=dtype), int(n_steps))
+
+        r_grid = r_pos[..., None] * t
+        rho = self.mass_density_3d(r_grid, params=params)
+        integrand_t = 4.0 * jnp.pi * (r_grid**2) * rho * r_pos[..., None]
+        mass = _trapz(integrand_t, t, axis=-1)
+        mass = jnp.where(r <= 0.0, jnp.zeros_like(mass), mass)
+        return jnp.nan_to_num(mass, nan=0.0, neginf=0.0, posinf=1e12)
+    
+    @property
+    def has_analytic_enclosed_mass(self) -> bool:
+        return hasattr(self, "enclosed_mass_analytic") and callable(getattr(self, "enclosed_mass_analytic"))
+
+    def enclosed_mass(self, r_pc: jnp.ndarray, method: str = "analytic", *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Return enclosed mass with selectable backend.
+
+        Default is `numeric` to keep autodiff robust for gradient-based samplers
+        when analytic special functions (e.g. betainc) cause AD issues.
+        """
+        has_analytic = self.has_analytic_enclosed_mass
+        if method == "analytic":
+            if has_analytic:
+                return self.enclosed_mass_analytic(r_pc, params=params)
+            else:
+                raise NotImplementedError(f"{self.__class__.__name__} does not have an analytic enclosed_mass implementation")
+        elif method == "numeric":
+            return self.enclosed_mass_numeric(r_pc, params=params)
+        else:
+            raise ValueError(f"method must be 'analytic' or 'numeric', got {method!r}")
 
 
 class NFWModel(DMModel):
     required_param_names = ("rs_pc", "rhos_Msunpc3", "r_t_pc")
 
-    def enclosed_mass(self, r_pc: jnp.ndarray, *, rs_pc: Any, rhos_Msunpc3: Any, r_t_pc: Any) -> jnp.ndarray:
+    def mass_density_3d(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        rs_pc = params["rs_pc"]
+        rhos_Msunpc3 = params["rhos_Msunpc3"]
+
+        rs = jnp.asarray(rs_pc)
+        rhos = jnp.asarray(rhos_Msunpc3)
+        r = jnp.asarray(r_pc)
+        x = r / rs
+        return rhos / x / (1.0 + x) ** 2
+
+    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        rs_pc = params["rs_pc"]
+        rhos_Msunpc3 = params["rhos_Msunpc3"]
+        r_t_pc = params["r_t_pc"]
+
         rs = jnp.asarray(rs_pc)
         rhos = jnp.asarray(rhos_Msunpc3)
         r_t = jnp.asarray(r_t_pc)
@@ -403,6 +473,65 @@ class NFWModel(DMModel):
         # M(r) = 4π ρs rs^3 [ ln(1+x) - x/(1+x) ]
         coeff = 4.0 * jnp.pi * rhos * rs**3
         return coeff * (jnp.log1p(x) - x / (1.0 + x))
+
+
+class ZhaoModel(DMModel):
+    required_param_names = ("rs_pc", "rhos_Msunpc3", "a", "b", "g", "r_t_pc")
+
+    def mass_density_3d(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        rs_pc = params["rs_pc"]
+        rhos_Msunpc3 = params["rhos_Msunpc3"]
+        a = params["a"]
+        b = params["b"]
+        g = params["g"]
+
+        rs = jnp.asarray(rs_pc)
+        rhos = jnp.asarray(rhos_Msunpc3)
+        a_arr = jnp.asarray(a)
+        b_arr = jnp.asarray(b)
+        g_arr = jnp.asarray(g)
+        r = jnp.asarray(r_pc)
+        x = r / rs
+        return rhos * x ** (-g_arr) * (1.0 + x**a_arr) ** (-(b_arr - g_arr) / a_arr)
+
+    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        rs_pc = params["rs_pc"]
+        rhos_Msunpc3 = params["rhos_Msunpc3"]
+        r_t_pc = params["r_t_pc"]
+        a = params["a"]
+        b = params["b"]
+        g = params["g"]
+
+        rs = jnp.asarray(rs_pc)
+        rhos = jnp.asarray(rhos_Msunpc3)
+        r_t = jnp.asarray(r_t_pc)
+        a_arr = jnp.asarray(a)
+        b_arr = jnp.asarray(b)
+        g_arr = jnp.asarray(g)
+
+        r = jnp.minimum(jnp.asarray(r_pc), r_t)
+        x_raw = r / rs
+        x = x_raw**a_arr
+
+        argbeta0 = (3.0 - g_arr) / a_arr
+        argbeta1 = (b_arr - 3.0) / a_arr
+        z = x / (1.0 + x)
+
+        tol = jnp.asarray(1e-7, dtype=jnp.result_type(a_arr, b_arr, g_arr))
+        is_nfw_limit = (
+            (jnp.abs(a_arr - 1.0) <= tol)
+            & (jnp.abs(b_arr - 3.0) <= tol)
+            & (jnp.abs(g_arr - 1.0) <= tol)
+        )
+
+        argbeta1_safe = jnp.where(is_nfw_limit, jnp.asarray(1.0, dtype=argbeta1.dtype), argbeta1)
+        coeff_general = 4.0 * jnp.pi * rs**3 * rhos / a_arr
+        mass_general = coeff_general * jsp.beta(argbeta0, argbeta1_safe) * jsp.betainc(argbeta0, argbeta1_safe, z)
+
+        coeff_nfw = 4.0 * jnp.pi * rhos * rs**3
+        mass_nfw = coeff_nfw * (jnp.log1p(x_raw) - x_raw / (1.0 + x_raw))
+
+        return jnp.where(is_nfw_limit, mass_nfw, mass_general)
 
 
 class AnisotropyModel(Model):
@@ -634,7 +763,7 @@ class DSphModel(Model):
 
     This implementation is intentionally limited:
     - StellarModel: currently assumed to be PlummerModel-compatible interface
-    - DMModel: currently assumed NFW-like enclosed mass interface
+    - DMModel: any subclass implementing enclosed_mass(r_pc, params=...)
     - AnisotropyModel: any subclass implementing beta/f/kernel consistently
 
     It is sufficient for demonstrating MCMC with AIES/NUTS in tests.
@@ -655,6 +784,7 @@ class DSphModel(Model):
         n_u: int = 256,
         u_max: float = 2e3,
         u_min_eps: float = 1e-6,
+        use_analytic_dm: bool = True,
     ) -> jnp.ndarray:
         r"""Compute projected velocity dispersion sigma_los^2(R).
 
@@ -681,13 +811,12 @@ class DSphModel(Model):
         ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]
 
         re_pc = params["re_pc"]
-        rs_pc = params["rs_pc"]
-        rhos = params["rhos_Msunpc3"]
-        r_t = params["r_t_pc"]
-
         nu3 = stellar.density_3d(r, re_pc=re_pc)
         sig2 = stellar.density_2d(R2d, re_pc=re_pc)
-        M = dm.enclosed_mass(r, rs_pc=rs_pc, rhos_Msunpc3=rhos, r_t_pc=r_t)
+        if use_analytic_dm and dm.has_analytic_enclosed_mass:
+            M = dm.enclosed_mass(r, method="analytic", params=params)
+        else:
+            M = dm.enclosed_mass(r, method="numeric", params=params)
 
         K = ani.kernel(u2d, R2d, params=params)
 
@@ -712,6 +841,7 @@ class DSphModel(Model):
 __all__ = [
     "Model",
     "PlummerModel",
+    "ZhaoModel",
     "NFWModel",
     "ConstantAnisotropyModel",
     "BaesAnisotropyModel",

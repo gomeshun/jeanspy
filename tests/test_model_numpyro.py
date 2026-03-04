@@ -37,6 +37,7 @@ from jeanspy.model_numpyro import (
     NFWModel,
     OsipkovMerrittModel,
     PlummerModel,
+    ZhaoModel,
 )
 
 
@@ -470,9 +471,88 @@ class TestModelNumPyro(unittest.TestCase):
             DSphModel as DSphModelRef,
             NFWModel as NFWModelRef,
             PlummerModel as PlummerModelRef,
+            ZhaoModel as ZhaoModelRef,
         )
 
-        true = {
+        cases = [
+            {
+                "name": "NFW",
+                "dm_jax": NFWModel(),
+                "dm_ref_ctor": lambda p: NFWModelRef(
+                    rs_pc=p["rs_pc"],
+                    rhos_Msunpc3=p["rhos_Msunpc3"],
+                    r_t_pc=p["r_t_pc"],
+                ),
+                "params": {
+                    "re_pc": 200.0,
+                    "rs_pc": 1200.0,
+                    "rhos_Msunpc3": 1e-2,
+                    "r_t_pc": 8000.0,
+                    "beta_ani": 0.2,
+                    "vmem_kms": 0.0,
+                },
+                "rtol_max": 0.05,
+            },
+            {
+                "name": "Zhao",
+                "dm_jax": ZhaoModel(),
+                "dm_ref_ctor": lambda p: ZhaoModelRef(
+                    rs_pc=p["rs_pc"],
+                    rhos_Msunpc3=p["rhos_Msunpc3"],
+                    a=p["a"],
+                    b=p["b"],
+                    g=p["g"],
+                    r_t_pc=p["r_t_pc"],
+                ),
+                "params": {
+                    "re_pc": 220.0,
+                    "rs_pc": 1000.0,
+                    "rhos_Msunpc3": 8e-3,
+                    "a": 1.1,
+                    "b": 4.2,
+                    "g": 0.7,
+                    "r_t_pc": 9000.0,
+                    "beta_ani": 0.2,
+                    "vmem_kms": 0.0,
+                },
+                "rtol_max": 0.08,
+            },
+        ]
+
+        R = np.array([5.0, 20.0, 100.0, 800.0], dtype=float)
+        for case in cases:
+            with self.subTest(dm_model=case["name"]):
+                true = case["params"]
+                dsph_jax = DSphModel(
+                    submodels={
+                        "StellarModel": PlummerModel(),
+                        "DMModel": case["dm_jax"],
+                        "AnisotropyModel": ConstantAnisotropyModel(),
+                    }
+                )
+                dsph_ref = DSphModelRef(
+                    submodels={
+                        "StellarModel": PlummerModelRef(re_pc=true["re_pc"]),
+                        "DMModel": case["dm_ref_ctor"](true),
+                        "AnisotropyModel": ConstantAnisotropyModelRef(beta_ani=true["beta_ani"]),
+                    },
+                    vmem_kms=0.0,
+                )
+
+                s2_jax = np.array(dsph_jax.sigmalos2(jnp.asarray(R), params=true, n_u=512, u_max=3000.0))
+                s2_ref = np.array(dsph_ref.sigmalos2_dequad(R, n=1024, n_kernel=128))
+
+                self.assertTrue(np.isfinite(s2_jax).all())
+                self.assertTrue(np.isfinite(s2_ref).all())
+                self.assertTrue((s2_jax > 0).all())
+                self.assertTrue((s2_ref > 0).all())
+
+                rel = np.abs(s2_jax - s2_ref) / np.maximum(1e-12, np.abs(s2_ref))
+                self.assertLess(float(np.max(rel)), case["rtol_max"])
+
+    def test_sigmalos2_nfw_equals_zhao_nfw_limit(self):
+        """Zhao(a=1,b=3,g=1) should reproduce NFW in sigmalos2."""
+        params_base = {
             "re_pc": 200.0,
             "rs_pc": 1200.0,
             "rhos_Msunpc3": 1e-2,
@@ -480,41 +560,105 @@ class TestModelNumPyro(unittest.TestCase):
             "beta_ani": 0.2,
             "vmem_kms": 0.0,
         }
+        params_zhao = {**params_base, "a": 1.0, "b": 3.0, "g": 1.0}
 
-        # JAX version
-        dsph_jax = DSphModel(
+        dsph_nfw = DSphModel(
             submodels={
                 "StellarModel": PlummerModel(),
                 "DMModel": NFWModel(),
                 "AnisotropyModel": ConstantAnisotropyModel(),
             }
         )
-
-        # Reference version (SciPy/dequad)
-        dsph_ref = DSphModelRef(
+        dsph_zhao = DSphModel(
             submodels={
-                "StellarModel": PlummerModelRef(re_pc=true["re_pc"]),
-                "DMModel": NFWModelRef(
-                    rs_pc=true["rs_pc"],
-                    rhos_Msunpc3=true["rhos_Msunpc3"],
-                    r_t_pc=true["r_t_pc"],
-                ),
-                "AnisotropyModel": ConstantAnisotropyModelRef(beta_ani=true["beta_ani"]),
-            },
-            vmem_kms=0.0,
+                "StellarModel": PlummerModel(),
+                "DMModel": ZhaoModel(),
+                "AnisotropyModel": ConstantAnisotropyModel(),
+            }
         )
 
-        R = np.array([5.0, 20.0, 100.0, 800.0], dtype=float)
-        s2_jax = np.array(dsph_jax.sigmalos2(jnp.asarray(R), params=true, n_u=512, u_max=3000.0))
-        s2_ref = np.array(dsph_ref.sigmalos2_dequad(R, n=1024, n_kernel=128))
+        R = jnp.asarray(np.geomspace(1.0, 1e3, 96), dtype=jnp.float32)
+        s2_nfw = np.asarray(dsph_nfw.sigmalos2(R, params=params_base, n_u=192, u_max=1500.0), dtype=np.float64)
+        s2_zhao = np.asarray(dsph_zhao.sigmalos2(R, params=params_zhao, n_u=192, u_max=1500.0), dtype=np.float64)
 
-        self.assertTrue(np.isfinite(s2_jax).all())
-        self.assertTrue(np.isfinite(s2_ref).all())
-        self.assertTrue((s2_jax > 0).all())
-        self.assertTrue((s2_ref > 0).all())
+        self.assertTrue(np.isfinite(s2_nfw).all())
+        self.assertTrue(np.isfinite(s2_zhao).all())
+        self.assertTrue((s2_nfw > 0).all())
+        self.assertTrue((s2_zhao > 0).all())
 
-        rel = np.abs(s2_jax - s2_ref) / np.maximum(1e-12, np.abs(s2_ref))
-        self.assertLess(float(np.max(rel)), 0.05)
+        np.testing.assert_allclose(s2_zhao, s2_nfw, rtol=8e-3, atol=1e-8)
+
+    def test_sigmalos2_nfw_equals_zhao_nfw_limit_sampled_R(self):
+        """NFW and Zhao(a=1,b=3,g=1) agree on sampled projected radii (snippet parity)."""
+        key = jax.random.PRNGKey(123)
+        key, subkey = jax.random.split(key)
+
+        params_nfw = {
+            "re_pc": 200.0,
+            "rs_pc": 1200.0,
+            "rhos_Msunpc3": 1e-2,
+            "r_t_pc": 8000.0,
+            "beta_ani": 0.2,
+            "vmem_kms": 0.0,
+        }
+        params_zhao = {**params_nfw, "a": 1.0, "b": 3.0, "g": 1.0}
+
+        stellar = PlummerModel()
+        nR = 1000
+        R_pc = stellar.sample_R(subkey, nR, re_pc=params_nfw["re_pc"])
+
+        dsph_nfw = DSphModel(
+            submodels={
+                "StellarModel": stellar,
+                "DMModel": NFWModel(),
+                "AnisotropyModel": ConstantAnisotropyModel(),
+            }
+        )
+        dsph_zhao = DSphModel(
+            submodels={
+                "StellarModel": stellar,
+                "DMModel": ZhaoModel(),
+                "AnisotropyModel": ConstantAnisotropyModel(),
+            }
+        )
+
+        @jax.jit
+        def _sig2_nfw(R, p):
+            return dsph_nfw.sigmalos2(R, params=p, n_u=192, u_max=1500.0)
+
+        @jax.jit
+        def _sig2_zhao(R, p):
+            return dsph_zhao.sigmalos2(R, params=p, n_u=192, u_max=1500.0)
+
+        s2_nfw = np.asarray(_sig2_nfw(jnp.asarray(R_pc), params_nfw), dtype=np.float64)
+        s2_zhao = np.asarray(_sig2_zhao(jnp.asarray(R_pc), params_zhao), dtype=np.float64)
+
+        self.assertTrue(np.isfinite(s2_nfw).all())
+        self.assertTrue(np.isfinite(s2_zhao).all())
+        self.assertTrue((s2_nfw > 0).all())
+        self.assertTrue((s2_zhao > 0).all())
+
+        np.testing.assert_allclose(s2_zhao, s2_nfw, rtol=1e-2, atol=1e-8)
+
+    def test_zhao_betainc_enclosed_mass_consistent_with_numeric_default(self):
+        """Keep betainc implementation and ensure it matches numeric enclosed mass."""
+        zhao = ZhaoModel()
+        params = {
+            "rs_pc": 900.0,
+            "rhos_Msunpc3": 8e-3,
+            "a": 1.2,
+            "b": 4.2,
+            "g": 0.6,
+            "r_t_pc": 8000.0,
+        }
+        r = jnp.asarray(np.geomspace(1.0, 6000.0, 64), dtype=jnp.float32)
+
+        m_num = np.asarray(zhao.enclosed_mass(r, params=params), dtype=np.float64)
+        m_beta = np.asarray(zhao.enclosed_mass_betainc(r, params=params), dtype=np.float64)
+
+        self.assertTrue(np.isfinite(m_num).all())
+        self.assertTrue(np.isfinite(m_beta).all())
+        np.testing.assert_allclose(m_beta, m_num, rtol=2e-2, atol=1e-8)
 
     def test_model_submodels_validation(self):
         class MyModel1(Model):
@@ -709,6 +853,92 @@ class TestModelNumPyro(unittest.TestCase):
             mcmc,
             var_names=["re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"],
         )
+
+    def test_jeans_demo_nuts_runs_jax_backend(self):
+        """Jeans demo should run with NUTS when hypergeometric backend is JAX."""
+        _log_runtime()
+
+        key = jax.random.PRNGKey(2)
+        true = {
+            "re_pc": 200.0,
+            "rs_pc": 1200.0,
+            "rhos_Msunpc3": 1e-2,
+            "r_t_pc": 8000.0,
+            "beta_ani": 0.2,
+            "vmem_kms": 0.0,
+        }
+
+        with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", "jax"):
+            dsph = DSphModel(
+                submodels={
+                    "StellarModel": PlummerModel(),
+                    "DMModel": NFWModel(),
+                    "AnisotropyModel": ConstantAnisotropyModel(),
+                }
+            )
+
+            nR = 20
+            R_pc = jnp.geomspace(5.0, 700.0, nR)
+            err = 2.0
+            err2 = (err * jnp.ones_like(R_pc)) ** 2
+
+            s2_true = dsph.sigmalos2(R_pc, params=true, n_u=144, u_max=1200.0)
+            key, subkey = jax.random.split(key)
+            vlos = true["vmem_kms"] + jnp.sqrt(s2_true + err2) * jax.random.normal(subkey, shape=R_pc.shape)
+
+            R_obs = jnp.array(R_pc)
+            v_obs = jnp.array(vlos)
+            e_obs = jnp.array(err * jnp.ones_like(R_obs))
+
+            def model(R_pc, vlos_kms, e_vlos_kms):
+                log_re = numpyro.sample("log_re", dist.Normal(jnp.log(200.0), 0.8))
+                log_rs = numpyro.sample("log_rs", dist.Normal(jnp.log(1200.0), 0.8))
+                log_rhos = numpyro.sample("log_rhos", dist.Normal(jnp.log(1e-2), 1.0))
+                log_r_t = numpyro.sample("log_r_t", dist.Normal(jnp.log(8000.0), 0.5))
+                beta_ani = numpyro.sample("beta_ani", dist.Uniform(-0.4, 0.8))
+                vmem_kms = numpyro.sample("vmem_kms", dist.Normal(0.0, 30.0))
+
+                re_pc = jnp.exp(log_re)
+                rs_pc = jnp.exp(log_rs)
+                rhos_Msunpc3 = jnp.exp(log_rhos)
+                r_t_pc = jnp.exp(log_r_t)
+
+                params = {
+                    "re_pc": re_pc,
+                    "rs_pc": rs_pc,
+                    "rhos_Msunpc3": rhos_Msunpc3,
+                    "r_t_pc": r_t_pc,
+                    "beta_ani": beta_ani,
+                    "vmem_kms": vmem_kms,
+                }
+
+                s2 = dsph.sigmalos2(jnp.asarray(R_pc), params=params, n_u=128, u_max=1200.0)
+                s2 = jnp.clip(s2, min=1e-12, max=1e12)
+                scale = jnp.sqrt(s2 + jnp.asarray(e_vlos_kms) ** 2)
+
+                numpyro.sample("vlos", dist.Normal(vmem_kms, scale), obs=jnp.asarray(vlos_kms))
+                numpyro.deterministic("re_pc", re_pc)
+                numpyro.deterministic("rs_pc", rs_pc)
+                numpyro.deterministic("rhos_Msunpc3", rhos_Msunpc3)
+                numpyro.deterministic("r_t_pc", r_t_pc)
+
+            nuts = NUTS(model)
+            mcmc = MCMC(nuts, num_warmup=80, num_samples=80, num_chains=1, progress_bar=False)
+            key, subkey = jax.random.split(key)
+            mcmc.run(subkey, R_pc=R_obs, vlos_kms=v_obs, e_vlos_kms=e_obs)
+            samples = mcmc.get_samples()
+
+            for name in ("re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"):
+                self.assertIn(name, samples)
+                self.assertTrue(np.isfinite(np.array(samples[name])).all())
+
+            re_mean = float(np.mean(np.array(samples["re_pc"])))
+            self.assertLess(abs(re_mean - true["re_pc"]) / true["re_pc"], 0.6)
+
+            self._arviz_smoke(
+                mcmc,
+                var_names=["re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"],
+            )
 
 
 if __name__ == "__main__":
