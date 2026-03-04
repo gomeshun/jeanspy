@@ -203,30 +203,69 @@ class NFWModel(DMModel):
 
 
 class AnisotropyModel(Model):
+    """Base interface for anisotropy models used in Jeans LOS integration.
+
+    The note defines
+
+        f(r) = f(r0) * exp(\int_{r0}^{r} 2 beta(t) / t dt)
+
+    and the projected-dispersion kernel formulation through beta(r), f(r), and K(u).
+    Subclasses are expected to implement these quantities consistently.
+    """
+
     required_models: Mapping[str, type[Model]] = {}
 
     def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Anisotropy profile beta(r) at 3D radius `r_pc`."""
+        raise NotImplementedError
+
+    def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Auxiliary function f(r) satisfying d ln f / d ln r = 2 beta(r)."""
         raise NotImplementedError
 
     def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Kernel K(u) entering sigma_los^2(R) = 2 * \int du ... K(u)/u."""
         raise NotImplementedError
 
 
 class ConstantAnisotropyModel(AnisotropyModel):
+    r"""Constant anisotropy model with beta(r) = beta_ani.
+
+    For constant beta,
+
+        f(r) = r^{2 beta_ani}
+
+    and K(u) has a closed form involving Gauss hypergeometric function.
+    """
+
     required_param_names = ("beta_ani",)
 
     def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
-        return jnp.asarray(params["beta_ani"])
+        """Return constant beta_ani with the same shape as `r_pc`."""
+        return jnp.asarray(params["beta_ani"]) * jnp.ones_like(r_pc)
 
     def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Return f(r)=r^(2 beta_ani) from the note definition."""
         beta_ani = jnp.asarray(params["beta_ani"])
         r = jnp.asarray(r_pc)
         return r ** (2.0 * beta_ani)
 
     def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
-        """LOSVD kernel K(u) for constant anisotropy.
+        r"""LOSVD kernel K(u) for constant anisotropy.
 
-        This is JAX-compatible via jax.scipy.special.hyp2f1.
+        Uses the transformed hypergeometric representation
+
+            K(u) = sqrt(1-u^{-2}) * ((3/2-beta) * 2F1(1,beta;3/2;1-u^{-2}) - 1/2)
+
+        which is algebraically equivalent to the original form in `model.py` and
+        numerically stable for large `u`.
+
+        Parameters
+        ----------
+        u:
+            Dimensionless radius ratio u=r/R (typically u>1).
+        R_pc:
+            Kept for API compatibility; K(u) is independent of R in this model.
         """
         beta_ani = jnp.asarray(params["beta_ani"])
 
@@ -263,6 +302,10 @@ class BaesAnisotropyModel(AnisotropyModel):
     required_param_names = ("beta_0", "beta_inf", "r_a", "eta")
 
     def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        r"""Baes & van Hese profile
+
+            beta(r) = (beta_0 + beta_inf (r/r_a)^eta) / (1 + (r/r_a)^eta).
+        """
         beta_0 = jnp.asarray(params["beta_0"])
         beta_inf = jnp.asarray(params["beta_inf"])
         r_a = jnp.asarray(params["r_a"])
@@ -272,6 +315,10 @@ class BaesAnisotropyModel(AnisotropyModel):
         return (beta_0 + beta_inf * x) / (1.0 + x)
 
     def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        r"""Return
+
+            f(r)=r^{2 beta_0} (1 + (r/r_a)^eta)^{2(beta_inf-beta_0)/eta}.
+        """
         beta_0 = jnp.asarray(params["beta_0"])
         beta_inf = jnp.asarray(params["beta_inf"])
         r_a = jnp.asarray(params["r_a"])
@@ -282,6 +329,7 @@ class BaesAnisotropyModel(AnisotropyModel):
         return r ** (2.0 * beta_0) * (1.0 + x) ** (2.0 * (beta_inf - beta_0) / eta)
 
     def _log_f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Logarithm of f(r) used for stable ratio evaluation f(s)/f(r)."""
         beta_0 = jnp.asarray(params["beta_0"])
         beta_inf = jnp.asarray(params["beta_inf"])
         r_a = jnp.asarray(params["r_a"])
@@ -299,12 +347,24 @@ class BaesAnisotropyModel(AnisotropyModel):
         params: Mapping[str, Any],
         n_kernel: int = 192,
     ) -> jnp.ndarray:
-        """LOSVD kernel K(u) for general BAES anisotropy via numerical integration.
+        r"""LOSVD kernel K(u) for general BAES anisotropy via numerical integration.
 
-        A JAX-friendly fixed-grid quadrature is used. To remove the integrable
-        singularity at u=1, the integration variable is changed to
+        Implements the note definition
 
-            y = sqrt(u_int^2 - 1),  u_int = sqrt(1 + y^2).
+            K(u_s) = f(Ru_s)/u_s * \int_1^{u_s} du
+                     [u/sqrt(u^2-1)] * (1-beta(Ru)/u^2) / f(Ru).
+
+        A fixed-grid JAX-friendly quadrature is used. The change of variables
+
+            y=sqrt(u^2-1),  u=sqrt(1+y^2)
+
+        removes the endpoint singularity at u=1. Internally, f-ratios are computed
+        via log-differences for numerical stability in extreme beta regimes.
+
+        Parameters
+        ----------
+        n_kernel:
+            Number of points in the inner quadrature grid.
         """
         u_arr, R_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(R_pc))
 
@@ -330,21 +390,34 @@ class BaesAnisotropyModel(AnisotropyModel):
 
 
 class OsipkovMerrittModel(AnisotropyModel):
-    """Osipkov-Merritt anisotropy model."""
+    r"""Osipkov-Merritt anisotropy model.
+
+    This corresponds to the BAES special case (beta_0,beta_inf,eta)=(0,1,2):
+
+        beta(r) = r^2 / (r^2 + r_a^2),
+        f(r)    = 1 + r^2/r_a^2.
+    """
 
     required_param_names = ("r_a",)
 
     def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Return beta(r)=r^2/(r^2+r_a^2)."""
         r_a = jnp.asarray(params["r_a"])
         r = jnp.asarray(r_pc)
         return r**2 / (r**2 + r_a**2)
 
     def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Return f(r)=1+r^2/r_a^2 from the note table."""
         r_a = jnp.asarray(params["r_a"])
         r = jnp.asarray(r_pc)
         return (r_a**2 + r**2) / r_a**2
 
     def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        r"""Closed-form K(u) for Osipkov-Merritt anisotropy.
+
+        Uses the analytical expression equivalent to the note/CLUMPY formula,
+        with u_a=r_a/R and u=r/R.
+        """
         r_a = jnp.asarray(params["r_a"])
         u_arr, R_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(R_pc))
 
@@ -366,7 +439,7 @@ class DSphModel(Model):
     This implementation is intentionally limited:
     - StellarModel: currently assumed to be PlummerModel-compatible interface
     - DMModel: currently assumed NFW-like enclosed mass interface
-    - AnisotropyModel: constant anisotropy kernel (hyp2f1)
+    - AnisotropyModel: any subclass implementing beta/f/kernel consistently
 
     It is sufficient for demonstrating MCMC with AIES/NUTS in tests.
     """
@@ -387,7 +460,15 @@ class DSphModel(Model):
         u_max: float = 2e3,
         u_min_eps: float = 1e-6,
     ) -> jnp.ndarray:
-        """Compute sigma_los^2(R) for an array of projected radii R_pc."""
+        r"""Compute projected velocity dispersion sigma_los^2(R).
+
+        With u=r/R, this computes
+
+            sigma_los^2(R) = 2 * \int_1^\infty du
+                [nu(uR)/Sigma(R)] [G M(uR)] K(u)/u,
+
+        consistent with the kernel normalization used in `model.py` and the note.
+        """
         R = jnp.atleast_1d(jnp.asarray(R_pc))
 
         # Integration grid in log(u)
