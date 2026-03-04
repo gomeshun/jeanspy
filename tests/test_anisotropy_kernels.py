@@ -6,6 +6,12 @@ Simple test for anisotropy models with kernel methods
 import jax.numpy as jnp
 import numpy as np
 from jeanspy.model_jax import *
+from tests._kernel_regression_utils import assert_baes_constant_large_u_consistency
+
+
+def test_baes_constant_limit_large_u_negative_beta_regression():
+    """Regression: for beta<0 and large u, BAES(beta0=betainf) matches constant kernel."""
+    assert_baes_constant_large_u_consistency(beta_values=(-10.0, -5.0, -2.0, -1.0, -0.5))
 
 def test_anisotropy_kernels():
     print("Testing Anisotropy Model Kernels...")

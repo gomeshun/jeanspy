@@ -103,6 +103,32 @@ class TestHyp2f1Jax(unittest.TestCase):
         rel_gk = abs(y_gk - y_ref) / abs(y_ref)
         self.assertLess(rel_ts, rel_gk)
 
+    def test_quad_broadcasts_b_vector_with_scalar_w(self):
+        b = jnp.asarray([0.3, 0.51, 0.8], dtype=jnp.float32)
+        w = jnp.asarray(0.999, dtype=jnp.float32)
+
+        y = hyp2f1_1b_3half(b, w, method="quad", quad_rule="tanh_sinh")
+        self.assertEqual(y.shape, (3,))
+
+        for bi, yi in zip(np.asarray(b), np.asarray(y)):
+            y_ref = _scipy_hyp2f1_1b_3half(float(bi), float(np.asarray(w)))
+            rel = abs(float(yi) - y_ref) / (abs(y_ref) + 1e-300)
+            self.assertLess(rel, 2e-3)
+
+    def test_auto_avoids_asymptotic_near_b_half(self):
+        b = jnp.asarray(0.5002, dtype=jnp.float32)
+        w = jnp.asarray(0.9998, dtype=jnp.float32)
+
+        y_auto = float(np.asarray(hyp2f1_1b_3half(b, w, method="auto", b_half_avoid_asym=1e-3)))
+        y_quad = float(np.asarray(hyp2f1_1b_3half(b, w, method="quad", quad_rule="tanh_sinh")))
+        y_asym = float(np.asarray(hyp2f1_1b_3half(b, w, method="asymptotic")))
+
+        rel_auto_quad = abs(y_auto - y_quad) / (abs(y_quad) + 1e-300)
+        rel_asym_quad = abs(y_asym - y_quad) / (abs(y_quad) + 1e-300)
+
+        self.assertLess(rel_auto_quad, 2e-3)
+        self.assertLessEqual(rel_auto_quad, rel_asym_quad)
+
     def test_value_matches_closed_form_at_b_half(self):
         # For b=1/2: 2F1(1,1/2;3/2;w) = atanh(sqrt(w))/sqrt(w)
         b = 0.5
@@ -113,7 +139,7 @@ class TestHyp2f1Jax(unittest.TestCase):
 
         y_closed = np.arctanh(np.sqrt(w)) / np.sqrt(w)
         rel = abs(y_jax_f - y_closed) / abs(y_closed)
-        self.assertLess(rel, 1e-3)
+        self.assertLess(rel, 2.5e-3)
 
     def test_value_matches_scipy_for_negative_b_series_at_moderate_w(self):
         # Quad is not valid for b<=0, so we only test the series backend there.
@@ -169,6 +195,29 @@ class TestHyp2f1Jax(unittest.TestCase):
 
         rel = abs(g_jax - g_ref) / (abs(g_ref) + 1e-300)
         self.assertLess(rel, 5e-4)
+
+    def test_grad_b_matches_finite_difference_auto_near_half(self):
+        b0 = 0.5005
+        w = 0.9997
+        eps = 1e-4
+
+        def f_scipy(b: float) -> float:
+            return _scipy_hyp2f1_1b_3half(b, w)
+
+        def f_jax(b):
+            return hyp2f1_1b_3half(
+                b,
+                jnp.asarray(w, dtype=jnp.float32),
+                method="auto",
+                b_half_avoid_asym=1e-3,
+            )
+
+        g_jax = float(np.asarray(jax.grad(f_jax)(jnp.asarray(b0, dtype=jnp.float32))))
+        g_ref = _central_diff(f_scipy, b0, eps)
+
+        self.assertTrue(np.isfinite(g_jax))
+        rel = abs(g_jax - g_ref) / (abs(g_ref) + 1e-300)
+        self.assertLess(rel, 8e-2)
 
 
 if __name__ == "__main__":

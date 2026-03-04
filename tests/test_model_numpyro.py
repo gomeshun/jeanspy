@@ -1,5 +1,6 @@
 import unittest
 import warnings
+from unittest.mock import patch
 
 # IMPORTANT: must be set before importing JAX.
 import os
@@ -23,6 +24,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import arviz as az
+from tests._kernel_regression_utils import assert_baes_constant_large_u_consistency
 
 from scipy.special import hyp2f1 as scipy_hyp2f1
 import jeanspy.model_numpyro as model_numpyro_mod
@@ -241,6 +243,72 @@ class TestModelNumPyro(unittest.TestCase):
                 err_msg=f"failed at beta_ani={beta_ani}",
             )
 
+    def test_constant_anisotropy_kernel_large_u_positive_beta_stable(self):
+        """For beta>0, very large-u kernel should stay finite and follow asymptotic growth."""
+        beta_ani = 0.5
+        u_np = np.geomspace(1.0 + 1e-4, 1e16, 512).astype(np.float64)
+        u = jnp.asarray(u_np, dtype=jnp.float32)
+        R_dummy = jnp.asarray(1.0, dtype=jnp.float32)
+
+        ani = ConstantAnisotropyModel()
+        k = np.asarray(ani.kernel(u, R_dummy, params={"beta_ani": beta_ani}))
+
+        self.assertTrue(np.isfinite(k).all())
+        self.assertGreater(float(k[-1]), float(k[64]))
+
+        # For beta=1/2: K(u) ~ log(2u) - 1/2 at large u.
+        tail = u_np >= 1e8
+        k_ref_tail = np.log(2.0 * u_np[tail]) - 0.5
+        rel_tail = np.abs(k[tail] - k_ref_tail) / (np.abs(k_ref_tail) + 1e-300)
+        self.assertLess(float(np.max(rel_tail)), 5e-2)
+
+    def test_constant_anisotropy_kernel_large_u_positive_beta_stable_all_backends(self):
+        """Large-u positive-beta stability should hold for both scipy and jax backends."""
+        beta_ani = 0.5
+        u_np = np.geomspace(1.0 + 1e-4, 1e16, 384).astype(np.float64)
+        u = jnp.asarray(u_np, dtype=jnp.float32)
+        r_dummy = jnp.asarray(1.0, dtype=jnp.float32)
+        tail = u_np >= 1e8
+        k_ref_tail = np.log(2.0 * u_np[tail]) - 0.5
+
+        for backend in ("scipy", "jax"):
+            with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", backend):
+                ani = ConstantAnisotropyModel()
+                k = np.asarray(ani.kernel(u, r_dummy, params={"beta_ani": beta_ani}))
+
+            self.assertTrue(np.isfinite(k).all(), msg=f"non-finite kernel for backend={backend}")
+            self.assertGreater(float(k[-1]), float(k[48]), msg=f"non-increasing tail for backend={backend}")
+
+            rel_tail = np.abs(k[tail] - k_ref_tail) / (np.abs(k_ref_tail) + 1e-300)
+            self.assertLess(
+                float(np.max(rel_tail)),
+                6e-2,
+                msg=f"tail asymptotic mismatch for backend={backend}",
+            )
+
+    def test_constant_anisotropy_kernel_jax_matches_scipy_positive_beta(self):
+        """JAX and SciPy backends should agree for beta>0 over wide u range."""
+        u_np = np.geomspace(1.0 + 1e-4, 1e16, 1024).astype(np.float64)
+        u = jnp.asarray(u_np, dtype=jnp.float32)
+        r_dummy = jnp.asarray(100.0, dtype=jnp.float32)
+
+        for beta_ani in (0.2, 0.5, 0.8, 1.0):
+            with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", "scipy"):
+                k_scipy = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": beta_ani}))
+
+            with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", "jax"):
+                k_jax = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": beta_ani}))
+
+            self.assertTrue(np.isfinite(k_scipy).all(), msg=f"non-finite scipy kernel at beta={beta_ani}")
+            self.assertTrue(np.isfinite(k_jax).all(), msg=f"non-finite jax kernel at beta={beta_ani}")
+
+            rel = np.abs(k_jax - k_scipy) / (np.abs(k_scipy) + 1e-30)
+            self.assertLess(
+                float(np.max(rel)),
+                2e-2,
+                msg=f"jax/scipy mismatch too large at beta={beta_ani}",
+            )
+
     def test_baes_kernel_reduces_to_constant_anisotropy(self):
         """BAES with beta_0=beta_inf reduces to the constant-anisotropy kernel."""
         beta_const = 0.2
@@ -293,6 +361,54 @@ class TestModelNumPyro(unittest.TestCase):
                 atol=3e-6,
                 err_msg=f"failed at beta={beta_const}",
             )
+
+    def test_baes_kernel_reduces_to_constant_anisotropy_large_u(self):
+        """Large-u regime should remain finite and consistent (regression for z->1 rounding)."""
+        assert_baes_constant_large_u_consistency(beta_values=(-10.0, -5.0, -2.0, -1.0, 0.0, 0.5))
+
+    def test_baes_kernel_constant_limit_does_not_call_constant_model(self):
+        """BAES kernel should remain self-contained even when beta_0=beta_inf."""
+        baes = BaesAnisotropyModel()
+        u = jnp.asarray(np.geomspace(1.0 + 1e-4, 1e4, 128), dtype=jnp.float32)[None, :]
+        R = jnp.asarray([1.0], dtype=jnp.float32)[:, None]
+        params_baes = {
+            "beta_0": -5.0,
+            "beta_inf": -5.0,
+            "r_a": 1.0,
+            "eta": 1.0,
+        }
+
+        with patch("jeanspy.model_numpyro.ConstantAnisotropyModel.kernel", side_effect=RuntimeError("should not be called")):
+            k_baes = np.asarray(baes.kernel(u, R, params=params_baes, n_kernel=512))
+
+        self.assertTrue(np.isfinite(k_baes).all())
+
+    def test_baes_kernel_n_kernel_sweep_accuracy_large_u_negative_beta(self):
+        """Accuracy remains good across practical n_kernel values (speed/accuracy guard)."""
+        baes = BaesAnisotropyModel()
+        const = ConstantAnisotropyModel()
+
+        u = jnp.asarray(np.geomspace(1.0 + 1e-4, 1e5, 260), dtype=jnp.float32)[None, :]
+        R = jnp.asarray([1.0], dtype=jnp.float32)[:, None]
+        params_baes = {
+            "beta_0": -10.0,
+            "beta_inf": -10.0,
+            "r_a": 1.0,
+            "eta": 1.0,
+        }
+        params_const = {"beta_ani": -10.0}
+
+        k_ref = np.asarray(const.kernel(u, R, params=params_const)).reshape(-1)
+        n_kernel_values = (64, 96, 128, 192, 256)
+        max_rels = []
+        for n_kernel in n_kernel_values:
+            k_baes = np.asarray(baes.kernel(u, R, params=params_baes, n_kernel=n_kernel)).reshape(-1)
+            self.assertTrue(np.isfinite(k_baes).all(), msg=f"non-finite at n_kernel={n_kernel}")
+            rel = np.abs(k_baes - k_ref) / (np.abs(k_ref) + 1e-30)
+            max_rels.append(float(np.max(rel)))
+
+        # Even at low node count, large-u negative-beta case should stay accurate.
+        self.assertLess(max(max_rels), 2e-4)
 
     def test_baes_kernel_matches_om_special_case(self):
         """BAES(beta_0=0,beta_inf=1,eta=2) matches the Osipkov-Merritt analytic kernel."""
@@ -504,10 +620,13 @@ class TestModelNumPyro(unittest.TestCase):
             "vmem_kms": 0.0,
         }
 
-        stellar = PlummerModel()
-        dm = NFWModel()
-        ani = ConstantAnisotropyModel()
-        dsph = DSphModel(submodels={"StellarModel": stellar, "DMModel": dm, "AnisotropyModel": ani})
+        dsph = DSphModel(
+            submodels={
+                "StellarModel": PlummerModel(), 
+                "DMModel": NFWModel(), 
+                "AnisotropyModel": ConstantAnisotropyModel()
+            }
+        )
 
         # Observational setup
         nR = 24
@@ -519,11 +638,13 @@ class TestModelNumPyro(unittest.TestCase):
         s2 = dsph.sigmalos2(R_pc, params=true, n_u=192, u_max=1500.0)
         key, subkey = jax.random.split(key)
         vlos = true["vmem_kms"] + jnp.sqrt(s2 + err2) * jax.random.normal(subkey, shape=R_pc.shape)
+        
+        # Mock observed data (convert to JAX arrays)
+        R_obs = jnp.array(R_pc)
+        v_obs = jnp.array(vlos)
+        e_obs = jnp.array(err * jnp.ones_like(R_obs))
 
-        R_obs = np.array(R_pc)
-        v_obs = np.array(vlos)
-        e_obs = np.array(err * np.ones_like(R_obs))
-
+        # Define the model for inference using numpyro
         def model(R_pc, vlos_kms, e_vlos_kms):
             # Broad but finite priors (keep the demo stable)
             log_re = numpyro.sample("log_re", dist.Normal(jnp.log(200.0), 0.8))
@@ -532,12 +653,12 @@ class TestModelNumPyro(unittest.TestCase):
             log_r_t = numpyro.sample("log_r_t", dist.Normal(jnp.log(8000.0), 0.4))
             beta_ani = numpyro.sample("beta_ani", dist.Uniform(-0.5, 0.8))
             vmem_kms = numpyro.sample("vmem_kms", dist.Normal(0.0, 30.0))
-
+            # Deterministic transformations to physical parameters for interpretability
             re_pc = jnp.exp(log_re)
             rs_pc = jnp.exp(log_rs)
             rhos_Msunpc3 = jnp.exp(log_rhos)
             r_t_pc = jnp.exp(log_r_t)
-
+            # Pack parameters for sigmalos2
             params = {
                 "re_pc": re_pc,
                 "rs_pc": rs_pc,
@@ -546,7 +667,7 @@ class TestModelNumPyro(unittest.TestCase):
                 "beta_ani": beta_ani,
                 "vmem_kms": vmem_kms,
             }
-
+            # Compute model-predicted sigma_los^2 and incorporate observational errors
             s2 = dsph.sigmalos2(jnp.asarray(R_pc), params=params, n_u=160, u_max=1500.0)
             s2 = jnp.clip(s2, min=1e-12, max=1e12)
             scale = jnp.sqrt(s2 + jnp.asarray(e_vlos_kms) ** 2)

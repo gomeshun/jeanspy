@@ -13,7 +13,7 @@ os.environ.setdefault("XLA_PYTHON_CLIENT_ALLOCATOR", "platform")
 import numpy as np
 import jax
 import jax.numpy as jnp
-from jax.scipy.special import gammaln, gammasgn
+from jax.scipy.special import gammaln, gammasgn, logsumexp
 
 
 @dataclass(frozen=True)
@@ -184,34 +184,50 @@ def hyp2f1_1b_3half_quad(
     b = jnp.asarray(b)
     w = jnp.asarray(w)
 
-    def _integral_terms_log(t_node: jnp.ndarray, w_node: jnp.ndarray, b_arr: jnp.ndarray, w_arr: jnp.ndarray, dtype_: jnp.dtype):
+    def _broadcast_batch(b_arr: jnp.ndarray, w_arr: jnp.ndarray):
+        batch_shape = jnp.broadcast_shapes(b_arr.shape, w_arr.shape)
+        b_b = jnp.broadcast_to(b_arr, batch_shape)
+        w_b = jnp.broadcast_to(w_arr, batch_shape)
+        return b_b, w_b, batch_shape
+
+    def _integral_logsumexp(
+        t_node: jnp.ndarray,
+        w_node: jnp.ndarray,
+        b_arr: jnp.ndarray,
+        w_arr: jnp.ndarray,
+        dtype_: jnp.dtype,
+    ):
         finfo = jnp.finfo(dtype_)
-        tiny = finfo.tiny
-        t_safe = jnp.clip(t_node, tiny, 1.0 - finfo.eps)
-        n_bcast = w_arr.ndim
-        t_safe_b = jnp.reshape(t_safe, t_safe.shape + (1,) * n_bcast)
-        wt_b = jnp.reshape(w_node, w_node.shape + (1,) * n_bcast)
-        w_b = jnp.expand_dims(w_arr, axis=0)
+        tiny = jnp.asarray(finfo.tiny, dtype_)
+        eps = jnp.asarray(finfo.eps, dtype_)
+        n_nodes = t_node.shape[0]
 
-        log_weight = (b_arr - 1.0) * jnp.log(t_safe_b) + (0.5 - b_arr) * jnp.log1p(-t_safe_b)
-        denom = 1.0 - w_b * t_safe_b
-        denom = jnp.clip(denom, tiny, jnp.inf)
+        b_b, w_b, batch_shape = _broadcast_batch(b_arr, w_arr)
+        t_b = t_node.astype(dtype_).reshape((n_nodes,) + (1,) * len(batch_shape))
+        wt_b = w_node.astype(dtype_).reshape((n_nodes,) + (1,) * len(batch_shape))
+        b_exp = b_b.astype(dtype_).reshape((1,) + batch_shape)
+        w_exp = w_b.astype(dtype_).reshape((1,) + batch_shape)
 
-        wt_safe = jnp.clip(wt_b, tiny, jnp.inf)
-        return jnp.log(wt_safe) + log_weight - jnp.log(denom)
+        # Drop exact endpoint / zero-weight samples (true zero contribution).
+        mask = (wt_b > 0.0) & (t_b > 0.0) & (t_b < 1.0)
 
-    def _sum_log_terms(log_terms: jnp.ndarray):
-        m = jnp.max(log_terms, axis=0)
-        s = jnp.sum(jnp.exp(log_terms - m), axis=0)
-        return m, s
+        # Keep logs finite even on masked-out points to prevent NaN gradients.
+        t_safe = jnp.clip(t_b, tiny, 1.0 - eps)
+        wt_safe = jnp.where(wt_b > 0.0, wt_b, 1.0)
+
+        log_weight = (b_exp - 1.0) * jnp.log(t_safe) + (0.5 - b_exp) * jnp.log1p(-t_safe)
+        denom_arg = jnp.clip(-w_exp * t_safe, -1.0 + eps, jnp.inf)
+        log_denom = jnp.log1p(denom_arg)
+
+        log_terms = jnp.where(mask, jnp.log(wt_safe) + log_weight - log_denom, -jnp.inf)
+        return logsumexp(log_terms, axis=0)
 
     def _quad_tanh_sinh(b_arr: jnp.ndarray, w_arr: jnp.ndarray, dtype_: jnp.dtype):
         quad = _TANH_SINH_120_H008
         t_node = quad.x.astype(dtype_)
         w_node = quad.w.astype(dtype_)
-        log_terms = _integral_terms_log(t_node, w_node, b_arr, w_arr, dtype_)
-        m, s = _sum_log_terms(log_terms)
-        return jnp.exp(m) * s
+        log_integral = _integral_logsumexp(t_node, w_node, b_arr, w_arr, dtype_)
+        return log_integral
 
     def _quad_gauss_kronrod(b_arr: jnp.ndarray, w_arr: jnp.ndarray, dtype_: jnp.dtype):
         n_panels = max(int(n_points), 1)
@@ -234,17 +250,15 @@ def hyp2f1_1b_3half_quad(
         tk = mid[:, None] + half[:, None] * xk[None, :]
         wk_map = half[:, None] * wk[None, :]
 
-        log_terms_k = _integral_terms_log(tk.reshape(-1), wk_map.reshape(-1), b_arr, w_arr, dtype_)
-        mk, sk = _sum_log_terms(log_terms_k)
+        log_integral_k = _integral_logsumexp(tk.reshape(-1), wk_map.reshape(-1), b_arr, w_arr, dtype_)
 
         tg = mid[:, None] + half[:, None] * xg[None, :]
         wg_map = half[:, None] * wg[None, :]
-        log_terms_g = _integral_terms_log(tg.reshape(-1), wg_map.reshape(-1), b_arr, w_arr, dtype_)
-        mg, sg = _sum_log_terms(log_terms_g)
+        log_integral_g = _integral_logsumexp(tg.reshape(-1), wg_map.reshape(-1), b_arr, w_arr, dtype_)
 
-        ik = jnp.exp(mk) * sk
-        ig = jnp.exp(mg) * sg
-        return ik, jnp.abs(ik - ig)
+        integral_k = jnp.exp(log_integral_k)
+        integral_g = jnp.exp(log_integral_g)
+        return log_integral_k, jnp.abs(integral_k - integral_g)
 
     dtype = jnp.result_type(b, w)
     b = b.astype(dtype)
@@ -252,15 +266,14 @@ def hyp2f1_1b_3half_quad(
 
     # prefactor in log-space for stability
     log_pref = gammaln(jnp.asarray(1.5, dtype=dtype)) - gammaln(b) - gammaln(jnp.asarray(1.5, dtype=dtype) - b)
-    pref = jnp.exp(log_pref)
 
     if quad_rule == "tanh_sinh":
-        integral = _quad_tanh_sinh(b, w, dtype)
-        return pref * integral
+        log_integral = _quad_tanh_sinh(b, w, dtype)
+        return jnp.exp(log_pref + log_integral)
 
     if quad_rule == "gauss_kronrod":
-        integral, _ = _quad_gauss_kronrod(b, w, dtype)
-        return pref * integral
+        log_integral, _ = _quad_gauss_kronrod(b, w, dtype)
+        return jnp.exp(log_pref + log_integral)
 
     raise ValueError(f"Unknown quad_rule: {quad_rule!r}")
 
@@ -330,7 +343,7 @@ def hyp2f1_1b_3half_asymptotic(
     b_const_sign = gammasgn(b_safe - half)
     singular_term = b_const_sign * jnp.exp(log_b_const + (half - b_safe) * jnp.log(delta)) / sqrt_w
     val_general = regular_term + singular_term
-    return jnp.where(is_b_half, val_b_half, val_general)
+    return jnp.asarray(jnp.where(is_b_half, val_b_half, val_general), dtype=dtype)
 
 
 def hyp2f1_1b_3half(
@@ -343,6 +356,7 @@ def hyp2f1_1b_3half(
     w_asymptotic: float = 0.995,
     b_min_quad: float = 0.25,
     b_max_quad: float = 1.49,
+    b_half_avoid_asym: float = 1e-3,
     n_quad: int = 128,
     quad_rule: str = "tanh_sinh",
     asym_n_terms: int = 3,
@@ -366,6 +380,10 @@ def hyp2f1_1b_3half(
     w_asymptotic:
         In ``method='auto'``, switch from quadrature to asymptotic evaluation for
         ``w > w_asymptotic``.
+
+    b_half_avoid_asym:
+        In ``method='auto'``, avoid asymptotic branch for
+        ``|b-1/2| < b_half_avoid_asym`` and keep quadrature in this region.
 
     asym_n_terms:
         Number of terms kept for the regular ``2F1(1,b;b+1/2;1-w)`` factor in the
@@ -392,7 +410,8 @@ def hyp2f1_1b_3half(
     if method != "auto":
         raise ValueError(f"Unknown method: {method!r}")
 
-    use_asym = (w_arr > w_asymptotic) & (b_arr > b_min_quad) & (b_arr < b_max_quad)
+    near_b_half = jnp.abs(b_arr - 0.5) < b_half_avoid_asym
+    use_asym = (w_arr > w_asymptotic) & (b_arr > b_min_quad) & (b_arr < b_max_quad) & (~near_b_half)
     use_quad = (w_arr > w_switch) & (b_arr > b_min_quad) & (b_arr < b_max_quad)
 
     # Scalar predicate can use lax.cond directly; array predicate needs elementwise
