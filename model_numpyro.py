@@ -23,7 +23,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-_HYP2F1_BACKEND = os.environ.get("JEANSPY_HYP2F1_BACKEND", "scipy").strip().lower()
+_HYP2F1_BACKEND = os.environ.get("JEANSPY_HYP2F1_BACKEND", "jax").strip().lower()
 _HYP2F1_JAX_METHOD = os.environ.get("JEANSPY_HYP2F1_JAX_METHOD", "auto").strip().lower()
 _HYP2F1_JAX_N_TERMS = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_TERMS", "192"))
 _HYP2F1_JAX_N_QUAD = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_QUAD", "128"))
