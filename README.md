@@ -13,6 +13,13 @@ Install the package with pip:
 pip install jeanspy
 ```
 
+This repository treats `requirements.txt` as the authoritative full environment definition, including development, visualization, and inference dependencies. To reproduce the working environment used in this repository, run:
+
+```bash
+pip install -r requirements.txt
+pip install -e .
+```
+
 For the development version, clone this repository and run:
 
 ```bash
@@ -26,6 +33,22 @@ The repository follows a standard `src` layout:
 - `scripts/`: standalone analysis and plotting scripts
 - `notebooks/`: exploratory notebooks
 - `examples/`: sample inputs and example notebooks
+
+## Build And Publish
+
+Build a source distribution and wheel from the repository root:
+
+```bash
+python -m pip install build twine
+python -m build
+python -m twine check dist/*
+```
+
+If the generated artifacts are valid, upload them to PyPI:
+
+```bash
+python -m twine upload dist/*
+```
 
 ## Usage
 
