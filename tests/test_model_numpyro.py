@@ -1,5 +1,6 @@
 import unittest
 import warnings
+import time
 from unittest.mock import patch
 
 # IMPORTANT: must be set before importing JAX.
@@ -62,6 +63,61 @@ def _log_runtime():
 
 
 class TestModelNumPyro(unittest.TestCase):
+    def _make_sigmalos2_backend_cases(self):
+        return [
+            {
+                "name": "constant",
+                "anisotropy": ConstantAnisotropyModel(),
+                "params": {
+                    "re_pc": 220.0,
+                    "rs_pc": 1100.0,
+                    "rhos_Msunpc3": 7.5e-3,
+                    "r_t_pc": 9000.0,
+                    "beta_ani": 0.25,
+                    "vmem_kms": 0.0,
+                },
+                "rtol_max": 3.5e-2,
+            },
+            {
+                "name": "osipkov_merritt",
+                "anisotropy": OsipkovMerrittModel(),
+                "params": {
+                    "re_pc": 220.0,
+                    "rs_pc": 1100.0,
+                    "rhos_Msunpc3": 7.5e-3,
+                    "r_t_pc": 9000.0,
+                    "r_a": 350.0,
+                    "vmem_kms": 0.0,
+                },
+                "rtol_max": 5.0e-2,
+            },
+            {
+                "name": "baes",
+                "anisotropy": BaesAnisotropyModel(),
+                "params": {
+                    "re_pc": 220.0,
+                    "rs_pc": 1100.0,
+                    "rhos_Msunpc3": 7.5e-3,
+                    "r_t_pc": 9000.0,
+                    "beta_0": 0.0,
+                    "beta_inf": 0.65,
+                    "r_a": 300.0,
+                    "eta": 2.2,
+                    "vmem_kms": 0.0,
+                },
+                "rtol_max": 7.5e-2,
+            },
+        ]
+
+    def _measure_jitted_runtime(self, fn, R_pc, repeats=5):
+        timings = []
+        for _ in range(repeats):
+            start = time.perf_counter()
+            result = fn(R_pc)
+            jax.block_until_ready(result)
+            timings.append(time.perf_counter() - start)
+        return float(np.median(np.asarray(timings, dtype=np.float64)))
+
     def _anisotropy_param_cases(self):
         """Parameter sets used for generic anisotropy consistency checks."""
         return {
@@ -639,6 +695,162 @@ class TestModelNumPyro(unittest.TestCase):
         self.assertTrue((s2_zhao > 0).all())
 
         np.testing.assert_allclose(s2_zhao, s2_nfw, rtol=1e-2, atol=1e-8)
+
+    def test_sigmalos2_abel_matches_kernel_for_supported_anisotropy_models(self):
+        R = jnp.asarray(np.geomspace(5.0, 900.0, 32), dtype=jnp.float32)
+
+        for case in self._make_sigmalos2_backend_cases():
+            with self.subTest(anisotropy=case["name"]):
+                dsph = DSphModel(
+                    submodels={
+                        "StellarModel": PlummerModel(),
+                        "DMModel": NFWModel(),
+                        "AnisotropyModel": case["anisotropy"],
+                    }
+                )
+
+                s2_kernel = np.asarray(
+                    dsph.sigmalos2(
+                        R,
+                        params=case["params"],
+                        backend="kernel",
+                        n_u=224,
+                        u_max=1600.0,
+                    ),
+                    dtype=np.float64,
+                )
+                s2_abel = np.asarray(
+                    dsph.sigmalos2(
+                        R,
+                        params=case["params"],
+                        backend="abel",
+                        n_r=896,
+                        u_max=1600.0,
+                        r_min_factor=0.35,
+                    ),
+                    dtype=np.float64,
+                )
+                s2_auto = np.asarray(
+                    dsph.sigmalos2(
+                        R,
+                        params=case["params"],
+                        backend="auto",
+                        n_u=224,
+                        n_r=896,
+                        u_max=1600.0,
+                        r_min_factor=0.35,
+                    ),
+                    dtype=np.float64,
+                )
+
+                self.assertTrue(np.isfinite(s2_kernel).all(), msg=f"kernel backend non-finite for {case['name']}")
+                self.assertTrue(np.isfinite(s2_abel).all(), msg=f"abel backend non-finite for {case['name']}")
+                self.assertTrue(np.isfinite(s2_auto).all(), msg=f"auto backend non-finite for {case['name']}")
+                self.assertTrue((s2_kernel > 0).all(), msg=f"kernel backend non-positive for {case['name']}")
+                self.assertTrue((s2_abel > 0).all(), msg=f"abel backend non-positive for {case['name']}")
+
+                # determine which explicit backend the auto choice corresponds to
+                if np.allclose(s2_auto, s2_abel, rtol=1e-7, atol=0.0):
+                    chosen = "abel"
+                elif np.allclose(s2_auto, s2_kernel, rtol=1e-7, atol=0.0):
+                    chosen = "kernel"
+                else:
+                    chosen = "<mismatch>"
+                logger.info("auto backend selected %s", chosen)
+                self.assertIn(chosen, {"abel", "kernel"})
+
+                rel = np.abs(s2_abel - s2_kernel) / np.maximum(1e-10, np.abs(s2_kernel))
+                logger.info(
+                    "sigmalos2 backend comparison %s: max_rel=%.4e mean_rel=%.4e",
+                    case["name"],
+                    float(np.max(rel)),
+                    float(np.mean(rel)),
+                )
+                self.assertLess(float(np.max(rel)), case["rtol_max"])
+
+    def test_sigmalos2_backend_benchmark_reports_accuracy_and_speed(self):
+        R = jnp.asarray(np.geomspace(5.0, 900.0, 48), dtype=jnp.float32)
+
+        for case in self._make_sigmalos2_backend_cases():
+            with self.subTest(anisotropy=case["name"]):
+                dsph = DSphModel(
+                    submodels={
+                        "StellarModel": PlummerModel(),
+                        "DMModel": NFWModel(),
+                        "AnisotropyModel": case["anisotropy"],
+                    }
+                )
+
+                kernel_fn = jax.jit(
+                    lambda radii: dsph.sigmalos2(
+                        radii,
+                        params=case["params"],
+                        backend="kernel",
+                        n_u=192,
+                        u_max=1400.0,
+                    )
+                )
+                abel_fn = jax.jit(
+                    lambda radii: dsph.sigmalos2(
+                        radii,
+                        params=case["params"],
+                        backend="abel",
+                        n_r=640,
+                        u_max=1400.0,
+                        r_min_factor=0.35,
+                    )
+                )
+                auto_fn = jax.jit(
+                    lambda radii: dsph.sigmalos2(
+                        radii,
+                        params=case["params"],
+                        backend="auto",
+                        n_u=192,
+                        n_r=640,
+                        u_max=1400.0,
+                        r_min_factor=0.35,
+                    )
+                )
+
+                kernel_ref = kernel_fn(R)
+                abel_ref = abel_fn(R)
+                auto_ref = auto_fn(R)
+                jax.block_until_ready(kernel_ref)
+                jax.block_until_ready(abel_ref)
+                jax.block_until_ready(auto_ref)
+
+                kernel_time = self._measure_jitted_runtime(kernel_fn, R)
+                abel_time = self._measure_jitted_runtime(abel_fn, R)
+                auto_time = self._measure_jitted_runtime(auto_fn, R)
+
+                s2_kernel = np.asarray(kernel_ref, dtype=np.float64)
+                s2_abel = np.asarray(abel_ref, dtype=np.float64)
+                rel = np.abs(s2_abel - s2_kernel) / np.maximum(1e-10, np.abs(s2_kernel))
+                speedup = kernel_time / abel_time if abel_time > 0.0 else np.inf
+
+                # determine which backend auto_fn actually selected
+                auto_res = np.asarray(auto_ref, dtype=np.float64)
+                if np.allclose(auto_res, s2_abel, rtol=1e-7, atol=0.0):
+                    auto_chosen = "abel"
+                else:
+                    auto_chosen = "kernel"
+
+                logger.info(
+                    "sigmalos2 benchmark %s: kernel=%.6fs abel=%.6fs auto=%.6fs (%s) speedup=%.2fx max_rel=%.4e mean_rel=%.4e",
+                    case["name"],
+                    kernel_time,
+                    abel_time,
+                    auto_time,
+                    auto_chosen,
+                    speedup,
+                    float(np.max(rel)),
+                    float(np.mean(rel)),
+                )
+
+                self.assertGreater(kernel_time, 0.0)
+                self.assertGreater(abel_time, 0.0)
+                self.assertTrue(np.isfinite(speedup))
+                self.assertLess(float(np.max(rel)), max(case["rtol_max"], 9.0e-2))
 
     def test_zhao_betainc_enclosed_mass_consistent_with_numeric_default(self):
         """Keep betainc implementation and ensure it matches numeric enclosed mass."""

@@ -190,11 +190,11 @@ def _constant_kernel_jax_backend(u: jnp.ndarray, beta_ani: jnp.ndarray) -> jnp.n
         u2 = u_safe**2
 
         z_stable = 1.0 - 1.0 / u2
-        hyp_main = _hyp2f1_1_b_3half_jax(z_stable, beta)
-        hyp_asym = _hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta, n_terms_regular=4)
+        hyp_main = jnp.asarray(_hyp2f1_1_b_3half_jax(z_stable, beta), dtype=dtype)
+        hyp_asym = jnp.asarray(_hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta, n_terms_regular=4), dtype=dtype)
 
         use_asym = ((u_safe > jnp.asarray(20.0, dtype=dtype)) & (beta > 0.0) & (beta < 1.49)) | (~jnp.isfinite(hyp_main))
-        hyp_stable = jnp.where(use_asym, hyp_asym, hyp_main)
+        hyp_stable = jnp.asarray(jnp.where(use_asym, hyp_asym, hyp_main), dtype=dtype)
 
         pref = jnp.sqrt(1.0 - 1.0 / u2)
         kernel_val = pref * ((1.5 - beta) * hyp_stable - 0.5)
@@ -300,6 +300,121 @@ def _trapz(y: jnp.ndarray, x: jnp.ndarray, axis: int = -1) -> jnp.ndarray:
     y0 = jnp.take(y, indices=jnp.arange(y.shape[axis] - 1), axis=axis)
     y1 = jnp.take(y, indices=jnp.arange(1, y.shape[axis]), axis=axis)
     return jnp.sum((y0 + y1) * 0.5 * dx, axis=axis)
+
+
+def _reverse_cumtrapz_1d(y: jnp.ndarray, x: jnp.ndarray) -> jnp.ndarray:
+    """Return I[i] = integral from x[i] to x[-1] of y(t) dt on a 1D grid."""
+    dx = jnp.diff(x)
+    seg = 0.5 * (y[:-1] + y[1:]) * dx
+    rev = jnp.cumsum(seg[::-1])[::-1]
+    return jnp.concatenate([rev, jnp.zeros((1,), dtype=y.dtype)], axis=0)
+
+
+def _make_log_grid(r_min: jnp.ndarray, r_max: jnp.ndarray, n_r: int) -> tuple[jnp.ndarray, jnp.ndarray]:
+    """Return log-spaced grid points and matching bin edges."""
+    n_r = int(n_r)
+    if n_r < 4:
+        raise ValueError("n_r must be >= 4")
+
+    x = jnp.linspace(jnp.log(r_min), jnp.log(r_max), n_r)
+    dx = x[1] - x[0]
+    x_edges = jnp.concatenate(
+        [x[:1] - 0.5 * dx, 0.5 * (x[:-1] + x[1:]), x[-1:] + 0.5 * dx],
+        axis=0,
+    )
+    return jnp.exp(x), jnp.exp(x_edges)
+
+
+
+# cache for abel weights keyed by flattened R and edge arrays
+_abel_weights_cache: Dict[tuple, jnp.ndarray] = {}
+
+
+def _abel_weights(R_pc: jnp.ndarray, r_edges_pc: jnp.ndarray) -> jnp.ndarray:
+    """Return weight matrix for a given set of projected radii and radial edges.
+
+    The result has shape ``(R_flat.size, r_edges_pc.size-1)`` and is cached on the
+    Python side so that repeated calls with the same geometry are cheap.  The
+    cache key is built from the raw bytes of the flattened arrays along with
+    their shapes and dtypes to avoid collisions.
+    """
+    # ensure we work with a flat 1‑D view of R for caching/reshaping
+    # If we are being traced under jax.jit, the R_pc/r_edges_pc arguments will
+    # be Tracer objects and we cannot convert them to bytes to form a cache key.
+    # In that case we simply compute the weights on the fly without caching; the
+    # JIT compiler will hoist and optimise any repeated arithmetic.
+    from jax import core
+
+    # ensure we work with a flat 1‑D view of R for caching/reshaping
+    R_arr = jnp.atleast_1d(jnp.asarray(R_pc))
+    R_flat = R_arr.ravel()
+    r_edges = jnp.asarray(r_edges_pc)
+
+    if isinstance(R_flat, core.Tracer) or isinstance(r_edges, core.Tracer):
+        # compute weights directly without touching Python-level cache
+        R2d = R_flat[:, None]
+        lo = r_edges[:-1][None, :]
+        hi = r_edges[1:][None, :]
+
+        lo_eff = jnp.maximum(lo, R2d)
+        valid = hi > R2d
+
+        dtype = jnp.result_type(R2d, r_edges)
+        one = jnp.asarray(1.0, dtype=dtype)
+        hi_ratio = jnp.maximum(hi / R2d, one)
+        lo_ratio = jnp.maximum(lo_eff / R2d, one)
+
+        return jnp.where(valid, jnp.arccosh(hi_ratio) - jnp.arccosh(lo_ratio), 0.0)
+
+    key = (
+        R_flat.shape,
+        R_flat.dtype,
+        bytes(R_flat.tobytes()),
+        r_edges.shape,
+        r_edges.dtype,
+        bytes(r_edges.tobytes()),
+    )
+    if key in _abel_weights_cache:
+        return _abel_weights_cache[key]
+
+    # compute weights as in the original implementation
+    R2d = R_flat[:, None]
+    lo = r_edges[:-1][None, :]
+    hi = r_edges[1:][None, :]
+
+    lo_eff = jnp.maximum(lo, R2d)
+    valid = hi > R2d
+
+    dtype = jnp.result_type(R2d, r_edges)
+    one = jnp.asarray(1.0, dtype=dtype)
+    hi_ratio = jnp.maximum(hi / R2d, one)
+    lo_ratio = jnp.maximum(lo_eff / R2d, one)
+
+    weights = jnp.where(valid, jnp.arccosh(hi_ratio) - jnp.arccosh(lo_ratio), 0.0)
+    _abel_weights_cache[key] = weights
+    return weights
+
+
+def _abel_transform_piecewise_constant(
+    g_r: jnp.ndarray,
+    R_pc: jnp.ndarray,
+    r_edges_pc: jnp.ndarray,
+) -> jnp.ndarray:
+    r"""Compute A[g](R)=integral_R^inf g(r)/sqrt(r^2-R^2) dr with exact bin weights.
+
+    The helper now supports arbitrarily-shaped ``R_pc`` arrays by flattening
+    before the transform and reshaping the result back to the original shape.
+    Weight matrices are cached via ``_abel_weights`` so that multiple calls with
+    the same projection geometry (e.g. fixed R grid) are very cheap.
+    """
+    R_arr = jnp.atleast_1d(jnp.asarray(R_pc))
+    orig_shape = R_arr.shape
+    R_flat = R_arr.ravel()
+    g = jnp.asarray(g_r)
+
+    weights = _abel_weights(R_flat, jnp.asarray(r_edges_pc))
+    result_flat = jnp.sum(weights * g[None, :], axis=-1)
+    return result_flat.reshape(orig_shape)
 
 
 class Model:
@@ -620,10 +735,10 @@ class ConstantAnisotropyModel(AnisotropyModel):
         u_safe = jnp.maximum(u_arr.astype(dtype), one + eps)
         u2 = u_safe**2
 
-        hyp_main = _hyp2f1_1_b_3half_from_u_scipy(u_safe, beta_ani)
-        hyp_asym = _hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta_ani, n_terms_regular=4)
+        hyp_main = jnp.asarray(_hyp2f1_1_b_3half_from_u_scipy(u_safe, beta_ani), dtype=dtype)
+        hyp_asym = jnp.asarray(_hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta_ani, n_terms_regular=4), dtype=dtype)
         use_asym = ((u_safe > jnp.asarray(20.0, dtype=dtype)) & (beta_ani > 0.0) & (beta_ani < 1.49)) | (~jnp.isfinite(hyp_main))
-        hyp_stable = jnp.where(use_asym, hyp_asym, hyp_main)
+        hyp_stable = jnp.asarray(jnp.where(use_asym, hyp_asym, hyp_main), dtype=dtype)
 
         pref = jnp.sqrt(1.0 - 1.0 / u2)
         kernel_val = pref * ((1.5 - beta_ani) * hyp_stable - 0.5)
@@ -776,7 +891,7 @@ class DSphModel(Model):
         "AnisotropyModel": AnisotropyModel,
     }
 
-    def sigmalos2(
+    def sigmalos2_kernel(
         self,
         R_pc: jnp.ndarray,
         *,
@@ -786,7 +901,7 @@ class DSphModel(Model):
         u_min_eps: float = 1e-6,
         use_analytic_dm: bool = True,
     ) -> jnp.ndarray:
-        r"""Compute projected velocity dispersion sigma_los^2(R).
+        r"""Original kernel-based sigma_los^2(R) implementation.
 
         With u=r/R, this computes
 
@@ -836,6 +951,111 @@ class DSphModel(Model):
         # can produce tiny negatives or NaNs during MCMC initialization.
         out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
         return jnp.clip(out, min=0.0, max=1e12)
+
+    def sigmalos2_abel(
+        self,
+        R_pc: jnp.ndarray,
+        *,
+        params: Mapping[str, Any],
+        n_r: int = 768,
+        u_max: float = 2e3,
+        r_min_factor: float = 0.5,
+        use_analytic_dm: bool = True,
+    ) -> jnp.ndarray:
+        r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms."""
+        R = jnp.atleast_1d(jnp.asarray(R_pc))
+        dtype = R.dtype
+
+        stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]
+        dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
+        ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]
+
+        re_pc = jnp.asarray(params["re_pc"], dtype=dtype)
+        r_min = jnp.maximum(jnp.min(R) * jnp.asarray(r_min_factor, dtype=dtype), jnp.asarray(1e-8, dtype=dtype))
+        r_max = jnp.max(R) * jnp.asarray(u_max, dtype=dtype)
+        if "r_t_pc" in params:
+            r_max = jnp.maximum(r_max, jnp.asarray(params["r_t_pc"], dtype=dtype))
+        if "rs_pc" in params:
+            r_max = jnp.maximum(r_max, jnp.asarray(20.0, dtype=dtype) * jnp.asarray(params["rs_pc"], dtype=dtype))
+        if "r_a" in params:
+            r_max = jnp.maximum(r_max, jnp.asarray(20.0, dtype=dtype) * jnp.asarray(params["r_a"], dtype=dtype))
+        r_max = jnp.maximum(r_max, jnp.asarray(50.0, dtype=dtype) * re_pc)
+
+        r, r_edges = _make_log_grid(r_min, r_max, int(n_r))
+        log_r = jnp.log(r)
+
+        nu3 = stellar.density_3d(r, re_pc=re_pc)
+        beta = jnp.asarray(ani.beta(r, params=params), dtype=dtype)
+        f_r = jnp.asarray(ani.f(r, params=params), dtype=dtype)
+        if use_analytic_dm and dm.has_analytic_enclosed_mass:
+            mass = dm.enclosed_mass(r, method="analytic", params=params)
+        else:
+            mass = dm.enclosed_mass(r, method="numeric", params=params)
+
+        grav = (GMsun_m3s2 * mass / PARSEC_M) * 1e-6
+        rhs_log_r = f_r * nu3 * grav / r
+        jeans_integral = _reverse_cumtrapz_1d(rhs_log_r, log_r)
+        radial_moment = jeans_integral / f_r
+
+        abel_rj = _abel_transform_piecewise_constant(r * radial_moment, R, r_edges)
+        abel_beta_j_over_r = _abel_transform_piecewise_constant(beta * radial_moment / r, R, r_edges)
+
+        sigma = stellar.density_2d(R, re_pc=re_pc)
+        numer = 2.0 * (abel_rj - (R**2) * abel_beta_j_over_r)
+        out = numer / sigma
+        out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
+        return jnp.clip(out, min=0.0, max=1e12)
+
+    def sigmalos2(
+        self,
+        R_pc: jnp.ndarray,
+        *,
+        params: Mapping[str, Any],
+        backend: str = "auto",
+        n_u: int = 256,
+        n_r: int = 768,
+        u_max: float = 2e3,
+        u_min_eps: float = 1e-6,
+        r_min_factor: float = 0.5,
+        use_analytic_dm: bool = True,
+    ) -> jnp.ndarray:
+        """Compute sigma_los^2(R) via the requested backend.
+
+        ``backend`` may be ``'abel'``, ``'kernel'``, or ``'auto'``.  When set to
+        ``'auto'`` the choice is made based on the anisotropy model:
+        Baes --> Abel, constant/Osipkov-Merritt --> kernel (see benchmarks).
+        """
+        backend_key = str(backend).strip().lower()
+        if backend_key in ("auto", ""):
+            # choose sensible defaults based on the anisotropy subclass
+            ani = self.submodels["AnisotropyModel"]  # type: ignore[index]
+            if isinstance(ani, BaesAnisotropyModel):
+                backend_key = "abel"
+            elif isinstance(ani, (ConstantAnisotropyModel, OsipkovMerrittModel)):
+                backend_key = "kernel"
+            else:
+                # unknown anisotropy: prefer the more general Abel solver
+                backend_key = "abel"
+
+        if backend_key == "abel":
+            return self.sigmalos2_abel(
+                R_pc,
+                params=params,
+                n_r=n_r,
+                u_max=u_max,
+                r_min_factor=r_min_factor,
+                use_analytic_dm=use_analytic_dm,
+            )
+        if backend_key == "kernel":
+            return self.sigmalos2_kernel(
+                R_pc,
+                params=params,
+                n_u=n_u,
+                u_max=u_max,
+                u_min_eps=u_min_eps,
+                use_analytic_dm=use_analytic_dm,
+            )
+        raise ValueError(f"backend must be 'abel','kernel' or 'auto', got {backend!r}")
 
 
 __all__ = [
