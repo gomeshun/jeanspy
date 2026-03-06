@@ -15,7 +15,7 @@ import jax
 import jax.numpy as jnp
 import jax.scipy.special as jsp
 import numpy as np
-from jeanspy.hyp2f1_jax import hyp2f1_1b_3half
+from .hyp2f1_jax import hyp2f1_1b_3half
 
 # Optional logger (used by callers/tests; kept lightweight)
 import logging

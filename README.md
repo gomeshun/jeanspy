@@ -19,6 +19,14 @@ For the development version, clone this repository and run:
 pip install -e .
 ```
 
+The repository follows a standard `src` layout:
+
+- `src/jeanspy/`: installable Python package
+- `tests/`: test suite
+- `scripts/`: standalone analysis and plotting scripts
+- `notebooks/`: exploratory notebooks
+- `examples/`: sample inputs and example notebooks
+
 ## Usage
 
 ```python
