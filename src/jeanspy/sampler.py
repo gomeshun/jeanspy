@@ -381,6 +381,8 @@ class Sampler:
                     break
                 else:
                     self.logger.info("Converged but convergence_check is False, so continue sampling.")
+            else:
+                self.logger.info("Not converged yet.")
             self.logger.info("tau: %s", tau)
             self.logger.info("iteration: %d", self.sampler.iteration)
             old_tau = tau
