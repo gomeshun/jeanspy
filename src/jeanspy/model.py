@@ -20,6 +20,7 @@ from scipy.interpolate import interp1d,Akima1DInterpolator
 from multiprocessing import Pool, cpu_count
 from abc import ABCMeta, abstractmethod
 from functools import cached_property, partial
+from importlib.resources import files
 
 import warnings
 
@@ -35,6 +36,9 @@ if not logger.hasHandlers():
 logger.setLevel("INFO")
 
 from .dequad import dequad
+
+
+DATA_DIR = files("jeanspy").joinpath("data")
 # check if dsph_database is installed
 try:
     import dsph_database.spectroscopy
@@ -480,10 +484,9 @@ class SersicModel(StellarModel):
     
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
-        dirname = os.path.dirname(__file__)
-        df = pd.read_csv(f"{dirname}/sersic_log10n_log10bn.csv")
+        df = pd.read_csv(DATA_DIR.joinpath("sersic_log10n_log10bn.csv"))
         self._b_interp = interp1d(df["log10n"].values,df["log10bn"].values,"cubic",assume_sorted=True)
-        self.coeff = pd.read_csv(f"{dirname}/coeff_dens_mod.csv",comment="#",delim_whitespace=True,header=None).values
+        self.coeff = pd.read_csv(DATA_DIR.joinpath("coeff_dens.csv"), comment="#", delim_whitespace=True, header=None).values
     
     @property
     def b_approx(self):
@@ -688,6 +691,15 @@ class DMModel(Model):
         
 
 class ZhaoModel(DMModel):
+    """ DM model whose 3D (deprojected) density is given by the Zhao model, 
+    which is a generalization of the NFW model.
+    
+    The Zhao model is given by the following formula:
+    \rho(r) = \rho_s (r/r_s)^{-g} (1+(r/r_s)^a)^{-(b-g)/a}
+
+    where r_s is the scale radius, \rho_s is the scale density, a is the transition sharpness, b is the outer slope and g is the inner slope.
+    NFW model is a special case of the Zhao model with (a,b,g) = (1,3,1).
+    """
     name = "Zhao Model"
     required_param_names = ['rs_pc','rhos_Msunpc3','a','b','g','r_t_pc']
     required_models = {}

@@ -8,18 +8,31 @@ version = "0.1.0"
 description = "Python library for Jeans analysis"
 readme = "README.md"
 authors = [{name="Shunichi Horigome"}]
-license = {file = "LICENSE"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 requires-python = ">=3.8"
 dependencies = [
     "pandas",
     "scipy",
     "tqdm",
+    "matplotlib",
+    "pytest",
     "astropy",
     "emcee",
-    "swyft",
-    "pytorch-lightning<2.0.0",
-    "torch-tb-profiler",
+    "arviz",
+    "numpyro[cuda12]",
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["jeanspy*"]
 
 [tool.setuptools.package-data]
 jeanspy = ["data/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
