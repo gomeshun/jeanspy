@@ -722,6 +722,12 @@ class ZhaoModel(DMModel):
         # r_pc_trunc[larger_than_r_t] = r_t_pc
         r_pc_trunc = np.where(r_pc>r_t_pc,r_t_pc,r_pc)
         
+        # The beta/betainc form becomes indeterminate at the exact NFW limit
+        # (a, b, g) = (1, 3, 1), even though the enclosed mass is finite.
+        if np.isclose(a, 1.0, atol=1e-7, rtol=0.0) and np.isclose(b, 3.0, atol=1e-7, rtol=0.0) and np.isclose(g, 1.0, atol=1e-7, rtol=0.0):
+            x_nfw = r_pc_trunc/rs_pc
+            return (4.*pi*rs_pc**3 * rhos_Msunpc3) * (log1p(x_nfw) - x_nfw/(1+x_nfw))
+
         x = power(r_pc_trunc/rs_pc,a)
         argbeta0 = (3-g)/a
         argbeta1 = (b-3)/a
@@ -937,6 +943,8 @@ class BaesAnisotropyModel(AnisotropyModel):
         return: ndarray, shape = (n_R,n_u)
         """
         n = 128 if ("n" not in kwargs) else kwargs["n"]
+        u = np.asarray(u).reshape(-1)
+        R = np.asarray(R).reshape(-1)
         
         u_expanded = u[np.newaxis,:,np.newaxis]  # axis = 1
         R_expanded = R[:,np.newaxis,np.newaxis]  # axis = 0
@@ -1757,7 +1765,6 @@ if __name__ == '__main__':
     #plt.ylim(0,40)
     plt.show()
     input("press any key")
-
 
 
 
