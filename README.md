@@ -20,6 +20,8 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+For GPU execution with JAX/NumPyro, the editable install currently targets the CUDA 12 plugin line. If `jax.default_backend()` fails with a driver mismatch, verify that your NVIDIA driver supports the CUDA runtime required by the installed JAX plugin.
+
 For the development version, clone this repository and run:
 
 ```bash
