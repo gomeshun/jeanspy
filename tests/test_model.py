@@ -3,6 +3,8 @@ import unittest
 import os
 import tempfile
 
+import pytest
+
 from jeanspy.model import *
 import jeanspy
 import numpy as np
@@ -10,13 +12,40 @@ from scipy.stats import norm, uniform
 from jeanspy.sampler import *
 swyft = None
 import matplotlib.pyplot as plt
-import torch
-from pytorch_lightning import loggers as pl_loggers
+
+torch = None
+pl_loggers = None
+
+try:
+    import torch as _torch
+    from pytorch_lightning import loggers as _pl_loggers
+except Exception:
+    _LEGACY_SWYFT_REASON = (
+        "legacy swyft/torch tests are disabled unless the optional swyft, torch, and "
+        "pytorch_lightning stack is installed"
+    )
+else:
+    torch = _torch
+    pl_loggers = _pl_loggers
+    _LEGACY_SWYFT_REASON = "swyft is temporarily disabled in this codebase"
+
+
+pytestmark = pytest.mark.skip(reason=_LEGACY_SWYFT_REASON)
 
 
 def _skip_if_swyft_unavailable(testcase: unittest.TestCase):
+    missing = []
     if swyft is None:
-        testcase.skipTest("swyft is temporarily disabled due to compatibility issues")
+        missing.append("swyft")
+    if torch is None:
+        missing.append("torch")
+    if pl_loggers is None:
+        missing.append("pytorch_lightning")
+    if missing:
+        testcase.skipTest(
+            "legacy swyft/torch tests disabled because optional dependencies are unavailable: "
+            + ", ".join(missing)
+        )
 
 
 class TestModel(unittest.TestCase):

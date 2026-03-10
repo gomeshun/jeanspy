@@ -489,7 +489,7 @@ class PlummerModel(StellarModel):
 
     def sample_R(self, key: jax.Array, n: int, *, re_pc: Any) -> jnp.ndarray:
         """Sample projected radii using the analytic inverse CDF.
-torch
+
         CDF(R) = R^2 / (R^2 + re^2)  ->  R = re * sqrt(u/(1-u)).
         """
         u = jax.random.uniform(key, shape=(n,), minval=0.0, maxval=1.0)

@@ -11,6 +11,7 @@ __all__ = [
     "jfactor",
     "polygon",
     "sampler",
+    "swyft_legacy",
     "cmd_utilities",
 ]
 
