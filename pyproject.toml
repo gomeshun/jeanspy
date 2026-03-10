@@ -10,7 +10,7 @@ readme = "README.md"
 authors = [{name="Shunichi Horigome"}]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 dependencies = [
     "numpy>=2.4.2",
     "pandas>=2.3.3",
