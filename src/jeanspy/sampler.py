@@ -1,4 +1,4 @@
-from typing import Any, Union, Callable
+from typing import Any, Union, Callable, TYPE_CHECKING
 import pandas as pd
 import numpy as np
 import emcee 
@@ -30,6 +30,9 @@ def __getattr__(name):
 
 
 __all__ = ["Sampler", "DSphSimulator", "Network", "Worker"]
+
+if TYPE_CHECKING:
+    from .swyft_legacy import DSphSimulator, Network, Worker
 
 # Module-level logger
 logger = logging.getLogger(__name__)
