@@ -38,3 +38,6 @@ jeanspy = ["data/*"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = [
+    "mcmc: slow NumPyro MCMC execution tests; run explicitly with --run-mcmc",
+]

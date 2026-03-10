@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+import pytest
 from pathlib import Path
 import sys
 
@@ -30,6 +31,7 @@ def test_run_map_finite_and_reasonable():
     assert abs(float(params_map["b"]) - truth["b"]) < 1.0
 
 
+@pytest.mark.mcmc
 def test_run_demo_returns_expected_keys():
     out = d.run_demo(seed=0, n=100)
     assert set(out.keys()) >= {"truth", "posterior_mean", "map", "losses"}

@@ -28,6 +28,7 @@ _HYP2F1_JAX_METHOD = os.environ.get("JEANSPY_HYP2F1_JAX_METHOD", "auto").strip()
 _HYP2F1_JAX_N_TERMS = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_TERMS", "192"))
 _HYP2F1_JAX_N_QUAD = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_QUAD", "128"))
 _HYP2F1_JAX_QUAD_RULE = os.environ.get("JEANSPY_HYP2F1_JAX_QUAD_RULE", "tanh_sinh").strip().lower()
+_CONSTANT_KERNEL_N_QUAD = int(os.environ.get("JEANSPY_CONSTANT_KERNEL_N_QUAD", "32"))
 
 if _HYP2F1_BACKEND not in {"scipy", "jax"}:
     raise ValueError(
@@ -125,7 +126,7 @@ def _hyp2f1_1_b_3half_asymptotic_from_u(
     u: jnp.ndarray,
     b: jnp.ndarray,
     *,
-    n_terms_regular: int = 4,
+    n_terms_regular: int = 20,
     b_half_tol: float = 1e-6,
 ) -> jnp.ndarray:
         """Asymptotic 2F1(1,b;3/2;1-1/u^2) evaluated from u directly."""
@@ -170,15 +171,30 @@ def _hyp2f1_1_b_3half_asymptotic_from_u(
             + jsp.gammaln(b_safe - half)
             - jsp.gammaln(b_safe)
         )
-        b_const_sign = jsp.gammasgn(b_safe - half)
+        b_const_sign = jsp.gammasgn(b_safe - half) * jsp.gammasgn(b_safe)
         singular_term = b_const_sign * jnp.exp(log_b_const + (half - b_safe) * jnp.log(delta)) / sqrt_w
 
         val_general = regular_term + singular_term
         return jnp.asarray(jnp.where(is_b_half, val_b_half, val_general), dtype=dtype)
 
-@jax.jit
-def _constant_kernel_jax_backend(u: jnp.ndarray, beta_ani: jnp.ndarray) -> jnp.ndarray:
-        """Fast JAX-path constant-anisotropy kernel."""
+@partial(jax.jit, static_argnames=("n_kernel",))
+def _constant_kernel_jax_backend(
+    u: jnp.ndarray,
+    beta_ani: jnp.ndarray,
+    *,
+    n_kernel: int = _CONSTANT_KERNEL_N_QUAD,
+) -> jnp.ndarray:
+        """Fast JAX-path constant-anisotropy kernel.
+
+        This evaluates the kernel integral directly in ``s = arccosh(u_int)``:
+
+            K(u) = f(uR)/u * integral_0^{arccosh(u)} ds
+                   cosh(s) * (1 - beta/cosh(s)^2) / f(R cosh(s))
+
+        with ``f(r) = r^(2 beta)`` for constant anisotropy. The direct quadrature
+        is more robust than routing through ``hyp2f1`` near continuation poles and
+        remains fully JAX/JIT compatible.
+        """
         u_arr = jnp.asarray(u)
         dtype = jnp.result_type(u_arr, beta_ani)
         one = jnp.asarray(1.0, dtype=dtype)
@@ -187,18 +203,22 @@ def _constant_kernel_jax_backend(u: jnp.ndarray, beta_ani: jnp.ndarray) -> jnp.n
         beta = jnp.asarray(beta_ani, dtype=dtype)
         u_in = u_arr.astype(dtype)
         u_safe = jnp.maximum(u_in, one + eps)
-        u2 = u_safe**2
+        s_max = jnp.arccosh(u_safe)
 
-        z_stable = 1.0 - 1.0 / u2
-        hyp_main = jnp.asarray(_hyp2f1_1_b_3half_jax(z_stable, beta), dtype=dtype)
-        hyp_asym = jnp.asarray(_hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta, n_terms_regular=4), dtype=dtype)
+        n_nodes = max(int(n_kernel), 8)
+        t01, w01 = _gauss_legendre_01(n_nodes)
+        t01 = jnp.asarray(t01, dtype=dtype)
+        w01 = jnp.asarray(w01, dtype=dtype)
 
-        use_asym = ((u_safe > jnp.asarray(20.0, dtype=dtype)) & (beta > 0.0) & (beta < 1.49)) | (~jnp.isfinite(hyp_main))
-        hyp_stable = jnp.asarray(jnp.where(use_asym, hyp_asym, hyp_main), dtype=dtype)
+        s = s_max[..., None] * t01[None, ...]
+        u_int = jnp.cosh(s)
+        log_ratio = jnp.clip(2.0 * beta * (jnp.log(u_safe)[..., None] - jnp.log(u_int)), min=-80.0, max=80.0)
+        integrand = u_int * (one - beta / (u_int * u_int)) * jnp.exp(log_ratio)
+        weights = s_max[..., None] * w01[None, ...]
+        kernel_val = jnp.sum(weights * integrand, axis=-1) / u_safe
 
-        pref = jnp.sqrt(1.0 - 1.0 / u2)
-        kernel_val = pref * ((1.5 - beta) * hyp_stable - 0.5)
-        return jnp.where(u_in <= 1.0, jnp.zeros_like(kernel_val), kernel_val)
+        kernel_val = jnp.where(u_in <= one, jnp.zeros_like(kernel_val), kernel_val)
+        return jnp.nan_to_num(kernel_val, nan=0.0, neginf=0.0, posinf=1e12)
 
 
 @jax.jit
@@ -252,32 +272,43 @@ def _baes_kernel_jax_backend(
         r_a_safe = jnp.asarray(r_a, dtype=dtype)
         eta_safe = jnp.asarray(eta, dtype=dtype)
 
-        s_max = jnp.arccosh(u_safe)
-        n_nodes = max(int(n_kernel), 8)
-        t01, w01 = _gauss_legendre_01(n_nodes)
-        t01 = jnp.asarray(t01, dtype=dtype)
-        w01 = jnp.asarray(w01, dtype=dtype)
+        same_beta = jnp.reshape(
+            jnp.abs(beta0 - betainf) <= jnp.asarray(1e-12, dtype=dtype),
+            (),
+        )
 
-        s = s_max[..., None] * t01[None, ...]
-        u_int = jnp.cosh(s)
-        r_int = r_safe[..., None] * u_int
+        def _constant_limit(_: None) -> jnp.ndarray:
+            return _constant_kernel_jax_backend(u_in, beta0)
 
-        x_int = (r_int / r_a_safe) ** eta_safe
-        beta_int = (beta0 + betainf * x_int) / (1.0 + x_int)
-        log_f_int = 2.0 * beta0 * jnp.log(r_int) + (2.0 * (betainf - beta0) / eta_safe) * jnp.log1p(x_int)
+        def _generic(_: None) -> jnp.ndarray:
+            s_max = jnp.arccosh(u_safe)
+            n_nodes = max(int(n_kernel), 8)
+            t01, w01 = _gauss_legendre_01(n_nodes)
+            t01 = jnp.asarray(t01, dtype=dtype)
+            w01 = jnp.asarray(w01, dtype=dtype)
 
-        r_s = r_safe * u_safe
-        x_s = (r_s / r_a_safe) ** eta_safe
-        log_f_s = 2.0 * beta0 * jnp.log(r_s) + (2.0 * (betainf - beta0) / eta_safe) * jnp.log1p(x_s)
+            s = s_max[..., None] * t01[None, ...]
+            u_int = jnp.cosh(s)
+            r_int = r_safe[..., None] * u_int
 
-        log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)
-        integ_s = u_int * (1.0 - beta_int / (u_int**2)) * jnp.exp(log_ratio)
-        weights = s_max[..., None] * w01[None, ...]
-        inner = jnp.sum(weights * integ_s, axis=-1)
+            x_int = (r_int / r_a_safe) ** eta_safe
+            beta_int = (beta0 + betainf * x_int) / (1.0 + x_int)
+            log_f_int = 2.0 * beta0 * jnp.log(r_int) + (2.0 * (betainf - beta0) / eta_safe) * jnp.log1p(x_int)
 
-        k_val = inner / u_safe
-        k_val = jnp.where(u_in <= 1.0, jnp.zeros_like(k_val), k_val)
-        return jnp.nan_to_num(k_val, nan=0.0, neginf=0.0, posinf=1e12)
+            r_s = r_safe * u_safe
+            x_s = (r_s / r_a_safe) ** eta_safe
+            log_f_s = 2.0 * beta0 * jnp.log(r_s) + (2.0 * (betainf - beta0) / eta_safe) * jnp.log1p(x_s)
+
+            log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)
+            integ_s = u_int * (1.0 - beta_int / (u_int**2)) * jnp.exp(log_ratio)
+            weights = s_max[..., None] * w01[None, ...]
+            inner = jnp.sum(weights * integ_s, axis=-1)
+
+            k_val = inner / u_safe
+            k_val = jnp.where(u_in <= 1.0, jnp.zeros_like(k_val), k_val)
+            return jnp.nan_to_num(k_val, nan=0.0, neginf=0.0, posinf=1e12)
+
+        return jax.lax.cond(same_beta, _constant_limit, _generic, operand=None)
 
 
 # Physical constants (floats are fine in JAX computations)
@@ -300,6 +331,22 @@ def _trapz(y: jnp.ndarray, x: jnp.ndarray, axis: int = -1) -> jnp.ndarray:
     y0 = jnp.take(y, indices=jnp.arange(y.shape[axis] - 1), axis=axis)
     y1 = jnp.take(y, indices=jnp.arange(1, y.shape[axis]), axis=axis)
     return jnp.sum((y0 + y1) * 0.5 * dx, axis=axis)
+
+
+def _nfw_enclosed_mass_shape(x: jnp.ndarray) -> jnp.ndarray:
+    """Return log(1+x) - x/(1+x) with a stable small-x series."""
+    x_arr = jnp.asarray(x)
+    dtype = x_arr.dtype
+    direct = jnp.log1p(x_arr) - x_arr / (1.0 + x_arr)
+    series = x_arr**2 * (
+        0.5
+        + x_arr * (
+            -2.0 / 3.0
+            + x_arr * (0.75 + x_arr * (-0.8 + x_arr * (5.0 / 6.0)))
+        )
+    )
+    threshold = jnp.asarray(1e-3, dtype=dtype)
+    return jnp.where(x_arr < threshold, series, direct)
 
 
 def _reverse_cumtrapz_1d(y: jnp.ndarray, x: jnp.ndarray) -> jnp.ndarray:
@@ -587,7 +634,7 @@ class NFWModel(DMModel):
         x = r / rs
         # M(r) = 4π ρs rs^3 [ ln(1+x) - x/(1+x) ]
         coeff = 4.0 * jnp.pi * rhos * rs**3
-        return coeff * (jnp.log1p(x) - x / (1.0 + x))
+        return coeff * _nfw_enclosed_mass_shape(x)
 
 
 class ZhaoModel(DMModel):
@@ -609,7 +656,13 @@ class ZhaoModel(DMModel):
         x = r / rs
         return rhos * x ** (-g_arr) * (1.0 + x**a_arr) ** (-(b_arr - g_arr) / a_arr)
 
-    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def enclosed_mass_betainc(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Enclosed mass from the Zhao incomplete-beta closed form.
+
+        The NFW-limit branch ``(a,b,g)=(1,3,1)`` is handled analytically because
+        the raw beta/betainc expression becomes indeterminate there even though
+        the physical enclosed mass remains finite.
+        """
         rs_pc = params["rs_pc"]
         rhos_Msunpc3 = params["rhos_Msunpc3"]
         r_t_pc = params["r_t_pc"]
@@ -644,9 +697,12 @@ class ZhaoModel(DMModel):
         mass_general = coeff_general * jsp.beta(argbeta0, argbeta1_safe) * jsp.betainc(argbeta0, argbeta1_safe, z)
 
         coeff_nfw = 4.0 * jnp.pi * rhos * rs**3
-        mass_nfw = coeff_nfw * (jnp.log1p(x_raw) - x_raw / (1.0 + x_raw))
+        mass_nfw = coeff_nfw * _nfw_enclosed_mass_shape(x_raw)
 
         return jnp.where(is_nfw_limit, mass_nfw, mass_general)
+
+    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        return self.enclosed_mass_betainc(r_pc, params=params)
 
 
 class AnisotropyModel(Model):
@@ -736,7 +792,7 @@ class ConstantAnisotropyModel(AnisotropyModel):
         u2 = u_safe**2
 
         hyp_main = jnp.asarray(_hyp2f1_1_b_3half_from_u_scipy(u_safe, beta_ani), dtype=dtype)
-        hyp_asym = jnp.asarray(_hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta_ani, n_terms_regular=4), dtype=dtype)
+        hyp_asym = jnp.asarray(_hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta_ani), dtype=dtype)
         use_asym = ((u_safe > jnp.asarray(20.0, dtype=dtype)) & (beta_ani > 0.0) & (beta_ani < 1.49)) | (~jnp.isfinite(hyp_main))
         hyp_stable = jnp.asarray(jnp.where(use_asym, hyp_asym, hyp_main), dtype=dtype)
 

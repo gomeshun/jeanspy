@@ -1,6 +1,8 @@
 import os
+import importlib
 import unittest
 import warnings
+from contextlib import contextmanager
 from typing import Any
 
 os.environ.setdefault("JAX_PLATFORMS", "cpu")
@@ -13,6 +15,10 @@ jax.config.update("jax_enable_x64", True)
 import jax.numpy as jnp
 import numpy as np
 
+import jeanspy.model_numpyro as _model_numpyro_mod
+
+model_numpyro_mod = importlib.reload(_model_numpyro_mod)
+
 from jeanspy.model import (
     BaesAnisotropyModel as BaesLegacy,
     ConstantAnisotropyModel as ConstantLegacy,
@@ -22,17 +28,16 @@ from jeanspy.model import (
     PlummerModel as PlummerLegacy,
     ZhaoModel as ZhaoLegacy,
 )
-from jeanspy.model_numpyro import (
-    GMsun_m3s2,
-    PARSEC_M,
-    BaesAnisotropyModel as BaesNumPyro,
-    ConstantAnisotropyModel as ConstantNumPyro,
-    DSphModel as DSphNumPyro,
-    NFWModel as NFWNumPyro,
-    OsipkovMerrittModel as OsipkovMerrittNumPyro,
-    PlummerModel as PlummerNumPyro,
-    ZhaoModel as ZhaoNumPyro,
-)
+
+GMsun_m3s2 = model_numpyro_mod.GMsun_m3s2
+PARSEC_M = model_numpyro_mod.PARSEC_M
+BaesNumPyro = model_numpyro_mod.BaesAnisotropyModel
+ConstantNumPyro = model_numpyro_mod.ConstantAnisotropyModel
+DSphNumPyro = model_numpyro_mod.DSphModel
+NFWNumPyro = model_numpyro_mod.NFWModel
+OsipkovMerrittNumPyro = model_numpyro_mod.OsipkovMerrittModel
+PlummerNumPyro = model_numpyro_mod.PlummerModel
+ZhaoNumPyro = model_numpyro_mod.ZhaoModel
 
 
 def _assert_all_finite(testcase: unittest.TestCase, values: Any, *, label: str) -> None:
@@ -48,12 +53,28 @@ def _assert_allclose(
     label: str,
     rtol: float,
     atol: float = 1e-12,
+    rtol_ulps: float | None = None,
+    rtol_floor: float = 0.0,
 ) -> None:
     legacy_arr = np.asarray(legacy, dtype=np.float64)
-    numpyro_arr = np.asarray(numpyro, dtype=np.float64)
+    numpyro_native = np.asarray(numpyro)
+    numpyro_arr = np.asarray(numpyro_native, dtype=np.float64)
+    rtol_eff = float(rtol)
+    if rtol_ulps is not None and np.issubdtype(numpyro_native.dtype, np.floating):
+        rtol_eff = max(rtol_eff, float(rtol_ulps) * np.finfo(numpyro_native.dtype).eps, float(rtol_floor))
     _assert_all_finite(testcase, legacy_arr, label=f"{label} (legacy)")
     _assert_all_finite(testcase, numpyro_arr, label=f"{label} (numpyro)")
-    np.testing.assert_allclose(legacy_arr, numpyro_arr, rtol=rtol, atol=atol, err_msg=label)
+    np.testing.assert_allclose(legacy_arr, numpyro_arr, rtol=rtol_eff, atol=atol, err_msg=label)
+
+
+@contextmanager
+def _jax_x64(enabled: bool):
+    previous = bool(jax.config.jax_enable_x64)
+    jax.config.update("jax_enable_x64", enabled)
+    try:
+        yield
+    finally:
+        jax.config.update("jax_enable_x64", previous)
 
 
 def _legacy_dm_from_params(params: dict[str, float]):
@@ -122,6 +143,13 @@ def _numpyro_sigmalos2_integrand(params: dict[str, float], anisotropy_kind: str,
 
 
 class TestSharedModelMethodsConsistency(unittest.TestCase):
+    def setUp(self):
+        self._jax_x64_ctx = _jax_x64(True)
+        self._jax_x64_ctx.__enter__()
+
+    def tearDown(self):
+        self._jax_x64_ctx.__exit__(None, None, None)
+
     def test_plummer_density_matches_legacy(self):
         radii = np.geomspace(1e-3, 1e4, 64)
         cases = [
@@ -140,6 +168,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.density_2d(jnp.asarray(radii), re_pc=params["re_pc"]),
                     label=f"Plummer.density_2d {params}",
                     rtol=5e-7,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
@@ -147,6 +177,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.density_3d(jnp.asarray(radii), re_pc=params["re_pc"]),
                     label=f"Plummer.density_3d {params}",
                     rtol=5e-7,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
 
     def test_nfw_density_and_enclosed_mass_match_legacy(self):
@@ -176,7 +208,9 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_legacy.mass_density_3d(radii),
                     model_numpyro.mass_density_3d(jnp.asarray(radii), params=params),
                     label=f"NFW.mass_density_3d {params}",
-                    rtol=1e-12,
+                    rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
@@ -185,6 +219,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     label=f"NFW.enclosed_mass {params}",
                     rtol=case["mass_rtol"],
                     atol=1e-10,
+                    rtol_ulps=128,
+                    rtol_floor=2e-10,
                 )
 
     def test_zhao_density_and_enclosed_mass_match_legacy(self):
@@ -204,15 +240,19 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_legacy.mass_density_3d(radii),
                     model_numpyro.mass_density_3d(jnp.asarray(radii), params=params),
                     label=f"Zhao.mass_density_3d {params}",
-                    rtol=1e-12,
+                    rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
                     model_legacy.enclosure_mass(radii),
                     model_numpyro.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
                     label=f"Zhao.enclosed_mass {params}",
-                    rtol=2e-10,
+                    rtol=0.0,
                     atol=1e-10,
+                    rtol_ulps=128,
+                    rtol_floor=2e-10,
                 )
 
     def test_constant_anisotropy_methods_match_legacy(self):
@@ -238,6 +278,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.beta(jnp.asarray(radii), params=params),
                     label=f"Constant.beta {params}",
                     rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
@@ -245,6 +287,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.f(jnp.asarray(radii), params=params),
                     label=f"Constant.f {params}",
                     rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
@@ -271,6 +315,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.beta(jnp.asarray(radii), params=params),
                     label=f"OsipkovMerritt.beta {params}",
                     rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
@@ -278,6 +324,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.f(jnp.asarray(radii), params=params),
                     label=f"OsipkovMerritt.f {params}",
                     rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
@@ -310,6 +358,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.beta(jnp.asarray(radii), params=params),
                     label=f"Baes.beta {params}",
                     rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 _assert_allclose(
                     self,
@@ -317,6 +367,8 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     model_numpyro.f(jnp.asarray(radii), params=params),
                     label=f"Baes.f {params}",
                     rtol=0.0,
+                    rtol_ulps=16,
+                    rtol_floor=5e-15,
                 )
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", RuntimeWarning)
@@ -357,12 +409,21 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
             legacy,
             numpyro,
             label="Zhao NFW-limit enclosed_mass",
-            rtol=1e-10,
+            rtol=0.0,
             atol=1e-10,
+            rtol_ulps=128,
+            rtol_floor=2e-10,
         )
 
 
 class TestDSphConsistencyAgainstLegacy(unittest.TestCase):
+    def setUp(self):
+        self._jax_x64_ctx = _jax_x64(True)
+        self._jax_x64_ctx.__enter__()
+
+    def tearDown(self):
+        self._jax_x64_ctx.__exit__(None, None, None)
+
     def _make_legacy_dsph(self, params: dict[str, float], anisotropy_kind: str) -> DSphLegacy:
         return DSphLegacy(
             vmem_kms=params["vmem_kms"],

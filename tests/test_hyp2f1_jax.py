@@ -5,12 +5,6 @@ import scipy.special
 
 import jax
 
-# Production-oriented test mode:
-# - We intentionally validate with float32 precision assumptions (future GPU use).
-# - Target practical requirement: about 4 significant digits (~1e-4 relative) where
-#   the model operates in the hard region (positive b, w close to 1).
-jax.config.update("jax_enable_x64", False)
-
 import jax.numpy as jnp
 
 from jeanspy.hyp2f1_jax import hyp2f1_1b_3half
@@ -128,6 +122,46 @@ class TestHyp2f1Jax(unittest.TestCase):
 
         self.assertLess(rel_auto_quad, 2e-3)
         self.assertLessEqual(rel_auto_quad, rel_asym_quad)
+
+    def test_auto_matches_scipy_for_negative_b_near_one(self):
+        b = jnp.asarray(-0.2, dtype=jnp.float32)
+        ws = [0.97, 0.99, 0.994, 0.999]
+
+        rels = []
+        for w in ws:
+            y_jax = hyp2f1_1b_3half(b, jnp.asarray(w, dtype=jnp.float32), method="auto")
+            y_ref = _scipy_hyp2f1_1b_3half(float(np.asarray(b)), w)
+            rels.append(abs(float(np.asarray(y_jax)) - y_ref) / (abs(y_ref) + 1e-300))
+
+        self.assertLess(np.max(rels), 1e-4)
+
+    def test_auto_matches_scipy_for_negative_integer_b_near_one(self):
+        b = jnp.asarray(-10.0, dtype=jnp.float32)
+        ws = [0.97, 0.99, 0.999]
+
+        rels = []
+        vals = []
+        for w in ws:
+            y_jax = hyp2f1_1b_3half(b, jnp.asarray(w, dtype=jnp.float32), method="auto")
+            y_ref = _scipy_hyp2f1_1b_3half(float(np.asarray(b)), w)
+            y_val = float(np.asarray(y_jax))
+            vals.append(y_val)
+            rels.append(abs(y_val - y_ref) / (abs(y_ref) + 1e-300))
+
+        self.assertTrue(np.all(np.isfinite(vals)))
+        self.assertLess(np.max(rels), 2e-3)
+
+    def test_auto_matches_scipy_for_high_positive_b_from_moderate_to_near_one(self):
+        b = jnp.asarray(0.95, dtype=jnp.float32)
+        ws = [0.7, 0.8, 0.9, 0.97, 0.99, 0.994, 0.999]
+
+        rels = []
+        for w in ws:
+            y_jax = hyp2f1_1b_3half(b, jnp.asarray(w, dtype=jnp.float32), method="auto")
+            y_ref = _scipy_hyp2f1_1b_3half(float(np.asarray(b)), w)
+            rels.append(abs(float(np.asarray(y_jax)) - y_ref) / (abs(y_ref) + 1e-300))
+
+        self.assertLess(np.max(rels), 5e-5)
 
     def test_value_matches_closed_form_at_b_half(self):
         # For b=1/2: 2F1(1,1/2;3/2;w) = atanh(sqrt(w))/sqrt(w)

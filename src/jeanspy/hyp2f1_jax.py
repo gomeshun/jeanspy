@@ -285,7 +285,7 @@ def hyp2f1_1b_3half_asymptotic(
     n_terms_regular: int = 3,
     b_half_tol: float = 1e-6,
 ) -> jnp.ndarray:
-    """Asymptotic evaluation of 2F1(1,b;3/2;w) for w very close to 1.
+    """Asymptotic evaluation of 2F1(1,b;3/2;w) for w close to 1.
 
     Uses the analytic continuation around ``w=1``:
 
@@ -298,7 +298,10 @@ def hyp2f1_1b_3half_asymptotic(
         B(b) = Gamma(3/2) * Gamma(b-1/2) / Gamma(b).
 
     For the regular hypergeometric factor we keep only a few terms in ``1-w``,
-    which is accurate when ``w`` is sufficiently close to 1.
+    which is accurate when ``w`` is sufficiently close to 1. This continuation is
+    valid for negative non-integer ``b`` as well; exact non-positive integers and
+    negative half-integers are handled by the ``auto`` selector and should stay on
+    the power-series path.
     """
     b_arr = jnp.asarray(b)
     w_arr = jnp.asarray(w)
@@ -340,7 +343,7 @@ def hyp2f1_1b_3half_asymptotic(
         + gammaln(b_safe - half)
         - gammaln(b_safe)
     )
-    b_const_sign = gammasgn(b_safe - half)
+    b_const_sign = gammasgn(b_safe - half) * gammasgn(b_safe)
     singular_term = b_const_sign * jnp.exp(log_b_const + (half - b_safe) * jnp.log(delta)) / sqrt_w
     val_general = regular_term + singular_term
     return jnp.asarray(jnp.where(is_b_half, val_b_half, val_general), dtype=dtype)
@@ -353,13 +356,15 @@ def hyp2f1_1b_3half(
     method: str = "auto",
     n_terms: int = 192,
     w_switch: float = 0.65,
-    w_asymptotic: float = 0.995,
-    b_min_quad: float = 0.25,
+    w_asymptotic: float = 0.6,
+    w_asymptotic_negative: float = 0.9,
+    b_min_quad: float = 1e-6,
     b_max_quad: float = 1.49,
     b_half_avoid_asym: float = 1e-3,
+    b_integer_avoid_asym: float = 1e-8,
     n_quad: int = 128,
     quad_rule: str = "tanh_sinh",
-    asym_n_terms: int = 3,
+    asym_n_terms: int = 20,
 ) -> jnp.ndarray:
     """2F1(1,b;3/2;w) specialized helper.
 
@@ -368,22 +373,32 @@ def hyp2f1_1b_3half(
     method:
         - "series": fixed-term power series.
         - "quad": Euler integral quadrature (0<b<3/2).
-        - "asymptotic": asymptotic expansion around w=1 (0<b<3/2).
-        - "auto": uses "quad" when w is close to 1 and b is in a safe range;
-                  uses "asymptotic" when w is extremely close to 1;
-                  otherwise uses "series".
+        - "asymptotic": asymptotic expansion around w=1.
+        - "auto": uses the asymptotic continuation for positive ``b`` once it is
+                  more accurate than quadrature, uses it for negative non-integer
+                  ``b`` only very near ``w=1``, and otherwise falls back to
+                  quadrature or the terminating/power series.
 
     n_quad:
         - ``quad_rule='tanh_sinh'``: currently ignored (uses precomputed tanh-sinh rule).
         - ``quad_rule='gauss_kronrod'``: number of uniform panels for composite GK.
 
     w_asymptotic:
-        In ``method='auto'``, switch from quadrature to asymptotic evaluation for
-        ``w > w_asymptotic``.
+        In ``method='auto'``, switch positive ``b`` values from quadrature to
+        asymptotic evaluation for ``w >= w_asymptotic``.
+
+    w_asymptotic_negative:
+        In ``method='auto'``, allow negative non-integer ``b`` values onto the
+        asymptotic branch only for ``w >= w_asymptotic_negative``.
 
     b_half_avoid_asym:
         In ``method='auto'``, avoid asymptotic branch for
         ``|b-1/2| < b_half_avoid_asym`` and keep quadrature in this region.
+
+    b_integer_avoid_asym:
+        In ``method='auto'``, avoid the asymptotic branch when ``b`` is close to a
+        non-positive integer pole or negative half-integer pole of the continuation
+        coefficient.
 
     asym_n_terms:
         Number of terms kept for the regular ``2F1(1,b;b+1/2;1-w)`` factor in the
@@ -410,8 +425,20 @@ def hyp2f1_1b_3half(
     if method != "auto":
         raise ValueError(f"Unknown method: {method!r}")
 
-    near_b_half = jnp.abs(b_arr - 0.5) < b_half_avoid_asym
-    use_asym = (w_arr > w_asymptotic) & (b_arr > b_min_quad) & (b_arr < b_max_quad) & (~near_b_half)
+    dtype = jnp.result_type(b_arr, w_arr)
+    zero = jnp.asarray(0.0, dtype=dtype)
+    b_half_exact_tol = jnp.asarray(1e-6, dtype=dtype)
+    near_b_half = jnp.abs(b_arr - 0.5) <= b_half_avoid_asym
+    is_b_half_exact = jnp.abs(b_arr - 0.5) <= b_half_exact_tol
+    nearest_integer = jnp.round(b_arr)
+    near_nonpositive_integer = (b_arr <= zero) & (jnp.abs(b_arr - nearest_integer) <= b_integer_avoid_asym)
+    shifted_nearest_integer = jnp.round(b_arr - 0.5)
+    near_negative_half_integer = (b_arr < zero) & (jnp.abs((b_arr - 0.5) - shifted_nearest_integer) <= b_integer_avoid_asym)
+
+    use_asym_positive = (b_arr > b_min_quad) & (w_arr >= w_asymptotic)
+    use_asym_negative = (b_arr < zero) & (~near_nonpositive_integer) & (~near_negative_half_integer) & (w_arr >= w_asymptotic_negative)
+    avoid_asym = near_b_half & (~is_b_half_exact)
+    use_asym = (use_asym_positive | use_asym_negative) & (b_arr < b_max_quad) & (~avoid_asym)
     use_quad = (w_arr > w_switch) & (b_arr > b_min_quad) & (b_arr < b_max_quad)
 
     # Scalar predicate can use lax.cond directly; array predicate needs elementwise

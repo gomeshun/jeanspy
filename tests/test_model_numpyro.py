@@ -1,6 +1,7 @@
 import unittest
 import warnings
 import time
+from contextlib import contextmanager
 from unittest.mock import patch
 
 # IMPORTANT: must be set before importing JAX.
@@ -17,6 +18,7 @@ import jax.numpy as jnp
 import numpy as np
 import numpyro
 import numpyro.distributions as dist
+import pytest
 from numpyro.infer import AIES, MCMC, NUTS
 
 import matplotlib
@@ -60,6 +62,16 @@ def _log_runtime():
         os.environ.get("XLA_PYTHON_CLIENT_MEM_FRACTION"),
         os.environ.get("XLA_PYTHON_CLIENT_ALLOCATOR"),
     )
+
+
+@contextmanager
+def _jax_x64(enabled: bool):
+    previous = bool(jax.config.read("jax_enable_x64"))
+    jax.config.update("jax_enable_x64", enabled)
+    try:
+        yield
+    finally:
+        jax.config.update("jax_enable_x64", previous)
 
 
 class TestModelNumPyro(unittest.TestCase):
@@ -905,6 +917,7 @@ class TestModelNumPyro(unittest.TestCase):
             self.assertIsNotNone(axes)
             plt.close("all")
 
+    @pytest.mark.mcmc
     def test_plummer_re_inference_nuts_and_aies(self):
         _log_runtime()
         numpyro.set_host_device_count(16)
@@ -961,6 +974,7 @@ class TestModelNumPyro(unittest.TestCase):
         self.assertLess(abs(re_mean2 - true_re) / true_re, 0.3)
         self._arviz_smoke(mcmc2, var_names=["re_pc"])
 
+    @pytest.mark.mcmc
     def test_jeans_demo_aies_runs(self):
         _log_runtime()
         numpyro.set_host_device_count(8)
@@ -1066,91 +1080,93 @@ class TestModelNumPyro(unittest.TestCase):
             var_names=["re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"],
         )
 
+    @pytest.mark.mcmc
     def test_jeans_demo_nuts_runs_jax_backend(self):
         """Jeans demo should run with NUTS when hypergeometric backend is JAX."""
         _log_runtime()
 
-        key = jax.random.PRNGKey(2)
-        true = {
-            "re_pc": 200.0,
-            "rs_pc": 1200.0,
-            "rhos_Msunpc3": 1e-2,
-            "r_t_pc": 8000.0,
-            "beta_ani": 0.2,
-            "vmem_kms": 0.0,
-        }
+        with _jax_x64(True):
+            key = jax.random.PRNGKey(2)
+            true = {
+                "re_pc": 200.0,
+                "rs_pc": 1200.0,
+                "rhos_Msunpc3": 1e-2,
+                "r_t_pc": 8000.0,
+                "beta_ani": 0.2,
+                "vmem_kms": 0.0,
+            }
 
-        with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", "jax"):
-            dsph = DSphModel(
-                submodels={
-                    "StellarModel": PlummerModel(),
-                    "DMModel": NFWModel(),
-                    "AnisotropyModel": ConstantAnisotropyModel(),
-                }
-            )
+            with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", "jax"):
+                dsph = DSphModel(
+                    submodels={
+                        "StellarModel": PlummerModel(),
+                        "DMModel": NFWModel(),
+                        "AnisotropyModel": ConstantAnisotropyModel(),
+                    }
+                )
 
-            nR = 20
-            R_pc = jnp.geomspace(5.0, 700.0, nR)
-            err = 2.0
-            err2 = (err * jnp.ones_like(R_pc)) ** 2
+                nR = 20
+                R_pc = jnp.geomspace(5.0, 700.0, nR)
+                err = 2.0
+                err2 = (err * jnp.ones_like(R_pc)) ** 2
 
-            s2_true = dsph.sigmalos2(R_pc, params=true, n_u=144, u_max=1200.0)
-            key, subkey = jax.random.split(key)
-            vlos = true["vmem_kms"] + jnp.sqrt(s2_true + err2) * jax.random.normal(subkey, shape=R_pc.shape)
+                s2_true = dsph.sigmalos2(R_pc, params=true, n_u=144, u_max=1200.0)
+                key, subkey = jax.random.split(key)
+                vlos = true["vmem_kms"] + jnp.sqrt(s2_true + err2) * jax.random.normal(subkey, shape=R_pc.shape)
 
-            R_obs = jnp.array(R_pc)
-            v_obs = jnp.array(vlos)
-            e_obs = jnp.array(err * jnp.ones_like(R_obs))
+                R_obs = jnp.array(R_pc)
+                v_obs = jnp.array(vlos)
+                e_obs = jnp.array(err * jnp.ones_like(R_obs))
 
-            def model(R_pc, vlos_kms, e_vlos_kms):
-                log_re = numpyro.sample("log_re", dist.Normal(jnp.log(200.0), 0.8))
-                log_rs = numpyro.sample("log_rs", dist.Normal(jnp.log(1200.0), 0.8))
-                log_rhos = numpyro.sample("log_rhos", dist.Normal(jnp.log(1e-2), 1.0))
-                log_r_t = numpyro.sample("log_r_t", dist.Normal(jnp.log(8000.0), 0.5))
-                beta_ani = numpyro.sample("beta_ani", dist.Uniform(-0.4, 0.8))
-                vmem_kms = numpyro.sample("vmem_kms", dist.Normal(0.0, 30.0))
+                def model(R_pc, vlos_kms, e_vlos_kms):
+                    log_re = numpyro.sample("log_re", dist.Normal(jnp.log(200.0), 0.8))
+                    log_rs = numpyro.sample("log_rs", dist.Normal(jnp.log(1200.0), 0.8))
+                    log_rhos = numpyro.sample("log_rhos", dist.Normal(jnp.log(1e-2), 1.0))
+                    log_r_t = numpyro.sample("log_r_t", dist.Normal(jnp.log(8000.0), 0.5))
+                    beta_ani = numpyro.sample("beta_ani", dist.Uniform(-0.4, 0.8))
+                    vmem_kms = numpyro.sample("vmem_kms", dist.Normal(0.0, 30.0))
 
-                re_pc = jnp.exp(log_re)
-                rs_pc = jnp.exp(log_rs)
-                rhos_Msunpc3 = jnp.exp(log_rhos)
-                r_t_pc = jnp.exp(log_r_t)
+                    re_pc = jnp.exp(log_re)
+                    rs_pc = jnp.exp(log_rs)
+                    rhos_Msunpc3 = jnp.exp(log_rhos)
+                    r_t_pc = jnp.exp(log_r_t)
 
-                params = {
-                    "re_pc": re_pc,
-                    "rs_pc": rs_pc,
-                    "rhos_Msunpc3": rhos_Msunpc3,
-                    "r_t_pc": r_t_pc,
-                    "beta_ani": beta_ani,
-                    "vmem_kms": vmem_kms,
-                }
+                    params = {
+                        "re_pc": re_pc,
+                        "rs_pc": rs_pc,
+                        "rhos_Msunpc3": rhos_Msunpc3,
+                        "r_t_pc": r_t_pc,
+                        "beta_ani": beta_ani,
+                        "vmem_kms": vmem_kms,
+                    }
 
-                s2 = dsph.sigmalos2(jnp.asarray(R_pc), params=params, n_u=128, u_max=1200.0)
-                s2 = jnp.clip(s2, min=1e-12, max=1e12)
-                scale = jnp.sqrt(s2 + jnp.asarray(e_vlos_kms) ** 2)
+                    s2 = dsph.sigmalos2(jnp.asarray(R_pc), params=params, n_u=128, u_max=1200.0)
+                    s2 = jnp.clip(s2, min=1e-12, max=1e12)
+                    scale = jnp.sqrt(s2 + jnp.asarray(e_vlos_kms) ** 2)
 
-                numpyro.sample("vlos", dist.Normal(vmem_kms, scale), obs=jnp.asarray(vlos_kms))
-                numpyro.deterministic("re_pc", re_pc)
-                numpyro.deterministic("rs_pc", rs_pc)
-                numpyro.deterministic("rhos_Msunpc3", rhos_Msunpc3)
-                numpyro.deterministic("r_t_pc", r_t_pc)
+                    numpyro.sample("vlos", dist.Normal(vmem_kms, scale), obs=jnp.asarray(vlos_kms))
+                    numpyro.deterministic("re_pc", re_pc)
+                    numpyro.deterministic("rs_pc", rs_pc)
+                    numpyro.deterministic("rhos_Msunpc3", rhos_Msunpc3)
+                    numpyro.deterministic("r_t_pc", r_t_pc)
 
-            nuts = NUTS(model)
-            mcmc = MCMC(nuts, num_warmup=80, num_samples=80, num_chains=1, progress_bar=False)
-            key, subkey = jax.random.split(key)
-            mcmc.run(subkey, R_pc=R_obs, vlos_kms=v_obs, e_vlos_kms=e_obs)
-            samples = mcmc.get_samples()
+                nuts = NUTS(model)
+                mcmc = MCMC(nuts, num_warmup=80, num_samples=80, num_chains=1, progress_bar=False)
+                key, subkey = jax.random.split(key)
+                mcmc.run(subkey, R_pc=R_obs, vlos_kms=v_obs, e_vlos_kms=e_obs)
+                samples = mcmc.get_samples()
 
-            for name in ("re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"):
-                self.assertIn(name, samples)
-                self.assertTrue(np.isfinite(np.array(samples[name])).all())
+                for name in ("re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"):
+                    self.assertIn(name, samples)
+                    self.assertTrue(np.isfinite(np.array(samples[name])).all())
 
-            re_mean = float(np.mean(np.array(samples["re_pc"])))
-            self.assertLess(abs(re_mean - true["re_pc"]) / true["re_pc"], 0.6)
+                re_mean = float(np.mean(np.array(samples["re_pc"])))
+                self.assertLess(abs(re_mean - true["re_pc"]) / true["re_pc"], 0.6)
 
-            self._arviz_smoke(
-                mcmc,
-                var_names=["re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"],
-            )
+                self._arviz_smoke(
+                    mcmc,
+                    var_names=["re_pc", "rs_pc", "rhos_Msunpc3", "r_t_pc", "beta_ani", "vmem_kms"],
+                )
 
 
 if __name__ == "__main__":
