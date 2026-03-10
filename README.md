@@ -7,24 +7,26 @@ JeansPy is a Python library for the Jeans analysis. This library is designed to 
 
 ## Installation
 
-Install the package with pip:
+Create a local environment with `uv`:
 
 ```bash
-pip install jeanspy
+uv sync
 ```
 
-This repository treats `requirements.txt` as the authoritative full environment definition, including development, visualization, and inference dependencies. To reproduce the working environment used in this repository, run:
+This repository treats `pyproject.toml` as the authoritative environment definition. The command above creates `.venv`, installs the package in editable mode, and resolves the full development and inference stack into `uv.lock`.
+
+If you need to refresh the environment after changing dependencies, run:
 
 ```bash
-pip install -r requirements.txt
-pip install -e .
+uv sync
 ```
 
 For GPU execution with JAX/NumPyro, the editable install currently targets the CUDA 12 plugin line. If `jax.default_backend()` fails with a driver mismatch, verify that your NVIDIA driver supports the CUDA runtime required by the installed JAX plugin.
 
-For the development version, clone this repository and run:
+If you prefer a pip-based install instead of `uv`, run:
 
 ```bash
+pip install -r requirements.txt
 pip install -e .
 ```
 

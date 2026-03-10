@@ -13,4 +13,5 @@ emcee
 
 arviz
 
+jax[cuda12]
 numpyro[cuda12]
