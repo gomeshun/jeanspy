@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 
 import numpy as np
 import jax.numpy as jnp
@@ -8,6 +9,17 @@ from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, NFWModel, 
 
 
 class TestRuntimeConfig(unittest.TestCase):
+    def test_default_sigmalos2_n_u_gpu_x32(self):
+        with mock.patch.dict(model_numpyro_mod.os.environ, {}, clear=False):
+            model_numpyro_mod.os.environ.pop("JEANSPY_SIGMALOS2_N_U", None)
+            with mock.patch.object(model_numpyro_mod, "_prefers_gpu_x32", return_value=True):
+                self.assertEqual(model_numpyro_mod._default_sigmalos2_n_u(), 1024)
+
+    def test_default_sigmalos2_n_u_respects_env_override(self):
+        with mock.patch.dict(model_numpyro_mod.os.environ, {"JEANSPY_SIGMALOS2_N_U": "777"}, clear=False):
+            with mock.patch.object(model_numpyro_mod, "_prefers_gpu_x32", return_value=True):
+                self.assertEqual(model_numpyro_mod._default_sigmalos2_n_u(), 777)
+
     def test_configure_runtime_round_trip(self):
         original = model_numpyro_mod.get_runtime_config()
         try:

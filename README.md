@@ -84,7 +84,7 @@ The NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/mod
 - `JEANSPY_SIGMALOS2_N_R=<int>`: override the Abel-solver radial grid size.
 - `JEANSPY_SIGMALOS2_U_MAX=<float>`: override the default outer integration limit.
 
-On GPU float32, `model_numpyro` now chooses more aggressive defaults automatically for the constant-anisotropy path so that the hot JIT-compiled solver stays faster than `model.py` while landing near the `1e-5` relative-accuracy range on the benchmark cases used during development.
+On GPU float32, `model_numpyro` now defaults to `sigmalos2_n_u=1024` for the kernel solver. That keeps the grid much smaller than the previous development setting while still staying in the sub-`1e-3` relative-error range on the representative constant-anisotropy benchmark cases used during development. If you need tighter agreement with the high-resolution reference, raise `JEANSPY_SIGMALOS2_N_U` explicitly.
 
 For interactive sessions, the same module exposes lightweight runtime helpers:
 
@@ -95,7 +95,7 @@ configure_runtime(
     hyp2f1_backend="jax",
     sigmalos2_backend="kernel",
     sigmalos2_jit=True,
-    sigmalos2_n_u=12289,
+    sigmalos2_n_u=1024,
     sigmalos2_u_max=5000.0,
     constant_kernel_n_quad=64,
     jax_enable_x64=False,

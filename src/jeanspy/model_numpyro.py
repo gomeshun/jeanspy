@@ -43,7 +43,7 @@ def _default_sigmalos2_n_u() -> int:
     env_value = os.environ.get("JEANSPY_SIGMALOS2_N_U")
     if env_value is not None:
         return int(env_value)
-    return 12289 if _prefers_gpu_x32() else 256
+    return 1024 if _prefers_gpu_x32() else 256
 
 
 def _default_sigmalos2_n_r() -> int:
