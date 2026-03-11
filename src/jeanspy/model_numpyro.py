@@ -6,21 +6,14 @@ from typing import Any, Dict, Mapping, Optional
 # IMPORTANT: these env vars must be set before importing JAX.
 import os
 
-_jeanspy_jax_platform = os.environ.get("JEANSPY_JAX_PLATFORM", "").strip().lower()
-if _jeanspy_jax_platform:
-    mapped_platform = "cuda" if _jeanspy_jax_platform == "gpu" else _jeanspy_jax_platform
-    os.environ.setdefault("JAX_PLATFORMS", mapped_platform)
-os.environ.setdefault("JAX_ENABLE_X64", os.environ.get("JEANSPY_JAX_ENABLE_X64", "false"))
-os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")
-# A small default safety fraction; users can override via env.
-os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.75")
-os.environ.setdefault("XLA_PYTHON_CLIENT_ALLOCATOR", "platform")
+from ._jax_env import configure_jax_environment
+
+configure_jax_environment()
 
 import jax
 import jax.numpy as jnp
 import jax.scipy.special as jsp
 import numpy as np
-from .hyp2f1_jax import hyp2f1_1b_3half
 
 # Optional logger (used by callers/tests; kept lightweight)
 import logging
@@ -28,73 +21,44 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+DEFAULT_CONSTANT_KERNEL_BACKEND = "jax"
+DEFAULT_SIGMALOS2_BACKEND = "auto"
+DEFAULT_SIGMALOS2_JIT = True
+DEFAULT_BAES_KERNEL_N_QUAD = 128
+
+
 def _prefers_gpu_x32() -> bool:
     return jax.default_backend() == "gpu" and (not bool(jax.config.read("jax_enable_x64")))
 
 
 def _default_constant_kernel_n_quad() -> int:
-    env_value = os.environ.get("JEANSPY_CONSTANT_KERNEL_N_QUAD")
-    if env_value is not None:
-        return int(env_value)
     return 64 if _prefers_gpu_x32() else 32
 
 
 def _default_sigmalos2_n_u() -> int:
-    env_value = os.environ.get("JEANSPY_SIGMALOS2_N_U")
-    if env_value is not None:
-        return int(env_value)
     return 1024 if _prefers_gpu_x32() else 256
 
 
 def _default_sigmalos2_n_r() -> int:
-    env_value = os.environ.get("JEANSPY_SIGMALOS2_N_R")
-    if env_value is not None:
-        return int(env_value)
     return 768
 
 
 def _default_sigmalos2_u_max() -> float:
-    env_value = os.environ.get("JEANSPY_SIGMALOS2_U_MAX")
-    if env_value is not None:
-        return float(env_value)
     return 5000.0 if _prefers_gpu_x32() else 2e3
 
 
-_HYP2F1_BACKEND = os.environ.get("JEANSPY_HYP2F1_BACKEND", "jax").strip().lower()
-_HYP2F1_JAX_METHOD = os.environ.get("JEANSPY_HYP2F1_JAX_METHOD", "auto").strip().lower()
-_HYP2F1_JAX_N_TERMS = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_TERMS", "192"))
-_HYP2F1_JAX_N_QUAD = int(os.environ.get("JEANSPY_HYP2F1_JAX_N_QUAD", "128"))
-_HYP2F1_JAX_QUAD_RULE = os.environ.get("JEANSPY_HYP2F1_JAX_QUAD_RULE", "tanh_sinh").strip().lower()
-_CONSTANT_KERNEL_N_QUAD = _default_constant_kernel_n_quad()
-_SIGMALOS2_BACKEND_DEFAULT = os.environ.get("JEANSPY_SIGMALOS2_BACKEND", "auto").strip().lower()
-_SIGMALOS2_JIT_MODE = os.environ.get("JEANSPY_SIGMALOS2_JIT", "auto").strip().lower()
-_SIGMALOS2_N_U_DEFAULT = _default_sigmalos2_n_u()
-_SIGMALOS2_N_R_DEFAULT = _default_sigmalos2_n_r()
-_SIGMALOS2_U_MAX_DEFAULT = _default_sigmalos2_u_max()
+def _normalize_constant_kernel_backend(backend: str) -> str:
+    backend_key = str(backend).strip().lower()
+    if backend_key not in {"scipy", "jax"}:
+        raise ValueError("constant_kernel_backend must be 'scipy' or 'jax'")
+    return backend_key
 
-if _HYP2F1_BACKEND not in {"scipy", "jax"}:
-    raise ValueError(
-        "JEANSPY_HYP2F1_BACKEND must be one of {'scipy','jax'} "
-        f"but got {_HYP2F1_BACKEND!r}"
-    )
 
-if _HYP2F1_JAX_QUAD_RULE not in {"tanh_sinh", "gauss_kronrod"}:
-    raise ValueError(
-        "JEANSPY_HYP2F1_JAX_QUAD_RULE must be one of {'tanh_sinh','gauss_kronrod'} "
-        f"but got {_HYP2F1_JAX_QUAD_RULE!r}"
-    )
-
-if _SIGMALOS2_BACKEND_DEFAULT not in {"auto", "abel", "kernel"}:
-    raise ValueError(
-        "JEANSPY_SIGMALOS2_BACKEND must be one of {'auto','abel','kernel'} "
-        f"but got {_SIGMALOS2_BACKEND_DEFAULT!r}"
-    )
-
-if _SIGMALOS2_JIT_MODE not in {"auto", "true", "false"}:
-    raise ValueError(
-        "JEANSPY_SIGMALOS2_JIT must be one of {'auto','true','false'} "
-        f"but got {_SIGMALOS2_JIT_MODE!r}"
-    )
+def _resolve_n_kernel(n_kernel: Optional[int], *, default: int) -> int:
+    resolved = default if n_kernel is None else int(n_kernel)
+    if resolved < 8:
+        raise ValueError("n_kernel must be >= 8")
+    return resolved
 
 
 def get_runtime_config() -> Dict[str, Any]:
@@ -106,111 +70,43 @@ def get_runtime_config() -> Dict[str, Any]:
       importing JAX. This helper reports both the requested and active backend.
     - Precision can be toggled at runtime through ``configure_runtime`` for
       future traces/compilations.
+    - Numerical integration choices are per-call options on ``sigmalos2`` and
+      ``ConstantAnisotropyModel.kernel`` rather than process-wide settings.
     """
     return {
         "jax_platform_requested": os.environ.get("JEANSPY_JAX_PLATFORM", os.environ.get("JAX_PLATFORMS", "")),
         "jax_platform_effective_env": os.environ.get("JAX_PLATFORMS", ""),
         "jax_backend_active": jax.default_backend(),
         "jax_enable_x64": bool(jax.config.read("jax_enable_x64")),
-        "hyp2f1_backend": _HYP2F1_BACKEND,
-        "hyp2f1_jax_method": _HYP2F1_JAX_METHOD,
-        "hyp2f1_jax_n_terms": _HYP2F1_JAX_N_TERMS,
-        "hyp2f1_jax_n_quad": _HYP2F1_JAX_N_QUAD,
-        "hyp2f1_jax_quad_rule": _HYP2F1_JAX_QUAD_RULE,
-        "constant_kernel_n_quad": _CONSTANT_KERNEL_N_QUAD,
-        "sigmalos2_backend_default": _SIGMALOS2_BACKEND_DEFAULT,
-        "sigmalos2_jit_default": _SIGMALOS2_JIT_MODE,
-        "sigmalos2_n_u_default": _SIGMALOS2_N_U_DEFAULT,
-        "sigmalos2_n_r_default": _SIGMALOS2_N_R_DEFAULT,
-        "sigmalos2_u_max_default": _SIGMALOS2_U_MAX_DEFAULT,
+        "constant_kernel_backend_default": DEFAULT_CONSTANT_KERNEL_BACKEND,
+        "constant_kernel_n_quad_default": _default_constant_kernel_n_quad(),
+        "sigmalos2_backend_default": DEFAULT_SIGMALOS2_BACKEND,
+        "sigmalos2_jit_default": DEFAULT_SIGMALOS2_JIT,
+        "sigmalos2_n_u_default": _default_sigmalos2_n_u(),
+        "sigmalos2_n_r_default": _default_sigmalos2_n_r(),
+        "sigmalos2_u_max_default": _default_sigmalos2_u_max(),
     }
 
 
 def configure_runtime(
     *,
-    hyp2f1_backend: Optional[str] = None,
-    hyp2f1_jax_method: Optional[str] = None,
-    hyp2f1_jax_quad_rule: Optional[str] = None,
-    sigmalos2_backend: Optional[str] = None,
-    sigmalos2_jit: Optional[Any] = None,
-    sigmalos2_n_u: Optional[int] = None,
-    sigmalos2_n_r: Optional[int] = None,
-    sigmalos2_u_max: Optional[float] = None,
-    constant_kernel_n_quad: Optional[int] = None,
     jax_enable_x64: Optional[bool] = None,
+    **legacy_kwargs: Any,
 ) -> Dict[str, Any]:
-    """Update runtime knobs used by model_numpyro.
+    """Update global runtime knobs used by model_numpyro.
 
-    This is a lightweight convenience layer for interactive use. Device platform
-    selection still needs to be configured before importing JAX, for example via
-    ``JEANSPY_JAX_PLATFORM=cpu`` or ``JAX_PLATFORMS=cpu``.
+    Only JAX precision remains process-wide. Numerical integration choices are
+    passed per call to ``DSphModel.sigmalos2`` or
+    ``ConstantAnisotropyModel.kernel``.
     """
-    global _CONSTANT_KERNEL_N_QUAD
-    global _HYP2F1_BACKEND
-    global _HYP2F1_JAX_METHOD
-    global _HYP2F1_JAX_QUAD_RULE
-    global _SIGMALOS2_BACKEND_DEFAULT
-    global _SIGMALOS2_JIT_MODE
-    global _SIGMALOS2_N_U_DEFAULT
-    global _SIGMALOS2_N_R_DEFAULT
-    global _SIGMALOS2_U_MAX_DEFAULT
-
-    if hyp2f1_backend is not None:
-        backend_key = str(hyp2f1_backend).strip().lower()
-        if backend_key not in {"scipy", "jax"}:
-            raise ValueError("hyp2f1_backend must be 'scipy' or 'jax'")
-        _HYP2F1_BACKEND = backend_key
-
-    if hyp2f1_jax_method is not None:
-        method_key = str(hyp2f1_jax_method).strip().lower()
-        if method_key not in {"auto", "series", "quad", "asymptotic"}:
-            raise ValueError("hyp2f1_jax_method must be one of {'auto','series','quad','asymptotic'}")
-        _HYP2F1_JAX_METHOD = method_key
-
-    if hyp2f1_jax_quad_rule is not None:
-        quad_rule_key = str(hyp2f1_jax_quad_rule).strip().lower()
-        if quad_rule_key not in {"tanh_sinh", "gauss_kronrod"}:
-            raise ValueError("hyp2f1_jax_quad_rule must be 'tanh_sinh' or 'gauss_kronrod'")
-        _HYP2F1_JAX_QUAD_RULE = quad_rule_key
-
-    if sigmalos2_backend is not None:
-        sig_backend_key = str(sigmalos2_backend).strip().lower()
-        if sig_backend_key not in {"auto", "abel", "kernel"}:
-            raise ValueError("sigmalos2_backend must be one of {'auto','abel','kernel'}")
-        _SIGMALOS2_BACKEND_DEFAULT = sig_backend_key
-
-    if sigmalos2_jit is not None:
-        if isinstance(sigmalos2_jit, str):
-            jit_key = sigmalos2_jit.strip().lower()
-            if jit_key not in {"auto", "true", "false"}:
-                raise ValueError("sigmalos2_jit must be one of {'auto','true','false'} or a bool")
-            _SIGMALOS2_JIT_MODE = jit_key
-        else:
-            _SIGMALOS2_JIT_MODE = "true" if bool(sigmalos2_jit) else "false"
-
-    if constant_kernel_n_quad is not None:
-        n_quad_value = int(constant_kernel_n_quad)
-        if n_quad_value < 8:
-            raise ValueError("constant_kernel_n_quad must be >= 8")
-        _CONSTANT_KERNEL_N_QUAD = n_quad_value
-
-    if sigmalos2_n_u is not None:
-        n_u_value = int(sigmalos2_n_u)
-        if n_u_value < 3:
-            raise ValueError("sigmalos2_n_u must be >= 3")
-        _SIGMALOS2_N_U_DEFAULT = n_u_value
-
-    if sigmalos2_n_r is not None:
-        n_r_value = int(sigmalos2_n_r)
-        if n_r_value < 4:
-            raise ValueError("sigmalos2_n_r must be >= 4")
-        _SIGMALOS2_N_R_DEFAULT = n_r_value
-
-    if sigmalos2_u_max is not None:
-        u_max_value = float(sigmalos2_u_max)
-        if u_max_value <= 1.0:
-            raise ValueError("sigmalos2_u_max must be > 1")
-        _SIGMALOS2_U_MAX_DEFAULT = u_max_value
+    if legacy_kwargs:
+        unsupported = ", ".join(sorted(legacy_kwargs))
+        raise TypeError(
+            "Numerical runtime options are now per-call arguments. "
+            "Pass backend/n_kernel to ConstantAnisotropyModel.kernel() and "
+            "backend/jit/n_u/n_r/u_max/constant_kernel_backend/n_kernel to "
+            f"DSphModel.sigmalos2(). Unsupported configure_runtime keys: {unsupported}."
+        )
 
     if jax_enable_x64 is not None:
         jax.config.update("jax_enable_x64", bool(jax_enable_x64))
@@ -266,34 +162,6 @@ def _hyp2f1_1_b_3half_from_u_scipy(u: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarra
             return _scipy_hyp2f1(1.0, b_val, 1.5, z_arr).astype(_np.asarray(u_np).dtype, copy=False)
 
         return jax.pure_callback(_cb, out_spec, u, b, vmap_method="sequential")
-
-
-def _hyp2f1_1_b_3half_jax(z: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarray:
-        """Compute hyp2f1(1, b; 3/2; z) using jeanspy JAX implementation."""
-        z = jnp.asarray(z)
-        b = jnp.asarray(b)
-        return hyp2f1_1b_3half(
-            b,
-            z,
-            method=_HYP2F1_JAX_METHOD,
-            n_terms=_HYP2F1_JAX_N_TERMS,
-            n_quad=_HYP2F1_JAX_N_QUAD,
-            quad_rule=_HYP2F1_JAX_QUAD_RULE,
-        )
-
-
-def _hyp2f1_1_b_3half(z: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarray:
-        z = jnp.asarray(z)
-        # Physical domain is z in [0, 1). For very large u in float32,
-        # z=1-1/u^2 can round to exactly 1 and spuriously diverge.
-        one = jnp.asarray(1.0, dtype=z.dtype)
-        zero = jnp.asarray(0.0, dtype=z.dtype)
-        z_upper = jnp.nextafter(one, zero)
-        z = jnp.clip(z, zero, z_upper)
-
-        if _HYP2F1_BACKEND == "jax":
-            return _hyp2f1_1_b_3half_jax(z, b)
-        return _hyp2f1_1_b_3half_scipy(z, b)
 
 
 @partial(jax.jit, static_argnames=("n_terms_regular",))
@@ -357,7 +225,7 @@ def _constant_kernel_jax_backend(
     u: jnp.ndarray,
     beta_ani: jnp.ndarray,
     *,
-    n_kernel: int = _CONSTANT_KERNEL_N_QUAD,
+    n_kernel: int,
 ) -> jnp.ndarray:
         """Fast JAX-path constant-anisotropy kernel.
 
@@ -956,7 +824,15 @@ class ConstantAnisotropyModel(AnisotropyModel):
         r = jnp.asarray(r_pc)
         return r ** (2.0 * beta_ani)
 
-    def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def kernel(
+        self,
+        u: jnp.ndarray,
+        R_pc: jnp.ndarray,
+        *,
+        params: Mapping[str, Any],
+        backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
+        n_kernel: Optional[int] = None,
+    ) -> jnp.ndarray:
         r"""LOSVD kernel K(u) for constant anisotropy.
 
         Uses the transformed hypergeometric representation
@@ -972,8 +848,14 @@ class ConstantAnisotropyModel(AnisotropyModel):
             Dimensionless radius ratio u=r/R (typically u>1).
         R_pc:
             Kept for API compatibility; K(u) is independent of R in this model.
+        backend:
+            ``'jax'`` uses the direct JAX quadrature kernel. ``'scipy'`` uses the
+            SciPy hypergeometric formulation.
+        n_kernel:
+            Quadrature order for the direct JAX kernel backend.
         """
         beta_ani = jnp.asarray(params["beta_ani"])
+        backend_key = _normalize_constant_kernel_backend(backend)
 
         # The original expression (as in model.py) uses
         #   hyp2f1(1, 1.5-beta, 1.5, 1-u^2)
@@ -984,8 +866,9 @@ class ConstantAnisotropyModel(AnisotropyModel):
         #   2F1(a,b;c;z) = (1-z)^(-a) * 2F1(a, c-b; c; z/(z-1))
         # with a=1, b=1.5-beta, c=1.5, z=1-u^2.
         # Then (1-z)=u^2 and z/(z-1)=1-1/u^2 in (0,1) for u>1.
-        if _HYP2F1_BACKEND == "jax":
-            return _constant_kernel_jax_backend(jnp.asarray(u), beta_ani, n_kernel=_CONSTANT_KERNEL_N_QUAD)
+        if backend_key == "jax":
+            resolved_n_kernel = _resolve_n_kernel(n_kernel, default=_default_constant_kernel_n_quad())
+            return _constant_kernel_jax_backend(jnp.asarray(u), beta_ani, n_kernel=resolved_n_kernel)
 
         u_arr = jnp.asarray(u)
         dtype = jnp.result_type(u_arr, beta_ani)
@@ -1157,6 +1040,8 @@ class DSphModel(Model):
         params: Mapping[str, Any],
         n_u: Optional[int] = None,
         u_max: Optional[float] = None,
+        n_kernel: Optional[int] = None,
+        constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
         use_analytic_dm: bool = True,
     ) -> jnp.ndarray:
@@ -1169,8 +1054,8 @@ class DSphModel(Model):
 
         consistent with the kernel normalization used in `model.py` and the note.
         """
-        resolved_n_u = _SIGMALOS2_N_U_DEFAULT if n_u is None else int(n_u)
-        resolved_u_max = _SIGMALOS2_U_MAX_DEFAULT if u_max is None else float(u_max)
+        resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
+        resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
         R = jnp.atleast_1d(jnp.asarray(R_pc))
 
         # Integration grid in log(u)
@@ -1194,7 +1079,15 @@ class DSphModel(Model):
         else:
             M = dm.enclosed_mass(r, method="numeric", params=params)
 
-        K = ani.kernel(u2d, R2d, params=params)
+        kernel_kwargs: Dict[str, Any] = {}
+        if isinstance(ani, ConstantAnisotropyModel):
+            kernel_kwargs["backend"] = _normalize_constant_kernel_backend(constant_kernel_backend)
+            if n_kernel is not None and kernel_kwargs["backend"] == "jax":
+                kernel_kwargs["n_kernel"] = _resolve_n_kernel(n_kernel, default=_default_constant_kernel_n_quad())
+        elif isinstance(ani, BaesAnisotropyModel) and n_kernel is not None:
+            kernel_kwargs["n_kernel"] = _resolve_n_kernel(n_kernel, default=DEFAULT_BAES_KERNEL_N_QUAD)
+
+        K = ani.kernel(u2d, R2d, params=params, **kernel_kwargs)
 
         # Following the structure in the original model.py (unit-carrying constants kept)
         integrand_u = (
@@ -1230,8 +1123,8 @@ class DSphModel(Model):
         r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms."""
         R = jnp.atleast_1d(jnp.asarray(R_pc))
         dtype = R.dtype
-        resolved_n_r = _SIGMALOS2_N_R_DEFAULT if n_r is None else int(n_r)
-        resolved_u_max = _SIGMALOS2_U_MAX_DEFAULT if u_max is None else float(u_max)
+        resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
+        resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
 
         stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
@@ -1282,7 +1175,9 @@ class DSphModel(Model):
         jit: Optional[bool] = None,
         n_u: Optional[int] = None,
         n_r: Optional[int] = None,
+        n_kernel: Optional[int] = None,
         u_max: Optional[float] = None,
+        constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
         r_min_factor: float = 0.5,
         use_analytic_dm: bool = True,
@@ -1294,34 +1189,28 @@ class DSphModel(Model):
         Baes --> Abel, constant/Osipkov-Merritt --> kernel (see benchmarks).
 
         ``jit`` controls whether a cached ``jax.jit`` wrapper is used around the
-        selected solver.  ``None`` follows ``JEANSPY_SIGMALOS2_JIT`` and defaults
-        to the cached JIT path.
+        selected solver. ``None`` defaults to the cached JIT path.
         """
         backend_key = str(backend).strip().lower()
+        ani = self.submodels["AnisotropyModel"]  # type: ignore[index]
         if backend_key in ("auto", ""):
-            if _SIGMALOS2_BACKEND_DEFAULT != "auto":
-                backend_key = _SIGMALOS2_BACKEND_DEFAULT
+            if isinstance(ani, BaesAnisotropyModel):
+                backend_key = "abel"
+            elif isinstance(ani, (ConstantAnisotropyModel, OsipkovMerrittModel)):
+                backend_key = "kernel"
             else:
-                # choose sensible defaults based on the anisotropy subclass
-                ani = self.submodels["AnisotropyModel"]  # type: ignore[index]
-                if isinstance(ani, BaesAnisotropyModel):
-                    backend_key = "abel"
-                elif isinstance(ani, (ConstantAnisotropyModel, OsipkovMerrittModel)):
-                    backend_key = "kernel"
-                else:
-                    # unknown anisotropy: prefer the more general Abel solver
-                    backend_key = "abel"
+                backend_key = "abel"
 
         if backend_key not in {"abel", "kernel"}:
             raise ValueError(f"backend must be 'abel','kernel' or 'auto', got {backend!r}")
 
-        use_jit = _SIGMALOS2_JIT_MODE == "auto" if jit is None else bool(jit)
-        if jit is None and _SIGMALOS2_JIT_MODE in {"true", "false"}:
-            use_jit = _SIGMALOS2_JIT_MODE == "true"
+        use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)
 
-        resolved_n_u = _SIGMALOS2_N_U_DEFAULT if n_u is None else int(n_u)
-        resolved_n_r = _SIGMALOS2_N_R_DEFAULT if n_r is None else int(n_r)
-        resolved_u_max = _SIGMALOS2_U_MAX_DEFAULT if u_max is None else float(u_max)
+        resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
+        resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
+        resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
+        resolved_n_kernel = None if n_kernel is None else _resolve_n_kernel(n_kernel, default=DEFAULT_BAES_KERNEL_N_QUAD)
+        constant_kernel_backend_key = _normalize_constant_kernel_backend(constant_kernel_backend)
 
         def _eval(R_value: jnp.ndarray, params_value: Mapping[str, Any]) -> jnp.ndarray:
             if backend_key == "abel":
@@ -1337,7 +1226,9 @@ class DSphModel(Model):
                 R_value,
                 params=params_value,
                 n_u=resolved_n_u,
+                n_kernel=resolved_n_kernel,
                 u_max=resolved_u_max,
+                constant_kernel_backend=constant_kernel_backend_key,
                 u_min_eps=u_min_eps,
                 use_analytic_dm=use_analytic_dm,
             )
@@ -1345,25 +1236,18 @@ class DSphModel(Model):
         if not use_jit:
             return _eval(R_pc, params)
 
-        runtime_signature = (
-            _HYP2F1_BACKEND,
-            _HYP2F1_JAX_METHOD,
-            _HYP2F1_JAX_N_TERMS,
-            _HYP2F1_JAX_N_QUAD,
-            _HYP2F1_JAX_QUAD_RULE,
-            _CONSTANT_KERNEL_N_QUAD,
-            bool(jax.config.read("jax_enable_x64")),
-            jax.default_backend(),
-        )
         cache_key = (
             backend_key,
             resolved_n_u,
             resolved_n_r,
+            resolved_n_kernel,
             resolved_u_max,
+            constant_kernel_backend_key,
             float(u_min_eps),
             float(r_min_factor),
             bool(use_analytic_dm),
-            runtime_signature,
+            bool(jax.config.read("jax_enable_x64")),
+            jax.default_backend(),
         )
         compiled = self._jit_cache.get(cache_key)
         if compiled is None:

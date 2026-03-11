@@ -2,13 +2,11 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from unittest.mock import patch
 
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
 
-import jeanspy.model_numpyro as model_numpyro_mod
 from jeanspy.model_numpyro import ConstantAnisotropyModel
 
 
@@ -26,11 +24,8 @@ def main() -> None:
     u = jnp.asarray(u_np, dtype=jnp.float32)
     r_dummy = jnp.asarray(args.r, dtype=jnp.float32)
 
-    with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", "scipy"):
-        k_scipy = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": args.beta}))
-
-    with patch.object(model_numpyro_mod, "_HYP2F1_BACKEND", "jax"):
-        k_jax = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": args.beta}))
+    k_scipy = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": args.beta}, backend="scipy"))
+    k_jax = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": args.beta}, backend="jax"))
 
     rel = np.abs(k_jax - k_scipy) / (np.abs(k_scipy) + 1e-30)
 

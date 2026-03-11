@@ -72,37 +72,48 @@ sampler = jpy.sampler.Sampler(mdl)
 
 ## JAX Runtime Configuration
 
-The NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) can be configured through a small set of environment variables before import:
+The NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) keeps only process-wide JAX settings in environment variables before import:
 
 - `JEANSPY_JAX_PLATFORM=cpu|gpu`: request the JAX platform. On CUDA installs, `gpu` is mapped to JAX's `cuda` backend automatically.
-- `JEANSPY_JAX_ENABLE_X64=true|false`: choose float64 or float32 execution.
-- `JEANSPY_HYP2F1_BACKEND=scipy|jax`: choose the constant-anisotropy kernel backend.
-- `JEANSPY_CONSTANT_KERNEL_N_QUAD=<int>`: override the constant-anisotropy kernel quadrature order.
-- `JEANSPY_SIGMALOS2_BACKEND=auto|kernel|abel`: choose the default `sigmalos2` solver.
-- `JEANSPY_SIGMALOS2_JIT=auto|true|false`: control the cached `jax.jit` wrapper around `sigmalos2`.
-- `JEANSPY_SIGMALOS2_N_U=<int>`: override the kernel-solver log-`u` grid size.
-- `JEANSPY_SIGMALOS2_N_R=<int>`: override the Abel-solver radial grid size.
-- `JEANSPY_SIGMALOS2_U_MAX=<float>`: override the default outer integration limit.
+- `JAX_ENABLE_X64=true|false`: choose float64 or float32 execution.
 
-On GPU float32, `model_numpyro` now defaults to `sigmalos2_n_u=1024` for the kernel solver. That keeps the grid much smaller than the previous development setting while still staying in the sub-`1e-3` relative-error range on the representative constant-anisotropy benchmark cases used during development. If you need tighter agreement with the high-resolution reference, raise `JEANSPY_SIGMALOS2_N_U` explicitly.
-
-For interactive sessions, the same module exposes lightweight runtime helpers:
+The numerical knobs that only affect a specific solver call are now explicit method arguments instead of environment variables. For example:
 
 ```python
-from jeanspy.model_numpyro import configure_runtime, get_runtime_config
+from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
 
-configure_runtime(
-    hyp2f1_backend="jax",
-    sigmalos2_backend="kernel",
-    sigmalos2_jit=True,
-    sigmalos2_n_u=1024,
-    sigmalos2_u_max=5000.0,
-    constant_kernel_n_quad=64,
-    jax_enable_x64=False,
+dsph = DSphModel(
+    submodels={
+        "StellarModel": PlummerModel(),
+        "DMModel": NFWModel(),
+        "AnisotropyModel": ConstantAnisotropyModel(),
+    }
 )
 
-print(get_runtime_config())
+sigma2 = dsph.sigmalos2(
+    R_pc,
+    params=params,
+    backend="kernel",
+    jit=True,
+    n_u=1024,
+    u_max=5000.0,
+    constant_kernel_backend="jax",
+    n_kernel=64,
+)
 ```
+
+For direct constant-anisotropy kernel comparisons, choose the backend per call:
+
+```python
+kernel = ConstantAnisotropyModel().kernel(
+    u,
+    R_pc,
+    params={"beta_ani": 0.5},
+    backend="scipy",
+)
+```
+
+On GPU float32, `model_numpyro` defaults to `n_u=1024` for the kernel solver. That keeps the grid much smaller than the previous development setting while still staying in the sub-`1e-3` relative-error range on the representative constant-anisotropy benchmark cases used during development. If you need tighter agreement with the high-resolution reference, raise `n_u` explicitly on the relevant `sigmalos2()` call.
 
 To reproduce the backend and precision comparison used during development, run:
 

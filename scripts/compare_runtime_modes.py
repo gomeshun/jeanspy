@@ -12,24 +12,32 @@ from typing import Any, cast
 
 MODES = {
     "scipy": {
-        "JEANSPY_HYP2F1_BACKEND": "scipy",
-        "JEANSPY_JAX_PLATFORM": "cpu",
-        "JEANSPY_JAX_ENABLE_X64": "true",
+        "constant_kernel_backend": "scipy",
+        "env": {
+            "JEANSPY_JAX_PLATFORM": "cpu",
+            "JAX_ENABLE_X64": "true",
+        },
     },
     "jax-cpu": {
-        "JEANSPY_HYP2F1_BACKEND": "jax",
-        "JEANSPY_JAX_PLATFORM": "cpu",
-        "JEANSPY_JAX_ENABLE_X64": "false",
+        "constant_kernel_backend": "jax",
+        "env": {
+            "JEANSPY_JAX_PLATFORM": "cpu",
+            "JAX_ENABLE_X64": "false",
+        },
     },
     "jax-gpu-x32": {
-        "JEANSPY_HYP2F1_BACKEND": "jax",
-        "JEANSPY_JAX_PLATFORM": "gpu",
-        "JEANSPY_JAX_ENABLE_X64": "false",
+        "constant_kernel_backend": "jax",
+        "env": {
+            "JEANSPY_JAX_PLATFORM": "gpu",
+            "JAX_ENABLE_X64": "false",
+        },
     },
     "jax-gpu-x64": {
-        "JEANSPY_HYP2F1_BACKEND": "jax",
-        "JEANSPY_JAX_PLATFORM": "gpu",
-        "JEANSPY_JAX_ENABLE_X64": "true",
+        "constant_kernel_backend": "jax",
+        "env": {
+            "JEANSPY_JAX_PLATFORM": "gpu",
+            "JAX_ENABLE_X64": "true",
+        },
     },
 }
 
@@ -43,11 +51,10 @@ def _median(values: list[float]) -> float:
 
 
 def _worker(mode_name: str) -> None:
+    mode = MODES[mode_name]
     if "JEANSPY_JAX_PLATFORM" in os.environ:
         requested_platform = os.environ["JEANSPY_JAX_PLATFORM"].strip().lower()
         os.environ["JAX_PLATFORMS"] = "cuda" if requested_platform == "gpu" else requested_platform
-    if "JEANSPY_JAX_ENABLE_X64" in os.environ:
-        os.environ["JAX_ENABLE_X64"] = os.environ["JEANSPY_JAX_ENABLE_X64"]
 
     import numpy as np
     import jax
@@ -131,7 +138,12 @@ def _worker(mode_name: str) -> None:
             legacy_const = legacy_mod.ConstantAnisotropyModel(beta_ani=float(beta))
             ref = np.asarray(legacy_const.kernel(u_legacy, R_legacy), dtype=np.float64).reshape(-1)
             got = np.asarray(
-                new_const.kernel(u_jax, R_jax, params={"beta_ani": u_jax.dtype.type(beta)}),
+                new_const.kernel(
+                    u_jax,
+                    R_jax,
+                    params={"beta_ani": u_jax.dtype.type(beta)},
+                    backend=str(mode["constant_kernel_backend"]),
+                ),
                 dtype=np.float64,
             ).reshape(-1)
             rel = np.max(np.abs(got - ref) / (np.abs(ref) + 1e-300))
@@ -159,22 +171,50 @@ def _worker(mode_name: str) -> None:
         r_pc_jax = jnp.asarray(R_pc, dtype=dtype)
         if n_u is None and u_max is None:
             got = np.asarray(
-                new_dsph.sigmalos2(r_pc_jax, params=params_jax, backend="kernel", jit=True),
+                new_dsph.sigmalos2(
+                    r_pc_jax,
+                    params=params_jax,
+                    backend="kernel",
+                    jit=True,
+                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                ),
                 dtype=np.float64,
             )
         elif n_u is None:
             got = np.asarray(
-                new_dsph.sigmalos2(r_pc_jax, params=params_jax, backend="kernel", jit=True, u_max=u_max),
+                new_dsph.sigmalos2(
+                    r_pc_jax,
+                    params=params_jax,
+                    backend="kernel",
+                    jit=True,
+                    u_max=u_max,
+                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                ),
                 dtype=np.float64,
             )
         elif u_max is None:
             got = np.asarray(
-                new_dsph.sigmalos2(r_pc_jax, params=params_jax, backend="kernel", jit=True, n_u=n_u),
+                new_dsph.sigmalos2(
+                    r_pc_jax,
+                    params=params_jax,
+                    backend="kernel",
+                    jit=True,
+                    n_u=n_u,
+                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                ),
                 dtype=np.float64,
             )
         else:
             got = np.asarray(
-                new_dsph.sigmalos2(r_pc_jax, params=params_jax, backend="kernel", jit=True, n_u=n_u, u_max=u_max),
+                new_dsph.sigmalos2(
+                    r_pc_jax,
+                    params=params_jax,
+                    backend="kernel",
+                    jit=True,
+                    n_u=n_u,
+                    u_max=u_max,
+                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                ),
                 dtype=np.float64,
             )
         return float(np.max(np.abs(got - ref) / (np.abs(ref) + 1e-300)))
@@ -215,13 +255,31 @@ def _worker(mode_name: str) -> None:
     legacy_kernel_fn = lambda: legacy_dsph["AnisotropyModel"].kernel(u_kernel_legacy, R_kernel_legacy)
     legacy_sig_fn = lambda: legacy_dsph.sigmalos2_dequad(R_sig_np, n=1024, n_kernel=128)
     new_kernel_model = cast(Any, new_dsph.submodels["AnisotropyModel"])
-    new_kernel_fn = lambda: new_kernel_model.kernel(u_kernel_jax, R_kernel_jax, params=params_jax)
-    new_sig_eager = lambda: new_dsph.sigmalos2(R_sig_jax, params=params_jax, backend="kernel", jit=False)
-    new_sig_jit = lambda: new_dsph.sigmalos2(R_sig_jax, params=params_jax, backend="kernel", jit=True)
+    new_kernel_fn = lambda: new_kernel_model.kernel(
+        u_kernel_jax,
+        R_kernel_jax,
+        params=params_jax,
+        backend=str(mode["constant_kernel_backend"]),
+    )
+    new_sig_eager = lambda: new_dsph.sigmalos2(
+        R_sig_jax,
+        params=params_jax,
+        backend="kernel",
+        jit=False,
+        constant_kernel_backend=str(mode["constant_kernel_backend"]),
+    )
+    new_sig_jit = lambda: new_dsph.sigmalos2(
+        R_sig_jax,
+        params=params_jax,
+        backend="kernel",
+        jit=True,
+        constant_kernel_backend=str(mode["constant_kernel_backend"]),
+    )
 
     result = {
         "mode": mode_name,
-        "requested_env": MODES[mode_name],
+        "requested_env": mode["env"],
+        "constant_kernel_backend": mode["constant_kernel_backend"],
         "runtime": new_mod.get_runtime_config(),
         "accuracy": {
             "kernel_wide_beta_max_rel": kernel_accuracy_wide_beta(),
@@ -260,7 +318,7 @@ def _worker(mode_name: str) -> None:
 
 def _launch_worker(mode_name: str) -> dict[str, object]:
     env = os.environ.copy()
-    env.update(MODES[mode_name])
+    env.update(cast(dict[str, str], MODES[mode_name]["env"]))
     env.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")
     repo_root = Path(__file__).resolve().parents[1]
     proc = subprocess.run(

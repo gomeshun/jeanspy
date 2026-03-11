@@ -2,18 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-# IMPORTANT: these env vars must be set before importing JAX.
-import os
+from ._jax_env import configure_jax_environment
 
-_jeanspy_jax_platform = os.environ.get("JEANSPY_JAX_PLATFORM", "").strip().lower()
-if _jeanspy_jax_platform:
-    mapped_platform = "cuda" if _jeanspy_jax_platform == "gpu" else _jeanspy_jax_platform
-    os.environ.setdefault("JAX_PLATFORMS", mapped_platform)
-os.environ.setdefault("JAX_ENABLE_X64", os.environ.get("JEANSPY_JAX_ENABLE_X64", "false"))
-os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")
-# A small default safety fraction; users can override via env.
-os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.75")
-os.environ.setdefault("XLA_PYTHON_CLIENT_ALLOCATOR", "platform")
+configure_jax_environment()
 
 import numpy as np
 import jax

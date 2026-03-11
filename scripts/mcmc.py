@@ -10,10 +10,7 @@ import numpyro.distributions as dist
 print("JAX devices:", jax.devices())
 import matplotlib.pyplot as plt
 import arviz as az
-import jeanspy.model_numpyro as model_numpyro
 from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
-
-model_numpyro._HYP2F1_BACKEND = "jax"
 
 key = jax.random.PRNGKey(123)
 
@@ -36,7 +33,7 @@ dsph = DSphModel(submodels={"StellarModel": stellar, "DMModel": dm, "AnisotropyM
 
 @jax.jit
 def sigmalos2(R_pc, params):
-    return dsph.sigmalos2(R_pc, params=params, n_u=192, u_max=1500.0)
+    return dsph.sigmalos2(R_pc, params=params, n_u=192, u_max=1500.0, constant_kernel_backend="jax")
 
 
 # Generate mock data
