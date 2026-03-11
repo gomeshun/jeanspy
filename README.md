@@ -70,6 +70,46 @@ mdl = jpy.model.get_default_estimation_model(
 sampler = jpy.sampler.Sampler(mdl)
 ```
 
+## JAX Runtime Configuration
+
+The NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) can be configured through a small set of environment variables before import:
+
+- `JEANSPY_JAX_PLATFORM=cpu|gpu`: request the JAX platform. On CUDA installs, `gpu` is mapped to JAX's `cuda` backend automatically.
+- `JEANSPY_JAX_ENABLE_X64=true|false`: choose float64 or float32 execution.
+- `JEANSPY_HYP2F1_BACKEND=scipy|jax`: choose the constant-anisotropy kernel backend.
+- `JEANSPY_CONSTANT_KERNEL_N_QUAD=<int>`: override the constant-anisotropy kernel quadrature order.
+- `JEANSPY_SIGMALOS2_BACKEND=auto|kernel|abel`: choose the default `sigmalos2` solver.
+- `JEANSPY_SIGMALOS2_JIT=auto|true|false`: control the cached `jax.jit` wrapper around `sigmalos2`.
+- `JEANSPY_SIGMALOS2_N_U=<int>`: override the kernel-solver log-`u` grid size.
+- `JEANSPY_SIGMALOS2_N_R=<int>`: override the Abel-solver radial grid size.
+- `JEANSPY_SIGMALOS2_U_MAX=<float>`: override the default outer integration limit.
+
+On GPU float32, `model_numpyro` now chooses more aggressive defaults automatically for the constant-anisotropy path so that the hot JIT-compiled solver stays faster than `model.py` while landing near the `1e-5` relative-accuracy range on the benchmark cases used during development.
+
+For interactive sessions, the same module exposes lightweight runtime helpers:
+
+```python
+from jeanspy.model_numpyro import configure_runtime, get_runtime_config
+
+configure_runtime(
+    hyp2f1_backend="jax",
+    sigmalos2_backend="kernel",
+    sigmalos2_jit=True,
+    sigmalos2_n_u=12289,
+    sigmalos2_u_max=5000.0,
+    constant_kernel_n_quad=64,
+    jax_enable_x64=False,
+)
+
+print(get_runtime_config())
+```
+
+To reproduce the backend and precision comparison used during development, run:
+
+```bash
+python scripts/compare_runtime_modes.py
+```
+
 ## License
 
 JeansPy is distributed under the terms of the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
