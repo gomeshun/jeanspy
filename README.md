@@ -2,8 +2,9 @@
 JeansPy is a Python library for the Jeans analysis. This library is designed to help researchers and astrophysicists analyze and understand the dynamics of a given system.
 
 ## Features
-- Calculation of velocity dispersion profile using Jeans equations
-- Visualization of the results using Matplotlib
+- Calculation of velocity dispersion profiles using the Jeans equations
+- NumPyro/JAX-based inference workflows
+- Visualization of results with Matplotlib and ArviZ
 
 ## Installation
 
@@ -14,6 +15,8 @@ uv sync
 ```
 
 This repository treats `pyproject.toml` as the authoritative environment definition. The command above creates `.venv`, installs the package in editable mode, and resolves the full development and inference stack into `uv.lock`.
+
+The current dependency set targets Python 3.12 or newer because the ArviZ 1.x `DataTree` API used by `sampler_numpyro` is resolved here against Python 3.12+.
 
 If you need to refresh the environment after changing dependencies, run:
 
@@ -37,6 +40,27 @@ The repository follows a standard `src` layout:
 - `scripts/`: standalone analysis and plotting scripts
 - `notebooks/`: exploratory notebooks
 - `examples/`: sample inputs and example notebooks
+
+
+## ArviZ I/O Backends
+
+This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. ArviZ 1.x no longer ships every optional I/O backend by default, so the project depends on:
+
+- `zarr`
+- `h5netcdf` and `h5py`
+- `netCDF4`
+
+
+The ArviZ docs show these as extras, but for this project they are declared as direct dependencies in `pyproject.toml`. That avoids resolver issues across the full supported environment matrix while still ensuring `uv sync` or `pip install -r requirements.txt` installs all three backends automatically.
+
+Backend guidance for `jeanspy.sampler_numpyro.NumPyroSampler`:
+
+- `zarr`: best default for iterative NumPyro runs. It is chunked, append-friendly, and a natural fit for repeated save/load workflows.
+- `h5netcdf`: best single-file alternative when you want HDF5/NetCDF storage with a Python-first stack.
+- `netcdf4`: best when compatibility with external NetCDF tooling matters most.
+
+
+`NumPyroSampler` defaults to `storage_backend="zarr"`, while still allowing `storage_backend="h5netcdf"` or `storage_backend="netcdf4"`.
 
 ## Build And Publish
 
@@ -74,8 +98,6 @@ sampler = jpy.sampler.Sampler(mdl)
 
 The NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) keeps only process-wide JAX settings in environment variables before import:
 
-- `JEANSPY_JAX_PLATFORM=cpu|gpu`: request the JAX platform. On CUDA installs, `gpu` is mapped to JAX's `cuda` backend automatically.
-- `JAX_ENABLE_X64=true|false`: choose float64 or float32 execution.
 
 The numerical knobs that only affect a specific solver call are now explicit method arguments instead of environment variables. For example:
 

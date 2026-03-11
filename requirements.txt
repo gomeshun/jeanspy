@@ -11,7 +11,12 @@ emcee
 # pytorch-lightning < 2.0.0
 # torch-tb-profiler
 
-arviz
+arviz>=1.0.0
+ipykernel
+h5netcdf
+h5py
+netCDF4
+zarr
 
 jax[cuda12]
 numpyro[cuda12]

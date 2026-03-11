@@ -10,7 +10,7 @@ readme = "README.md"
 authors = [{name="Shunichi Horigome"}]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.4.2",
     "pandas>=2.3.3",
@@ -20,7 +20,12 @@ dependencies = [
     "pytest>=9.0.2",
     "astropy>=7.1.0",
     "emcee>=3.1.6",
-    "arviz>=0.22.0",
+    "arviz>=1.0.0",
+    "ipykernel",
+    "h5netcdf",
+    "h5py",
+    "netCDF4",
+    "zarr",
     "jax[cuda12]>=0.6.2",
     "numpyro[cuda12]>=0.18.0",
 ]
