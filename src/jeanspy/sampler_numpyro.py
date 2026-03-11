@@ -70,6 +70,10 @@ def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _pow10(value: Any) -> Any:
+    return jnp.power(10.0, value)
+
+
 def _normalize_storage_backend(storage_backend: str) -> StorageBackend:
     normalized = str(storage_backend).strip().lower()
     if normalized not in _STORAGE_CONFIGS:
@@ -156,6 +160,24 @@ class ParameterSpec:
             distribution=distribution,
             param_name=param_name,
             transform=jnp.exp,
+            record_deterministic=True,
+            deterministic_name=deterministic_name,
+        )
+
+    @classmethod
+    def pow10(
+        cls,
+        sample_name: str,
+        distribution: Any,
+        *,
+        param_name: str | None = None,
+        deterministic_name: str | None = None,
+    ) -> "ParameterSpec":
+        return cls(
+            sample_name=sample_name,
+            distribution=distribution,
+            param_name=param_name,
+            transform=_pow10,
             record_deterministic=True,
             deterministic_name=deterministic_name,
         )

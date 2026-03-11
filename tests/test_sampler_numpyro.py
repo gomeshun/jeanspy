@@ -23,6 +23,19 @@ def _simple_normal_model(y=None):
     numpyro.sample("obs", dist.Normal(x, 1.0), obs=y)
 
 
+def test_parameter_spec_pow10_records_base10_transformed_value():
+    parameter_spec = ParameterSpec.pow10("log_rs", dist.Delta(jnp.array(3.0)), param_name="rs_pc")
+
+    def _model():
+        parameter_spec.sample()
+
+    model_trace = trace(seed(_model, jax.random.PRNGKey(0))).get_trace()
+
+    assert model_trace["log_rs"]["type"] == "sample"
+    assert model_trace["rs_pc"]["type"] == "deterministic"
+    assert float(model_trace["rs_pc"]["value"]) == pytest.approx(1000.0)
+
+
 def _require_storage_backend(backend: str):
     package_name = {
         "zarr": "zarr",
