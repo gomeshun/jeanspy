@@ -8,9 +8,11 @@ __all__ = [
     "coord",
     "dequad",
     "model",
+    "model_numpyro",
     "jfactor",
     "polygon",
     "sampler",
+    "sampler_numpyro",
     "swyft_legacy",
     "cmd_utilities",
 ]
