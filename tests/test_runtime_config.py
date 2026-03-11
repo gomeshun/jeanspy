@@ -10,48 +10,25 @@ from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, NFWModel, 
 
 class TestRuntimeConfig(unittest.TestCase):
     def test_default_sigmalos2_n_u_gpu_x32(self):
-        with mock.patch.dict(model_numpyro_mod.os.environ, {}, clear=False):
-            model_numpyro_mod.os.environ.pop("JEANSPY_SIGMALOS2_N_U", None)
+        with mock.patch.object(model_numpyro_mod, "_prefers_gpu_x32", return_value=True):
+            self.assertEqual(model_numpyro_mod._default_sigmalos2_n_u(), 1024)
+
+    def test_default_sigmalos2_n_u_has_no_env_override(self):
+        with mock.patch.dict(model_numpyro_mod.os.environ, {"JEANSPY_SIGMALOS2_N_U": "777"}, clear=False):
             with mock.patch.object(model_numpyro_mod, "_prefers_gpu_x32", return_value=True):
                 self.assertEqual(model_numpyro_mod._default_sigmalos2_n_u(), 1024)
 
-    def test_default_sigmalos2_n_u_respects_env_override(self):
-        with mock.patch.dict(model_numpyro_mod.os.environ, {"JEANSPY_SIGMALOS2_N_U": "777"}, clear=False):
-            with mock.patch.object(model_numpyro_mod, "_prefers_gpu_x32", return_value=True):
-                self.assertEqual(model_numpyro_mod._default_sigmalos2_n_u(), 777)
-
-    def test_configure_runtime_round_trip(self):
-        original = model_numpyro_mod.get_runtime_config()
+    def test_configure_runtime_updates_jax_precision_only(self):
+        original = bool(model_numpyro_mod.jax.config.read("jax_enable_x64"))
         try:
-            updated = model_numpyro_mod.configure_runtime(
-                hyp2f1_backend="scipy",
-                sigmalos2_backend="kernel",
-                sigmalos2_jit=False,
-                sigmalos2_n_u=4097,
-                sigmalos2_n_r=640,
-                sigmalos2_u_max=4096.0,
-                constant_kernel_n_quad=24,
-            )
-            self.assertEqual(updated["hyp2f1_backend"], "scipy")
-            self.assertEqual(updated["sigmalos2_backend_default"], "kernel")
-            self.assertEqual(updated["sigmalos2_jit_default"], "false")
-            self.assertEqual(updated["sigmalos2_n_u_default"], 4097)
-            self.assertEqual(updated["sigmalos2_n_r_default"], 640)
-            self.assertEqual(updated["sigmalos2_u_max_default"], 4096.0)
-            self.assertEqual(updated["constant_kernel_n_quad"], 24)
+            updated = model_numpyro_mod.configure_runtime(jax_enable_x64=not original)
+            self.assertEqual(updated["jax_enable_x64"], (not original))
         finally:
-            model_numpyro_mod.configure_runtime(
-                hyp2f1_backend=original["hyp2f1_backend"],
-                hyp2f1_jax_method=original["hyp2f1_jax_method"],
-                hyp2f1_jax_quad_rule=original["hyp2f1_jax_quad_rule"],
-                sigmalos2_backend=original["sigmalos2_backend_default"],
-                sigmalos2_jit=original["sigmalos2_jit_default"],
-                sigmalos2_n_u=original["sigmalos2_n_u_default"],
-                sigmalos2_n_r=original["sigmalos2_n_r_default"],
-                sigmalos2_u_max=original["sigmalos2_u_max_default"],
-                constant_kernel_n_quad=original["constant_kernel_n_quad"],
-                jax_enable_x64=original["jax_enable_x64"],
-            )
+            model_numpyro_mod.configure_runtime(jax_enable_x64=original)
+
+    def test_configure_runtime_rejects_legacy_numerical_options(self):
+        with self.assertRaises(TypeError):
+            model_numpyro_mod.configure_runtime(sigmalos2_n_u=1024)
 
     def test_sigmalos2_jit_matches_eager(self):
         params = {
