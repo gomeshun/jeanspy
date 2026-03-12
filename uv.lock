@@ -39,6 +39,17 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/30/dc/b1dcb62745f58f800d4073c9ad914a5cf882fe1d8f20793eae0a1d54bbac/arviz-1.0.0-py3-none-any.whl", hash = "sha256:8caf30516bb7e13c237d266e3d37c59531898a93db9e89c1f1bb9320699e97dd", size = 8445, upload-time = "2026-03-02T14:58:47.7Z" },
 ]
 
+[package.optional-dependencies]
+h5netcdf = [
+    { name = "arviz-base", extra = ["h5netcdf"] },
+]
+netcdf4 = [
+    { name = "arviz-base", extra = ["netcdf4"] },
+]
+zarr = [
+    { name = "arviz-base", extra = ["zarr"] },
+]
+
 [[package]]
 name = "arviz-base"
 version = "1.0.0"
@@ -51,6 +62,17 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/17/9b/84b06b529b1b397c50f8ff2e5af5af7a09eef24c6ee5334e08e2cf12ef96/arviz_base-1.0.0.tar.gz", hash = "sha256:6b9796043b4e394056fd8a1ab51c8d4d3e88dcf8f2b698a46b660ff4346c8841", size = 1403207, upload-time = "2026-03-02T07:36:17.604Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/35/69/6624d40ec780a30d187e9224e1c2bf51eebe0e61ebd2c7dee06dd4464a24/arviz_base-1.0.0-py3-none-any.whl", hash = "sha256:77c93e3503166517da8155d580ec9615e9b7b89ab7890f8d9ab72c78a9b6c9e6", size = 1420656, upload-time = "2026-03-02T07:36:15.588Z" },
+]
+
+[package.optional-dependencies]
+h5netcdf = [
+    { name = "h5netcdf", extra = ["h5py"] },
+]
+netcdf4 = [
+    { name = "netcdf4" },
+]
+zarr = [
+    { name = "zarr" },
 ]
 
 [[package]]
@@ -464,6 +486,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b1/8b/88f16936a8e8070a83d36239555227ecd91728f9ef222c5382cda07e0fd6/h5netcdf-1.8.1-py3-none-any.whl", hash = "sha256:a76ed7cfc9b8a8908ea7057c4e57e27307acff1049b7f5ed52db6c2247636879", size = 62915, upload-time = "2026-01-23T07:35:30.195Z" },
 ]
 
+[package.optional-dependencies]
+h5py = [
+    { name = "h5py" },
+]
+
 [[package]]
 name = "h5py"
 version = "3.16.0"
@@ -675,7 +702,7 @@ name = "jeanspy"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "arviz" },
+    { name = "arviz", extra = ["h5netcdf", "netcdf4", "zarr"] },
     { name = "astropy" },
     { name = "emcee" },
     { name = "h5netcdf" },
@@ -683,6 +710,7 @@ dependencies = [
     { name = "ipykernel" },
     { name = "jax", extra = ["cuda12"] },
     { name = "matplotlib" },
+    { name = "mpmath" },
     { name = "netcdf4" },
     { name = "numpy" },
     { name = "numpyro", extra = ["cuda12"] },
@@ -695,7 +723,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "arviz", specifier = ">=1.0.0" },
+    { name = "arviz", extras = ["zarr", "h5netcdf", "netcdf4"], specifier = ">=1.0.0" },
     { name = "astropy", specifier = ">=7.1.0" },
     { name = "emcee", specifier = ">=3.1.6" },
     { name = "h5netcdf" },
@@ -703,6 +731,7 @@ requires-dist = [
     { name = "ipykernel" },
     { name = "jax", extras = ["cuda12"], specifier = ">=0.6.2" },
     { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "mpmath", specifier = ">=1.3.0" },
     { name = "netcdf4" },
     { name = "numpy", specifier = ">=2.4.2" },
     { name = "numpyro", extras = ["cuda12"], specifier = ">=0.18.0" },
@@ -940,6 +969,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/79/2b/a826ba18d2179a56e144aef69e57fb2ab7c464ef0b2111940ee8a3a223a2/ml_dtypes-0.5.4-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:0d2ffd05a2575b1519dc928c0b93c06339eb67173ff53acb00724502cda231cf", size = 5366332, upload-time = "2025-11-17T22:32:21.193Z" },
     { url = "https://files.pythonhosted.org/packages/84/44/f4d18446eacb20ea11e82f133ea8f86e2bf2891785b67d9da8d0ab0ef525/ml_dtypes-0.5.4-cp314-cp314t-win_amd64.whl", hash = "sha256:4381fe2f2452a2d7589689693d3162e876b3ddb0a832cde7a414f8e1adf7eab1", size = 236612, upload-time = "2025-11-17T22:32:22.579Z" },
     { url = "https://files.pythonhosted.org/packages/ad/3f/3d42e9a78fe5edf792a83c074b13b9b770092a4fbf3462872f4303135f09/ml_dtypes-0.5.4-cp314-cp314t-win_arm64.whl", hash = "sha256:11942cbf2cf92157db91e5022633c0d9474d4dfd813a909383bd23ce828a4b7d", size = 168825, upload-time = "2025-11-17T22:32:23.766Z" },
+]
+
+[[package]]
+name = "mpmath"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/9d/97a96c6bcbc113368d1f4f01e84bcca168f162ee96fb55ccec90ec22ca2f/mpmath-1.4.0.tar.gz", hash = "sha256:d272b40c031ba0ee385e7e5fc735b48560d9838a0d7fbca109919efd23580a22", size = 2092745, upload-time = "2026-02-23T05:24:50.459Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/16/5d/7f950d12fc2775234ca8e08617273659a9fac6f0030d28b123332303201c/mpmath-1.4.0-py3-none-any.whl", hash = "sha256:1910f299a1346afcc47d17586c6b3b2a39fd5e0c0829fcecd87c57acd5007c95", size = 566404, upload-time = "2026-02-23T05:24:48.845Z" },
 ]
 
 [[package]]
