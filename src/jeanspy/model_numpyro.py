@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import lru_cache, partial
-from typing import Any, Dict, Mapping, Optional
+from typing import Any, Dict, Mapping, Optional, cast
 
 # IMPORTANT: these env vars must be set before importing JAX.
 import os
@@ -28,7 +28,9 @@ DEFAULT_BAES_KERNEL_N_QUAD = 128
 
 
 def _prefers_gpu_x32() -> bool:
-    return jax.default_backend() == "gpu" and (not bool(jax.config.read("jax_enable_x64")))
+    return jax.default_backend() == "gpu" and (
+        not bool(jax.config.read("jax_enable_x64"))
+    )
 
 
 def _default_constant_kernel_n_quad() -> int:
@@ -74,7 +76,9 @@ def get_runtime_config() -> Dict[str, Any]:
       ``ConstantAnisotropyModel.kernel`` rather than process-wide settings.
     """
     return {
-        "jax_platform_requested": os.environ.get("JEANSPY_JAX_PLATFORM", os.environ.get("JAX_PLATFORMS", "")),
+        "jax_platform_requested": os.environ.get(
+            "JEANSPY_JAX_PLATFORM", os.environ.get("JAX_PLATFORMS", "")
+        ),
         "jax_platform_effective_env": os.environ.get("JAX_PLATFORMS", ""),
         "jax_backend_active": jax.default_backend(),
         "jax_enable_x64": bool(jax.config.read("jax_enable_x64")),
@@ -115,53 +119,55 @@ def configure_runtime(
 
 
 def _hyp2f1_1_b_3half_scipy(z: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarray:
-        """Compute hyp2f1(1, b; 3/2; z) using SciPy via jax.pure_callback.
+    """Compute hyp2f1(1, b; 3/2; z) using SciPy via jax.pure_callback.
 
-        Rationale:
-        - jax.scipy.special.hyp2f1 can be inaccurate/unstable for some parameter
-            regimes relevant to Jeans kernels.
-        - Our default MCMC for these models is gradient-free (AIES), so a host
-            callback is acceptable and more robust.
-        """
-        import numpy as _np
-        from scipy.special import hyp2f1 as _scipy_hyp2f1
+    Rationale:
+    - jax.scipy.special.hyp2f1 can be inaccurate/unstable for some parameter
+        regimes relevant to Jeans kernels.
+    - Our default MCMC for these models is gradient-free (AIES), so a host
+        callback is acceptable and more robust.
+    """
+    import numpy as _np
+    from scipy.special import hyp2f1 as _scipy_hyp2f1
 
-        z = jnp.asarray(z)
-        b = jnp.asarray(b)
+    z = jnp.asarray(z)
+    b = jnp.asarray(b)
 
-        out_spec = jax.ShapeDtypeStruct(z.shape, z.dtype)
+    out_spec = jax.ShapeDtypeStruct(z.shape, z.dtype)
 
-        def _cb(z_np, b_np):
-                # b is expected to be scalar in our current usage.
-                b_val = float(_np.asarray(b_np).reshape(()))
-                z_arr = _np.asarray(z_np)
-                return _scipy_hyp2f1(1.0, b_val, 1.5, z_arr).astype(z_arr.dtype, copy=False)
+    def _cb(z_np, b_np):
+        # b is expected to be scalar in our current usage.
+        b_val = float(_np.asarray(b_np).reshape(()))
+        z_arr = _np.asarray(z_np)
+        return _scipy_hyp2f1(1.0, b_val, 1.5, z_arr).astype(z_arr.dtype, copy=False)
 
-        return jax.pure_callback(_cb, out_spec, z, b, vmap_method="sequential")
+    return jax.pure_callback(_cb, out_spec, z, b, vmap_method="sequential")
 
 
 def _hyp2f1_1_b_3half_from_u_scipy(u: jnp.ndarray, b: jnp.ndarray) -> jnp.ndarray:
-        """Compute hyp2f1(1, b; 3/2; 1-1/u^2) robustly for large u via SciPy callback.
+    """Compute hyp2f1(1, b; 3/2; 1-1/u^2) robustly for large u via SciPy callback.
 
-        We compute z=1-1/u^2 in float64 on host to avoid float32 cancellation that
-        rounds z to exactly 1 when u is very large.
-        """
-        import numpy as _np
-        from scipy.special import hyp2f1 as _scipy_hyp2f1
+    We compute z=1-1/u^2 in float64 on host to avoid float32 cancellation that
+    rounds z to exactly 1 when u is very large.
+    """
+    import numpy as _np
+    from scipy.special import hyp2f1 as _scipy_hyp2f1
 
-        u = jnp.asarray(u)
-        b = jnp.asarray(b)
-        out_spec = jax.ShapeDtypeStruct(u.shape, u.dtype)
+    u = jnp.asarray(u)
+    b = jnp.asarray(b)
+    out_spec = jax.ShapeDtypeStruct(u.shape, u.dtype)
 
-        def _cb(u_np, b_np):
-            b_val = float(_np.asarray(b_np).reshape(()))
-            u_arr = _np.asarray(u_np, dtype=_np.float64)
-            u2 = u_arr * u_arr
-            z_arr = 1.0 - 1.0 / u2
-            z_arr = _np.clip(z_arr, 0.0, _np.nextafter(1.0, 0.0))
-            return _scipy_hyp2f1(1.0, b_val, 1.5, z_arr).astype(_np.asarray(u_np).dtype, copy=False)
+    def _cb(u_np, b_np):
+        b_val = float(_np.asarray(b_np).reshape(()))
+        u_arr = _np.asarray(u_np, dtype=_np.float64)
+        u2 = u_arr * u_arr
+        z_arr = 1.0 - 1.0 / u2
+        z_arr = _np.clip(z_arr, 0.0, _np.nextafter(1.0, 0.0))
+        return _scipy_hyp2f1(1.0, b_val, 1.5, z_arr).astype(
+            _np.asarray(u_np).dtype, copy=False
+        )
 
-        return jax.pure_callback(_cb, out_spec, u, b, vmap_method="sequential")
+    return jax.pure_callback(_cb, out_spec, u, b, vmap_method="sequential")
 
 
 @partial(jax.jit, static_argnames=("n_terms_regular",))
@@ -172,53 +178,56 @@ def _hyp2f1_1_b_3half_asymptotic_from_u(
     n_terms_regular: int = 20,
     b_half_tol: float = 1e-6,
 ) -> jnp.ndarray:
-        """Asymptotic 2F1(1,b;3/2;1-1/u^2) evaluated from u directly."""
-        u_arr = jnp.asarray(u)
-        b_arr = jnp.asarray(b)
-        dtype = jnp.result_type(u_arr, b_arr)
-        u_arr = u_arr.astype(dtype)
-        b_arr = b_arr.astype(dtype)
+    """Asymptotic 2F1(1,b;3/2;1-1/u^2) evaluated from u directly."""
+    u_arr = jnp.asarray(u)
+    b_arr = jnp.asarray(b)
+    dtype = jnp.result_type(u_arr, b_arr)
+    u_arr = u_arr.astype(dtype)
+    b_arr = b_arr.astype(dtype)
 
-        one = jnp.asarray(1.0, dtype=dtype)
-        half = jnp.asarray(0.5, dtype=dtype)
-        two = jnp.asarray(2.0, dtype=dtype)
-        finfo = jnp.finfo(dtype)
-        tiny = jnp.asarray(finfo.tiny, dtype=dtype)
-        eps = jnp.asarray(finfo.eps, dtype=dtype)
+    one = jnp.asarray(1.0, dtype=dtype)
+    half = jnp.asarray(0.5, dtype=dtype)
+    two = jnp.asarray(2.0, dtype=dtype)
+    finfo = jnp.finfo(dtype)
+    tiny = jnp.asarray(finfo.tiny, dtype=dtype)
+    eps = jnp.asarray(finfo.eps, dtype=dtype)
 
-        u_safe = jnp.maximum(u_arr, one + eps)
-        delta = jnp.clip(one / (u_safe * u_safe), tiny, one - eps)
-        sqrt_w = jnp.sqrt(one - delta)
+    u_safe = jnp.maximum(u_arr, one + eps)
+    delta = jnp.clip(one / (u_safe * u_safe), tiny, one - eps)
+    sqrt_w = jnp.sqrt(one - delta)
 
-        # b=1/2 exact branch with stable computation of (1-sqrt_w).
-        one_minus_sqrt_w = delta / (one + sqrt_w)
-        val_b_half = half * (jnp.log1p(sqrt_w) - jnp.log(one_minus_sqrt_w)) / sqrt_w
-        is_b_half = jnp.abs(b_arr - half) <= jnp.asarray(b_half_tol, dtype=dtype)
+    # b=1/2 exact branch with stable computation of (1-sqrt_w).
+    one_minus_sqrt_w = delta / (one + sqrt_w)
+    val_b_half = half * (jnp.log1p(sqrt_w) - jnp.log(one_minus_sqrt_w)) / sqrt_w
+    is_b_half = jnp.abs(b_arr - half) <= jnp.asarray(b_half_tol, dtype=dtype)
 
-        b_safe = jnp.where(is_b_half, b_arr + jnp.asarray(b_half_tol, dtype=dtype), b_arr)
+    b_safe = jnp.where(is_b_half, b_arr + jnp.asarray(b_half_tol, dtype=dtype), b_arr)
 
-        # Regular factor: 2F1(1,b;b+1/2;delta)
-        term = jnp.ones_like(delta, dtype=dtype)
-        regular_factor = term
-        n_reg = max(int(n_terms_regular), 1)
-        for i in range(n_reg - 1):
-            i_f = jnp.asarray(i, dtype=dtype)
-            term = term * (b_safe + i_f) / (b_safe + half + i_f) * delta
-            regular_factor = regular_factor + term
+    # Regular factor: 2F1(1,b;b+1/2;delta)
+    term = jnp.ones_like(delta, dtype=dtype)
+    regular_factor = term
+    n_reg = max(int(n_terms_regular), 1)
+    for i in range(n_reg - 1):
+        i_f = jnp.asarray(i, dtype=dtype)
+        term = term * (b_safe + i_f) / (b_safe + half + i_f) * delta
+        regular_factor = regular_factor + term
 
-        a_const = one / (one - two * b_safe)
-        regular_term = a_const * regular_factor
+    a_const = one / (one - two * b_safe)
+    regular_term = a_const * regular_factor
 
-        log_b_const = (
-            jsp.gammaln(jnp.asarray(1.5, dtype=dtype))
-            + jsp.gammaln(b_safe - half)
-            - jsp.gammaln(b_safe)
-        )
-        b_const_sign = jsp.gammasgn(b_safe - half) * jsp.gammasgn(b_safe)
-        singular_term = b_const_sign * jnp.exp(log_b_const + (half - b_safe) * jnp.log(delta)) / sqrt_w
+    log_b_const = (
+        jsp.gammaln(jnp.asarray(1.5, dtype=dtype))
+        + jsp.gammaln(b_safe - half)
+        - jsp.gammaln(b_safe)
+    )
+    b_const_sign = jsp.gammasgn(b_safe - half) * jsp.gammasgn(b_safe)
+    singular_term = (
+        b_const_sign * jnp.exp(log_b_const + (half - b_safe) * jnp.log(delta)) / sqrt_w
+    )
 
-        val_general = regular_term + singular_term
-        return jnp.asarray(jnp.where(is_b_half, val_b_half, val_general), dtype=dtype)
+    val_general = regular_term + singular_term
+    return jnp.asarray(jnp.where(is_b_half, val_b_half, val_general), dtype=dtype)
+
 
 @partial(jax.jit, static_argnames=("n_kernel",))
 def _constant_kernel_jax_backend(
@@ -227,67 +236,70 @@ def _constant_kernel_jax_backend(
     *,
     n_kernel: int,
 ) -> jnp.ndarray:
-        """Fast JAX-path constant-anisotropy kernel.
+    """Fast JAX-path constant-anisotropy kernel.
 
-        This evaluates the kernel integral directly in ``s = arccosh(u_int)``:
+    This evaluates the kernel integral directly in ``s = arccosh(u_int)``:
 
-            K(u) = f(uR)/u * integral_0^{arccosh(u)} ds
-                   cosh(s) * (1 - beta/cosh(s)^2) / f(R cosh(s))
+        K(u) = f(uR)/u * integral_0^{arccosh(u)} ds
+               cosh(s) * (1 - beta/cosh(s)^2) / f(R cosh(s))
 
-        with ``f(r) = r^(2 beta)`` for constant anisotropy. The direct quadrature
-        is more robust than routing through ``hyp2f1`` near continuation poles and
-        remains fully JAX/JIT compatible.
-        """
-        u_arr = jnp.asarray(u)
-        dtype = jnp.result_type(u_arr, beta_ani)
-        one = jnp.asarray(1.0, dtype=dtype)
-        eps = jnp.asarray(jnp.finfo(dtype).eps, dtype=dtype)
+    with ``f(r) = r^(2 beta)`` for constant anisotropy. The direct quadrature
+    is more robust than routing through ``hyp2f1`` near continuation poles and
+    remains fully JAX/JIT compatible.
+    """
+    u_arr = jnp.asarray(u)
+    dtype = jnp.result_type(u_arr, beta_ani)
+    one = jnp.asarray(1.0, dtype=dtype)
+    eps = jnp.asarray(jnp.finfo(dtype).eps, dtype=dtype)
 
-        beta = jnp.asarray(beta_ani, dtype=dtype)
-        u_in = u_arr.astype(dtype)
-        u_safe = jnp.maximum(u_in, one + eps)
-        s_max = jnp.arccosh(u_safe)
+    beta = jnp.asarray(beta_ani, dtype=dtype)
+    u_in = u_arr.astype(dtype)
+    u_safe = jnp.maximum(u_in, one + eps)
+    s_max = jnp.arccosh(u_safe)
 
-        n_nodes = max(int(n_kernel), 8)
-        t01, w01 = _gauss_legendre_01(n_nodes)
-        t01 = jnp.asarray(t01, dtype=dtype)
-        w01 = jnp.asarray(w01, dtype=dtype)
+    n_nodes = max(int(n_kernel), 8)
+    t01, w01 = _gauss_legendre_01(n_nodes)
+    t01 = jnp.asarray(t01, dtype=dtype)
+    w01 = jnp.asarray(w01, dtype=dtype)
 
-        s = s_max[..., None] * t01[None, ...]
-        u_int = jnp.cosh(s)
-        log_ratio = jnp.clip(2.0 * beta * (jnp.log(u_safe)[..., None] - jnp.log(u_int)), min=-80.0, max=80.0)
-        integrand = u_int * (one - beta / (u_int * u_int)) * jnp.exp(log_ratio)
-        weights = s_max[..., None] * w01[None, ...]
-        kernel_val = jnp.sum(weights * integrand, axis=-1) / u_safe
+    s = s_max[..., None] * t01[None, ...]
+    u_int = jnp.cosh(s)
+    log_ratio = jnp.clip(
+        2.0 * beta * (jnp.log(u_safe)[..., None] - jnp.log(u_int)), min=-80.0, max=80.0
+    )
+    integrand = u_int * (one - beta / (u_int * u_int)) * jnp.exp(log_ratio)
+    weights = s_max[..., None] * w01[None, ...]
+    kernel_val = jnp.sum(weights * integrand, axis=-1) / u_safe
 
-        kernel_val = jnp.where(u_in <= one, jnp.zeros_like(kernel_val), kernel_val)
-        return jnp.nan_to_num(kernel_val, nan=0.0, neginf=0.0, posinf=1e12)
+    kernel_val = jnp.where(u_in <= one, jnp.zeros_like(kernel_val), kernel_val)
+    return jnp.nan_to_num(kernel_val, nan=0.0, neginf=0.0, posinf=1e12)
 
 
 @jax.jit
-def _osipkov_kernel_jax_backend(u: jnp.ndarray, r_pc: jnp.ndarray, r_a: jnp.ndarray) -> jnp.ndarray:
-        """Fast JAX-path Osipkov-Merritt kernel."""
-        u_arr, r_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(r_pc))
-        dtype = jnp.result_type(u_arr, r_arr, r_a)
-        one = jnp.asarray(1.0, dtype=dtype)
-        eps = jnp.asarray(jnp.finfo(dtype).eps, dtype=dtype)
+def _osipkov_kernel_jax_backend(
+    u: jnp.ndarray, r_pc: jnp.ndarray, r_a: jnp.ndarray
+) -> jnp.ndarray:
+    """Fast JAX-path Osipkov-Merritt kernel."""
+    u_arr, r_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(r_pc))
+    dtype = jnp.result_type(u_arr, r_arr, r_a)
+    one = jnp.asarray(1.0, dtype=dtype)
+    eps = jnp.asarray(jnp.finfo(dtype).eps, dtype=dtype)
 
-        u_in = u_arr.astype(dtype)
-        u_safe = jnp.maximum(u_in, one + eps)
-        r_safe = r_arr.astype(dtype)
-        r_a_safe = jnp.asarray(r_a, dtype=dtype)
+    u_in = u_arr.astype(dtype)
+    u_safe = jnp.maximum(u_in, one + eps)
+    r_safe = r_arr.astype(dtype)
+    r_a_safe = jnp.asarray(r_a, dtype=dtype)
 
-        u_a = r_a_safe / r_safe
-        u2_a = u_a**2
-        u2 = u_safe**2
-        sqrt_term = jnp.sqrt((u2 - 1.0) / (u2_a + 1.0))
-        arctan_term = jnp.arctan(sqrt_term)
-        sqrt_term2 = jnp.sqrt(1.0 - 1.0 / u2)
-        kernel_val = (
-            (u2 + u2_a) * (u2_a + 0.5) / (u_safe * (u2_a + 1.0) ** 1.5) * arctan_term
-            - sqrt_term2 / (2.0 * (u2_a + 1.0))
-        )
-        return jnp.where(u_in <= 1.0, jnp.zeros_like(kernel_val), kernel_val)
+    u_a = r_a_safe / r_safe
+    u2_a = u_a**2
+    u2 = u_safe**2
+    sqrt_term = jnp.sqrt((u2 - 1.0) / (u2_a + 1.0))
+    arctan_term = jnp.arctan(sqrt_term)
+    sqrt_term2 = jnp.sqrt(1.0 - 1.0 / u2)
+    kernel_val = (u2 + u2_a) * (u2_a + 0.5) / (
+        u_safe * (u2_a + 1.0) ** 1.5
+    ) * arctan_term - sqrt_term2 / (2.0 * (u2_a + 1.0))
+    return jnp.where(u_in <= 1.0, jnp.zeros_like(kernel_val), kernel_val)
 
 
 @partial(jax.jit, static_argnames=("n_kernel",))
@@ -301,57 +313,61 @@ def _baes_kernel_jax_backend(
     *,
     n_kernel: int,
 ) -> jnp.ndarray:
-        """Fast JAX-path BAES kernel using Gauss-Legendre quadrature in arccosh(u)."""
-        u_arr, r_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(r_pc))
-        dtype = jnp.result_type(u_arr, r_arr, beta_0, beta_inf, r_a, eta)
-        one = jnp.asarray(1.0, dtype=dtype)
-        eps = jnp.asarray(jnp.finfo(dtype).eps, dtype=dtype)
+    """Fast JAX-path BAES kernel using Gauss-Legendre quadrature in arccosh(u)."""
+    u_arr, r_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(r_pc))
+    dtype = jnp.result_type(u_arr, r_arr, beta_0, beta_inf, r_a, eta)
+    one = jnp.asarray(1.0, dtype=dtype)
+    eps = jnp.asarray(jnp.finfo(dtype).eps, dtype=dtype)
 
-        u_in = u_arr.astype(dtype)
-        u_safe = jnp.maximum(u_in, one + eps)
-        r_safe = r_arr.astype(dtype)
-        beta0 = jnp.asarray(beta_0, dtype=dtype)
-        betainf = jnp.asarray(beta_inf, dtype=dtype)
-        r_a_safe = jnp.asarray(r_a, dtype=dtype)
-        eta_safe = jnp.asarray(eta, dtype=dtype)
+    u_in = u_arr.astype(dtype)
+    u_safe = jnp.maximum(u_in, one + eps)
+    r_safe = r_arr.astype(dtype)
+    beta0 = jnp.asarray(beta_0, dtype=dtype)
+    betainf = jnp.asarray(beta_inf, dtype=dtype)
+    r_a_safe = jnp.asarray(r_a, dtype=dtype)
+    eta_safe = jnp.asarray(eta, dtype=dtype)
 
-        same_beta = jnp.reshape(
-            jnp.abs(beta0 - betainf) <= jnp.asarray(1e-12, dtype=dtype),
-            (),
-        )
+    same_beta = jnp.reshape(
+        jnp.abs(beta0 - betainf) <= jnp.asarray(1e-12, dtype=dtype),
+        (),
+    )
 
-        def _constant_limit(_: None) -> jnp.ndarray:
-            return _constant_kernel_jax_backend(u_in, beta0, n_kernel=n_kernel)
+    def _constant_limit(_: None) -> jnp.ndarray:
+        return _constant_kernel_jax_backend(u_in, beta0, n_kernel=n_kernel)
 
-        def _generic(_: None) -> jnp.ndarray:
-            s_max = jnp.arccosh(u_safe)
-            n_nodes = max(int(n_kernel), 8)
-            t01, w01 = _gauss_legendre_01(n_nodes)
-            t01 = jnp.asarray(t01, dtype=dtype)
-            w01 = jnp.asarray(w01, dtype=dtype)
+    def _generic(_: None) -> jnp.ndarray:
+        s_max = jnp.arccosh(u_safe)
+        n_nodes = max(int(n_kernel), 8)
+        t01, w01 = _gauss_legendre_01(n_nodes)
+        t01 = jnp.asarray(t01, dtype=dtype)
+        w01 = jnp.asarray(w01, dtype=dtype)
 
-            s = s_max[..., None] * t01[None, ...]
-            u_int = jnp.cosh(s)
-            r_int = r_safe[..., None] * u_int
+        s = s_max[..., None] * t01[None, ...]
+        u_int = jnp.cosh(s)
+        r_int = r_safe[..., None] * u_int
 
-            x_int = (r_int / r_a_safe) ** eta_safe
-            beta_int = (beta0 + betainf * x_int) / (1.0 + x_int)
-            log_f_int = 2.0 * beta0 * jnp.log(r_int) + (2.0 * (betainf - beta0) / eta_safe) * jnp.log1p(x_int)
+        x_int = (r_int / r_a_safe) ** eta_safe
+        beta_int = (beta0 + betainf * x_int) / (1.0 + x_int)
+        log_f_int = 2.0 * beta0 * jnp.log(r_int) + (
+            2.0 * (betainf - beta0) / eta_safe
+        ) * jnp.log1p(x_int)
 
-            r_s = r_safe * u_safe
-            x_s = (r_s / r_a_safe) ** eta_safe
-            log_f_s = 2.0 * beta0 * jnp.log(r_s) + (2.0 * (betainf - beta0) / eta_safe) * jnp.log1p(x_s)
+        r_s = r_safe * u_safe
+        x_s = (r_s / r_a_safe) ** eta_safe
+        log_f_s = 2.0 * beta0 * jnp.log(r_s) + (
+            2.0 * (betainf - beta0) / eta_safe
+        ) * jnp.log1p(x_s)
 
-            log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)
-            integ_s = u_int * (1.0 - beta_int / (u_int**2)) * jnp.exp(log_ratio)
-            weights = s_max[..., None] * w01[None, ...]
-            inner = jnp.sum(weights * integ_s, axis=-1)
+        log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)
+        integ_s = u_int * (1.0 - beta_int / (u_int**2)) * jnp.exp(log_ratio)
+        weights = s_max[..., None] * w01[None, ...]
+        inner = jnp.sum(weights * integ_s, axis=-1)
 
-            k_val = inner / u_safe
-            k_val = jnp.where(u_in <= 1.0, jnp.zeros_like(k_val), k_val)
-            return jnp.nan_to_num(k_val, nan=0.0, neginf=0.0, posinf=1e12)
+        k_val = inner / u_safe
+        k_val = jnp.where(u_in <= 1.0, jnp.zeros_like(k_val), k_val)
+        return jnp.nan_to_num(k_val, nan=0.0, neginf=0.0, posinf=1e12)
 
-        return jax.lax.cond(same_beta, _constant_limit, _generic, operand=None)
+    return jax.lax.cond(same_beta, _constant_limit, _generic, operand=None)
 
 
 # Physical constants (floats are fine in JAX computations)
@@ -410,10 +426,7 @@ def _nfw_enclosed_mass_shape(x: jnp.ndarray) -> jnp.ndarray:
     direct = jnp.log1p(x_arr) - x_arr / (1.0 + x_arr)
     series = x_arr**2 * (
         0.5
-        + x_arr * (
-            -2.0 / 3.0
-            + x_arr * (0.75 + x_arr * (-0.8 + x_arr * (5.0 / 6.0)))
-        )
+        + x_arr * (-2.0 / 3.0 + x_arr * (0.75 + x_arr * (-0.8 + x_arr * (5.0 / 6.0))))
     )
     threshold = jnp.asarray(1e-3, dtype=dtype)
     return jnp.where(x_arr < threshold, series, direct)
@@ -427,7 +440,9 @@ def _reverse_cumtrapz_1d(y: jnp.ndarray, x: jnp.ndarray) -> jnp.ndarray:
     return jnp.concatenate([rev, jnp.zeros((1,), dtype=y.dtype)], axis=0)
 
 
-def _make_log_grid(r_min: jnp.ndarray, r_max: jnp.ndarray, n_r: int) -> tuple[jnp.ndarray, jnp.ndarray]:
+def _make_log_grid(
+    r_min: jnp.ndarray, r_max: jnp.ndarray, n_r: int
+) -> tuple[jnp.ndarray, jnp.ndarray]:
     """Return log-spaced grid points and matching bin edges."""
     n_r = int(n_r)
     if n_r < 4:
@@ -440,7 +455,6 @@ def _make_log_grid(r_min: jnp.ndarray, r_max: jnp.ndarray, n_r: int) -> tuple[jn
         axis=0,
     )
     return jnp.exp(x), jnp.exp(x_edges)
-
 
 
 # cache for abel weights keyed by flattened R and edge arrays
@@ -619,10 +633,17 @@ class PlummerModel(StellarModel):
 class DMModel(Model):
     required_models: Mapping[str, type[Model]] = {}
 
-    def mass_density_3d(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def resolve_params(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
+        return params
+
+    def mass_density_3d(
+        self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
         raise NotImplementedError
 
-    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def enclosed_mass_analytic(
+        self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
         raise NotImplementedError
 
     def enclosed_mass_numeric(
@@ -648,7 +669,9 @@ class DMModel(Model):
             r = r.astype(dtype)
 
         r_pos = jnp.maximum(r, jnp.asarray(0.0, dtype=dtype))
-        t = jnp.linspace(jnp.asarray(t_min, dtype=dtype), jnp.asarray(1.0, dtype=dtype), int(n_steps))
+        t = jnp.linspace(
+            jnp.asarray(t_min, dtype=dtype), jnp.asarray(1.0, dtype=dtype), int(n_steps)
+        )
 
         r_grid = r_pos[..., None] * t
         rho = self.mass_density_3d(r_grid, params=params)
@@ -656,12 +679,16 @@ class DMModel(Model):
         mass = _trapz(integrand_t, t, axis=-1)
         mass = jnp.where(r <= 0.0, jnp.zeros_like(mass), mass)
         return jnp.nan_to_num(mass, nan=0.0, neginf=0.0, posinf=1e12)
-    
+
     @property
     def has_analytic_enclosed_mass(self) -> bool:
-        return hasattr(self, "enclosed_mass_analytic") and callable(getattr(self, "enclosed_mass_analytic"))
+        return hasattr(self, "enclosed_mass_analytic") and callable(
+            getattr(self, "enclosed_mass_analytic")
+        )
 
-    def enclosed_mass(self, r_pc: jnp.ndarray, method: str = "analytic", *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def enclosed_mass(
+        self, r_pc: jnp.ndarray, method: str = "analytic", *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
         """Return enclosed mass with selectable backend.
 
         Default is `numeric` to keep autodiff robust for gradient-based samplers
@@ -672,7 +699,9 @@ class DMModel(Model):
             if has_analytic:
                 return self.enclosed_mass_analytic(r_pc, params=params)
             else:
-                raise NotImplementedError(f"{self.__class__.__name__} does not have an analytic enclosed_mass implementation")
+                raise NotImplementedError(
+                    f"{self.__class__.__name__} does not have an analytic enclosed_mass implementation"
+                )
         elif method == "numeric":
             return self.enclosed_mass_numeric(r_pc, params=params)
         else:
@@ -682,71 +711,72 @@ class DMModel(Model):
 class NFWModel(DMModel):
     required_param_names = ("rs_pc", "rhos_Msunpc3", "r_t_pc")
 
-    def mass_density_3d(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
-        rs_pc = params["rs_pc"]
-        rhos_Msunpc3 = params["rhos_Msunpc3"]
+    def resolve_params(self, params: Mapping[str, Any]) -> dict[str, jnp.ndarray]:
+        rs = jnp.asarray(params["rs_pc"])
+        rhos = jnp.asarray(params["rhos_Msunpc3"])
+        r_t = jnp.asarray(params["r_t_pc"])
+        coeff = 4.0 * jnp.pi * rhos * rs**3
+        return {
+            "rs_pc": rs,
+            "rhos_Msunpc3": rhos,
+            "r_t_pc": r_t,
+            "nfw_mass_coeff": coeff,
+        }
 
-        rs = jnp.asarray(rs_pc)
-        rhos = jnp.asarray(rhos_Msunpc3)
+    def mass_density_3d(
+        self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
+        resolved = self.resolve_params(params)
+        rs = jnp.asarray(resolved["rs_pc"])
+        rhos = jnp.asarray(resolved["rhos_Msunpc3"])
         r = jnp.asarray(r_pc)
         x = r / rs
         return rhos / x / (1.0 + x) ** 2
 
-    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
-        rs_pc = params["rs_pc"]
-        rhos_Msunpc3 = params["rhos_Msunpc3"]
-        r_t_pc = params["r_t_pc"]
-
-        rs = jnp.asarray(rs_pc)
-        rhos = jnp.asarray(rhos_Msunpc3)
-        r_t = jnp.asarray(r_t_pc)
+    def enclosed_mass_analytic(
+        self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
+        resolved = self.resolve_params(params)
+        rs = jnp.asarray(resolved["rs_pc"])
+        r_t = jnp.asarray(resolved["r_t_pc"])
 
         r = jnp.minimum(jnp.asarray(r_pc), r_t)
         x = r / rs
         # M(r) = 4π ρs rs^3 [ ln(1+x) - x/(1+x) ]
-        coeff = 4.0 * jnp.pi * rhos * rs**3
+        coeff = jnp.asarray(resolved["nfw_mass_coeff"])
         return coeff * _nfw_enclosed_mass_shape(x)
 
 
 class ZhaoModel(DMModel):
     required_param_names = ("rs_pc", "rhos_Msunpc3", "a", "b", "g", "r_t_pc")
 
-    def mass_density_3d(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
-        rs_pc = params["rs_pc"]
-        rhos_Msunpc3 = params["rhos_Msunpc3"]
-        a = params["a"]
-        b = params["b"]
-        g = params["g"]
-
-        rs = jnp.asarray(rs_pc)
-        rhos = jnp.asarray(rhos_Msunpc3)
-        a_arr = jnp.asarray(a)
-        b_arr = jnp.asarray(b)
-        g_arr = jnp.asarray(g)
+    def mass_density_3d(
+        self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
+        rs = jnp.asarray(params["rs_pc"])
+        rhos = jnp.asarray(params["rhos_Msunpc3"])
+        a_arr = jnp.asarray(params["a"])
+        b_arr = jnp.asarray(params["b"])
+        g_arr = jnp.asarray(params["g"])
         r = jnp.asarray(r_pc)
         x = r / rs
         return rhos * x ** (-g_arr) * (1.0 + x**a_arr) ** (-(b_arr - g_arr) / a_arr)
 
-    def enclosed_mass_betainc(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def enclosed_mass_betainc(
+        self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
         """Enclosed mass from the Zhao incomplete-beta closed form.
 
         The NFW-limit branch ``(a,b,g)=(1,3,1)`` is handled analytically because
         the raw beta/betainc expression becomes indeterminate there even though
         the physical enclosed mass remains finite.
         """
-        rs_pc = params["rs_pc"]
-        rhos_Msunpc3 = params["rhos_Msunpc3"]
-        r_t_pc = params["r_t_pc"]
-        a = params["a"]
-        b = params["b"]
-        g = params["g"]
-
-        rs = jnp.asarray(rs_pc)
-        rhos = jnp.asarray(rhos_Msunpc3)
-        r_t = jnp.asarray(r_t_pc)
-        a_arr = jnp.asarray(a)
-        b_arr = jnp.asarray(b)
-        g_arr = jnp.asarray(g)
+        rs = jnp.asarray(params["rs_pc"])
+        rhos = jnp.asarray(params["rhos_Msunpc3"])
+        r_t = jnp.asarray(params["r_t_pc"])
+        a_arr = jnp.asarray(params["a"])
+        b_arr = jnp.asarray(params["b"])
+        g_arr = jnp.asarray(params["g"])
 
         r = jnp.minimum(jnp.asarray(r_pc), r_t)
         x_raw = r / rs
@@ -762,17 +792,24 @@ class ZhaoModel(DMModel):
             & (jnp.abs(b_arr - 3.0) <= tol)
             & (jnp.abs(g_arr - 1.0) <= tol)
         )
-
-        argbeta1_safe = jnp.where(is_nfw_limit, jnp.asarray(1.0, dtype=argbeta1.dtype), argbeta1)
+        argbeta1_safe = jnp.where(
+            is_nfw_limit, jnp.asarray(1.0, dtype=argbeta1.dtype), argbeta1
+        )
         coeff_general = 4.0 * jnp.pi * rs**3 * rhos / a_arr
-        mass_general = coeff_general * jsp.beta(argbeta0, argbeta1_safe) * jsp.betainc(argbeta0, argbeta1_safe, z)
+        mass_general = (
+            coeff_general
+            * jsp.beta(argbeta0, argbeta1_safe)
+            * jsp.betainc(argbeta0, argbeta1_safe, z)
+        )
 
         coeff_nfw = 4.0 * jnp.pi * rhos * rs**3
         mass_nfw = coeff_nfw * _nfw_enclosed_mass_shape(x_raw)
 
         return jnp.where(is_nfw_limit, mass_nfw, mass_general)
 
-    def enclosed_mass_analytic(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def enclosed_mass_analytic(
+        self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
         return self.enclosed_mass_betainc(r_pc, params=params)
 
 
@@ -797,7 +834,9 @@ class AnisotropyModel(Model):
         """Auxiliary function f(r) satisfying d ln f / d ln r = 2 beta(r)."""
         raise NotImplementedError
 
-    def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def kernel(
+        self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
         r"""Kernel K(u) entering sigma_los^2(R) = 2 * \int du ... K(u)/u."""
         raise NotImplementedError
 
@@ -867,8 +906,12 @@ class ConstantAnisotropyModel(AnisotropyModel):
         # with a=1, b=1.5-beta, c=1.5, z=1-u^2.
         # Then (1-z)=u^2 and z/(z-1)=1-1/u^2 in (0,1) for u>1.
         if backend_key == "jax":
-            resolved_n_kernel = _resolve_n_kernel(n_kernel, default=_default_constant_kernel_n_quad())
-            return _constant_kernel_jax_backend(jnp.asarray(u), beta_ani, n_kernel=resolved_n_kernel)
+            resolved_n_kernel = _resolve_n_kernel(
+                n_kernel, default=_default_constant_kernel_n_quad()
+            )
+            return _constant_kernel_jax_backend(
+                jnp.asarray(u), beta_ani, n_kernel=resolved_n_kernel
+            )
 
         u_arr = jnp.asarray(u)
         dtype = jnp.result_type(u_arr, beta_ani)
@@ -877,9 +920,17 @@ class ConstantAnisotropyModel(AnisotropyModel):
         u_safe = jnp.maximum(u_arr.astype(dtype), one + eps)
         u2 = u_safe**2
 
-        hyp_main = jnp.asarray(_hyp2f1_1_b_3half_from_u_scipy(u_safe, beta_ani), dtype=dtype)
-        hyp_asym = jnp.asarray(_hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta_ani), dtype=dtype)
-        use_asym = ((u_safe > jnp.asarray(20.0, dtype=dtype)) & (beta_ani > 0.0) & (beta_ani < 1.49)) | (~jnp.isfinite(hyp_main))
+        hyp_main = jnp.asarray(
+            _hyp2f1_1_b_3half_from_u_scipy(u_safe, beta_ani), dtype=dtype
+        )
+        hyp_asym = jnp.asarray(
+            _hyp2f1_1_b_3half_asymptotic_from_u(u_safe, beta_ani), dtype=dtype
+        )
+        use_asym = (
+            (u_safe > jnp.asarray(20.0, dtype=dtype))
+            & (beta_ani > 0.0)
+            & (beta_ani < 1.49)
+        ) | (~jnp.isfinite(hyp_main))
         hyp_stable = jnp.asarray(jnp.where(use_asym, hyp_asym, hyp_main), dtype=dtype)
 
         pref = jnp.sqrt(1.0 - 1.0 / u2)
@@ -904,7 +955,7 @@ class BaesAnisotropyModel(AnisotropyModel):
     def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         r"""Baes & van Hese profile
 
-            beta(r) = (beta_0 + beta_inf (r/r_a)^eta) / (1 + (r/r_a)^eta).
+        beta(r) = (beta_0 + beta_inf (r/r_a)^eta) / (1 + (r/r_a)^eta).
         """
         beta_0 = jnp.asarray(params["beta_0"])
         beta_inf = jnp.asarray(params["beta_inf"])
@@ -917,7 +968,7 @@ class BaesAnisotropyModel(AnisotropyModel):
     def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         r"""Return
 
-            f(r)=r^{2 beta_0} (1 + (r/r_a)^eta)^{2(beta_inf-beta_0)/eta}.
+        f(r)=r^{2 beta_0} (1 + (r/r_a)^eta)^{2(beta_inf-beta_0)/eta}.
         """
         beta_0 = jnp.asarray(params["beta_0"])
         beta_inf = jnp.asarray(params["beta_inf"])
@@ -937,7 +988,9 @@ class BaesAnisotropyModel(AnisotropyModel):
 
         r = jnp.asarray(r_pc)
         x = (r / r_a) ** eta
-        return 2.0 * beta_0 * jnp.log(r) + (2.0 * (beta_inf - beta_0) / eta) * jnp.log1p(x)
+        return 2.0 * beta_0 * jnp.log(r) + (
+            2.0 * (beta_inf - beta_0) / eta
+        ) * jnp.log1p(x)
 
     def kernel(
         self,
@@ -1002,7 +1055,9 @@ class OsipkovMerrittModel(AnisotropyModel):
         r = jnp.asarray(r_pc)
         return (r_a**2 + r**2) / r_a**2
 
-    def kernel(self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+    def kernel(
+        self, u: jnp.ndarray, R_pc: jnp.ndarray, *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
         r"""Closed-form K(u) for Osipkov-Merritt anisotropy.
 
         Uses the analytical expression equivalent to the note/CLUMPY formula,
@@ -1033,6 +1088,15 @@ class DSphModel(Model):
         "AnisotropyModel": AnisotropyModel,
     }
 
+    def _resolve_dm_params_once(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
+        dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
+        resolve_params = getattr(dm, "resolve_params", None)
+        if not callable(resolve_params):
+            return params
+        resolved = dict(params)
+        resolved.update(cast(Mapping[str, Any], resolve_params(params)))
+        return resolved
+
     def sigmalos2_kernel(
         self,
         R_pc: jnp.ndarray,
@@ -1057,6 +1121,7 @@ class DSphModel(Model):
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
         R = jnp.atleast_1d(jnp.asarray(R_pc))
+        params = self._resolve_dm_params_once(params)
 
         # Integration grid in log(u)
         t = jnp.linspace(jnp.log1p(u_min_eps), jnp.log(resolved_u_max), resolved_n_u)
@@ -1081,21 +1146,23 @@ class DSphModel(Model):
 
         kernel_kwargs: Dict[str, Any] = {}
         if isinstance(ani, ConstantAnisotropyModel):
-            kernel_kwargs["backend"] = _normalize_constant_kernel_backend(constant_kernel_backend)
+            kernel_kwargs["backend"] = _normalize_constant_kernel_backend(
+                constant_kernel_backend
+            )
             if n_kernel is not None and kernel_kwargs["backend"] == "jax":
-                kernel_kwargs["n_kernel"] = _resolve_n_kernel(n_kernel, default=_default_constant_kernel_n_quad())
+                kernel_kwargs["n_kernel"] = _resolve_n_kernel(
+                    n_kernel, default=_default_constant_kernel_n_quad()
+                )
         elif isinstance(ani, BaesAnisotropyModel) and n_kernel is not None:
-            kernel_kwargs["n_kernel"] = _resolve_n_kernel(n_kernel, default=DEFAULT_BAES_KERNEL_N_QUAD)
+            kernel_kwargs["n_kernel"] = _resolve_n_kernel(
+                n_kernel, default=DEFAULT_BAES_KERNEL_N_QUAD
+            )
 
         K = ani.kernel(u2d, R2d, params=params, **kernel_kwargs)
 
         # Following the structure in the original model.py (unit-carrying constants kept)
         integrand_u = (
-            2.0
-            * (K / u2d)
-            * (nu3 / sig2)
-            * (GMsun_m3s2 * M / PARSEC_M)
-            * 1e-6
+            2.0 * (K / u2d) * (nu3 / sig2) * (GMsun_m3s2 * M / PARSEC_M) * 1e-6
         )
 
         # du = exp(t) dt  -> integrate over t
@@ -1125,20 +1192,32 @@ class DSphModel(Model):
         dtype = R.dtype
         resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
+        params = self._resolve_dm_params_once(params)
 
         stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]
 
         re_pc = jnp.asarray(params["re_pc"], dtype=dtype)
-        r_min = jnp.maximum(jnp.min(R) * jnp.asarray(r_min_factor, dtype=dtype), jnp.asarray(1e-8, dtype=dtype))
+        r_min = jnp.maximum(
+            jnp.min(R) * jnp.asarray(r_min_factor, dtype=dtype),
+            jnp.asarray(1e-8, dtype=dtype),
+        )
         r_max = jnp.max(R) * jnp.asarray(resolved_u_max, dtype=dtype)
         if "r_t_pc" in params:
             r_max = jnp.maximum(r_max, jnp.asarray(params["r_t_pc"], dtype=dtype))
         if "rs_pc" in params:
-            r_max = jnp.maximum(r_max, jnp.asarray(20.0, dtype=dtype) * jnp.asarray(params["rs_pc"], dtype=dtype))
+            r_max = jnp.maximum(
+                r_max,
+                jnp.asarray(20.0, dtype=dtype)
+                * jnp.asarray(params["rs_pc"], dtype=dtype),
+            )
         if "r_a" in params:
-            r_max = jnp.maximum(r_max, jnp.asarray(20.0, dtype=dtype) * jnp.asarray(params["r_a"], dtype=dtype))
+            r_max = jnp.maximum(
+                r_max,
+                jnp.asarray(20.0, dtype=dtype)
+                * jnp.asarray(params["r_a"], dtype=dtype),
+            )
         r_max = jnp.maximum(r_max, jnp.asarray(50.0, dtype=dtype) * re_pc)
 
         r, r_edges = _make_log_grid(r_min, r_max, resolved_n_r)
@@ -1158,7 +1237,9 @@ class DSphModel(Model):
         radial_moment = jeans_integral / f_r
 
         abel_rj = _abel_transform_piecewise_constant(r * radial_moment, R, r_edges)
-        abel_beta_j_over_r = _abel_transform_piecewise_constant(beta * radial_moment / r, R, r_edges)
+        abel_beta_j_over_r = _abel_transform_piecewise_constant(
+            beta * radial_moment / r, R, r_edges
+        )
 
         sigma = stellar.density_2d(R, re_pc=re_pc)
         numer = 2.0 * (abel_rj - (R**2) * abel_beta_j_over_r)
@@ -1202,15 +1283,23 @@ class DSphModel(Model):
                 backend_key = "abel"
 
         if backend_key not in {"abel", "kernel"}:
-            raise ValueError(f"backend must be 'abel','kernel' or 'auto', got {backend!r}")
+            raise ValueError(
+                f"backend must be 'abel','kernel' or 'auto', got {backend!r}"
+            )
 
         use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)
 
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
-        resolved_n_kernel = None if n_kernel is None else _resolve_n_kernel(n_kernel, default=DEFAULT_BAES_KERNEL_N_QUAD)
-        constant_kernel_backend_key = _normalize_constant_kernel_backend(constant_kernel_backend)
+        resolved_n_kernel = (
+            None
+            if n_kernel is None
+            else _resolve_n_kernel(n_kernel, default=DEFAULT_BAES_KERNEL_N_QUAD)
+        )
+        constant_kernel_backend_key = _normalize_constant_kernel_backend(
+            constant_kernel_backend
+        )
 
         def _eval(R_value: jnp.ndarray, params_value: Mapping[str, Any]) -> jnp.ndarray:
             if backend_key == "abel":
