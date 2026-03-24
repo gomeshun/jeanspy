@@ -1507,23 +1507,41 @@ class SimpleDSphEstimationModel(FittableModel,Model):
 
 
     def reset_data(self, data):
-        """ reset data attribute and update FlatPriorModel.
+        """Reset the observed data and refresh derived prior bounds.
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            Observed kinematic data used by the model. The ``vlos_kms`` column
+            is used to update the ``vmem_kms`` bounds in ``FlatPriorModel``.
+
+        Returns
+        -------
+        None
         """
         self.data = data
         # override FlatPriorModel config by data
         # for vmem_kms
-        self.logger.info("%s: Override FlatPriorModel config by data", self.__class__.__name__)
-        self.logger.info("%s", "="*32)
-        self.logger.info("%r", self["FlatPriorModel"].data.loc["vmem_kms"])
+        before_lower = float(self["FlatPriorModel"].data.loc["vmem_kms", "lower"])
+        before_upper = float(self["FlatPriorModel"].data.loc["vmem_kms", "upper"])
+        self.logger.info(
+            "%s: Override FlatPriorModel config by data for vmem_kms: before lower=%.6f upper=%.6f",
+            self.__class__.__name__,
+            before_lower,
+            before_upper,
+        )
         lower = self.data["vlos_kms"].min()
         upper = self.data["vlos_kms"].max()
         # self["FlatPriorModel"].data.loc["vmem_kms"]["lower"] = lower
         # self["FlatPriorModel"].data.loc["vmem_kms"]["upper"] = upper
         self["FlatPriorModel"].data.loc["vmem_kms","lower"] = lower
         self["FlatPriorModel"].data.loc["vmem_kms","upper"] = upper
-        self.logger.info("%s", "-"*8+">")
-        self.logger.info("%r", self["FlatPriorModel"].data.loc["vmem_kms"])
-        self.logger.info("%s", "="*32)
+        self.logger.info(
+            "%s: Override FlatPriorModel config by data for vmem_kms: after lower=%.6f upper=%.6f",
+            self.__class__.__name__,
+            float(lower),
+            float(upper),
+        )
 
 
     @property
