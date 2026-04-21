@@ -16,8 +16,8 @@ __all__ = [
 ]
 
 _OPTIONAL_MODULES = {
-    "model_numpyro": "numpyro",
-    "sampler_numpyro": "numpyro",
+    "model_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
+    "sampler_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
 }
 
 _LAZY_MODULES = set(__all__) | set(_OPTIONAL_MODULES)
@@ -33,6 +33,12 @@ _OPTIONAL_IMPORT_ROOTS = {
     "zarr",
 }
 
+
+def _format_optional_install_hint(extras):
+    if isinstance(extras, str):
+        return f"jeanspy[{extras}]"
+    return " or ".join(f"jeanspy[{extra}]" for extra in extras)
+
 def __getattr__(name):
     if name in _LAZY_MODULES:
         try:
@@ -40,10 +46,10 @@ def __getattr__(name):
         except ModuleNotFoundError as exc:
             root_name = (exc.name or "").split(".")[0]
             if name in _OPTIONAL_MODULES and root_name in _OPTIONAL_IMPORT_ROOTS:
-                extra = _OPTIONAL_MODULES[name]
+                extras = _OPTIONAL_MODULES[name]
                 raise ImportError(
-                    f"{name} requires the optional '{extra}' dependencies. "
-                    f"Install jeanspy[{extra}] to use this module."
+                    f"{name} requires optional NumPyro/JAX dependencies. "
+                    f"Install {_format_optional_install_hint(extras)} to use this module."
                 ) from exc
             raise
         globals()[name] = module

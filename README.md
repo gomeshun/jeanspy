@@ -14,13 +14,25 @@ Install the core package with `uv`:
 uv sync
 ```
 
-Install the optional NumPyro/JAX stack when you need the CUDA12-backed JAX models and samplers:
+Install the optional NumPyro/JAX stack for CPU-only environments:
+
+```bash
+uv sync --extra numpyro_cpu
+```
+
+Install the optional NumPyro/JAX stack for CUDA12-backed environments:
 
 ```bash
 uv sync --extra numpyro_cuda12
 ```
 
-Install the full repository environment, including notebooks, tests, and ancillary plotting/debug tooling:
+Install the full repository environment for CPU-only use:
+
+```bash
+uv sync --extra numpyro_cpu --extra dev
+```
+
+Install the full repository environment for CUDA12 use:
 
 ```bash
 uv sync --extra numpyro_cuda12 --extra dev
@@ -32,20 +44,28 @@ The current dependency set targets Python 3.12 or newer because the NumPyro/Arvi
 
 If you need to refresh the environment after changing dependencies, rerun the relevant `uv sync` command for the extras you use.
 
-The `numpyro_cuda12` extra now resolves to `numpyro[cuda12]`, which already pulls `jax[cuda12]`. Installing `.[numpyro_cuda12]` therefore assumes a CUDA 12-capable environment.
+The `numpyro_cpu` extra installs the CPU-backed JAX/NumPyro stack. The `numpyro_cuda12` extra installs the CUDA12-backed JAX/NumPyro stack. Users who manage their own JAX/NumPyro installation can still use `jeanspy` as long as the required imports for the module they use are available.
 
 If you prefer a pip-based install instead of `uv`, use one of the following:
 
 ```bash
 pip install -e .                  # core
-pip install -e .[numpyro_cuda12]        # core + NumPyro/JAX on CUDA12
-pip install -e .[numpyro_cuda12,dev]  # full repo environment
+pip install -e .[numpyro_cpu]          # core + NumPyro/JAX on CPU
+pip install -e .[numpyro_cuda12]       # core + NumPyro/JAX on CUDA12
+pip install -e .[numpyro_cpu,dev]      # full CPU repository environment
+pip install -e .[numpyro_cuda12,dev]   # full CUDA12 repository environment
 ```
 
-For a single-command full repository environment from a checkout, `requirements.txt` installs the editable package with both optional extras:
+For a single-command full repository environment from a checkout, `requirements.txt` keeps the default CUDA12 editable environment used in this repository:
 
 ```bash
 pip install -r requirements.txt
+```
+
+For the CPU-only equivalent, use:
+
+```bash
+pip install -e .[numpyro_cpu,dev]
 ```
 
 The repository follows a standard `src` layout:
@@ -59,7 +79,7 @@ The repository follows a standard `src` layout:
 
 ## ArviZ I/O Backends
 
-This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. The `numpyro` extra installs the ArviZ stack together with the backend packages needed by `sampler_numpyro`:
+This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. Both `numpyro_cpu` and `numpyro_cuda12` install the ArviZ stack together with the backend packages needed by `sampler_numpyro`:
 
 - `arviz`
 - `zarr`
@@ -67,7 +87,7 @@ This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. The `numpy
 - `netCDF4`
 - `xarray`
 
-Install them with `jeanspy[numpyro_cuda12]`, `uv sync --extra numpyro_cuda12`, or the full `requirements.txt` environment.
+Install them with `jeanspy[numpyro_cpu]`, `jeanspy[numpyro_cuda12]`, either matching `uv sync --extra ...` command, or the full `requirements.txt` environment.
 
 Backend guidance for `jeanspy.sampler_numpyro.NumPyroSampler`:
 
@@ -112,7 +132,7 @@ sampler = jpy.sampler.Sampler(mdl)
 
 ## JAX Runtime Configuration
 
-After installing the `numpyro_cuda12` extra, the NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) keeps only process-wide JAX settings in environment variables before import:
+After installing either the `numpyro_cpu` or `numpyro_cuda12` extra, the NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) keeps only process-wide JAX settings in environment variables before import:
 
 
 The numerical knobs that only affect a specific solver call are now explicit method arguments instead of environment variables. For example:

@@ -22,6 +22,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+numpyro_cpu = [
+    "arviz[zarr, h5netcdf, netcdf4]>=1.0.0",
+    "h5netcdf",
+    "h5py",
+    "netCDF4",
+    "xarray",
+    "zarr",
+    "jax[cpu]>=0.6.2",
+    "numpyro[cpu]>=0.18.0",
+]
 numpyro_cuda12 = [
     "arviz[zarr, h5netcdf, netcdf4]>=1.0.0",
     "h5netcdf",
