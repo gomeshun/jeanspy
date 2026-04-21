@@ -1,8 +1,24 @@
 """JeansPy package initialization."""
 
 import importlib
+import tomllib
+from importlib.metadata import PackageNotFoundError, version as _distribution_version
+from pathlib import Path
 
-__version__ = "0.1.0"
+
+def _load_version():
+    try:
+        return _distribution_version("jeanspy")
+    except PackageNotFoundError:
+        pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
+        try:
+            with pyproject_path.open("rb") as pyproject_file:
+                return tomllib.load(pyproject_file)["project"]["version"]
+        except (FileNotFoundError, KeyError, tomllib.TOMLDecodeError):
+            return "0.0.0"
+
+
+__version__ = _load_version()
 
 __all__ = [
     "coord",
@@ -38,6 +54,7 @@ def _format_optional_install_hint(extras):
     if isinstance(extras, str):
         return f"jeanspy[{extras}]"
     return " or ".join(f"jeanspy[{extra}]" for extra in extras)
+
 
 def __getattr__(name):
     if name in _LAZY_MODULES:

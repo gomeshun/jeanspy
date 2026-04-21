@@ -1,85 +1,83 @@
 # JeansPy
-JeansPy is a Python library for the Jeans analysis. This library is designed to help researchers and astrophysicists analyze and understand the dynamics of a given system.
 
-## Features
-- Calculation of velocity dispersion profiles using the Jeans equations
-- NumPyro/JAX-based inference workflows
-- Visualization of results with Matplotlib, plus ArviZ for NumPyro workflows
+JeansPy is a Python toolkit for Jeans analysis of dwarf spheroidal galaxies. It combines classical dynamical modeling utilities with optional JAX and NumPyro inference workflows for research use.
+
+## Highlights
+
+- Velocity-dispersion and mass-model calculations based on the Jeans equations
+- Optional JAX and NumPyro workflows for gradient-based inference
+- ArviZ-compatible posterior storage using `zarr`, `h5netcdf`, or `netCDF4`
+- A standard `src` layout suitable for library use, scripts, and notebooks
 
 ## Installation
 
-Install the core package with `uv`:
+JeansPy requires Python 3.12 or newer.
+
+Install the base package from PyPI:
+
+```bash
+pip install jeanspy
+```
+
+Install the optional NumPyro and JAX stack for CPU-only environments:
+
+```bash
+pip install "jeanspy[numpyro_cpu]"
+```
+
+Install the optional NumPyro and JAX stack for CUDA12-backed environments:
+
+```bash
+pip install "jeanspy[numpyro_cuda12]"
+```
+
+The base install contains the non-JAX runtime. The optional extras add the NumPyro and JAX stack together with the ArviZ storage dependencies used by `jeanspy.sampler_numpyro`.
+
+## Installation From Source
+
+For development with `uv`:
 
 ```bash
 uv sync
-```
-
-Install the optional NumPyro/JAX stack for CPU-only environments:
-
-```bash
 uv sync --extra numpyro_cpu
-```
-
-Install the optional NumPyro/JAX stack for CUDA12-backed environments:
-
-```bash
 uv sync --extra numpyro_cuda12
-```
-
-Install the full repository environment for CPU-only use:
-
-```bash
 uv sync --extra numpyro_cpu --extra dev
-```
-
-Install the full repository environment for CUDA12 use:
-
-```bash
 uv sync --extra numpyro_cuda12 --extra dev
 ```
 
-This repository treats `pyproject.toml` as the authoritative package definition. The base install contains the non-JAX runtime; the NumPyro/JAX stack and debug tooling are exposed as optional extras.
-
-The current dependency set targets Python 3.12 or newer because the NumPyro/ArviZ `DataTree` workflow used by `sampler_numpyro` is resolved here against Python 3.12+.
-
-If you need to refresh the environment after changing dependencies, rerun the relevant `uv sync` command for the extras you use.
-
-The `numpyro_cpu` extra installs the CPU-backed JAX/NumPyro stack. The `numpyro_cuda12` extra installs the CUDA12-backed JAX/NumPyro stack. Users who manage their own JAX/NumPyro installation can still use `jeanspy` as long as the required imports for the module they use are available.
-
-If you prefer a pip-based install instead of `uv`, use one of the following:
+If you prefer `pip` from a checkout:
 
 ```bash
-pip install -e .                  # core
-pip install -e .[numpyro_cpu]          # core + NumPyro/JAX on CPU
-pip install -e .[numpyro_cuda12]       # core + NumPyro/JAX on CUDA12
-pip install -e .[numpyro_cpu,dev]      # full CPU repository environment
-pip install -e .[numpyro_cuda12,dev]   # full CUDA12 repository environment
+pip install -e .
+pip install -e ".[numpyro_cpu]"
+pip install -e ".[numpyro_cuda12]"
+pip install -e ".[numpyro_cpu,dev]"
+pip install -e ".[numpyro_cuda12,dev]"
 ```
 
-For a single-command full repository environment from a checkout, `requirements.txt` keeps the default CUDA12 editable environment used in this repository:
+`requirements.txt` keeps the default CUDA12-oriented development environment used in this repository:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-For the CPU-only equivalent, use:
+## Quick Start
 
-```bash
-pip install -e .[numpyro_cpu,dev]
+```python
+import jeanspy as jpy
+
+mdl = jpy.model.get_default_estimation_model(
+    dsph_type="Classical",
+    dsph_name="Sculptor",
+    config="priorconfig.csv",
+)
+
+sampler = jpy.sampler.Sampler(mdl)
 ```
 
-The repository follows a standard `src` layout:
+## NumPyro And ArviZ Backends
 
-- `src/jeanspy/`: installable Python package
-- `tests/`: test suite
-- `scripts/`: standalone analysis and plotting scripts
-- `notebooks/`: exploratory notebooks
-- `examples/`: sample inputs and example notebooks
-
-
-## ArviZ I/O Backends
-
-This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. Both `numpyro_cpu` and `numpyro_cuda12` install the ArviZ stack together with the backend packages needed by `sampler_numpyro`:
+Both `jeanspy[numpyro_cpu]` and `jeanspy[numpyro_cuda12]` install the backend stack needed by `jeanspy.sampler_numpyro.NumPyroSampler`:
 
 - `arviz`
 - `zarr`
@@ -87,55 +85,17 @@ This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. Both `nump
 - `netCDF4`
 - `xarray`
 
-Install them with `jeanspy[numpyro_cpu]`, `jeanspy[numpyro_cuda12]`, either matching `uv sync --extra ...` command, or the full `requirements.txt` environment.
+Storage backend guidance:
 
-Backend guidance for `jeanspy.sampler_numpyro.NumPyroSampler`:
-
-- `zarr`: best default for iterative NumPyro runs. It is chunked, append-friendly, and a natural fit for repeated save/load workflows.
-- `h5netcdf`: best single-file alternative when you want HDF5/NetCDF storage with a Python-first stack.
-- `netcdf4`: best when compatibility with external NetCDF tooling matters most.
-
+- `zarr`: good default for iterative NumPyro runs and append-friendly storage
+- `h5netcdf`: good single-file choice when you want an HDF5 or NetCDF-style workflow
+- `netcdf4`: good when compatibility with external NetCDF tooling matters most
 
 `NumPyroSampler` defaults to `storage_backend="zarr"`, while still allowing `storage_backend="h5netcdf"` or `storage_backend="netcdf4"`.
 
-## Build And Publish
-
-Build a source distribution and wheel from the repository root:
-
-```bash
-python -m pip install build twine
-python -m build
-python -m twine check dist/*
-```
-
-If the generated artifacts are valid, upload them to PyPI:
-
-```bash
-python -m twine upload dist/*
-```
-
-## Usage
-
-```python
-import jeanspy as jpy
-
-# define your model or load the preset model
-mdl = jpy.model.get_default_estimation_model(
-    dsph_type="Classical",  # "Classical" or "UFD"
-    dsph_name="Sculptor",
-    config="priorconfig.csv",
-)
-
-# run the estimation
-sampler = jpy.sampler.Sampler(mdl)
-```
-
 ## JAX Runtime Configuration
 
-After installing either the `numpyro_cpu` or `numpyro_cuda12` extra, the NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) keeps only process-wide JAX settings in environment variables before import:
-
-
-The numerical knobs that only affect a specific solver call are now explicit method arguments instead of environment variables. For example:
+After installing either optional NumPyro extra, the implementation in `model_numpyro` keeps only process-wide JAX settings in environment variables before import. Solver-specific numerical controls are explicit method arguments instead. For example:
 
 ```python
 from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
@@ -171,7 +131,7 @@ kernel = ConstantAnisotropyModel().kernel(
 )
 ```
 
-On GPU float32, `model_numpyro` defaults to `n_u=1024` for the kernel solver. That keeps the grid much smaller than the previous development setting while still staying in the sub-`1e-3` relative-error range on the representative constant-anisotropy benchmark cases used during development. If you need tighter agreement with the high-resolution reference, raise `n_u` explicitly on the relevant `sigmalos2()` call.
+On GPU float32, `model_numpyro` defaults to `n_u=1024` for the kernel solver. If you need tighter agreement with a high-resolution reference, raise `n_u` explicitly on the relevant `sigmalos2()` call.
 
 To reproduce the backend and precision comparison used during development, run:
 
@@ -179,6 +139,24 @@ To reproduce the backend and precision comparison used during development, run:
 python scripts/compare_runtime_modes.py
 ```
 
+## Project Links
+
+- Source: https://github.com/gomeshun/jeanspy
+- Issues: https://github.com/gomeshun/jeanspy/issues
+- Release guide: https://github.com/gomeshun/jeanspy/blob/main/RELEASE.md
+
+## Maintainer Notes
+
+Build and validate distributions locally before upload:
+
+```bash
+python -m pip install --upgrade build twine
+python -m build
+python -m twine check dist/*
+```
+
+The full release flow, including TestPyPI upload, is documented in https://github.com/gomeshun/jeanspy/blob/main/RELEASE.md.
+
 ## License
 
-JeansPy is distributed under the terms of the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
+JeansPy is distributed under the BSD 3-Clause License. See https://github.com/gomeshun/jeanspy/blob/main/LICENSE for details.

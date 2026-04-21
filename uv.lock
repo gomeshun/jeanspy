@@ -702,45 +702,76 @@ name = "jeanspy"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "arviz", extra = ["h5netcdf", "netcdf4", "zarr"] },
     { name = "astropy" },
     { name = "emcee" },
-    { name = "h5netcdf" },
-    { name = "h5py" },
-    { name = "ipykernel" },
-    { name = "jax", extra = ["cuda12"] },
     { name = "matplotlib" },
-    { name = "mpmath" },
-    { name = "netcdf4" },
     { name = "numpy" },
-    { name = "numpyro", extra = ["cuda12"] },
     { name = "pandas" },
-    { name = "pytest" },
     { name = "scipy" },
     { name = "tqdm" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "ipykernel" },
+    { name = "mpmath" },
+    { name = "pytest" },
+    { name = "seaborn" },
+    { name = "sympy" },
+]
+numpyro-cpu = [
+    { name = "arviz", extra = ["h5netcdf", "netcdf4", "zarr"] },
+    { name = "h5netcdf" },
+    { name = "h5py" },
+    { name = "jax" },
+    { name = "netcdf4" },
+    { name = "numpyro", extra = ["cpu"] },
+    { name = "xarray" },
+    { name = "zarr" },
+]
+numpyro-cuda12 = [
+    { name = "arviz", extra = ["h5netcdf", "netcdf4", "zarr"] },
+    { name = "h5netcdf" },
+    { name = "h5py" },
+    { name = "jax", extra = ["cuda12"] },
+    { name = "netcdf4" },
+    { name = "numpyro", extra = ["cuda12"] },
+    { name = "xarray" },
     { name = "zarr" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "arviz", extras = ["zarr", "h5netcdf", "netcdf4"], specifier = ">=1.0.0" },
+    { name = "arviz", extras = ["zarr", "h5netcdf", "netcdf4"], marker = "extra == 'numpyro-cpu'", specifier = ">=1.0.0" },
+    { name = "arviz", extras = ["zarr", "h5netcdf", "netcdf4"], marker = "extra == 'numpyro-cuda12'", specifier = ">=1.0.0" },
     { name = "astropy", specifier = ">=7.1.0" },
     { name = "emcee", specifier = ">=3.1.6" },
-    { name = "h5netcdf" },
-    { name = "h5py" },
-    { name = "ipykernel" },
-    { name = "jax", extras = ["cuda12"], specifier = ">=0.6.2" },
+    { name = "h5netcdf", marker = "extra == 'numpyro-cpu'" },
+    { name = "h5netcdf", marker = "extra == 'numpyro-cuda12'" },
+    { name = "h5py", marker = "extra == 'numpyro-cpu'" },
+    { name = "h5py", marker = "extra == 'numpyro-cuda12'" },
+    { name = "ipykernel", marker = "extra == 'dev'" },
+    { name = "jax", extras = ["cpu"], marker = "extra == 'numpyro-cpu'", specifier = ">=0.6.2" },
+    { name = "jax", extras = ["cuda12"], marker = "extra == 'numpyro-cuda12'", specifier = ">=0.6.2" },
     { name = "matplotlib", specifier = ">=3.10.8" },
-    { name = "mpmath", specifier = ">=1.3.0" },
-    { name = "netcdf4" },
+    { name = "mpmath", marker = "extra == 'dev'", specifier = ">=1.3.0" },
+    { name = "netcdf4", marker = "extra == 'numpyro-cpu'" },
+    { name = "netcdf4", marker = "extra == 'numpyro-cuda12'" },
     { name = "numpy", specifier = ">=2.4.2" },
-    { name = "numpyro", extras = ["cuda12"], specifier = ">=0.18.0" },
+    { name = "numpyro", extras = ["cpu"], marker = "extra == 'numpyro-cpu'", specifier = ">=0.18.0" },
+    { name = "numpyro", extras = ["cuda12"], marker = "extra == 'numpyro-cuda12'", specifier = ">=0.18.0" },
     { name = "pandas", specifier = ">=2.3.3" },
-    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.2" },
     { name = "scipy", specifier = ">=1.16.0" },
+    { name = "seaborn", marker = "extra == 'dev'" },
+    { name = "sympy", marker = "extra == 'dev'" },
     { name = "tqdm", specifier = ">=4.67.1" },
-    { name = "zarr" },
+    { name = "xarray", marker = "extra == 'numpyro-cpu'" },
+    { name = "xarray", marker = "extra == 'numpyro-cuda12'" },
+    { name = "zarr", marker = "extra == 'numpyro-cpu'" },
+    { name = "zarr", marker = "extra == 'numpyro-cuda12'" },
 ]
+provides-extras = ["numpyro-cpu", "numpyro-cuda12", "dev"]
 
 [[package]]
 name = "jedi"
@@ -973,11 +1004,11 @@ wheels = [
 
 [[package]]
 name = "mpmath"
-version = "1.4.0"
+version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/81/9d/97a96c6bcbc113368d1f4f01e84bcca168f162ee96fb55ccec90ec22ca2f/mpmath-1.4.0.tar.gz", hash = "sha256:d272b40c031ba0ee385e7e5fc735b48560d9838a0d7fbca109919efd23580a22", size = 2092745, upload-time = "2026-02-23T05:24:50.459Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/47/dd32fa426cc72114383ac549964eecb20ecfd886d1e5ccf5340b55b02f57/mpmath-1.3.0.tar.gz", hash = "sha256:7a28eb2a9774d00c7bc92411c19a89209d5da7c4c9a9e227be8330a23a25b91f", size = 508106, upload-time = "2023-03-07T16:47:11.061Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/5d/7f950d12fc2775234ca8e08617273659a9fac6f0030d28b123332303201c/mpmath-1.4.0-py3-none-any.whl", hash = "sha256:1910f299a1346afcc47d17586c6b3b2a39fd5e0c0829fcecd87c57acd5007c95", size = 566404, upload-time = "2026-02-23T05:24:48.845Z" },
+    { url = "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl", hash = "sha256:a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c", size = 536198, upload-time = "2023-03-07T16:47:09.197Z" },
 ]
 
 [[package]]
@@ -1130,6 +1161,9 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+cpu = [
+    { name = "jax" },
+]
 cuda12 = [
     { name = "jax", extra = ["cuda12"] },
 ]
@@ -1728,6 +1762,20 @@ wheels = [
 ]
 
 [[package]]
+name = "seaborn"
+version = "0.13.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/59/a451d7420a77ab0b98f7affa3a1d78a313d2f7281a57afb1a34bae8ab412/seaborn-0.13.2.tar.gz", hash = "sha256:93e60a40988f4d65e9f4885df477e2fdaff6b73a9ded434c1ab356dd57eefff7", size = 1457696, upload-time = "2024-01-25T13:21:52.551Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/11/00d3c3dfc25ad54e731d91449895a79e4bf2384dc3ac01809010ba88f6d5/seaborn-0.13.2-py3-none-any.whl", hash = "sha256:636f8336facf092165e27924f223d3c62ca560b1f2bb5dff7ab7fad265361987", size = 294914, upload-time = "2024-01-25T13:21:49.598Z" },
+]
+
+[[package]]
 name = "six"
 version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1748,6 +1796,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707, upload-time = "2023-09-30T13:58:05.479Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521, upload-time = "2023-09-30T13:58:03.53Z" },
+]
+
+[[package]]
+name = "sympy"
+version = "1.14.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mpmath" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/83/d3/803453b36afefb7c2bb238361cd4ae6125a569b4db67cd9e79846ba2d68c/sympy-1.14.0.tar.gz", hash = "sha256:d3d3fe8df1e5a0b42f0e7bdf50541697dbe7d23746e894990c030e2b05e72517", size = 7793921, upload-time = "2025-04-27T18:05:01.611Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl", hash = "sha256:e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5", size = 6299353, upload-time = "2025-04-27T18:04:59.103Z" },
 ]
 
 [[package]]
