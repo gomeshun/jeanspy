@@ -1,22 +1,2 @@
-pandas
-scipy
-tqdm
-matplotlib
-
-pytest
-
-astropy
-emcee
-
-# pytorch-lightning < 2.0.0
-# torch-tb-profiler
-
-arviz>=1.0.0
-ipykernel
-h5netcdf
-h5py
-netCDF4
-zarr
-
-jax[cuda12]
-numpyro[cuda12]
+# Full repository environment: core package + CUDA12 NumPyro/JAX extra + debug tooling.
+-e .[numpyro_cuda12,dev]
