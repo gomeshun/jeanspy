@@ -4,33 +4,48 @@ JeansPy is a Python library for the Jeans analysis. This library is designed to 
 ## Features
 - Calculation of velocity dispersion profiles using the Jeans equations
 - NumPyro/JAX-based inference workflows
-- Visualization of results with Matplotlib and ArviZ
+- Visualization of results with Matplotlib, plus ArviZ for NumPyro workflows
 
 ## Installation
 
-Create a local environment with `uv`:
+Install the core package with `uv`:
 
 ```bash
 uv sync
 ```
 
-This repository treats `pyproject.toml` as the authoritative environment definition. The command above creates `.venv`, installs the package in editable mode, and resolves the full development and inference stack into `uv.lock`.
-
-The current dependency set targets Python 3.12 or newer because the ArviZ 1.x `DataTree` API used by `sampler_numpyro` is resolved here against Python 3.12+.
-
-If you need to refresh the environment after changing dependencies, run:
+Install the optional NumPyro/JAX stack when you need the CUDA12-backed JAX models and samplers:
 
 ```bash
-uv sync
+uv sync --extra numpyro_cuda12
 ```
 
-For GPU execution with JAX/NumPyro, the editable install currently targets the CUDA 12 plugin line. If `jax.default_backend()` fails with a driver mismatch, verify that your NVIDIA driver supports the CUDA runtime required by the installed JAX plugin.
+Install the full repository environment, including notebooks, tests, and ancillary plotting/debug tooling:
 
-If you prefer a pip-based install instead of `uv`, run:
+```bash
+uv sync --extra numpyro_cuda12 --extra dev
+```
+
+This repository treats `pyproject.toml` as the authoritative package definition. The base install contains the non-JAX runtime; the NumPyro/JAX stack and debug tooling are exposed as optional extras.
+
+The current dependency set targets Python 3.12 or newer because the NumPyro/ArviZ `DataTree` workflow used by `sampler_numpyro` is resolved here against Python 3.12+.
+
+If you need to refresh the environment after changing dependencies, rerun the relevant `uv sync` command for the extras you use.
+
+The `numpyro_cuda12` extra now resolves to `numpyro[cuda12]`, which already pulls `jax[cuda12]`. Installing `.[numpyro_cuda12]` therefore assumes a CUDA 12-capable environment.
+
+If you prefer a pip-based install instead of `uv`, use one of the following:
+
+```bash
+pip install -e .                  # core
+pip install -e .[numpyro_cuda12]        # core + NumPyro/JAX on CUDA12
+pip install -e .[numpyro_cuda12,dev]  # full repo environment
+```
+
+For a single-command full repository environment from a checkout, `requirements.txt` installs the editable package with both optional extras:
 
 ```bash
 pip install -r requirements.txt
-pip install -e .
 ```
 
 The repository follows a standard `src` layout:
@@ -44,14 +59,15 @@ The repository follows a standard `src` layout:
 
 ## ArviZ I/O Backends
 
-This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. ArviZ 1.x no longer ships every optional I/O backend by default, so the project depends on:
+This project uses ArviZ 1.x `DataTree` outputs for NumPyro workflows. The `numpyro` extra installs the ArviZ stack together with the backend packages needed by `sampler_numpyro`:
 
+- `arviz`
 - `zarr`
 - `h5netcdf` and `h5py`
 - `netCDF4`
+- `xarray`
 
-
-The ArviZ docs show these as extras, but for this project they are declared as direct dependencies in `pyproject.toml`. That avoids resolver issues across the full supported environment matrix while still ensuring `uv sync` or `pip install -r requirements.txt` installs all three backends automatically.
+Install them with `jeanspy[numpyro_cuda12]`, `uv sync --extra numpyro_cuda12`, or the full `requirements.txt` environment.
 
 Backend guidance for `jeanspy.sampler_numpyro.NumPyroSampler`:
 
@@ -96,7 +112,7 @@ sampler = jpy.sampler.Sampler(mdl)
 
 ## JAX Runtime Configuration
 
-The NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) keeps only process-wide JAX settings in environment variables before import:
+After installing the `numpyro_cuda12` extra, the NumPyro/JAX implementation in [src/jeanspy/model_numpyro.py](src/jeanspy/model_numpyro.py) keeps only process-wide JAX settings in environment variables before import:
 
 
 The numerical knobs that only affect a specific solver call are now explicit method arguments instead of environment variables. For example:
