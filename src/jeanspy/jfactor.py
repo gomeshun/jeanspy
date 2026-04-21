@@ -1,5 +1,4 @@
 import numpy as np
-import numba
 import matplotlib
 import matplotlib.pyplot as plt
 import glob
@@ -60,9 +59,7 @@ def Jfactor_v01_truncated(rhos_Msunpc3,rs_pc,a,b,g,dist,Rtrunc_pc=2000):
         (4.*np.pi*rs_pc**3/a)*rhos_Msunpc3**2*beta(argbeta0,argbeta1)*betainc(argbeta0,argbeta1,xa/(1+xa))/dist**2
         +(1./3.)*(4.*np.pi*rs_pc**5/a)*rhos_Msunpc3**2*beta(argbeta2,argbeta3)*betainc(argbeta2,argbeta3,xa/(1+xa))/dist**4
         ) #M_sun/pc^2
-  
-#@numba.vectorize(['f8[:](f8[:],f8[:],f8[:],f8[:],f8[:])'])
-#@numba.guvectorize('f8[:](f8[:],f8[:],f8[:],f8[:],f8[:],f8[:])','(m),(m),(m),(m),(m),(m)->(m)')
+
 def Jfactor_v02(rhos_Msunpc3,rs_pc,a,b,g,dist,*,Rtrunc_pc=2000):
     if Rtrunc_pc < Rroi_pc(dist):
         xa = np.power(Rtrunc_pc/rs_pc,a)
