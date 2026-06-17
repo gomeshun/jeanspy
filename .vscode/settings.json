@@ -1,7 +1,12 @@
 {
+    "python.defaultInterpreterPath": "python3",
+    "terminal.integrated.env.linux": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cublas/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cuda_cccl/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cuda_cupti/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cuda_runtime/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cudnn/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cufft/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cusolver/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/cusparse/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/nccl/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/nvjitlink/lib:${workspaceFolder}/.venv/lib/python3.12/site-packages/nvidia/nvshmem/lib:${env:LD_LIBRARY_PATH}"
+    },
     "python.testing.pytestArgs": [
         "."
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "github.copilot.chat.responsesApiReasoningEffort": "xhigh"
 }
