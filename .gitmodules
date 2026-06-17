@@ -1,0 +1,12 @@
+[submodule "external/create_mock"]
+	path = external/create_mock
+	url = https://github.com/gomeshun/create_mock.git
+[submodule "external/GravSphere2"]
+	path = external/GravSphere2
+	url = https://github.com/dadams42/GravSphere2.git
+[submodule "external/Agama"]
+	path = external/Agama
+	url = https://github.com/GalacticDynamics-Oxford/Agama.git
+[submodule "external/gravsphere"]
+	path = external/gravsphere
+	url = https://github.com/justinread/gravsphere
