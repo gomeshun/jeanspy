@@ -73,6 +73,13 @@ dev = [
     "seaborn",
     "sympy",
 ]
+benchmark = [
+    "adamet>=2.0.10",
+    "corner>=2.2.3",
+    "dynesty>=3.0.0",
+    "jampy>=8.1.4",
+    "mgefit>=6.2.6",
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

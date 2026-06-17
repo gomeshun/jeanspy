@@ -131,3 +131,6 @@ dmypy.json
 
 # demo outputs
 notebooks/_demo_outputs
+
+# benchmark outputs
+benchmarks/jeans_comparison/artifacts/
