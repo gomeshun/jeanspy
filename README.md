@@ -63,17 +63,31 @@ pip install -r requirements.txt
 
 ## Quick Start
 
-```python
-import jeanspy as jpy
+The following example is self-contained and uses only the base JeansPy installation.
 
-mdl = jpy.model.get_default_estimation_model(
-    dsph_type="Classical",
-    dsph_name="Sculptor",
-    config="priorconfig.csv",
+```python
+import numpy as np
+from jeanspy.model import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
+
+model = DSphModel(
+    vmem_kms=0.0,
+    submodels={
+        "StellarModel": PlummerModel(re_pc=200.0),
+        "DMModel": NFWModel(
+            rs_pc=1000.0,
+            rhos_Msunpc3=1.0e-2,
+            r_t_pc=10000.0,
+        ),
+        "AnisotropyModel": ConstantAnisotropyModel(beta_ani=0.0),
+    },
 )
 
-sampler = jpy.sampler.Sampler(mdl)
+R_pc = np.array([50.0, 100.0, 300.0])
+sigma_los_kms = model.sigmalos_dequad(R_pc)
+print(sigma_los_kms)
 ```
+
+JeansPy does not bundle an external dwarf-galaxy database. Observational data and object-specific priors should be supplied explicitly by downstream analyses.
 
 ## NumPyro And ArviZ Backends
 
