@@ -1,18 +1,50 @@
-# Releasing jeanspy to PyPI with uv
+# Releasing jeanspy to PyPI
 
-This document describes the manual release flow for jeanspy. The maintainer workflow is uv-first: build with `uv build`, validate with `uvx twine`, and publish with `uv publish`. Users still install the published package with `pip install jeanspy`.
+JeansPy is published from GitHub Actions with `uv` and PyPI Trusted Publishing. The release workflow is `.github/workflows/release.yml`.
 
-## 1. Before The First Release
+No long-lived PyPI API token is stored in GitHub. A version tag triggers a build and validation job; only the resulting artifacts are passed to a separate publishing job with GitHub OIDC permission.
 
-- Confirm the project name is still available on PyPI: https://pypi.org/project/jeanspy/
-- Create accounts on both PyPI and TestPyPI.
-- Generate API tokens from the account settings pages.
-- Keep the package version in `pyproject.toml` as the single source of truth.
-- `jeanspy.__version__` is resolved from installed package metadata, with a local `pyproject.toml` fallback for source-tree imports.
+Users install the published package with:
 
-## 2. Prepare The Release
+```bash
+pip install jeanspy
+```
 
-1. Update the version in `pyproject.toml`.
+## 1. One-Time Setup Before The First Release
+
+### Create the GitHub environment
+
+In the `gomeshun/jeanspy` repository, open:
+
+`Settings` -> `Environments` -> `New environment`
+
+Create an environment named:
+
+```text
+pypi
+```
+
+No PyPI secret is required. Optionally configure required reviewers on this environment if you want every release to require manual approval before the publish job runs.
+
+### Register the PyPI Trusted Publisher
+
+If `jeanspy` does not yet exist on PyPI, add a **pending publisher** from the PyPI account's `Publishing` page. Use:
+
+| Field | Value |
+| --- | --- |
+| PyPI project name | `jeanspy` |
+| GitHub owner | `gomeshun` |
+| Repository | `jeanspy` |
+| Workflow filename | `release.yml` |
+| Environment | `pypi` |
+
+A pending publisher creates the PyPI project on the first successful upload. It does not reserve the project name before that upload.
+
+If the project already exists on PyPI, configure the same Trusted Publisher from that project's `Publishing` settings instead.
+
+## 2. Prepare A Release
+
+Keep the package version in `pyproject.toml` as the single source of truth. The Git tag must match it exactly with a leading `v`.
 
 For an explicit version:
 
@@ -26,83 +58,73 @@ For a semantic bump:
 uv version --bump patch
 ```
 
-2. Review `README.md` and `pyproject.toml` for any release-specific changes.
-3. Remove old build artifacts so only the current release files remain in `dist/`.
+Then review and commit the version change:
+
+```bash
+git add pyproject.toml uv.lock
+git commit -m "Bump version to 0.1.1"
+git push origin main
+```
+
+Run any relevant tests locally before tagging. A useful release check is:
 
 ```bash
 rm -rf dist/
-```
-
-4. Optionally create a Git tag or release branch before uploading.
-
-## 3. Build And Validate
-
-From the repository root:
-
-```bash
 uv build --no-sources
 uvx twine check dist/*
 uv run pytest tests/test_import.py -q
 ```
 
-- `uv build --no-sources` is recommended for publishing so the build is closer to what downstream tools see outside your local uv project.
-- If you changed core behavior, run additional targeted tests before uploading.
+## 3. Publish
 
-Optional smoke test of the built wheel in an isolated environment:
-
-```bash
-uv venv .venv-release-test --python 3.12
-. .venv-release-test/bin/activate
-uv pip install dist/jeanspy-<version>-py3-none-any.whl
-python -c "import jeanspy; print(jeanspy.__version__)"
-deactivate
-rm -rf .venv-release-test
-```
-
-## 4. Upload To TestPyPI
-
-Use a TestPyPI token first so you can verify the package metadata and installation flow without consuming the real release version on PyPI.
+Create and push an annotated version tag matching `pyproject.toml`:
 
 ```bash
-export UV_PUBLISH_TOKEN=<testpypi-token>
-uv publish \
-  --publish-url https://test.pypi.org/legacy/ \
-  --check-url https://test.pypi.org/simple/
+git tag -a v0.1.1 -m "Release v0.1.1"
+git push origin v0.1.1
 ```
 
-If the upload fails partway through, rerun the same command. uv skips files that already exist and match exactly.
+The workflow accepts stable semantic-version tags such as `v0.1.1` and prerelease tags such as `v0.2.0rc1`, `v0.2.0a1`, and `v0.2.0b1`.
 
-Then verify installation from TestPyPI in a clean environment:
+The GitHub Actions workflow then:
+
+1. checks out the tagged source without persisting Git credentials;
+2. verifies that the tag matches the version in `pyproject.toml`;
+3. builds the wheel and source distribution with `uv build --no-sources`;
+4. validates package metadata with `twine check`;
+5. installs and imports both the wheel and source distribution in isolated Python 3.12 environments;
+6. uploads only the built distributions as a GitHub Actions artifact;
+7. runs a separate `publish` job using the protected `pypi` environment;
+8. generates PEP 740 attestations;
+9. publishes with `uv publish` using PyPI Trusted Publishing/OIDC.
+
+The publish job alone has `id-token: write` permission.
+
+## 4. Post-Release Checks
+
+After the workflow succeeds, verify the release from a clean environment:
 
 ```bash
-uv venv .venv-testpypi --python 3.12
-. .venv-testpypi/bin/activate
-uv pip install \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple \
-  jeanspy
-python -c "import jeanspy; print(jeanspy.__version__)"
-deactivate
-rm -rf .venv-testpypi
+uv run --with jeanspy --no-project -- python -c "import jeanspy; print(jeanspy.__version__)"
 ```
 
-## 5. Upload To PyPI
+Also check the PyPI project page to confirm that the README, version, classifiers, project links, wheel, and source distribution look correct.
 
-When the TestPyPI upload looks correct, publish the same artifacts to PyPI:
+Optionally create a GitHub Release from the same tag if you want release notes to be visible on GitHub.
 
-```bash
-export UV_PUBLISH_TOKEN=<pypi-token>
-uv publish
-```
+## 5. If A Release Fails
 
-If you switch to Trusted Publishing later, `UV_PUBLISH_TOKEN` is no longer needed.
+Do not reuse a different package build under a version that has already been published to PyPI; PyPI release files are immutable.
 
-## 6. Post-Release Checks
+If the workflow fails **before** publishing, fix the problem, delete/recreate the local and remote tag if appropriate, and rerun the release from the corrected commit.
 
-- Install from PyPI in a clean environment: `uv run --with jeanspy --no-project -- python -c "import jeanspy; print(jeanspy.__version__)"`
-- Open the PyPI project page and confirm the README, classifiers, and links render correctly.
-- Create a GitHub release if you want tags and release notes to match the published version.
+If some artifacts were already uploaded to PyPI, inspect the PyPI release first. If a correction requires different package contents, bump to a new version and publish that version instead.
 
-## 7. Recommended Follow-Up
+For Trusted Publishing failures, confirm that these values match exactly on both sides:
 
-For repeatable releases, consider configuring PyPI Trusted Publishing from GitHub Actions so that you can publish without storing long-lived API tokens.
+- GitHub repository: `gomeshun/jeanspy`
+- workflow: `.github/workflows/release.yml`
+- GitHub environment: `pypi`
+- PyPI project: `jeanspy`
+
+No `PYPI_TOKEN`, `UV_PUBLISH_TOKEN`, username, or password should be necessary for the GitHub Actions release workflow.
