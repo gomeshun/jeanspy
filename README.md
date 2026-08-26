@@ -147,15 +147,16 @@ python scripts/compare_runtime_modes.py
 
 ## Maintainer Notes
 
-Build and validate distributions locally before upload:
+Releases are published automatically from version tags by `.github/workflows/release.yml` using `uv` and PyPI Trusted Publishing. No long-lived PyPI API token is required in GitHub.
+
+Before the first release, configure the `pypi` GitHub environment and the matching PyPI Trusted Publisher. Then create and push a version tag matching the version in `pyproject.toml`, for example:
 
 ```bash
-python -m pip install --upgrade build twine
-python -m build
-python -m twine check dist/*
+git tag -a v0.1.0 -m "Release v0.1.0"
+git push origin v0.1.0
 ```
 
-The full release flow, including TestPyPI upload, is documented in https://github.com/gomeshun/jeanspy/blob/main/RELEASE.md.
+See [RELEASE.md](RELEASE.md) for the complete setup, validation, publishing, and recovery procedure.
 
 ## License
 
