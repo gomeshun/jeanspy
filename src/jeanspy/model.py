@@ -39,13 +39,6 @@ from .dequad import dequad
 
 
 DATA_DIR = files("jeanspy").joinpath("data")
-# check if dsph_database is installed
-try:
-    import dsph_database.spectroscopy
-    import dsph_database.photometry
-except ImportError:
-    dsph_database = None
-    warnings.warn("dsph_database is not installed. Some functionalities may not work.")
 
 GMsun_m3s2 = 1.32712440018e20
 R_trunc_pc = 1866.
@@ -1350,36 +1343,26 @@ class FlatPriorModel(Model):
 
 class PhotometryPriorModel(Model):
     """ prior model for photometry.
+
+    Parameters
+    ----------
+    loc : float
+        Mean (location) of the log10 effective-radius prior in log10(pc).
+        Pass ``float('nan')`` when the prior will be set later via
+        :meth:`reset_prior`.
+    scale : float
+        Standard deviation (scale) of the log10 effective-radius prior.
+        Pass ``float('nan')`` when the prior will be set later via
+        :meth:`reset_prior`.
     """
     required_param_names = []
     required_models = {}
 
-    def __init__(self, dsph_name, show_init=False, submodels=None, **params):
+    def __init__(self, loc, scale, show_init=False, submodels=None, **params):
         super().__init__(show_init, submodels or {}, **params)
-        self._dsph_name = dsph_name
-        self.load_config(dsph_name)
-
-    @property
-    def dsph_name(self):
-        return self._dsph_name
-    
-    def load_config(self,dsph_name):
-        if type(dsph_name) == str:
-            if dsph_name == "Mock":
-                self.logger.warning("dsph_name is 'Mock'. loc and scale must be set manually by 'reset_prior'.")
-                loc,scale = np.nan, np.nan
-            else:
-                database = dsph_database.photometry.load_prior()
-                loc,scale = database.set_index("name").T[dsph_name]
-        else:
-            # check if dsph_name is tuple of (loc,scale)
-            self.logger.warning("dsph_name is not a string. Check if it is a tuple of (loc,scale).")
-            loc,scale = dsph_name
-            self.logger.info("loc: %r", loc)
-            self.logger.info("scale: %r", scale)
-        print_dict = {"log10_re_pc":loc,"e_log10_re_pc":scale}
+        print_dict = {"log10_re_pc": loc, "e_log10_re_pc": scale}
         self.logger.info("%s:%r", self.__class__.__name__, print_dict)
-        self.reset_prior(loc,scale)
+        self.reset_prior(loc, scale)
 
     def reset_prior(self,loc,scale):
         self._lnprior_func = norm(loc=loc,scale=scale).logpdf
@@ -1489,21 +1472,21 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         return pd.Series(d)
 
 
-    def load_data(self, dsph_type, dsph_name,shared=False):
-        """ load dataset required for parameter fitting or estimation.
-        data must be stored in self.data, as a pd.DataFrame.
-        additional data must be stored in self.additional_data, as a dict.
-        """
-        self.dsph_name = dsph_name
-        self.dsph_type = dsph_type
-        self.shared = shared
-        if self.dsph_type == "Mock":
-            self.logger.warning("dsph_type is 'Mock'. 'data' attribute must be reset manually by 'reset_data'.")
+    def load_data(self, data, shared=False):
+        """ Load dataset required for parameter fitting or estimation.
 
-        else:
-            data = dsph_database.spectroscopy.load_kinematic_data(dsph_type,dsph_name)
-            data = data.astype(self.dtype)  # decrease memory usage
-            self.reset_data(data)
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            Observed kinematic data. Must contain at least a ``vlos_kms``
+            column. Pass a DataFrame directly; no internal database fetch is
+            performed.
+        shared : bool, optional
+            Whether to store data in shared memory for multiprocessing.
+        """
+        self.shared = shared
+        data = data.astype(self.dtype)
+        self.reset_data(data)
 
 
     def reset_data(self, data):
@@ -1549,7 +1532,7 @@ class SimpleDSphEstimationModel(FittableModel,Model):
         if not self.shared:
             # raise ValueError("shared_memory_name is not available when shared is False.")
             return None
-        return f"{self.dsph_type}_{self.dsph_name}"
+        return f"SimpleDSphEstimationModel_{id(self)}"
     
     
     @property
@@ -1720,10 +1703,24 @@ class SimpleDSphEstimationModel(FittableModel,Model):
     
 
 
-def get_default_estimation_model(dsph_type,dsph_name,
-                                 config="priorconfig.csv",
-                                 kwargs_load_data=None):
-    """ return a default estimation model. 
+def get_default_estimation_model(data,
+                                 photometry_prior_loc,
+                                 photometry_prior_scale,
+                                 config="priorconfig.csv"):
+    """ Return a default estimation model.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        Observed kinematic data with at least ``vlos_kms``, ``R_pc``, and
+        ``e_vlos_kms`` columns.
+    photometry_prior_loc : float
+        Mean of the log10 effective-radius prior (log10 pc).
+    photometry_prior_scale : float
+        Standard deviation of the log10 effective-radius prior.
+    config : str, optional
+        Path to the flat-prior configuration CSV file.  A default file is
+        generated automatically when the path does not exist.
     """
 
     dsph_model = DSphModel(submodels={
@@ -1739,8 +1736,7 @@ def get_default_estimation_model(dsph_type,dsph_name,
         FlatPriorModel.generate_default_config_file(config,dsph_model.params_all.index)
 
     mdl = SimpleDSphEstimationModel(
-        args_load_data=[dsph_type, dsph_name],
-        kwargs_load_data=kwargs_load_data or {},
+        args_load_data=[data],
         submodels={
             "DSphModel" : DSphModel(submodels={
                 "StellarModel" : PlummerModel(),
@@ -1748,7 +1744,10 @@ def get_default_estimation_model(dsph_type,dsph_name,
                 "AnisotropyModel" : ConstantAnisotropyModel(),
             }),
             "FlatPriorModel": FlatPriorModel(config=config),
-            "PhotometryPriorModel": PhotometryPriorModel(dsph_name)
+            "PhotometryPriorModel": PhotometryPriorModel(
+                loc=photometry_prior_loc,
+                scale=photometry_prior_scale,
+            )
         })
     return mdl
 
