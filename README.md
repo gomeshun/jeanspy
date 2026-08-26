@@ -1,5 +1,10 @@
 # JeansPy
 
+## ⚠️ Development Status
+
+> [!WARNING]
+> **JeansPy is under active development and may not work correctly.** APIs, numerical behavior, and supported workflows may change without notice. Some parts of the code may be incomplete or insufficiently validated, so results should be independently checked before they are used for scientific conclusions.
+
 JeansPy is a Python toolkit for Jeans analysis of dwarf spheroidal galaxies. It combines classical dynamical modeling utilities with optional JAX and NumPyro inference workflows for research use.
 
 ## Highlights
