@@ -131,6 +131,11 @@ dmypy.json
 
 # demo outputs
 notebooks/_demo_outputs
+notebooks/*.nc
+notebooks/*.zarr/
+
+# test outputs
+tests/artifacts/
 
 # benchmark outputs
 benchmarks/jeans_comparison/artifacts/
