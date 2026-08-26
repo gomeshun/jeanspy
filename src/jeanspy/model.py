@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import multiprocessing as multi
 from multiprocessing.shared_memory import SharedMemory
-from copy import copy
+from copy import copy, deepcopy
 import os
 from numpy import array,pi,sqrt,exp,power,log,log10,log1p,cos,tan,sin, sort,argsort, inf, isnan
 from scipy.stats import norm
@@ -185,7 +185,7 @@ class Parameters(MutableMapping):
         Return a deep copy of the Parameters object.
         """
         data = object.__getattribute__(self, "_data")
-        return Parameters(copy.deepcopy(data, memo=memo))
+        return Parameters(deepcopy(data, memo=memo))
 
 class Model(metaclass=ABCMeta):
     #params, required_param_names = pd.Series(), ['',]
