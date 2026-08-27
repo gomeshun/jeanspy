@@ -184,8 +184,12 @@ class Parameters(MutableMapping):
         """
         Return a deep copy of the Parameters object.
         """
+        cls = type(self)
+        copied = cls.__new__(cls)
+        memo[id(self)] = copied
         data = object.__getattribute__(self, "_data")
-        return Parameters(deepcopy(data, memo=memo))
+        object.__setattr__(copied, "_data", deepcopy(data, memo=memo))
+        return copied
 
 class Model(metaclass=ABCMeta):
     #params, required_param_names = pd.Series(), ['',]

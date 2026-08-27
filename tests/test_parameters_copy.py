@@ -13,8 +13,18 @@ def test_deepcopy_succeeds():
     """copy.deepcopy(Parameters(...)) must not raise."""
     p = Parameters({"a": 1, "nested": [1, 2, 3]})
     p_deep = copy.deepcopy(p)
+    assert isinstance(p_deep, Parameters)
     assert p_deep["a"] == 1
     assert p_deep["nested"] == [1, 2, 3]
+
+
+def test_deepcopy_self_reference():
+    """Self-referential data must deepcopy without infinite recursion."""
+    p = Parameters()
+    p["self"] = p
+    p_deep = copy.deepcopy(p)
+    assert isinstance(p_deep, Parameters)
+    assert p_deep["self"] is p_deep
 
 
 def test_deepcopy_independence():
