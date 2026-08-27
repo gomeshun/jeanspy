@@ -22,6 +22,13 @@ def test_sampler_wildcard_import_no_legacy_names():
         assert name not in namespace, f"{name} should not be imported from jeanspy.sampler"
 
 
+def test_sampler_legacy_names_not_accessible():
+    from jeanspy import sampler
+
+    for name in ("DSphSimulator", "Network", "Worker", "_LEGACY_SWYFT_EXPORTS"):
+        assert not hasattr(sampler, name), f"{name} should not be accessible on sampler module"
+
+
 def test_sampler_class_importable():
     from jeanspy.sampler import Sampler
     assert Sampler is not None
