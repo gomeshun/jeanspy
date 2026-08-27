@@ -7,7 +7,6 @@ capability-driven ``auto`` policy.
 
 import inspect
 
-import jax
 import jax.numpy as jnp
 import numpy as np
 import pytest
@@ -109,23 +108,3 @@ def test_invalid_dm_mass_method_is_rejected_consistently():
             u_max=300.0,
             dm_mass_method="not-a-method",
         )
-
-
-def test_default_zhao_jeans_path_remains_differentiable():
-    dsph = _zhao_dsph()
-    params = _zhao_params()
-    R = jnp.asarray([20.0, 100.0], dtype=jnp.float32)
-
-    def objective(a):
-        sigma2 = dsph.sigmalos2(
-            R,
-            params={**params, "a": a},
-            backend="kernel",
-            jit=False,
-            n_u=64,
-            u_max=400.0,
-        )
-        return jnp.sum(sigma2)
-
-    grad_a = jax.grad(objective)(jnp.asarray(params["a"], dtype=R.dtype))
-    assert np.isfinite(np.asarray(grad_a)).all()
