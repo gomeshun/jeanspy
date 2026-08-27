@@ -74,9 +74,9 @@ jobs:
         if: matrix.python-version == '3.12'
         run: JAX_ENABLE_X64=true uv run --python "${{ matrix.python-version }}" python scripts/benchmark_eta2_sqrtlog_stress.py
 
-      - name: Benchmark public sqrtlog defaults
+      - name: Check sigmalos2 accuracy contract
         if: matrix.python-version == '3.12'
-        run: JAX_ENABLE_X64=true uv run --python "${{ matrix.python-version }}" python scripts/benchmark_sigmalos2_sqrtlog_defaults.py
+        run: JAX_ENABLE_X64=true uv run --python "${{ matrix.python-version }}" python scripts/benchmark_sigmalos2_accuracy_contract.py
 
       - name: Generate Sérsic visualization
         run: uv run --python "${{ matrix.python-version }}" python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
