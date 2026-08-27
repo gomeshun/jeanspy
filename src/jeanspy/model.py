@@ -479,18 +479,32 @@ class SersicModel(StellarModel):
     required_models = {}
     
     
-    _VALID_DEPROJECTION_METHODS = ("approx", "numerical")
+    _VALID_DEPROJECTION_METHODS = ("approx", "vm20", "vm20bis", "numerical")
 
-    def __init__(self, *args, deprojection_method: str = "approx", **kwargs):
+    def __init__(self, *args, deprojection_method: str = "vm20", **kwargs):
         """
         Parameters
         ----------
         deprojection_method : str, optional
             Default method used by :meth:`density_3d` when no ``method``
-            keyword is passed.  ``"approx"`` uses the fast Lima Neto–Gerbal–
-            Márquez (LGM) analytical approximation; ``"numerical"`` uses the
-            slower but more accurate Abel inversion via
-            :meth:`density_3d_numerical`.  Default is ``"approx"``.
+            keyword is passed.  Accepted values:
+
+            ``"approx"``
+                Lima Neto–Gerbal–Márquez (LGM) approximation.  Fast but
+                appreciably inaccurate for low Sérsic index at small radii.
+            ``"vm20"``
+                Vitral & Mamon (2020) LGM + bivariate polynomial correction.
+                Valid for ``0.5 ≤ n ≤ 10``, ``1e-3 ≤ r/R_e ≤ 1e3``.
+                Recommended for most purposes. **Default.**
+            ``"vm20bis"``
+                Vitral & Mamon (2021) recalibrated polynomial covering the
+                extended low-radius domain ``1e-4 ≤ r/R_e ≤ 1e3`` for
+                ``0.5 ≤ n ≤ 3.4``.  Preferred for dwarf-galaxy applications.
+            ``"numerical"``
+                Numerical spherical Abel inversion (reference implementation).
+                Slowest; use for validation.
+
+            Default is ``"vm20"``.
         """
         super().__init__(*args, **kwargs)
         if deprojection_method not in self._VALID_DEPROJECTION_METHODS:
@@ -502,6 +516,7 @@ class SersicModel(StellarModel):
         df = pd.read_csv(DATA_DIR.joinpath("sersic_log10n_log10bn.csv"))
         self._b_interp = interp1d(df["log10n"].values,df["log10bn"].values,"cubic",assume_sorted=True)
         self.coeff = pd.read_csv(DATA_DIR.joinpath("coeff_dens.csv"), comment="#", sep=r"\s+", engine="python", header=None).values
+        self.coeff_vm20bis = pd.read_csv(DATA_DIR.joinpath("coeff_dens_vm20bis.csv"), comment="#", sep=r"\s+", engine="python", header=None).values
     
     @property
     def b_approx(self):
@@ -579,6 +594,8 @@ class SersicModel(StellarModel):
             that the error can be appreciable for low Sérsic index, especially
             at small ``r / R_e``.  A supported nominal range is ``0.5 ≤ n ≤ 10``;
             outside this range a :class:`ValueError` is raised.
+            Prefer :meth:`density_3d_VM20` or :meth:`density_3d_VM20bis` for
+            better accuracy without the cost of a full Abel integration.
         """
         n = self.params.n
         if not (0.5 <= n <= 10):
@@ -589,6 +606,149 @@ class SersicModel(StellarModel):
         b = self.b_CB
         x = (r_pc / self.params.re_pc)
         return x**-p * exp(-b * x**(1/n)) / self.norm_3d
+
+    @staticmethod
+    def _eval_vm20_poly(coeff_table, log_x, log_n):
+        """Evaluate the VM20 bivariate polynomial correction.
+
+        Parameters
+        ----------
+        coeff_table : ndarray, shape (order+1, order+1)
+            Coefficient matrix (rows = exponent of log r/Re, cols = exponent
+            of log n), as stored in ``coeff_dens.csv``.
+        log_x : float
+            ``log10(r / R_e)``.
+        log_n : float
+            ``log10(n)``.
+
+        Returns
+        -------
+        float
+            ``P = log10(rho_LGM / rho_numerical)``.
+        """
+        P = 0.0
+        order = coeff_table.shape[0] - 1
+        for l in range(order + 1):
+            for j in range(order + 1 - l):
+                P += coeff_table[l, j] * log_n**j * log_x**l
+        return P
+
+    def density_3d_VM20(self, r_pc):
+        """3-D Sérsic density using the Vitral & Mamon (2020) approximation.
+
+        The VM20 approximation corrects the LGM formula with a bivariate
+        polynomial in ``log10(r / R_e)`` and ``log10(n)`` that is fitted to the
+        ratio ``log10(rho_LGM / rho_numerical)`` on the grid
+        ``0.5 ≤ n ≤ 10``, ``1e-3 ≤ r/R_e ≤ 1e3``.
+
+        Formula:
+
+        .. math::
+
+            \\rho_\\mathrm{VM20}(r) =
+                \\rho_\\mathrm{LGM}(r) /
+                10^{P(\\log_{10}(r/R_e),\\,\\log_{10}(n))}
+
+        where the polynomial coefficients are stored in
+        ``data/coeff_dens.csv`` (Vitral & Mamon 2020, A&A 635 A20).
+
+        .. note::
+            Both the LGM baseline and the polynomial correction use the
+            Ciotti–Bertin (1999) ``b_CB`` approximation, consistent with the
+            original calibration.  The correction is not meaningful outside the
+            calibrated domain; a :class:`ValueError` is raised.
+
+        Parameters
+        ----------
+        r_pc : float or array_like
+            3-D radius in parsec.
+
+        Returns
+        -------
+        float or ndarray
+        """
+        n = self.params.n
+        re = self.params.re_pc
+        if not (0.5 <= n <= 10):
+            raise ValueError(
+                f"density_3d_VM20 is valid for 0.5 ≤ n ≤ 10; got n={n}."
+            )
+        log_n = log10(n)
+        scalar_input = np.ndim(r_pc) == 0
+        r_arr = np.atleast_1d(np.asarray(r_pc, dtype=float))
+        x_arr = r_arr / re
+        log_x_arr = log10(x_arr)
+        if np.any(x_arr <= 0):
+            raise ValueError("r_pc must be positive for density_3d_VM20.")
+        result = np.empty_like(r_arr)
+        for idx in np.ndindex(r_arr.shape):
+            log_x = log_x_arr[idx]
+            if not (-3.0 <= log_x <= 3.0):
+                raise ValueError(
+                    f"density_3d_VM20 is valid for 1e-3 ≤ r/R_e ≤ 1e3; "
+                    f"got r/R_e = {x_arr[idx]:.3g} (log10={log_x:.2f})."
+                )
+            P = self._eval_vm20_poly(self.coeff, log_x, log_n)
+            lgm = self.density_3d_LGM(r_arr[idx])
+            result[idx] = lgm * 10**P
+        if scalar_input:
+            return float(result.ravel()[0])
+        return result
+
+    def density_3d_VM20bis(self, r_pc):
+        """3-D Sérsic density using the Vitral & Mamon (2021) extended approximation.
+
+        VM20bis extends the VM20 polynomial correction to the lower-radius
+        regime, using a grid calibrated over
+        ``0.5 ≤ n ≤ 3.4``, ``1e-4 ≤ r/R_e ≤ 1e3``.
+        This is the preferred choice for dwarf-spheroidal applications where
+        small Sérsic indices and inner-profile accuracy matter.
+
+        The coefficient table is stored in ``data/coeff_dens_vm20bis.csv``,
+        computed using the VM20 methodology applied to the extended domain
+        (following Vitral & Mamon 2021, A&A 646 A63, Appendix A).
+
+        .. note::
+            Extrapolation outside the calibrated domain (n or r/R_e) is
+            disallowed; a :class:`ValueError` is raised to prevent silent
+            errors.
+
+        Parameters
+        ----------
+        r_pc : float or array_like
+            3-D radius in parsec.
+
+        Returns
+        -------
+        float or ndarray
+        """
+        n = self.params.n
+        re = self.params.re_pc
+        if not (0.5 <= n <= 3.4):
+            raise ValueError(
+                f"density_3d_VM20bis is valid for 0.5 ≤ n ≤ 3.4; got n={n}."
+            )
+        log_n = log10(n)
+        scalar_input = np.ndim(r_pc) == 0
+        r_arr = np.atleast_1d(np.asarray(r_pc, dtype=float))
+        x_arr = r_arr / re
+        log_x_arr = log10(x_arr)
+        if np.any(x_arr <= 0):
+            raise ValueError("r_pc must be positive for density_3d_VM20bis.")
+        result = np.empty_like(r_arr)
+        for idx in np.ndindex(r_arr.shape):
+            log_x = log_x_arr[idx]
+            if not (-4.0 <= log_x <= 3.0):
+                raise ValueError(
+                    f"density_3d_VM20bis is valid for 1e-4 ≤ r/R_e ≤ 1e3; "
+                    f"got r/R_e = {x_arr[idx]:.3g} (log10={log_x:.2f})."
+                )
+            P = self._eval_vm20_poly(self.coeff_vm20bis, log_x, log_n)
+            lgm = self.density_3d_LGM(r_arr[idx])
+            result[idx] = lgm * 10**P
+        if scalar_input:
+            return float(result.ravel()[0])
+        return result
 
     def density_3d_numerical(self, r_pc, *, epsrel=1e-6, epsabs=0.0, limit=200):
         """3-D deprojected Sérsic density via numerical spherical Abel inversion.
@@ -664,23 +824,29 @@ class SersicModel(StellarModel):
         return result.reshape(r_arr.shape)
 
     def density_3d(self, r_pc, method: Optional[str] = None):
-        """Dispatch to either the LGM approximation or the numerical Abel inversion.
+        """Dispatch to the selected 3-D Sérsic deprojection implementation.
 
         Parameters
         ----------
         r_pc : float or array_like
             3-D radius in parsec.
         method : str or None
-            ``"approx"`` → :meth:`density_3d_LGM`; ``"numerical"`` →
-            :meth:`density_3d_numerical`; ``None`` → use the instance default
-            set by ``deprojection_method`` (constructor argument, default
-            ``"approx"``).
+            Which implementation to use:
+
+            * ``"approx"``   → :meth:`density_3d_LGM` (legacy, fast).
+            * ``"vm20"``     → :meth:`density_3d_VM20` (Vitral & Mamon 2020).
+            * ``"vm20bis"``  → :meth:`density_3d_VM20bis` (Vitral & Mamon 2021,
+              low-radius extension; ``n ≤ 3.4``).
+            * ``"numerical"`` → :meth:`density_3d_numerical` (reference Abel
+              inversion; slowest).
+            * ``None``        → use the instance default set by
+              ``deprojection_method`` (constructor argument).
 
         Raises
         ------
         ValueError
             If *method* (or the instance default) is not one of the accepted
-            method names.
+            names.
         """
         resolved = method if method is not None else self.deprojection_method
         if resolved not in self._VALID_DEPROJECTION_METHODS:
@@ -690,6 +856,10 @@ class SersicModel(StellarModel):
             )
         if resolved == "approx":
             return self.density_3d_LGM(r_pc)
+        if resolved == "vm20":
+            return self.density_3d_VM20(r_pc)
+        if resolved == "vm20bis":
+            return self.density_3d_VM20bis(r_pc)
         return self.density_3d_numerical(r_pc)
     
     def half_light_radius(self):
