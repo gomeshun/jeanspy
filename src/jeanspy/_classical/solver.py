@@ -134,12 +134,7 @@ class DSphModel(Model):
     ):
         """Return the LOS velocity dispersion in km/s."""
         return np.sqrt(
-            self.sigmalos2_dequad(
-                R_pc,
-                n=n,
-                n_kernel=n_kernel,
-                ignore_RuntimeWarning=ignore_RuntimeWarning,
-            )
+            self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
         )
 
     def sigmalos2(
@@ -150,12 +145,7 @@ class DSphModel(Model):
         ignore_RuntimeWarning=True,
     ):
         """Backend-neutral entry point for classical LOS dispersion squared."""
-        return self.sigmalos2_dequad(
-            R_pc,
-            n=n,
-            n_kernel=n_kernel,
-            ignore_RuntimeWarning=ignore_RuntimeWarning,
-        )
+        return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
 
 
 __all__ = ["DSphModel", "GMsun_m3s2"]
