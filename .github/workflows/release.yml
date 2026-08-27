@@ -1,6 +1,13 @@
 name: Publish release to PyPI
 
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/release.yml"
+      - "pyproject.toml"
+      - "README.md"
+      - "RELEASE.md"
+      - "scripts/validate_release_artifact.py"
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
@@ -26,6 +33,7 @@ jobs:
           enable-cache: false
 
       - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         run: |
           PROJECT_VERSION="$(uv run --isolated --no-project --python 3.12 python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
@@ -40,19 +48,74 @@ jobs:
       - name: Check distribution metadata
         run: uvx twine check dist/*
 
-      - name: Smoke test wheel
+      - name: Locate built artifacts
         shell: bash
         run: |
-          WHEEL="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
-          uv run --isolated --no-project --python 3.12 --with "${WHEEL}" \
-            python -c "import jeanspy; print(jeanspy.__version__)"
+          WHEEL="$(find "$GITHUB_WORKSPACE/dist" -maxdepth 1 -name '*.whl' -print -quit)"
+          SDIST="$(find "$GITHUB_WORKSPACE/dist" -maxdepth 1 -name '*.tar.gz' -print -quit)"
+          test -n "$WHEEL"
+          test -n "$SDIST"
+          WHEEL_URI="$(python -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$WHEEL")"
+          SDIST_URI="$(python -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$SDIST")"
+          {
+            echo "WHEEL=$WHEEL"
+            echo "SDIST=$SDIST"
+            echo "WHEEL_URI=$WHEEL_URI"
+            echo "SDIST_URI=$SDIST_URI"
+          } >> "$GITHUB_ENV"
 
-      - name: Smoke test source distribution
+      - name: Resolve documented optional extras from built artifacts
         shell: bash
         run: |
-          SDIST="$(find dist -maxdepth 1 -name '*.tar.gz' -print -quit)"
-          uv run --isolated --no-project --python 3.12 --with "${SDIST}" \
-            python -c "import jeanspy; print(jeanspy.__version__)"
+          uv venv --python 3.12 "$RUNNER_TEMP/resolve-env"
+          for artifact_uri in "$WHEEL_URI" "$SDIST_URI"; do
+            uv pip install --python "$RUNNER_TEMP/resolve-env/bin/python" --dry-run \
+              "jeanspy[numpyro_cpu] @ ${artifact_uri}"
+            uv pip install --python "$RUNNER_TEMP/resolve-env/bin/python" --dry-run \
+              "jeanspy[numpyro_cuda12] @ ${artifact_uri}"
+          done
+
+      - name: Validate wheel base runtime
+        shell: bash
+        run: |
+          uv venv --python 3.12 "$RUNNER_TEMP/wheel-base"
+          uv pip install --python "$RUNNER_TEMP/wheel-base/bin/python" "$WHEEL"
+          (
+            cd "$RUNNER_TEMP"
+            PYTHONPATH= "$RUNNER_TEMP/wheel-base/bin/python" \
+              "$GITHUB_WORKSPACE/scripts/validate_release_artifact.py" \
+              --readme "$GITHUB_WORKSPACE/README.md" \
+              --base
+          )
+
+      - name: Validate source distribution base runtime
+        shell: bash
+        run: |
+          uv venv --python 3.12 "$RUNNER_TEMP/sdist-base"
+          uv pip install --python "$RUNNER_TEMP/sdist-base/bin/python" "$SDIST"
+          (
+            cd "$RUNNER_TEMP"
+            PYTHONPATH= "$RUNNER_TEMP/sdist-base/bin/python" \
+              "$GITHUB_WORKSPACE/scripts/validate_release_artifact.py" \
+              --readme "$GITHUB_WORKSPACE/README.md" \
+              --base
+          )
+
+      - name: Validate NumPyro CPU runtime from wheel
+        shell: bash
+        env:
+          JAX_PLATFORMS: cpu
+          XLA_PYTHON_CLIENT_PREALLOCATE: "false"
+        run: |
+          uv venv --python 3.12 "$RUNNER_TEMP/wheel-numpyro-cpu"
+          uv pip install --python "$RUNNER_TEMP/wheel-numpyro-cpu/bin/python" \
+            "jeanspy[numpyro_cpu] @ ${WHEEL_URI}"
+          (
+            cd "$RUNNER_TEMP"
+            PYTHONPATH= "$RUNNER_TEMP/wheel-numpyro-cpu/bin/python" \
+              "$GITHUB_WORKSPACE/scripts/validate_release_artifact.py" \
+              --numpyro-cpu
+          )
 
       - name: Upload distributions
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -63,6 +126,7 @@ jobs:
 
   publish:
     name: Publish to PyPI
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     environment:
