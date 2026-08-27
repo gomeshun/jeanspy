@@ -119,8 +119,10 @@ def validate_numpyro_cpu() -> None:
     e_vlos_kms = jnp.full_like(R_pc, 2.0)
     sigma2 = dsph.sigmalos2(R_pc, params=params, n_u=32, u_max=400.0)
     sigma2_np = np.asarray(jax.block_until_ready(sigma2), dtype=float)
-    assert np.isfinite(sigma2_np).all()
-    assert (sigma2_np > 0.0).all()
+    if not np.isfinite(sigma2_np).all():
+        raise AssertionError(f"sigmalos2 contained non-finite values: {sigma2_np!r}")
+    if not (sigma2_np > 0.0).all():
+        raise AssertionError(f"sigmalos2 must be strictly positive: {sigma2_np!r}")
 
     vlos_kms = params["vmem_kms"] + jnp.sqrt(sigma2 + e_vlos_kms**2) * jnp.array(
         [0.1, -0.2, 0.3, -0.1]
@@ -158,9 +160,12 @@ def validate_numpyro_cpu() -> None:
         vlos_kms=vlos_kms,
         e_vlos_kms=e_vlos_kms,
     )
-    assert model_trace["re_pc"]["type"] == "deterministic"
-    assert model_trace["rs_pc"]["type"] == "deterministic"
-    assert model_trace["vlos"]["is_observed"] is True
+    if model_trace["re_pc"]["type"] != "deterministic":
+        raise AssertionError(f"re_pc trace entry was unexpected: {model_trace['re_pc']!r}")
+    if model_trace["rs_pc"]["type"] != "deterministic":
+        raise AssertionError(f"rs_pc trace entry was unexpected: {model_trace['rs_pc']!r}")
+    if model_trace["vlos"]["is_observed"] is not True:
+        raise AssertionError(f"vlos trace entry was not observed: {model_trace['vlos']!r}")
 
     print("NumPyro CPU artifact smoke test passed")
 
