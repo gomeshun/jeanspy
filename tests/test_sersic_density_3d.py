@@ -1,47 +1,45 @@
-"""Tests for SersicModel.density_3d, density_3d_LGM, density_3d_VM20,
-density_3d_VM20bis, and density_3d_numerical."""
+"""Tests for the public spherical Sérsic deprojection API."""
+
 import numpy as np
 import pytest
-from scipy.special import gamma, k0
 from scipy.integrate import quad
+from scipy.special import gamma, k0
 
+from jeanspy._sersic_deprojection import sp04_density
 from jeanspy.model import SersicModel
 
 
-# ---------------------------------------------------------------------------
-# Helpers / fixtures
-# ---------------------------------------------------------------------------
-
-RE_PC = 100.0  # arbitrary effective radius in parsec
+RE_PC = 100.0
 
 
 def make_model(n, deprojection_method="numerical"):
-    """Make a SersicModel; default method is 'numerical' to avoid needing
-    r/Re bounds checks in tests that probe a wide range of radii."""
+    """Construct a model with a method suitable for wide-radius tests."""
     return SersicModel(re_pc=RE_PC, n=n, deprojection_method=deprojection_method)
 
 
 def _radii(rmin=0.01, rmax=10.0, num=20):
-    """Log-spaced r/R_e values, returned as r in parsec."""
     return np.logspace(np.log10(rmin), np.log10(rmax), num) * RE_PC
 
 
-# ---------------------------------------------------------------------------
-# 1. Exact n=0.5 (Gaussian projected → Gaussian 3D)
-# ---------------------------------------------------------------------------
-
 def exact_rho_n05(r_pc, re_pc):
-    """Exact 3-D deprojection of the n=0.5 Sérsic profile (= Gaussian).
-
-    For n=0.5, Sigma(R) = exp(-b*(R/re)^2) / norm2d with b = b(n=0.5).
-    sigma^2 = re^2 / (2b), and the Abel inversion gives a Gaussian.
-    """
+    """Exact n=0.5 Gaussian deprojection."""
     m = make_model(0.5)
     b = m.b
     norm2d = m.norm
     sigma2 = re_pc**2 / (2 * b)
     A = 1.0 / norm2d
-    return A / (np.sqrt(2 * np.pi * sigma2)) * np.exp(-r_pc**2 / (2 * sigma2))
+    return A / np.sqrt(2 * np.pi * sigma2) * np.exp(-r_pc**2 / (2 * sigma2))
+
+
+def exact_rho_n1(r_pc, re_pc):
+    """Exact n=1 exponential deprojection."""
+    m = make_model(1.0)
+    return (m.b / re_pc) / (np.pi * m.norm) * k0(m.b * r_pc / re_pc)
+
+
+# ---------------------------------------------------------------------------
+# Numerical Abel reference
+# ---------------------------------------------------------------------------
 
 
 def test_numerical_n05_vs_exact():
@@ -54,18 +52,6 @@ def test_numerical_n05_vs_exact():
     assert np.all(rel_err < 1e-4), f"max rel err = {rel_err.max():.2e}"
 
 
-# ---------------------------------------------------------------------------
-# 2. Exact n=1 (exponential projected → K0 3D)
-# ---------------------------------------------------------------------------
-
-def exact_rho_n1(r_pc, re_pc):
-    """Exact 3-D deprojection of the n=1 Sérsic (exponential) profile."""
-    m = make_model(1.0)
-    b = m.b
-    norm2d = m.norm
-    return (b / re_pc) / (np.pi * norm2d) * k0(b * r_pc / re_pc)
-
-
 def test_numerical_n1_vs_exact():
     m = make_model(1.0)
     r_arr = _radii(0.05, 5.0, 25)
@@ -76,67 +62,96 @@ def test_numerical_n1_vs_exact():
     assert np.all(rel_err < 1e-4), f"max rel err = {rel_err.max():.2e}"
 
 
+@pytest.mark.parametrize("n", [0.5, 0.75])
+def test_numerical_center_n_lt_1_uses_analytic_limit(n):
+    m = make_model(n)
+    expected = (
+        m.b ** (3 * n)
+        * gamma(1 - n)
+        / (2 * np.pi**2 * n * gamma(2 * n) * RE_PC**3)
+    )
+    assert m.density_3d_numerical(0.0) == pytest.approx(expected, rel=5e-13)
+
+
+@pytest.mark.parametrize("n", [1.0, 2.0, 4.0])
+def test_numerical_center_diverges_for_n_ge_1(n):
+    m = make_model(n)
+    assert np.isposinf(m.density_3d_numerical(0.0))
+
+
+def test_numerical_positive_infinity_is_zero():
+    m = make_model(2.0)
+    assert m.density_3d_numerical(np.inf) == 0.0
+
+
+def test_density_3d_numerical_negative_raises():
+    m = make_model(2.0)
+    with pytest.raises(ValueError, match="non-negative"):
+        m.density_3d_numerical(-1.0)
+
+
+def test_density_3d_numerical_nan_raises():
+    m = make_model(2.0)
+    with pytest.raises(ValueError, match="NaN"):
+        m.density_3d_numerical(np.nan)
+
+
+@pytest.mark.parametrize("n", [0.5, 1.0, 2.0, 4.0])
+def test_numerical_normalization(n):
+    """The numerical deprojection should preserve unit total luminosity."""
+    m = make_model(n)
+
+    def integrand(r):
+        return 4 * np.pi * r**2 * m.density_3d_numerical(r)
+
+    result, err = quad(
+        integrand,
+        RE_PC * 1e-3,
+        RE_PC * 30,
+        limit=200,
+        epsrel=1e-4,
+        epsabs=0,
+    )
+    assert 0.90 < result < 1.02, (
+        f"n={n}: normalization integral = {result:.4f} ± {err:.2e}"
+    )
+
+
 # ---------------------------------------------------------------------------
-# 3. LGM approx vs numerical around r ~ R_e
+# Approximation accuracy and validity domains
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("n", [1.0, 2.0, 4.0, 8.0])
 def test_approx_vs_numerical_near_re(n):
-    """Near r ~ R_e the LGM approximation and numerical result agree at ~percent level."""
     m = make_model(n)
     r_arr = np.array([0.5, 1.0, 2.0]) * RE_PC
-    rho_lgm = m.density_3d_LGM(r_arr)
-    rho_num = m.density_3d_numerical(r_arr)
-    rel_err = np.abs(rho_lgm / rho_num - 1.0)
-    assert np.all(rel_err < 0.05), (
-        f"n={n}: max rel err near R_e = {rel_err.max():.2%}"
-    )
+    rel_err = np.abs(m.density_3d_LGM(r_arr) / m.density_3d_numerical(r_arr) - 1.0)
+    assert np.all(rel_err < 0.05)
 
 
 def test_approx_vs_numerical_low_n_near_re():
-    """Low n=0.6: LGM and numerical agree near R_e (not at small radii)."""
-    n = 0.6
-    m = make_model(n)
+    m = make_model(0.6)
     r_arr = np.array([0.5, 1.0, 2.0]) * RE_PC
-    rho_lgm = m.density_3d_LGM(r_arr)
-    rho_num = m.density_3d_numerical(r_arr)
-    rel_err = np.abs(rho_lgm / rho_num - 1.0)
-    assert np.all(rel_err < 0.10), (
-        f"n={n}: max rel err near R_e = {rel_err.max():.2%}"
-    )
+    rel_err = np.abs(m.density_3d_LGM(r_arr) / m.density_3d_numerical(r_arr) - 1.0)
+    assert np.all(rel_err < 0.10)
 
-
-# ---------------------------------------------------------------------------
-# 4. VM20 accuracy vs numerical reference
-# ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("n", [1.0, 2.0, 4.0])
 def test_vm20_vs_numerical_near_re(n):
-    """VM20 should be more accurate than LGM vs the numerical reference near R_e."""
     m = make_model(n)
     r_arr = np.array([0.1, 0.5, 1.0, 2.0, 5.0]) * RE_PC
-    rho_vm20 = m.density_3d_VM20(r_arr)
-    rho_num = m.density_3d_numerical(r_arr)
-    rel_err = np.abs(rho_vm20 / rho_num - 1.0)
-    assert np.all(rel_err < 0.05), (
-        f"n={n}: VM20 max rel err = {rel_err.max():.2%}"
-    )
+    rel_err = np.abs(m.density_3d_VM20(r_arr) / m.density_3d_numerical(r_arr) - 1.0)
+    assert np.all(rel_err < 0.05)
 
 
 def test_vm20_low_n_accuracy():
-    """VM20 improves over LGM at small r/Re for n=0.6."""
     m = make_model(0.6)
-    # Use intermediate radii within the VM20 validity domain (1e-3 <= r/Re <= 1e3)
     r_arr = np.array([0.01, 0.05, 0.1, 0.5, 1.0]) * RE_PC
-    rho_vm20 = m.density_3d_VM20(r_arr)
     rho_num = m.density_3d_numerical(r_arr)
-    rho_lgm = m.density_3d_LGM(r_arr)
-    rel_err_vm20 = np.abs(rho_vm20 / rho_num - 1.0)
-    rel_err_lgm = np.abs(rho_lgm / rho_num - 1.0)
-    # VM20 should be at least as good as LGM on average
-    assert rel_err_vm20.mean() <= rel_err_lgm.mean() * 2.0, (
-        "VM20 should not be dramatically worse than LGM for n=0.6"
-    )
+    rel_vm20 = np.abs(m.density_3d_VM20(r_arr) / rho_num - 1.0)
+    rel_lgm = np.abs(m.density_3d_LGM(r_arr) / rho_num - 1.0)
+    assert rel_vm20.mean() <= rel_lgm.mean() * 2.0
 
 
 def test_vm20_out_of_range_n():
@@ -148,41 +163,25 @@ def test_vm20_out_of_range_n():
 def test_vm20_out_of_range_r():
     m = make_model(2.0)
     with pytest.raises(ValueError, match="r/R_e"):
-        m.density_3d_VM20(RE_PC * 1e-4)  # r/Re = 1e-4, below 1e-3 limit
+        m.density_3d_VM20(RE_PC * 1e-4)
 
-
-# ---------------------------------------------------------------------------
-# 5. VM20bis accuracy vs numerical reference
-# ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("n", [0.5, 0.75, 1.0, 2.0])
 def test_vm20bis_vs_numerical(n):
-    """VM20bis should be accurate within ~5% over the physically meaningful domain.
-
-    At very large r/Re for small n (e.g. n=0.5, r/Re > ~15), the Sérsic density
-    drops below floating-point resolution (~1e-300), causing both the polynomial
-    approximation and the numerical integral to underflow to 0.  These
-    underflow radii are excluded from the accuracy check.
-    """
+    """Official VM20bis should remain within 5% on representative radii."""
     m = make_model(n)
-    r_arr = np.logspace(-2, 1, 15) * RE_PC  # r/Re in [0.01, 10]
+    r_arr = np.logspace(-2, 1, 15) * RE_PC
     rho_vm20bis = m.density_3d_VM20bis(r_arr)
     rho_num = m.density_3d_numerical(r_arr)
-    # Exclude underflow (both ≈ 0)
     valid = (rho_num > 0) & (rho_vm20bis > 0)
     rel_err = np.abs(rho_vm20bis[valid] / rho_num[valid] - 1.0)
-    assert rel_err.size > 0, "No valid radii for comparison"
-    assert np.all(rel_err < 0.05), (
-        f"n={n}: VM20bis max rel err = {rel_err.max():.2%}"
-    )
+    assert rel_err.size > 0
+    assert np.all(rel_err < 0.05), f"n={n}: max rel err = {rel_err.max():.2%}"
 
 
 def test_vm20bis_extended_low_radius():
-    """VM20bis covers the extended domain down to r/Re = 1e-4."""
     m = make_model(1.0)
-    # r/Re = 1e-4 is in the VM20bis domain but outside VM20
-    r_small = RE_PC * 1e-4
-    rho = m.density_3d_VM20bis(r_small)
+    rho = m.density_3d_VM20bis(RE_PC * 1e-4)
     assert np.isfinite(rho) and rho > 0
 
 
@@ -195,87 +194,111 @@ def test_vm20bis_out_of_range_n():
 def test_vm20bis_out_of_range_r():
     m = make_model(2.0)
     with pytest.raises(ValueError, match="r/R_e"):
-        m.density_3d_VM20bis(RE_PC * 1e-5)  # below 1e-4 limit
+        m.density_3d_VM20bis(RE_PC * 1e-5)
+
+
+def test_density_3d_lgm_out_of_range():
+    m_low = SersicModel(re_pc=RE_PC, n=0.3)
+    m_high = SersicModel(re_pc=RE_PC, n=12.0)
+    with pytest.raises(ValueError):
+        m_low.density_3d_LGM(RE_PC)
+    with pytest.raises(ValueError):
+        m_high.density_3d_LGM(RE_PC)
 
 
 # ---------------------------------------------------------------------------
-# 6. Normalization consistency test
+# Public dispatch and safe auto policy
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("n", [0.5, 1.0, 2.0, 4.0])
-def test_numerical_normalization(n):
-    """4*pi * integral rho(r)*r^2 dr should integrate to 1 (reprojection norm)."""
-    m = make_model(n)
-    re = RE_PC
 
-    def integrand(r):
-        return 4 * np.pi * r**2 * m.density_3d_numerical(r)
+def test_density_3d_default_is_auto():
+    m = SersicModel(re_pc=RE_PC, n=2.0)
+    assert m.deprojection_method == "auto"
+    assert m.density_3d(RE_PC) == pytest.approx(m.density_3d_VM20bis(RE_PC), rel=1e-12)
 
-    # Integrate from a small inner radius to a large outer radius
-    result, err = quad(integrand, re * 1e-3, re * 30,
-                       limit=200, epsrel=1e-4, epsabs=0)
-    # Should be close to 1 (some missing mass at very small and very large r)
-    assert 0.90 < result < 1.02, (
-        f"n={n}: normalization integral = {result:.4f} ± {err:.2e}"
+
+def test_auto_low_n_uses_official_vm20bis_inside_domain():
+    m = SersicModel(re_pc=RE_PC, n=0.75)
+    r = 0.03 * RE_PC
+    assert m.density_3d(r, method="auto") == pytest.approx(
+        m.density_3d_VM20bis(r), rel=1e-12
     )
 
 
-# ---------------------------------------------------------------------------
-# 7. API behavior
-# ---------------------------------------------------------------------------
-
-def test_density_3d_default_is_vm20():
-    """Default deprojection_method should be 'vm20'."""
-    m = SersicModel(re_pc=RE_PC, n=2.0)
-    assert m.deprojection_method == "vm20"
+def test_auto_high_n_uses_sp04_inside_domain():
+    m = SersicModel(re_pc=RE_PC, n=4.0)
     r = RE_PC
-    assert m.density_3d(r) == pytest.approx(m.density_3d_VM20(r), rel=1e-12)
+    expected = sp04_density(r, re_pc=RE_PC, n=4.0, b=m.b)
+    assert m.density_3d(r, method="auto") == pytest.approx(expected, rel=1e-12)
+
+
+def test_auto_falls_back_to_numerical_below_calibrated_radius():
+    m = SersicModel(re_pc=RE_PC, n=2.0)
+    r = RE_PC * 1e-5
+    assert m.density_3d(r, method="auto") == pytest.approx(
+        m.density_3d_numerical(r), rel=1e-12
+    )
+
+
+def test_auto_zero_uses_numerical_center_limit():
+    m = SersicModel(re_pc=RE_PC, n=0.75)
+    assert m.density_3d(0.0, method="auto") == pytest.approx(
+        m.density_3d_numerical(0.0), rel=1e-12
+    )
+
+
+def test_auto_mixed_array_dispatch_preserves_shape():
+    m = SersicModel(re_pc=RE_PC, n=2.0)
+    r = np.array([RE_PC * 1e-5, RE_PC, np.inf])
+    result = m.density_3d(r, method="auto")
+    assert result.shape == r.shape
+    assert result[0] == pytest.approx(m.density_3d_numerical(r[0]), rel=1e-12)
+    assert result[1] == pytest.approx(m.density_3d_VM20bis(r[1]), rel=1e-12)
+    assert result[2] == 0.0
+
+
+def test_auto_negative_raises():
+    m = SersicModel(re_pc=RE_PC, n=2.0)
+    with pytest.raises(ValueError, match="non-negative"):
+        m.density_3d(-1.0, method="auto")
 
 
 def test_density_3d_method_approx():
     m = SersicModel(re_pc=RE_PC, n=2.0)
-    r = RE_PC
-    assert m.density_3d(r, method="approx") == pytest.approx(
-        m.density_3d_LGM(r), rel=1e-12
+    assert m.density_3d(RE_PC, method="approx") == pytest.approx(
+        m.density_3d_LGM(RE_PC), rel=1e-12
     )
 
 
 def test_density_3d_method_vm20():
     m = SersicModel(re_pc=RE_PC, n=2.0)
-    r = RE_PC
-    assert m.density_3d(r, method="vm20") == pytest.approx(
-        m.density_3d_VM20(r), rel=1e-12
+    assert m.density_3d(RE_PC, method="vm20") == pytest.approx(
+        m.density_3d_VM20(RE_PC), rel=1e-12
     )
 
 
 def test_density_3d_method_vm20bis():
     m = SersicModel(re_pc=RE_PC, n=2.0)
-    r = RE_PC
-    assert m.density_3d(r, method="vm20bis") == pytest.approx(
-        m.density_3d_VM20bis(r), rel=1e-12
+    assert m.density_3d(RE_PC, method="vm20bis") == pytest.approx(
+        m.density_3d_VM20bis(RE_PC), rel=1e-12
     )
 
 
 def test_density_3d_method_numerical():
-    """density_3d(method='numerical') should match density_3d_numerical()."""
     m = SersicModel(re_pc=RE_PC, n=2.0)
-    r = RE_PC
-    assert m.density_3d(r, method="numerical") == pytest.approx(
-        m.density_3d_numerical(r), rel=1e-10
+    assert m.density_3d(RE_PC, method="numerical") == pytest.approx(
+        m.density_3d_numerical(RE_PC), rel=1e-10
     )
 
 
 def test_instance_deprojection_method_numerical():
-    """deprojection_method='numerical' at construction selects numerical by default."""
     m = SersicModel(re_pc=RE_PC, n=2.0, deprojection_method="numerical")
-    r = RE_PC
-    assert m.density_3d(r) == pytest.approx(m.density_3d_numerical(r), rel=1e-10)
+    assert m.density_3d(RE_PC) == pytest.approx(m.density_3d_numerical(RE_PC), rel=1e-10)
 
 
 def test_instance_deprojection_method_vm20bis():
     m = SersicModel(re_pc=RE_PC, n=2.0, deprojection_method="vm20bis")
-    r = RE_PC
-    assert m.density_3d(r) == pytest.approx(m.density_3d_VM20bis(r), rel=1e-12)
+    assert m.density_3d(RE_PC) == pytest.approx(m.density_3d_VM20bis(RE_PC), rel=1e-12)
 
 
 def test_invalid_method_raises():
@@ -290,8 +313,7 @@ def test_invalid_deprojection_method_at_construction():
 
 
 def test_density_3d_numerical_scalar():
-    m = make_model(2.0)
-    result = m.density_3d_numerical(RE_PC)
+    result = make_model(2.0).density_3d_numerical(RE_PC)
     assert np.isscalar(result) or np.ndim(result) == 0
     assert result > 0
 
@@ -305,8 +327,7 @@ def test_density_3d_numerical_array():
 
 
 def test_density_3d_vm20_scalar():
-    m = SersicModel(re_pc=RE_PC, n=2.0)
-    result = m.density_3d_VM20(RE_PC)
+    result = SersicModel(re_pc=RE_PC, n=2.0).density_3d_VM20(RE_PC)
     assert np.isscalar(result) or np.ndim(result) == 0
     assert result > 0
 
@@ -319,17 +340,6 @@ def test_density_3d_vm20_array():
     assert np.all(result > 0)
 
 
-def test_density_3d_numerical_negative_raises():
-    m = make_model(2.0)
-    with pytest.raises(ValueError, match="non-negative"):
-        m.density_3d_numerical(-1.0)
-
-
-def test_density_3d_lgm_out_of_range():
-    """density_3d_LGM should raise ValueError outside n ∈ [0.5, 10]."""
-    m_low = SersicModel(re_pc=RE_PC, n=0.3)
-    m_high = SersicModel(re_pc=RE_PC, n=12.0)
-    with pytest.raises(ValueError):
-        m_low.density_3d_LGM(RE_PC)
-    with pytest.raises(ValueError):
-        m_high.density_3d_LGM(RE_PC)
+def test_public_sersic_class_remains_in_jeanspy_model_namespace():
+    """The implementation split must not change the public import path."""
+    assert SersicModel.__module__ == "jeanspy.model"
