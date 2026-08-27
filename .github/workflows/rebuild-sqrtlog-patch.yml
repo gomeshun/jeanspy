@@ -1,0 +1,143 @@
+name: Rebuild sqrtlog patch
+
+on:
+  push:
+    branches:
+      - feature/baes-eta2-analytic-kernel
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch with history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: feature/baes-eta2-analytic-kernel
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebuild model_numpyro patch from main base
+        env:
+          BASE_SHA: 2e34b110146b77adbc49097d800610a3496a4e67
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          import subprocess
+
+          base_sha = os.environ["BASE_SHA"]
+          path = "src/jeanspy/model_numpyro.py"
+          source = subprocess.check_output(
+              ["git", "show", f"{base_sha}:{path}"], text=True
+          )
+
+          source = source.replace(
+              'DEFAULT_SIGMALOS2_JIT = True\nDEFAULT_BAES_KERNEL_N_QUAD = 128\n',
+              'DEFAULT_SIGMALOS2_JIT = True\n'
+              'DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM = "sqrtlog"\n'
+              'DEFAULT_BAES_KERNEL_N_QUAD = 128\n',
+              1,
+          )
+
+          marker = '''def _resolve_n_kernel(n_kernel: Optional[int], *, default: int) -> int:\n'''
+          helper = '''def _normalize_kernel_outer_transform(transform: str) -> str:\n    key = str(transform).strip().lower()\n    aliases = {\n        "sqrtlog": "sqrtlog",\n        "sqrt-log": "sqrtlog",\n        "sqrt_log": "sqrtlog",\n        "log": "log",\n    }\n    try:\n        return aliases[key]\n    except KeyError as exc:\n        raise ValueError(\n            "kernel_outer_transform must be 'sqrtlog' or 'log', "\n            f"got {transform!r}"\n        ) from exc\n\n\n'''
+          source = source.replace(marker, helper + marker, 1)
+
+          source = source.replace(
+              '        "sigmalos2_jit_default": DEFAULT_SIGMALOS2_JIT,\n'
+              '        "sigmalos2_n_u_default": _default_sigmalos2_n_u(),\n',
+              '        "sigmalos2_jit_default": DEFAULT_SIGMALOS2_JIT,\n'
+              '        "sigmalos2_kernel_outer_transform_default": '\
+              'DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,\n'
+              '        "sigmalos2_n_u_default": _default_sigmalos2_n_u(),\n',
+              1,
+          )
+
+          source = source.replace(
+              '            "backend/jit/n_u/n_r/u_max/constant_kernel_backend/n_kernel to "\n'
+              '            f"DSphModel.sigmalos2(). Unsupported configure_runtime keys: {unsupported}."\n',
+              '            "backend/jit/n_u/n_r/u_max/kernel_outer_transform/"\n'
+              '            "constant_kernel_backend/n_kernel to DSphModel.sigmalos2(). "\n'
+              '            f"Unsupported configure_runtime keys: {unsupported}."\n',
+              1,
+          )
+
+          start = source.index('    def sigmalos2_kernel(\n')
+          end = source.index('    def sigmalos2_abel(\n', start)
+          kernel_function = '''    def sigmalos2_kernel(\n        self,\n        R_pc: jnp.ndarray,\n        *,\n        params: Mapping[str, Any],\n        n_u: Optional[int] = None,\n        u_max: Optional[float] = None,\n        n_kernel: Optional[int] = None,\n        constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,\n        u_min_eps: float = 1e-6,\n        kernel_outer_transform: str = DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,\n        dm_mass_method: str = "auto",\n    ) -> jnp.ndarray:\n        r"""Kernel-based sigma_los^2(R) implementation.\n\n        With u=r/R, this computes\n\n            sigma_los^2(R) = 2 * \\int_1^\\infty du\n                [nu(uR)/Sigma(R)] [G M(uR)] K(u)/u.\n\n        ``kernel_outer_transform='sqrtlog'`` uses ``log(u)=x^2``.  Since\n        ``K(u) ~ sqrt(u-1)`` at the lower endpoint, the transformed integrand\n        is smooth in ``x``.  ``'log'`` retains the legacy uniform-log(u) grid.\n        """\n        resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)\n        resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)\n        R = jnp.atleast_1d(jnp.asarray(R_pc))\n        dtype = R.dtype\n        params = self._resolve_dm_params_once(params)\n        transform_key = _normalize_kernel_outer_transform(kernel_outer_transform)\n\n        u_max_arr = jnp.asarray(resolved_u_max, dtype=dtype)\n        if transform_key == "sqrtlog":\n            x = jnp.linspace(\n                jnp.asarray(0.0, dtype=dtype),\n                jnp.sqrt(jnp.log(u_max_arr)),\n                resolved_n_u,\n            )\n            u = jnp.exp(x * x)\n            dlogu_dx = 2.0 * x\n        else:\n            x = jnp.linspace(\n                jnp.log1p(jnp.asarray(u_min_eps, dtype=dtype)),\n                jnp.log(u_max_arr),\n                resolved_n_u,\n            )\n            u = jnp.exp(x)\n            dlogu_dx = jnp.ones_like(x)\n\n        # Broadcast shapes: (n_R, n_u)\n        R2d = R[:, None]\n        u2d = u[None, :]\n        r = R2d * u2d\n\n        stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]\n        dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]\n        ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]\n        dm_mass_method = self._resolve_dm_mass_method(dm, dm_mass_method)\n\n        re_pc = params["re_pc"]\n        nu3 = stellar.density_3d(r, re_pc=re_pc)\n        sig2 = stellar.density_2d(R2d, re_pc=re_pc)\n        M = dm.enclosed_mass(r, method=dm_mass_method, params=params)\n\n        kernel_kwargs: Dict[str, Any] = {}\n        if isinstance(ani, ConstantAnisotropyModel):\n            kernel_kwargs["backend"] = _normalize_constant_kernel_backend(\n                constant_kernel_backend\n            )\n            if n_kernel is not None and kernel_kwargs["backend"] == "jax":\n                kernel_kwargs["n_kernel"] = _resolve_n_kernel(\n                    n_kernel, default=_default_constant_kernel_n_quad()\n                )\n        elif isinstance(ani, BaesAnisotropyModel) and n_kernel is not None:\n            kernel_kwargs["n_kernel"] = _resolve_n_kernel(\n                n_kernel, default=DEFAULT_BAES_KERNEL_N_QUAD\n            )\n\n        K = ani.kernel(u2d, R2d, params=params, **kernel_kwargs)\n        grav = (GMsun_m3s2 * M / PARSEC_M) * 1e-6\n\n        # du/u = dlog(u) = (dlog(u)/dx) dx.  For sqrtlog both K and\n        # dlogu_dx vanish at x=0, regularizing the lower endpoint.\n        integrand_x = 2.0 * K * (nu3 / sig2) * grav * dlogu_dx[None, :]\n        if resolved_n_u > 1:\n            h = x[1] - x[0]\n            out = _simpson_uniform_last_axis(integrand_x, h)\n        else:\n            out = integrand_x[..., 0]\n        # Numerical safety: sigma_los^2 should be >=0, but coarse quadrature / edge params\n        # can produce tiny negatives or NaNs during MCMC initialization.\n        out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)\n        return jnp.clip(out, min=0.0, max=1e12)\n\n'''
+          source = source[:start] + kernel_function + source[end:]
+
+          source = source.replace(
+              '        u_min_eps: float = 1e-6,\n'
+              '        r_min_factor: float = 0.5,\n',
+              '        u_min_eps: float = 1e-6,\n'
+              '        kernel_outer_transform: str = DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,\n'
+              '        r_min_factor: float = 0.5,\n',
+              1,
+          )
+
+          source = source.replace(
+              '        default "auto" follows the DM model\'s autodiff-safe choice:\n'
+              '        analytic for NFW and numeric for Zhao.\n',
+              '        default "auto" follows the DM model\'s autodiff-safe choice:\n'
+              '        analytic for NFW and numeric for Zhao.\n\n'
+              '        ``kernel_outer_transform`` selects the outer coordinate for the\n'
+              '        kernel backend. ``"sqrtlog"`` is the regularized default; ``"log"``\n'
+              '        reproduces the legacy uniform-log(u) integration grid.\n',
+              1,
+          )
+
+          source = source.replace(
+              '        constant_kernel_backend_key = _normalize_constant_kernel_backend(\n'
+              '            constant_kernel_backend\n'
+              '        )\n\n'
+              '        def _eval(',
+              '        constant_kernel_backend_key = _normalize_constant_kernel_backend(\n'
+              '            constant_kernel_backend\n'
+              '        )\n'
+              '        kernel_outer_transform_key = (\n'
+              '            _normalize_kernel_outer_transform(kernel_outer_transform)\n'
+              '            if backend_key == "kernel"\n'
+              '            else DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM\n'
+              '        )\n\n'
+              '        def _eval(',
+              1,
+          )
+
+          source = source.replace(
+              '                constant_kernel_backend=constant_kernel_backend_key,\n'
+              '                u_min_eps=u_min_eps,\n'
+              '                dm_mass_method=dm_mass_method,\n',
+              '                constant_kernel_backend=constant_kernel_backend_key,\n'
+              '                u_min_eps=u_min_eps,\n'
+              '                kernel_outer_transform=kernel_outer_transform_key,\n'
+              '                dm_mass_method=dm_mass_method,\n',
+              1,
+          )
+
+          source = source.replace(
+              '            constant_kernel_backend_key,\n'
+              '            float(u_min_eps),\n',
+              '            constant_kernel_backend_key,\n'
+              '            kernel_outer_transform_key,\n'
+              '            float(u_min_eps),\n',
+              1,
+          )
+
+          Path(path).write_text(source, encoding="utf-8")
+          PY
+
+      - name: Commit minimal patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/jeanspy/model_numpyro.py
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Clean up sqrtlog outer-transform implementation"
+          git push origin HEAD:feature/baes-eta2-analytic-kernel
