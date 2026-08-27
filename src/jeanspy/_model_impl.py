@@ -1,3 +1,9 @@
+"""Classical NumPy/SciPy model implementation.
+
+The public stateful API is re-exported from :mod:`jeanspy.model`; the separate
+:mod:`jeanspy.model_numpyro` module provides the functional JAX/NumPyro API.
+"""
+
 from __future__ import annotations
 # from collections.abc import MutableMapping
 from typing import Dict, Iterator, Any, Mapping, Optional
@@ -724,6 +730,15 @@ class DMModel(Model):
     @abstractmethod
     def mass_density_3d(self,r_pc):
         pass
+
+    def enclosed_mass(self, r_pc):
+        """Return the mass enclosed within ``r_pc``.
+
+        ``enclosure_mass`` is retained on the classical concrete models for
+        compatibility with the original API.  This spelling is shared with
+        the NumPyro backend.
+        """
+        return self.enclosure_mass(r_pc)
     
     def _validate_jfactor_inputs(self, dist_pc, roi_deg, *, full=False, small_angle=False):
         try:
@@ -935,8 +950,7 @@ class NFWModel(DMModel):
         # Therefore we use another expression in the following calculation.
         # Note that the element specification is relatively slow, thus we calculate all elements first and then modify overflowed ones.
         ret = (1/(1+x)-1 + log(1+x))  # NOTE:  underflow occurs when x<<1. 
-        ret = np.array(ret)
-        ret[is_small] = x[is_small]**2/2  # Series expantion of (1/(1+x)-1 + log(1+x)) up to the second order
+        ret = np.where(is_small, np.asarray(x)**2/2, ret)  # Series expansion up to second order
         return (4.*pi*rs_pc**3 * rhos_Msunpc3) * ret 
     
     def jfactor_ullio2016_simple(self,dist_pc,roi_deg=0.5):
@@ -1155,9 +1169,9 @@ class DSphModel(Model):
     def _sigmar2(self,r_pc):
         RELERROR_INTEG = 1e-6
         density_3d = self["StellarModel"].density_3d
-        enclosure_mass = self["DMModel"].enclosure_mass
+        enclosed_mass = self["DMModel"].enclosed_mass
         f = self["AnisotropyModel"].f
-        integrand = lambda r: density_3d(r)*f(r)*GMsun_m3s2*enclosure_mass(r)/r**2/f(r_pc)/density_3d(r_pc)*1e-6/parsec
+        integrand = lambda r: density_3d(r)*f(r)*GMsun_m3s2*enclosed_mass(r)/r**2/f(r_pc)/density_3d(r_pc)*1e-6/parsec
         integ, abserr = integrate.quad(integrand,r_pc,np.inf)
         return integ
     
@@ -1190,14 +1204,14 @@ class DSphModel(Model):
         
         density_3d = self["StellarModel"].density_3d
         density_2d = self["StellarModel"].density_2d
-        enclosure_mass = self["DMModel"].enclosure_mass
+        enclosed_mass = self["DMModel"].enclosed_mass
         kernel = self["AnisotropyModel"].kernel
         r = R_pc*u
         # Note that parsec = parsec/m.
         # If you convert m -> pc,      ... var[m] * [1 pc/ parsec m] = var/parsec[pc].
         #                pc^1 -> m^pc, ... var[pc^1] * parsec(=[pc/m]) = var[m^-1]
         # Here var[m^3 pc^-1 s^-2] /parsec[m/pc] * 1e-6[km^2/m^2] = var[km^2/s^2]
-        return 2.0 * kernel(u,R_pc,n=n_kernel)/u *  density_3d(r)/density_2d(R_pc)*GMsun_m3s2 * enclosure_mass(r) / parsec * 1e-6
+        return 2.0 * kernel(u,R_pc,n=n_kernel)/u *  density_3d(r)/density_2d(R_pc)*GMsun_m3s2 * enclosed_mass(r) / parsec * 1e-6
 
     
     def sigmalos2_dequad(self,R_pc,n=1024,n_kernel=128,ignore_RuntimeWarning=True):
@@ -1225,6 +1239,13 @@ class DSphModel(Model):
     def sigmalos_dequad(self,R_pc,n=1024,n_kernel=128,ignore_RuntimeWarning=True):
         return np.sqrt(self.sigmalos2_dequad(R_pc,n,n_kernel,ignore_RuntimeWarning))
 
+    def sigmalos2(self,R_pc,n=1024,n_kernel=128,ignore_RuntimeWarning=True):
+        """Return the line-of-sight velocity-dispersion squared.
+
+        This is the backend-neutral entry point; the classical implementation
+        uses its fixed-grid double-exponential (DE) ``dequad`` solver.
+        """
+        return self.sigmalos2_dequad(R_pc,n,n_kernel,ignore_RuntimeWarning)
 
 
 class FittableModel(Model,metaclass=ABCMeta):
@@ -1961,8 +1982,6 @@ if __name__ == '__main__':
     #plt.ylim(0,40)
     plt.show()
     input("press any key")
-
-
 
 
 

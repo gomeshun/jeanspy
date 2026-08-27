@@ -129,6 +129,50 @@ print(sigma_los_kms)
 
 JeansPy does not bundle an external dwarf-galaxy database. Observational data and object-specific priors should be supplied explicitly by downstream analyses.
 
+## Model Backends
+
+JeansPy provides two supported model backends. The module layout is
+intentionally stable for v0.1.0: `jeanspy.model` and
+`jeanspy.model_numpyro` are distinct public APIs, and neither backend is
+deprecated or “legacy”.
+
+| Backend | Use it when | Capabilities and limitations |
+| --- | --- | --- |
+| `jeanspy.model` | You need the general-purpose or reference implementation from the base install. | Stateful NumPy/SciPy models, fixed-grid double-exponential (`dequad`) integration, the broader stellar-model collection, J-factor utilities, and the `emcee`-based `jeanspy.sampler` workflow. It is not a JAX/JIT or autodiff API. |
+| `jeanspy.model_numpyro` | You need JAX arrays, JIT/autodiff, or NumPyro inference. Install `jeanspy[numpyro_cpu]` or `jeanspy[numpyro_cuda12]`. | Functional models for the currently supported Plummer, NFW, Zhao, and anisotropy paths, with kernel and Abel `sigmalos2` solvers and `jeanspy.sampler_numpyro`. It is not a drop-in replacement for every model, J-factor, or fitting utility in `model`. |
+
+Use `model` when broad model coverage and the established stateful API matter
+most. Use `model_numpyro` when differentiable or accelerator-backed inference
+matters most; shared calculations are covered by cross-backend numerical
+regression tests, but backend-specific solver and precision differences are
+intentional.
+
+### Shared model concepts
+
+The physical parameter names are aligned where the models overlap:
+`re_pc`, `rs_pc`, `rhos_Msunpc3`, `r_t_pc`, `beta_ani`, `beta_0`,
+`beta_inf`, `r_a`, `eta`, and `vmem_kms`. The parameter-passing convention is
+backend-specific by design:
+
+| Concept | `model` | `model_numpyro` |
+| --- | --- | --- |
+| Model parameters | Values are supplied at construction and stored in `model.params`; `update()` changes them. | Values are supplied as a `params` mapping to each numerical method so JAX transformations can trace them. |
+| Density | `density_2d(R_pc)` and `density_3d(r_pc)` read the stored parameters. | `density_2d(R_pc, re_pc=...)` and `density_3d(r_pc, re_pc=...)` receive parameters explicitly. |
+| Enclosed mass | `enclosed_mass(r_pc)` is the common spelling; the existing `enclosure_mass(r_pc)` spelling remains supported. | `enclosed_mass(r_pc, params=..., method=...)` is canonical; `enclosure_mass(...)` is provided as a compatibility spelling. |
+| Line-of-sight dispersion | `DSphModel.sigmalos2(...)` uses the classical fixed-grid double-exponential (`dequad`) solver (also available as `sigmalos2_dequad(...)`). | `DSphModel.sigmalos2(..., backend="kernel"|"abel", ...)` uses a JAX-friendly fixed-grid solver. |
+| Numerical controls | Quadrature/grid resolution controls such as `n` and `n_kernel` are method arguments. | JIT, solver selection, grid sizes, and kernel backend are method arguments. |
+
+For `model_numpyro`, `DMModel.enclosed_mass(..., method="auto")` is the
+default model-aware choice: it uses the analytic NFW mass and the fixed-grid
+numeric mass for Zhao. The Zhao analytic mass uses
+`jax.scipy.special.betainc`; JAX does not provide autodiff through its shape
+parameters, so gradients through Zhao `a`, `b`, or `g` can fail on that path.
+The default `DSphModel.sigmalos2(..., use_analytic_dm=None)` follows the same
+choice and is the NUTS-safe path. Use `use_analytic_dm=False` (or
+`method="numeric"`) to force numeric mass, and request `method="analytic"` or
+`use_analytic_dm=True` explicitly only when the closed form is desired without
+those Zhao shape-parameter gradients.
+
 ## Example Notebooks
 
 The canonical examples are:

@@ -603,7 +603,15 @@ class TestModelNumPyro(unittest.TestCase):
                     vmem_kms=0.0,
                 )
 
-                s2_jax = np.array(dsph_jax.sigmalos2(jnp.asarray(R), params=true, n_u=512, u_max=3000.0))
+                s2_jax = np.array(
+                    dsph_jax.sigmalos2(
+                        jnp.asarray(R),
+                        params=true,
+                        n_u=512,
+                        u_max=3000.0,
+                        use_analytic_dm=True,
+                    )
+                )
                 s2_ref = np.array(dsph_ref.sigmalos2_dequad(R, n=1024, n_kernel=128))
 
                 self.assertTrue(np.isfinite(s2_jax).all())
@@ -642,8 +650,26 @@ class TestModelNumPyro(unittest.TestCase):
         )
 
         R = jnp.asarray(np.geomspace(1.0, 1e3, 96), dtype=jnp.float32)
-        s2_nfw = np.asarray(dsph_nfw.sigmalos2(R, params=params_base, n_u=192, u_max=1500.0), dtype=np.float64)
-        s2_zhao = np.asarray(dsph_zhao.sigmalos2(R, params=params_zhao, n_u=192, u_max=1500.0), dtype=np.float64)
+        s2_nfw = np.asarray(
+            dsph_nfw.sigmalos2(
+                R,
+                params=params_base,
+                n_u=192,
+                u_max=1500.0,
+                use_analytic_dm=True,
+            ),
+            dtype=np.float64,
+        )
+        s2_zhao = np.asarray(
+            dsph_zhao.sigmalos2(
+                R,
+                params=params_zhao,
+                n_u=192,
+                u_max=1500.0,
+                use_analytic_dm=True,
+            ),
+            dtype=np.float64,
+        )
 
         self.assertTrue(np.isfinite(s2_nfw).all())
         self.assertTrue(np.isfinite(s2_zhao).all())
@@ -688,11 +714,23 @@ class TestModelNumPyro(unittest.TestCase):
 
         @jax.jit
         def _sig2_nfw(R, p):
-            return dsph_nfw.sigmalos2(R, params=p, n_u=192, u_max=1500.0)
+            return dsph_nfw.sigmalos2(
+                R,
+                params=p,
+                n_u=192,
+                u_max=1500.0,
+                use_analytic_dm=True,
+            )
 
         @jax.jit
         def _sig2_zhao(R, p):
-            return dsph_zhao.sigmalos2(R, params=p, n_u=192, u_max=1500.0)
+            return dsph_zhao.sigmalos2(
+                R,
+                params=p,
+                n_u=192,
+                u_max=1500.0,
+                use_analytic_dm=True,
+            )
 
         s2_nfw = np.asarray(_sig2_nfw(jnp.asarray(R_pc), params_nfw), dtype=np.float64)
         s2_zhao = np.asarray(_sig2_zhao(jnp.asarray(R_pc), params_zhao), dtype=np.float64)
@@ -724,6 +762,7 @@ class TestModelNumPyro(unittest.TestCase):
                         backend="kernel",
                         n_u=224,
                         u_max=1600.0,
+                        use_analytic_dm=True,
                     ),
                     dtype=np.float64,
                 )
@@ -735,6 +774,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=896,
                         u_max=1600.0,
                         r_min_factor=0.35,
+                        use_analytic_dm=True,
                     ),
                     dtype=np.float64,
                 )
@@ -747,6 +787,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=896,
                         u_max=1600.0,
                         r_min_factor=0.35,
+                        use_analytic_dm=True,
                     ),
                     dtype=np.float64,
                 )
@@ -796,6 +837,7 @@ class TestModelNumPyro(unittest.TestCase):
                         backend="kernel",
                         n_u=192,
                         u_max=1400.0,
+                        use_analytic_dm=True,
                     )
                 )
                 abel_fn = jax.jit(
@@ -806,6 +848,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=640,
                         u_max=1400.0,
                         r_min_factor=0.35,
+                        use_analytic_dm=True,
                     )
                 )
                 auto_fn = jax.jit(
@@ -817,6 +860,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=640,
                         u_max=1400.0,
                         r_min_factor=0.35,
+                        use_analytic_dm=True,
                     )
                 )
 
@@ -860,8 +904,8 @@ class TestModelNumPyro(unittest.TestCase):
                 self.assertTrue(np.isfinite(speedup))
                 self.assertLess(float(np.max(rel)), max(case["rtol_max"], 9.0e-2))
 
-    def test_zhao_betainc_enclosed_mass_consistent_with_numeric_default(self):
-        """Keep betainc implementation and ensure it matches numeric enclosed mass."""
+    def test_zhao_betainc_enclosed_mass_matches_explicit_numeric(self):
+        """Keep the analytic betainc implementation consistent with numeric mass."""
         zhao = ZhaoModel()
         params = {
             "rs_pc": 900.0,
@@ -873,12 +917,56 @@ class TestModelNumPyro(unittest.TestCase):
         }
         r = jnp.asarray(np.geomspace(1.0, 6000.0, 64), dtype=jnp.float32)
 
-        m_num = np.asarray(zhao.enclosed_mass(r, params=params), dtype=np.float64)
-        m_beta = np.asarray(zhao.enclosed_mass_betainc(r, params=params), dtype=np.float64)
+        m_num = np.asarray(
+            zhao.enclosed_mass(r, method="numeric", params=params), dtype=np.float64
+        )
+        m_beta = np.asarray(
+            zhao.enclosed_mass(r, method="analytic", params=params), dtype=np.float64
+        )
+        m_default = np.asarray(zhao.enclosed_mass(r, params=params), dtype=np.float64)
 
         self.assertTrue(np.isfinite(m_num).all())
         self.assertTrue(np.isfinite(m_beta).all())
+        self.assertTrue(np.isfinite(m_default).all())
+        np.testing.assert_allclose(m_default, m_num, rtol=0.0, atol=0.0)
         np.testing.assert_allclose(m_beta, m_num, rtol=2e-2, atol=1e-8)
+
+    def test_zhao_default_sigmalos2_path_has_finite_shape_gradient(self):
+        """The default Zhao Jeans path must remain differentiable for NUTS."""
+        params = {
+            "re_pc": 220.0,
+            "rs_pc": 900.0,
+            "rhos_Msunpc3": 8e-3,
+            "a": 1.2,
+            "b": 4.2,
+            "g": 0.6,
+            "r_t_pc": 8000.0,
+            "beta_ani": 0.2,
+            "vmem_kms": 0.0,
+        }
+        R = jnp.asarray([20.0, 100.0], dtype=jnp.float32)
+        dsph = DSphModel(
+            submodels={
+                "StellarModel": PlummerModel(),
+                "DMModel": ZhaoModel(),
+                "AnisotropyModel": ConstantAnisotropyModel(),
+            }
+        )
+
+        def objective(a):
+            params_at_a = {**params, "a": a}
+            sigma2 = dsph.sigmalos2(
+                R,
+                params=params_at_a,
+                backend="kernel",
+                jit=False,
+                n_u=64,
+                u_max=400.0,
+            )
+            return jnp.sum(sigma2)
+
+        grad_a = jax.grad(objective)(jnp.asarray(params["a"], dtype=R.dtype))
+        self.assertTrue(np.isfinite(np.asarray(grad_a)).all())
 
     def test_model_submodels_validation(self):
         class MyModel1(Model):

@@ -4,6 +4,7 @@ import unittest
 import warnings
 from contextlib import contextmanager
 from typing import Any
+from unittest.mock import patch
 
 os.environ.setdefault("JAX_PLATFORMS", "cpu")
 os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")
@@ -20,13 +21,13 @@ import jeanspy.model_numpyro as _model_numpyro_mod
 model_numpyro_mod = importlib.reload(_model_numpyro_mod)
 
 from jeanspy.model import (
-    BaesAnisotropyModel as BaesLegacy,
-    ConstantAnisotropyModel as ConstantLegacy,
-    DSphModel as DSphLegacy,
-    NFWModel as NFWLegacy,
-    OsipkovMerrittModel as OsipkovMerrittLegacy,
-    PlummerModel as PlummerLegacy,
-    ZhaoModel as ZhaoLegacy,
+    BaesAnisotropyModel as BaesClassical,
+    ConstantAnisotropyModel as ConstantClassical,
+    DSphModel as DSphClassical,
+    NFWModel as NFWClassical,
+    OsipkovMerrittModel as OsipkovMerrittClassical,
+    PlummerModel as PlummerClassical,
+    ZhaoModel as ZhaoClassical,
 )
 
 GMsun_m3s2 = model_numpyro_mod.GMsun_m3s2
@@ -47,7 +48,7 @@ def _assert_all_finite(testcase: unittest.TestCase, values: Any, *, label: str) 
 
 def _assert_allclose(
     testcase: unittest.TestCase,
-    legacy: Any,
+    classical: Any,
     numpyro: Any,
     *,
     label: str,
@@ -56,15 +57,15 @@ def _assert_allclose(
     rtol_ulps: float | None = None,
     rtol_floor: float = 0.0,
 ) -> None:
-    legacy_arr = np.asarray(legacy, dtype=np.float64)
+    classical_arr = np.asarray(classical, dtype=np.float64)
     numpyro_native = np.asarray(numpyro)
     numpyro_arr = np.asarray(numpyro_native, dtype=np.float64)
     rtol_eff = float(rtol)
     if rtol_ulps is not None and np.issubdtype(numpyro_native.dtype, np.floating):
         rtol_eff = max(rtol_eff, float(rtol_ulps) * np.finfo(numpyro_native.dtype).eps, float(rtol_floor))
-    _assert_all_finite(testcase, legacy_arr, label=f"{label} (legacy)")
+    _assert_all_finite(testcase, classical_arr, label=f"{label} (classical)")
     _assert_all_finite(testcase, numpyro_arr, label=f"{label} (numpyro)")
-    np.testing.assert_allclose(legacy_arr, numpyro_arr, rtol=rtol_eff, atol=atol, err_msg=label)
+    np.testing.assert_allclose(classical_arr, numpyro_arr, rtol=rtol_eff, atol=atol, err_msg=label)
 
 
 @contextmanager
@@ -77,9 +78,9 @@ def _jax_x64(enabled: bool):
         jax.config.update("jax_enable_x64", previous)
 
 
-def _legacy_dm_from_params(params: dict[str, float]):
+def _classical_dm_from_params(params: dict[str, float]):
     if {"a", "b", "g"} <= params.keys():
-        return ZhaoLegacy(
+        return ZhaoClassical(
             rs_pc=params["rs_pc"],
             rhos_Msunpc3=params["rhos_Msunpc3"],
             a=params["a"],
@@ -87,7 +88,7 @@ def _legacy_dm_from_params(params: dict[str, float]):
             g=params["g"],
             r_t_pc=params["r_t_pc"],
         )
-    return NFWLegacy(
+    return NFWClassical(
         rs_pc=params["rs_pc"],
         rhos_Msunpc3=params["rhos_Msunpc3"],
         r_t_pc=params["r_t_pc"],
@@ -100,13 +101,13 @@ def _numpyro_dm_from_params(params: dict[str, float]):
     return NFWNumPyro()
 
 
-def _legacy_anisotropy_from_kind(kind: str, params: dict[str, float]):
+def _classical_anisotropy_from_kind(kind: str, params: dict[str, float]):
     if kind == "constant":
-        return ConstantLegacy(beta_ani=params["beta_ani"])
+        return ConstantClassical(beta_ani=params["beta_ani"])
     if kind == "osipkov_merritt":
-        return OsipkovMerrittLegacy(r_a=params["r_a"])
+        return OsipkovMerrittClassical(r_a=params["r_a"])
     if kind == "baes":
-        return BaesLegacy(
+        return BaesClassical(
             beta_0=params["beta_0"],
             beta_inf=params["beta_inf"],
             r_a=params["r_a"],
@@ -150,7 +151,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
     def tearDown(self):
         self._jax_x64_ctx.__exit__(None, None, None)
 
-    def test_plummer_density_matches_legacy(self):
+    def test_plummer_density_matches_classical(self):
         radii = np.geomspace(1e-3, 1e4, 64)
         cases = [
             {"re_pc": 3.0},
@@ -161,10 +162,10 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         model_numpyro = PlummerNumPyro()
         for params in cases:
             with self.subTest(params=params):
-                model_legacy = PlummerLegacy(re_pc=params["re_pc"])
+                model_classical = PlummerClassical(re_pc=params["re_pc"])
                 _assert_allclose(
                     self,
-                    model_legacy.density_2d(radii),
+                    model_classical.density_2d(radii),
                     model_numpyro.density_2d(jnp.asarray(radii), re_pc=params["re_pc"]),
                     label=f"Plummer.density_2d {params}",
                     rtol=5e-7,
@@ -173,7 +174,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.density_3d(radii),
+                    model_classical.density_3d(radii),
                     model_numpyro.density_3d(jnp.asarray(radii), re_pc=params["re_pc"]),
                     label=f"Plummer.density_3d {params}",
                     rtol=5e-7,
@@ -181,7 +182,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     rtol_floor=5e-15,
                 )
 
-    def test_nfw_density_and_enclosed_mass_match_legacy(self):
+    def test_nfw_density_and_enclosed_mass_match_classical(self):
         cases = [
             {
                 "params": {"rs_pc": 0.3, "rhos_Msunpc3": 1e-6, "r_t_pc": 1.0},
@@ -202,10 +203,10 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         for case in cases:
             params = case["params"]
             with self.subTest(params=params):
-                model_legacy = NFWLegacy(**params)
+                model_classical = NFWClassical(**params)
                 _assert_allclose(
                     self,
-                    model_legacy.mass_density_3d(radii),
+                    model_classical.mass_density_3d(radii),
                     model_numpyro.mass_density_3d(jnp.asarray(radii), params=params),
                     label=f"NFW.mass_density_3d {params}",
                     rtol=0.0,
@@ -214,7 +215,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.enclosure_mass(radii),
+                    model_classical.enclosure_mass(radii),
                     model_numpyro.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
                     label=f"NFW.enclosed_mass {params}",
                     rtol=case["mass_rtol"],
@@ -223,7 +224,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     rtol_floor=2e-10,
                 )
 
-    def test_zhao_density_and_enclosed_mass_match_legacy(self):
+    def test_zhao_density_and_enclosed_mass_match_classical(self):
         cases = [
             {"rs_pc": 420.0, "rhos_Msunpc3": 0.06, "a": 1.2, "b": 4.0, "g": 0.6, "r_t_pc": 5000.0},
             {"rs_pc": 50.0, "rhos_Msunpc3": 1e-4, "a": 0.5, "b": 6.0, "g": 0.1, "r_t_pc": 1e4},
@@ -234,10 +235,10 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         model_numpyro = ZhaoNumPyro()
         for params in cases:
             with self.subTest(params=params):
-                model_legacy = ZhaoLegacy(**params)
+                model_classical = ZhaoClassical(**params)
                 _assert_allclose(
                     self,
-                    model_legacy.mass_density_3d(radii),
+                    model_classical.mass_density_3d(radii),
                     model_numpyro.mass_density_3d(jnp.asarray(radii), params=params),
                     label=f"Zhao.mass_density_3d {params}",
                     rtol=0.0,
@@ -246,7 +247,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.enclosure_mass(radii),
+                    model_classical.enclosure_mass(radii),
                     model_numpyro.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
                     label=f"Zhao.enclosed_mass {params}",
                     rtol=0.0,
@@ -255,7 +256,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                     rtol_floor=2e-10,
                 )
 
-    def test_constant_anisotropy_methods_match_legacy(self):
+    def test_constant_anisotropy_methods_match_classical(self):
         radii = np.geomspace(0.1, 10.0, 64)
         u = np.geomspace(1.0 + 1e-6, 1e3, 256)
         R_pc = np.array([0.3, 3.0, 300.0], dtype=np.float64)[:, None]
@@ -271,10 +272,10 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         for case in cases:
             params = {"beta_ani": case["beta_ani"]}
             with self.subTest(params=params):
-                model_legacy = ConstantLegacy(**params)
+                model_classical = ConstantClassical(**params)
                 _assert_allclose(
                     self,
-                    model_legacy.beta(radii),
+                    model_classical.beta(radii),
                     model_numpyro.beta(jnp.asarray(radii), params=params),
                     label=f"Constant.beta {params}",
                     rtol=0.0,
@@ -283,7 +284,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.f(radii),
+                    model_classical.f(radii),
                     model_numpyro.f(jnp.asarray(radii), params=params),
                     label=f"Constant.f {params}",
                     rtol=0.0,
@@ -292,14 +293,14 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.kernel(u, R_pc),
+                    model_classical.kernel(u, R_pc),
                     model_numpyro.kernel(jnp.asarray(u), jnp.asarray(R_pc), params=params),
                     label=f"Constant.kernel {params}",
                     rtol=case["kernel_rtol"],
                     atol=1e-10,
                 )
 
-    def test_osipkov_merritt_methods_match_legacy(self):
+    def test_osipkov_merritt_methods_match_classical(self):
         radii = np.geomspace(0.1, 1e4, 64)
         u = np.geomspace(1.0 + 1e-6, 1e3, 256)
         R_pc = np.array([0.3, 3.0, 300.0], dtype=np.float64)[:, None]
@@ -308,10 +309,10 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         for r_a in (0.1, 1.0, 350.0, 1e4):
             params = {"r_a": r_a}
             with self.subTest(params=params):
-                model_legacy = OsipkovMerrittLegacy(**params)
+                model_classical = OsipkovMerrittClassical(**params)
                 _assert_allclose(
                     self,
-                    model_legacy.beta(radii),
+                    model_classical.beta(radii),
                     model_numpyro.beta(jnp.asarray(radii), params=params),
                     label=f"OsipkovMerritt.beta {params}",
                     rtol=0.0,
@@ -320,7 +321,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.f(radii),
+                    model_classical.f(radii),
                     model_numpyro.f(jnp.asarray(radii), params=params),
                     label=f"OsipkovMerritt.f {params}",
                     rtol=0.0,
@@ -329,14 +330,14 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.kernel(u[None, :], R_pc),
+                    model_classical.kernel(u[None, :], R_pc),
                     model_numpyro.kernel(jnp.asarray(u)[None, :], jnp.asarray(R_pc), params=params),
                     label=f"OsipkovMerritt.kernel {params}",
                     rtol=1e-10,
                     atol=1e-10,
                 )
 
-    def test_baes_methods_match_legacy(self):
+    def test_baes_methods_match_classical(self):
         u = np.geomspace(1.0 + 1e-6, 1e3, 256)
         R_pc = np.array([0.5, 10.0], dtype=np.float64)
 
@@ -351,10 +352,10 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         for params in cases:
             radii = np.geomspace(max(0.1, params["r_a"] * 0.1), params["r_a"] * 10.0, 64)
             with self.subTest(params=params):
-                model_legacy = BaesLegacy(**params)
+                model_classical = BaesClassical(**params)
                 _assert_allclose(
                     self,
-                    model_legacy.beta(radii),
+                    model_classical.beta(radii),
                     model_numpyro.beta(jnp.asarray(radii), params=params),
                     label=f"Baes.beta {params}",
                     rtol=0.0,
@@ -363,7 +364,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_legacy.f(radii),
+                    model_classical.f(radii),
                     model_numpyro.f(jnp.asarray(radii), params=params),
                     label=f"Baes.f {params}",
                     rtol=0.0,
@@ -372,7 +373,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", RuntimeWarning)
-                    legacy_kernel = model_legacy.kernel(u, R_pc, n=320)
+                    classical_kernel = model_classical.kernel(u, R_pc, n=320)
                 numpyro_kernel = model_numpyro.kernel(
                     jnp.asarray(u)[None, :],
                     jnp.asarray(R_pc)[:, None],
@@ -381,14 +382,14 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    legacy_kernel,
+                    classical_kernel,
                     numpyro_kernel,
                     label=f"Baes.kernel {params}",
                     rtol=2e-5,
                     atol=1e-8,
                 )
 
-    def test_zhao_enclosed_mass_fails_at_nfw_limit_in_legacy_impl(self):
+    def test_zhao_enclosed_mass_nfw_limit_is_consistent(self):
         params = {
             "rs_pc": 1200.0,
             "rhos_Msunpc3": 1e-2,
@@ -399,14 +400,14 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         }
         radii = np.geomspace(1.0, 1e4, 32)
 
-        legacy = ZhaoLegacy(**params).enclosure_mass(radii)
+        classical = ZhaoClassical(**params).enclosure_mass(radii)
         numpyro = ZhaoNumPyro().enclosed_mass(jnp.asarray(radii), params=params, method="analytic")
 
         _assert_all_finite(self, numpyro, label="Zhao NFW-limit enclosed_mass (numpyro)")
-        _assert_all_finite(self, legacy, label="Zhao NFW-limit enclosed_mass (legacy)")
+        _assert_all_finite(self, classical, label="Zhao NFW-limit enclosed_mass (classical)")
         _assert_allclose(
             self,
-            legacy,
+            classical,
             numpyro,
             label="Zhao NFW-limit enclosed_mass",
             rtol=0.0,
@@ -416,7 +417,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         )
 
 
-class TestDSphConsistencyAgainstLegacy(unittest.TestCase):
+class TestDSphConsistencyAgainstClassical(unittest.TestCase):
     def setUp(self):
         self._jax_x64_ctx = _jax_x64(True)
         self._jax_x64_ctx.__enter__()
@@ -424,13 +425,13 @@ class TestDSphConsistencyAgainstLegacy(unittest.TestCase):
     def tearDown(self):
         self._jax_x64_ctx.__exit__(None, None, None)
 
-    def _make_legacy_dsph(self, params: dict[str, float], anisotropy_kind: str) -> DSphLegacy:
-        return DSphLegacy(
+    def _make_classical_dsph(self, params: dict[str, float], anisotropy_kind: str) -> DSphClassical:
+        return DSphClassical(
             vmem_kms=params["vmem_kms"],
             submodels={
-                "StellarModel": PlummerLegacy(re_pc=params["re_pc"]),
-                "DMModel": _legacy_dm_from_params(params),
-                "AnisotropyModel": _legacy_anisotropy_from_kind(anisotropy_kind, params),
+                "StellarModel": PlummerClassical(re_pc=params["re_pc"]),
+                "DMModel": _classical_dm_from_params(params),
+                "AnisotropyModel": _classical_anisotropy_from_kind(anisotropy_kind, params),
             },
         )
 
@@ -443,7 +444,7 @@ class TestDSphConsistencyAgainstLegacy(unittest.TestCase):
             }
         )
 
-    def test_sigmalos2_integrand_matches_legacy(self):
+    def test_sigmalos2_integrand_matches_classical(self):
         cases = [
             {
                 "name": "constant_nfw_typical",
@@ -494,19 +495,19 @@ class TestDSphConsistencyAgainstLegacy(unittest.TestCase):
             params = case["params"]
             R_pc = np.geomspace(max(0.1, params["re_pc"] * 0.05), params["re_pc"] * 2.0, 4)
             with self.subTest(case=case["name"]):
-                legacy_dsph = self._make_legacy_dsph(params, case["anisotropy_kind"])
-                legacy_integrand = legacy_dsph.integrand_sigmalos2(u, R_pc, n_kernel=256)
+                classical_dsph = self._make_classical_dsph(params, case["anisotropy_kind"])
+                classical_integrand = classical_dsph.integrand_sigmalos2(u, R_pc, n_kernel=256)
                 numpyro_integrand = _numpyro_sigmalos2_integrand(params, case["anisotropy_kind"], u, R_pc)
                 _assert_allclose(
                     self,
-                    legacy_integrand,
+                    classical_integrand,
                     numpyro_integrand,
                     label=f"DSph.integrand_sigmalos2 {case['name']}",
                     rtol=case["rtol"],
                     atol=1e-10,
                 )
 
-    def test_sigmalos2_matches_legacy_for_constant_and_osipkov_merritt(self):
+    def test_sigmalos2_matches_classical_for_constant_and_osipkov_merritt(self):
         cases = [
             {
                 "name": "constant_nfw_typical",
@@ -556,20 +557,21 @@ class TestDSphConsistencyAgainstLegacy(unittest.TestCase):
             params = case["params"]
             R_pc = np.geomspace(max(0.1, params["re_pc"] * 0.05), params["re_pc"] * 5.0, 10)
             with self.subTest(case=case["name"]):
-                legacy_dsph = self._make_legacy_dsph(params, case["anisotropy_kind"])
+                classical_dsph = self._make_classical_dsph(params, case["anisotropy_kind"])
                 numpyro_dsph = self._make_numpyro_dsph(params, case["anisotropy_kind"])
 
-                legacy_sigmalos2 = legacy_dsph.sigmalos2_dequad(R_pc, n=2048, n_kernel=256)
+                classical_sigmalos2 = classical_dsph.sigmalos2_dequad(R_pc, n=2048, n_kernel=256)
                 numpyro_sigmalos2 = numpyro_dsph.sigmalos2(
                     jnp.asarray(R_pc),
                     params=params,
                     backend="kernel",
                     n_u=1024,
                     u_max=5000.0,
+                    use_analytic_dm=True,
                 )
                 _assert_allclose(
                     self,
-                    legacy_sigmalos2,
+                    classical_sigmalos2,
                     numpyro_sigmalos2,
                     label=f"DSph.sigmalos2 {case['name']}",
                     rtol=case["rtol"],
@@ -590,25 +592,53 @@ class TestDSphConsistencyAgainstLegacy(unittest.TestCase):
         }
         R_pc = np.geomspace(20.0, 1200.0, 8)
 
-        legacy_dsph = self._make_legacy_dsph(params, "baes")
+        classical_dsph = self._make_classical_dsph(params, "baes")
         numpyro_dsph = self._make_numpyro_dsph(params, "baes")
 
-        legacy_sigmalos2 = legacy_dsph.sigmalos2_dequad(R_pc, n=1024, n_kernel=128)
+        classical_sigmalos2 = classical_dsph.sigmalos2_dequad(R_pc, n=1024, n_kernel=128)
         numpyro_sigmalos2 = numpyro_dsph.sigmalos2(
             jnp.asarray(R_pc),
             params=params,
             backend="kernel",
             n_u=768,
             u_max=3000.0,
+            use_analytic_dm=True,
         )
         _assert_allclose(
             self,
-            legacy_sigmalos2,
+            classical_sigmalos2,
             numpyro_sigmalos2,
             label="DSph.sigmalos2 baes",
             rtol=1e-2,
             atol=1e-8,
         )
+
+    def test_classical_sigmalos2_uses_the_shared_entry_point(self):
+        params = {
+            "re_pc": 200.0,
+            "rs_pc": 1200.0,
+            "rhos_Msunpc3": 1e-2,
+            "r_t_pc": 8000.0,
+            "beta_ani": 0.2,
+            "vmem_kms": 0.0,
+        }
+        classical_dsph = self._make_classical_dsph(params, "constant")
+        R_pc = np.array([50.0, 100.0])
+
+        with patch.object(
+            classical_dsph,
+            "sigmalos2_dequad",
+            return_value=np.array([1.0, 2.0]),
+        ) as dequad:
+            result = classical_dsph.sigmalos2(
+                R_pc,
+                n=64,
+                n_kernel=32,
+                ignore_RuntimeWarning=False,
+            )
+
+        dequad.assert_called_once_with(R_pc, 64, 32, False)
+        np.testing.assert_array_equal(result, np.array([1.0, 2.0]))
 
 
 if __name__ == "__main__":

@@ -1,3 +1,11 @@
+"""JAX/NumPyro model backend.
+
+This module is a supported, functional API for JAX-compatible Jeans
+calculations and NumPyro inference. Model parameters are passed explicitly to
+calculation methods; the classical, stateful API remains in
+:mod:`jeanspy.model`.
+"""
+
 from __future__ import annotations
 
 from functools import lru_cache, partial
@@ -632,6 +640,7 @@ class PlummerModel(StellarModel):
 
 class DMModel(Model):
     required_models: Mapping[str, type[Model]] = {}
+    _default_enclosed_mass_method = "numeric"
 
     def resolve_params(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
         return params
@@ -687,29 +696,43 @@ class DMModel(Model):
         )
 
     def enclosed_mass(
-        self, r_pc: jnp.ndarray, method: str = "analytic", *, params: Mapping[str, Any]
+        self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
         """Return enclosed mass with selectable backend.
 
-        Default is `numeric` to keep autodiff robust for gradient-based samplers
-        when analytic special functions (e.g. betainc) cause AD issues.
+        The default ``auto`` method uses each model's autodiff-safe default:
+        analytic for NFW and numeric for Zhao. Pass ``method="analytic"`` to
+        request a closed form explicitly, or ``method="numeric"`` for the
+        autodiff-friendly numerical integral.
         """
+        resolved_method = (
+            self._default_enclosed_mass_method if method == "auto" else method
+        )
         has_analytic = self.has_analytic_enclosed_mass
-        if method == "analytic":
+        if resolved_method == "analytic":
             if has_analytic:
                 return self.enclosed_mass_analytic(r_pc, params=params)
             else:
                 raise NotImplementedError(
                     f"{self.__class__.__name__} does not have an analytic enclosed_mass implementation"
                 )
-        elif method == "numeric":
+        elif resolved_method == "numeric":
             return self.enclosed_mass_numeric(r_pc, params=params)
         else:
-            raise ValueError(f"method must be 'analytic' or 'numeric', got {method!r}")
+            raise ValueError(
+                f"method must be 'analytic', 'numeric', or 'auto', got {method!r}"
+            )
+
+    def enclosure_mass(
+        self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
+        """Compatibility spelling shared with the classical backend."""
+        return self.enclosed_mass(r_pc, method=method, params=params)
 
 
 class NFWModel(DMModel):
     required_param_names = ("rs_pc", "rhos_Msunpc3", "r_t_pc")
+    _default_enclosed_mass_method = "analytic"
 
     def resolve_params(self, params: Mapping[str, Any]) -> dict[str, jnp.ndarray]:
         rs = jnp.asarray(params["rs_pc"])
@@ -1097,6 +1120,16 @@ class DSphModel(Model):
         resolved.update(cast(Mapping[str, Any], resolve_params(params)))
         return resolved
 
+    @staticmethod
+    def _resolve_dm_mass_method(
+        dm: DMModel, use_analytic_dm: Optional[bool]
+    ) -> str:
+        if use_analytic_dm is None:
+            return dm._default_enclosed_mass_method
+        if use_analytic_dm and dm.has_analytic_enclosed_mass:
+            return "analytic"
+        return "numeric"
+
     def sigmalos2_kernel(
         self,
         R_pc: jnp.ndarray,
@@ -1107,7 +1140,7 @@ class DSphModel(Model):
         n_kernel: Optional[int] = None,
         constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
-        use_analytic_dm: bool = True,
+        use_analytic_dm: Optional[bool] = None,
     ) -> jnp.ndarray:
         r"""Original kernel-based sigma_los^2(R) implementation.
 
@@ -1135,14 +1168,12 @@ class DSphModel(Model):
         stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]
+        dm_mass_method = self._resolve_dm_mass_method(dm, use_analytic_dm)
 
         re_pc = params["re_pc"]
         nu3 = stellar.density_3d(r, re_pc=re_pc)
         sig2 = stellar.density_2d(R2d, re_pc=re_pc)
-        if use_analytic_dm and dm.has_analytic_enclosed_mass:
-            M = dm.enclosed_mass(r, method="analytic", params=params)
-        else:
-            M = dm.enclosed_mass(r, method="numeric", params=params)
+        M = dm.enclosed_mass(r, method=dm_mass_method, params=params)
 
         kernel_kwargs: Dict[str, Any] = {}
         if isinstance(ani, ConstantAnisotropyModel):
@@ -1185,7 +1216,7 @@ class DSphModel(Model):
         n_r: Optional[int] = None,
         u_max: Optional[float] = None,
         r_min_factor: float = 0.5,
-        use_analytic_dm: bool = True,
+        use_analytic_dm: Optional[bool] = None,
     ) -> jnp.ndarray:
         r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms."""
         R = jnp.atleast_1d(jnp.asarray(R_pc))
@@ -1197,6 +1228,7 @@ class DSphModel(Model):
         stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]
+        dm_mass_method = self._resolve_dm_mass_method(dm, use_analytic_dm)
 
         re_pc = jnp.asarray(params["re_pc"], dtype=dtype)
         r_min = jnp.maximum(
@@ -1226,10 +1258,7 @@ class DSphModel(Model):
         nu3 = stellar.density_3d(r, re_pc=re_pc)
         beta = jnp.asarray(ani.beta(r, params=params), dtype=dtype)
         f_r = jnp.asarray(ani.f(r, params=params), dtype=dtype)
-        if use_analytic_dm and dm.has_analytic_enclosed_mass:
-            mass = dm.enclosed_mass(r, method="analytic", params=params)
-        else:
-            mass = dm.enclosed_mass(r, method="numeric", params=params)
+        mass = dm.enclosed_mass(r, method=dm_mass_method, params=params)
 
         grav = (GMsun_m3s2 * mass / PARSEC_M) * 1e-6
         rhs_log_r = f_r * nu3 * grav / r
@@ -1261,7 +1290,7 @@ class DSphModel(Model):
         constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
         r_min_factor: float = 0.5,
-        use_analytic_dm: bool = True,
+        use_analytic_dm: Optional[bool] = None,
     ) -> jnp.ndarray:
         """Compute sigma_los^2(R) via the requested backend.
 
@@ -1271,6 +1300,11 @@ class DSphModel(Model):
 
         ``jit`` controls whether a cached ``jax.jit`` wrapper is used around the
         selected solver. ``None`` defaults to the cached JIT path.
+
+        ``use_analytic_dm=None`` (the default) follows the DM model's
+        autodiff-safe mass method: analytic for NFW and numeric for Zhao. Set
+        it to ``True`` to request an analytic mass explicitly, or ``False`` to
+        force the numeric path.
         """
         backend_key = str(backend).strip().lower()
         ani = self.submodels["AnisotropyModel"]  # type: ignore[index]
@@ -1288,6 +1322,9 @@ class DSphModel(Model):
             )
 
         use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)
+        dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
+        dm_mass_method = self._resolve_dm_mass_method(dm, use_analytic_dm)
+        resolved_use_analytic_dm = dm_mass_method == "analytic"
 
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
@@ -1309,7 +1346,7 @@ class DSphModel(Model):
                     n_r=resolved_n_r,
                     u_max=resolved_u_max,
                     r_min_factor=r_min_factor,
-                    use_analytic_dm=use_analytic_dm,
+                    use_analytic_dm=resolved_use_analytic_dm,
                 )
             return self.sigmalos2_kernel(
                 R_value,
@@ -1319,7 +1356,7 @@ class DSphModel(Model):
                 u_max=resolved_u_max,
                 constant_kernel_backend=constant_kernel_backend_key,
                 u_min_eps=u_min_eps,
-                use_analytic_dm=use_analytic_dm,
+                use_analytic_dm=resolved_use_analytic_dm,
             )
 
         if not use_jit:
@@ -1334,7 +1371,7 @@ class DSphModel(Model):
             constant_kernel_backend_key,
             float(u_min_eps),
             float(r_min_factor),
-            bool(use_analytic_dm),
+            dm_mass_method,
             bool(jax.config.read("jax_enable_x64")),
             jax.default_backend(),
         )
