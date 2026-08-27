@@ -49,7 +49,7 @@ def _default_constant_kernel_n_quad() -> int:
 
 
 def _default_sigmalos2_n_u() -> int:
-    return 1024 if _prefers_gpu_x32() else 256
+    return 1024 if _prefers_gpu_x32() else 128
 
 
 def _default_sigmalos2_n_r() -> int:
@@ -57,7 +57,7 @@ def _default_sigmalos2_n_r() -> int:
 
 
 def _default_sigmalos2_u_max() -> float:
-    return 5000.0 if _prefers_gpu_x32() else 2e3
+    return 1.0e4
 
 
 def _normalize_constant_kernel_backend(backend: str) -> str:
@@ -1235,6 +1235,11 @@ class DSphModel(Model):
         ``kernel_outer_transform='sqrtlog'`` uses ``log(u)=x^2``.  Since
         ``K(u) ~ sqrt(u-1)`` at the lower endpoint, the transformed integrand
         is smooth in ``x``.  ``'log'`` retains the legacy uniform-log(u) grid.
+
+        The default ``sqrtlog`` grid is tuned to a maximum relative-error target
+        of ``1e-3`` on the documented Plummer+NFW dSph stress benchmark.  For
+        more extended or otherwise tail-sensitive models, increase ``u_max``
+        before increasing ``n_u``; then double ``n_u`` to verify convergence.
         """
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
@@ -1404,6 +1409,12 @@ class DSphModel(Model):
         must be one of ``"auto"``, ``"analytic"``, or ``"numeric"``. The
         default ``"auto"`` follows the DM model's autodiff-safe choice:
         analytic for NFW and numeric for Zhao.
+
+        For the kernel backend, the documented ``1e-3`` accuracy target applies
+        to the sampled Plummer+NFW stress envelope described in the README.
+        Outside that envelope, test convergence by increasing ``u_max`` first
+        and then doubling ``n_u``.  The Abel backend has a separate radial-grid
+        convergence control, ``n_r``.
         """
         backend_key = str(backend).strip().lower()
         ani = self.submodels["AnisotropyModel"]  # type: ignore[index]
