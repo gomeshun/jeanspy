@@ -28,7 +28,7 @@ import jax.numpy as jnp
 DEFAULT_BAES_ETA2_KERNEL_N_QUAD = 96
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=16)
 def _gauss_legendre_01(n: int) -> tuple[np.ndarray, np.ndarray]:
     """Return Gauss--Legendre nodes and weights on [0, 1]."""
     n = max(int(n), 8)
