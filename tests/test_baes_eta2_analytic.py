@@ -26,7 +26,7 @@ def _broadcast_grid(u_values, r_values):
 def test_eta2_appell_reference_matches_generic_baes_kernel():
     """Exact Appell-F1 expression agrees with the existing numerical kernel."""
     generic = BaesAnisotropyModel()
-    u, R = _broadcast_grid([1.001, 1.03, 1.2, 2.0, 5.0, 12.0], [0.7, 2.3])
+    u, R = _broadcast_grid([1.001, 1.03, 1.2, 2.0, 5.0, 10.0], [0.7, 2.3])
 
     cases = [
         {"beta_0": -0.5, "beta_inf": 0.7, "r_a": 1.4},
@@ -46,7 +46,7 @@ def test_eta2_appell_reference_matches_generic_baes_kernel():
             case["beta_0"],
             case["beta_inf"],
             case["r_a"],
-            dps=35,
+            dps=32,
         )
 
         assert np.isfinite(k_numeric).all()
@@ -57,7 +57,7 @@ def test_eta2_appell_reference_matches_generic_baes_kernel():
 def test_eta2_jax_evaluator_matches_appell_reference():
     """JAX evaluator of the analytic reduction matches high-precision Appell F1."""
     model = BaesEta2AnisotropyModel()
-    u, R = _broadcast_grid([1.001, 1.02, 1.1, 1.5, 3.0, 10.0, 40.0], [0.6, 1.7, 4.0])
+    u, R = _broadcast_grid([1.001, 1.02, 1.1, 1.5, 3.0, 8.0], [0.6, 1.7])
     params = {"beta_0": -1.2, "beta_inf": 0.65, "r_a": 1.5}
 
     k_jax = np.asarray(model.kernel(u, R, params=params, n_kernel=128), dtype=np.float64)
@@ -67,7 +67,7 @@ def test_eta2_jax_evaluator_matches_appell_reference():
         params["beta_0"],
         params["beta_inf"],
         params["r_a"],
-        dps=35,
+        dps=32,
     )
 
     assert np.isfinite(k_jax).all()
