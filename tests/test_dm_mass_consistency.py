@@ -71,6 +71,10 @@ class TestDMEnclosureMassConsistency(unittest.TestCase):
             rtol=0.0,
             atol=0.0,
         )
+        self.assertEqual(
+            classical.enclosed_mass(100.0),
+            classical.enclosure_mass(100.0),
+        )
         np.testing.assert_allclose(
             numpyro.enclosure_mass(jnp.asarray(radii), params=params),
             numpyro.enclosed_mass(jnp.asarray(radii), params=params),

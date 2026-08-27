@@ -782,9 +782,8 @@ class NFWModel(DMModel):
         # but scipy.special.betainc and scipy.special.beta are useless because of their diversence.
         # Therefore we use another expression in the following calculation.
         # Note that the element specification is relatively slow, thus we calculate all elements first and then modify overflowed ones.
-        ret = (1/(1+x)-1 + log(1+x))  # NOTE:  underflow occurs when x<<1. 
-        ret = np.array(ret)
-        ret[is_small] = x[is_small]**2/2  # Series expantion of (1/(1+x)-1 + log(1+x)) up to the second order
+        ret = (1/(1+x)-1 + log(1+x))  # NOTE:  underflow occurs when x<<1.
+        ret = np.where(is_small, np.asarray(x)**2/2, ret)  # Series expansion up to second order
         return (4.*pi*rs_pc**3 * rhos_Msunpc3) * ret 
     
     def jfactor_ullio2016_simple(self,dist_pc,roi_deg=0.5):
@@ -1812,5 +1811,4 @@ if __name__ == '__main__':
     #plt.ylim(0,40)
     plt.show()
     input("press any key")
-
 
