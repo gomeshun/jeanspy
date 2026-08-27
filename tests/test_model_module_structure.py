@@ -3,6 +3,8 @@
 import importlib
 import pickle
 
+import pytest
+
 import jeanspy.model as model
 
 
@@ -42,10 +44,10 @@ def test_public_model_api_is_explicit():
     assert not hasattr(model, "SharedMemory")
 
 
-def test_public_classes_keep_historical_module_provenance():
+def test_public_symbols_keep_historical_module_provenance():
     for name in EXPECTED_PUBLIC_NAMES:
         value = getattr(model, name)
-        if isinstance(value, type):
+        if hasattr(value, "__module__"):
             assert value.__module__ == "jeanspy.model", name
 
 
@@ -59,6 +61,12 @@ def test_parameters_remain_pickleable_through_public_module():
 def test_sersic_uses_split_stellar_base():
     assert issubclass(model.SersicModel, model.StellarModel)
     assert model.SersicModel.__module__ == "jeanspy.model"
+
+
+def test_dotdict_missing_attribute_uses_requested_name():
+    values = model.DotDict({"present": 1})
+    with pytest.raises(AttributeError, match="^missing$"):
+        _ = values.missing
 
 
 def test_legacy_model_impl_is_only_a_compatibility_surface():
