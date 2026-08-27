@@ -129,6 +129,19 @@ print(sigma_los_kms)
 
 JeansPy does not bundle an external dwarf-galaxy database. Observational data and object-specific priors should be supplied explicitly by downstream analyses.
 
+## Public API Boundary
+
+For v0.1.0, the supported base-install module exports in `jeanspy.__all__` are
+exactly `dequad`, `model`, `jfactor`, and `sampler`. The optional
+`model_numpyro` and `sampler_numpyro` modules are supported when their extras
+are installed, but are imported explicitly so that base-package imports do not
+load optional dependencies.
+
+The historical `coord`, `polygon`, and `cmd_utilities` modules remain in the
+source distribution for internal or legacy use only. They are not package-level
+public APIs, are excluded from `jeanspy.__all__` and its lazy exports, and do
+not carry a v0.1.0 compatibility guarantee.
+
 ## Model Backends
 
 JeansPy provides two supported model backends. The module layout is

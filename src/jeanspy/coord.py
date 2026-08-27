@@ -55,22 +55,3 @@ def dms_to_deg(d,m,s):
     '''
     sign = np.sign(np.array(1.0)/d)
     return sign*(np.fabs(d)+m/60.+s/3600.)
-
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    import mpl_toolkits.mplot3d as Axes3D
-    
-    args = {'ra_center':0,'de_center':np.pi/2-0.5}
-    ra = (np.arange(-np.pi,np.pi,0.01) + args['ra_center'])
-    de = (np.arange(-np.pi,np.pi,0.01) + args['de_center'])
-    ras, des = np.meshgrid(ra,de)
-    dists = projected_distance(1,ra=ras,de=des,**args)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-    ax.plot_surface(ras,des,dists)
-    ax.set_xlabel('ra'),ax.set_ylabel('de'),ax.set_zlabel('dist')
-    print(args)
-    fig.show()
-    input('press any key')

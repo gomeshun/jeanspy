@@ -21,13 +21,10 @@ def _load_version():
 __version__ = _load_version()
 
 __all__ = [
-    "coord",
     "dequad",
     "model",
     "jfactor",
-    "polygon",
     "sampler",
-    "cmd_utilities",
 ]
 
 _OPTIONAL_MODULES = {

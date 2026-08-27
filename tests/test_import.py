@@ -9,8 +9,16 @@ def test_version_available():
     assert hasattr(jeanspy, "__version__")
 
 
-def test_core_modules_importable():
-    from jeanspy import cmd_utilities, coord, dequad, jfactor, model, polygon
+def test_public_modules_importable():
+    from jeanspy import dequad, jfactor, model, sampler
+
+
+def test_package_public_api_boundary():
+    assert jeanspy.__all__ == ["dequad", "model", "jfactor", "sampler"]
+
+    historical_modules = {"coord", "polygon", "cmd_utilities"}
+    assert historical_modules.isdisjoint(jeanspy.__all__)
+    assert historical_modules.isdisjoint(jeanspy._LAZY_MODULES)
 
 
 def test_sampler_all_contains_only_sampler():
