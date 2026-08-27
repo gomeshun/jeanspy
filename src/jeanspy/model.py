@@ -483,7 +483,7 @@ class SersicModel(StellarModel):
         super().__init__(*args,**kwargs)
         df = pd.read_csv(DATA_DIR.joinpath("sersic_log10n_log10bn.csv"))
         self._b_interp = interp1d(df["log10n"].values,df["log10bn"].values,"cubic",assume_sorted=True)
-        self.coeff = pd.read_csv(DATA_DIR.joinpath("coeff_dens.csv"), comment="#", delim_whitespace=True, header=None).values
+        self.coeff = pd.read_csv(DATA_DIR.joinpath("coeff_dens.csv"), comment="#", sep=r"\s+", header=None).values
     
     @property
     def b_approx(self):
