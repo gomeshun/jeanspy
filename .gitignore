@@ -129,10 +129,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# demo outputs
-notebooks/_demo_outputs
-notebooks/*.nc
-notebooks/*.zarr/
+# notebook outputs
+notebooks/_demo_outputs/
+notebooks/**/*.nc
+notebooks/**/*.zarr/
+notebooks/**/*.pkl
 
 # test outputs
 tests/artifacts/
