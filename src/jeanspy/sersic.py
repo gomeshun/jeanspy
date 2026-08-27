@@ -10,7 +10,7 @@ from scipy.integrate import quad
 from scipy.interpolate import interp1d
 from scipy.special import gamma
 
-from ._model_impl import SersicModel as _LegacySersicModel
+from ._model_profiles import SersicModel as _LegacySersicModel
 from ._sersic_deprojection import sp04_density
 
 

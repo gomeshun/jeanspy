@@ -1,31 +1,72 @@
-"""Public model API.
+"""Public classical model API.
 
-The historical implementation remains in :mod:`jeanspy._model_impl` while the
-Sérsic implementation is maintained separately in :mod:`jeanspy.sersic`.
-This facade preserves the existing ``jeanspy.model`` import surface.
+The implementation is organized in private modules, while this module keeps
+the supported stateful NumPy/SciPy model imports stable.
 """
 
-from . import _model_impl as _impl
+from ._model_impl import (
+    AnisotropyModel,
+    BaesAnisotropyModel,
+    C_J,
+    ConstantAnisotropyModel,
+    DMModel,
+    DSphModel,
+    DotDict,
+    Exp2dModel,
+    Exp3dModel,
+    FittableModel,
+    FlatPriorModel,
+    KI17_Model,
+    Model,
+    NFWModel,
+    OsipkovMerrittModel,
+    Parameters,
+    PhotometryPriorModel,
+    PlummerModel,
+    SimpleDSphEstimationModel,
+    StellarModel,
+    Uniform2dModel,
+    ZhaoModel,
+    get_default_estimation_model,
+)
+from ._model_jfactor import _ullio2016_inner_weight, _ullio2016_weight
+from .sersic import SersicModel
 
-# Preserve the broad historical module namespace, including a few private
-# helpers that downstream notebooks may still import.  Dunder attributes are
-# intentionally kept from this public facade rather than copied from the
-# implementation module.
-for _name, _value in vars(_impl).items():
-    if not (_name.startswith("__") and _name.endswith("__")):
-        globals()[_name] = _value
 
-# Replace the historical Sérsic implementation with the maintained public one.
-from .sersic import SersicModel as SersicModel
+__all__ = [
+    "Parameters",
+    "Model",
+    "StellarModel",
+    "PlummerModel",
+    "SersicModel",
+    "Exp2dModel",
+    "Exp3dModel",
+    "Uniform2dModel",
+    "DMModel",
+    "ZhaoModel",
+    "NFWModel",
+    "AnisotropyModel",
+    "ConstantAnisotropyModel",
+    "OsipkovMerrittModel",
+    "BaesAnisotropyModel",
+    "DSphModel",
+    "FittableModel",
+    "FlatPriorModel",
+    "PhotometryPriorModel",
+    "SimpleDSphEstimationModel",
+    "DotDict",
+    "KI17_Model",
+    "get_default_estimation_model",
+    "C_J",
+]
 
-# Keep public class/function provenance stable for repr/pickle/introspection.
-for _name, _value in list(globals().items()):
-    if getattr(_value, "__module__", None) == _impl.__name__:
+
+# Keep class and factory provenance stable for repr, introspection, and pickle.
+for _name in __all__:
+    _value = globals()[_name]
+    if callable(_value):
         try:
             _value.__module__ = __name__
         except (AttributeError, TypeError):
             pass
-SersicModel.__module__ = __name__
-
-# Avoid leaking facade implementation details through ordinary inspection.
-del _name, _value, _impl
+del _name, _value

@@ -37,3 +37,46 @@ def test_sampler_legacy_names_not_accessible():
 def test_sampler_class_importable():
     from jeanspy.sampler import Sampler
     assert Sampler is not None
+
+
+def test_model_public_exports_are_explicit():
+    from jeanspy import model
+
+    expected = {
+        "Parameters",
+        "Model",
+        "StellarModel",
+        "PlummerModel",
+        "SersicModel",
+        "Exp2dModel",
+        "Exp3dModel",
+        "Uniform2dModel",
+        "DMModel",
+        "ZhaoModel",
+        "NFWModel",
+        "AnisotropyModel",
+        "ConstantAnisotropyModel",
+        "OsipkovMerrittModel",
+        "BaesAnisotropyModel",
+        "DSphModel",
+        "FittableModel",
+        "FlatPriorModel",
+        "PhotometryPriorModel",
+        "SimpleDSphEstimationModel",
+        "DotDict",
+        "KI17_Model",
+        "get_default_estimation_model",
+        "C_J",
+    }
+    assert set(model.__all__) == expected
+
+    namespace = {}
+    exec("from jeanspy.model import *", namespace)
+    assert {name for name in namespace if not name.startswith("_")} == expected
+
+
+def test_model_facade_does_not_leak_implementation_names():
+    from jeanspy import model
+
+    for name in ("_impl", "np", "pd", "multi", "SharedMemory", "DATA_DIR"):
+        assert not hasattr(model, name), f"{name} should remain private"
