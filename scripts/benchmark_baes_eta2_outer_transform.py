@@ -21,19 +21,32 @@ class Case:
     beta_inf: float
     r_a_over_re: float
     rs_over_re: float
+    note: str
 
 
+# This is deliberately an adversarial numerical set, not a prior or a catalogue
+# of physically preferred models.  MCMC walkers can visit awkward regions while
+# exploring, so the transform should not be tuned only to a fiducial dSph.
 CASES = [
-    Case("fiducial", -0.5, 0.65, 1.36, 5.0),
-    Case("inner-transition", -1.0, 0.8, 0.25, 5.0),
-    Case("outer-transition", 0.4, 0.8, 5.0, 5.0),
-    Case("tangential", -1.5, -0.2, 1.0, 5.0),
-    Case("constant-radial", 0.7, 0.7, 1.0, 2.0),
-    Case("broad-halo", -0.5, 0.65, 1.36, 12.0),
+    Case("fiducial", -0.5, 0.65, 1.36, 5.0, "representative transition"),
+    Case("inner-transition", -1.0, 0.8, 0.25, 5.0, "transition inside Re"),
+    Case("outer-transition", 0.4, 0.8, 5.0, 5.0, "transition outside Re"),
+    Case("moderate-tangential", -1.5, -0.2, 1.0, 5.0, "tangential profile"),
+    Case("constant-radial", 0.7, 0.7, 1.0, 2.0, "constant radial limit"),
+    Case("near-radial-constant", 0.98, 0.98, 1.0, 5.0, "beta -> 1 cancellation"),
+    Case("extreme-tangential-constant", -5.0, -5.0, 1.0, 5.0, "large negative beta dynamic range"),
+    Case("rapid-radializing", -5.0, 0.98, 0.01, 5.0, "large beta contrast and small ra"),
+    Case("rapid-tangentializing", 0.98, -5.0, 0.01, 5.0, "reversed large beta contrast"),
+    Case("tiny-ra", -0.5, 0.98, 1e-3, 5.0, "almost outer-anisotropy limit"),
+    Case("huge-ra", 0.98, -0.5, 1e3, 5.0, "almost inner-anisotropy limit"),
+    Case("compact-halo", -0.5, 0.65, 1.36, 0.05, "rs well inside Re"),
+    Case("broad-halo", -0.5, 0.65, 1.36, 12.0, "rs well outside Re"),
+    Case("ultra-broad-halo", -0.5, 0.65, 1.36, 100.0, "very slowly varying halo mass"),
 ]
 
 N_VALUES = [32, 64, 128, 256, 512, 1024, 2048]
 TOLERANCES = [1e-2, 3e-3, 1e-3, 3e-4, 1e-4]
+REFERENCE_WARN = 3e-4
 
 
 def _sync(jax, value):
@@ -55,20 +68,40 @@ def _bench(jax, func: Callable[[], Any], repeats: int = 5) -> float:
     return float(statistics.median(_time_once(jax, func) for _ in range(repeats)))
 
 
-def _max_rel(a, b) -> float:
+def _error_summary(a, b) -> dict[str, float | bool]:
     import numpy as np
 
     aa = np.asarray(a, dtype=np.float64)
     bb = np.asarray(b, dtype=np.float64)
-    return float(np.max(np.abs(aa - bb) / np.maximum(np.abs(bb), 1e-12)))
+    finite = bool(np.isfinite(aa).all() and np.isfinite(bb).all())
+    if not finite:
+        return {
+            "finite": False,
+            "max_rel": float("inf"),
+            "max_scaled_abs": float("inf"),
+            "near_zero_fraction": 1.0,
+        }
+
+    scale = max(float(np.max(np.abs(bb))), 1e-12)
+    floor = max(scale * 1e-8, 1e-12)
+    absdiff = np.abs(aa - bb)
+    max_rel = float(np.max(absdiff / np.maximum(np.abs(bb), floor)))
+    max_scaled_abs = float(np.max(absdiff) / scale)
+    near_zero_fraction = float(np.mean(np.abs(bb) < floor))
+    return {
+        "finite": True,
+        "max_rel": max_rel,
+        "max_scaled_abs": max_scaled_abs,
+        "near_zero_fraction": near_zero_fraction,
+    }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Robustly benchmark outer-variable transforms for the eta=2 Baes kernel. "
-            "The comparison aggregates worst-case accuracy over several anisotropy and halo scales "
-            "rather than tuning to one fiducial profile."
+            "The comparison aggregates worst-case accuracy over representative and "
+            "MCMC-adversarial anisotropy/halo scales instead of tuning one profile."
         )
     )
     parser.add_argument("--quick", action="store_true")
@@ -88,11 +121,14 @@ def main() -> None:
 
     dtype = jnp.float64
     re_pc = 220.0
-    n_radii = 24 if args.quick else 32
-    R = jnp.asarray(np.geomspace(0.02 * re_pc, 5.0 * re_pc, n_radii), dtype=dtype)
+    n_radii = 28 if args.quick else 40
+    # Wider than the earlier fiducial test.  This probes R far inside/outside
+    # tracer and anisotropy scales without going so small that u_max truncation
+    # trivially dominates the reference integral.
+    R = jnp.asarray(np.geomspace(0.005 * re_pc, 10.0 * re_pc, n_radii), dtype=dtype)
     u_max = 5000.0
     n_values = N_VALUES[:5] if args.quick else N_VALUES
-    cases = CASES[:4] if args.quick else CASES
+    cases = CASES[:8] if args.quick else CASES
     n_ref_outer = 4096 if args.quick else 8192
     n_ref_abel = 16384 if args.quick else 32768
     n_kernel = 32
@@ -147,7 +183,7 @@ def main() -> None:
                 x = jnp.linspace(jnp.asarray(0.0, dtype=dtype), q_max, n_u)
                 one_minus_q2 = jnp.maximum(1.0 - x * x, jnp.finfo(dtype).tiny)
                 u = 1.0 / jnp.sqrt(one_minus_q2)
-                jac = x / one_minus_q2  # dt/dq for t=log(u)
+                jac = x / one_minus_q2
             else:
                 raise ValueError(transform)
 
@@ -204,7 +240,7 @@ def main() -> None:
         ref_abel_fn = abel_fn(dsph, params, n_ref_abel)
         ref_outer = _sync(jax, ref_outer_fn())
         ref_abel = _sync(jax, ref_abel_fn())
-        ref_cross = _max_rel(ref_outer, ref_abel)
+        ref_summary = _error_summary(ref_outer, ref_abel)
 
         rows = []
         for n_u in n_values:
@@ -215,23 +251,29 @@ def main() -> None:
                     fn = transformed_kernel_fn(dsph, params, n_u=n_u, transform=method)
                 value = _sync(jax, fn())
                 hot_s = _bench(jax, fn, repeats=args.repeats)
-                err_outer = _max_rel(value, ref_outer)
-                err_abel = _max_rel(value, ref_abel)
+                err_outer = _error_summary(value, ref_outer)
+                err_abel = _error_summary(value, ref_abel)
+                conservative = max(float(err_outer["max_rel"]), float(err_abel["max_rel"]))
                 rows.append(
                     {
                         "method": method,
                         "n_u": n_u,
                         "hot_s": hot_s,
-                        "max_rel_vs_outer_ref": err_outer,
-                        "max_rel_vs_abel_ref": err_abel,
-                        "conservative_max_rel": max(err_outer, err_abel),
+                        "max_rel_vs_outer_ref": err_outer["max_rel"],
+                        "max_rel_vs_abel_ref": err_abel["max_rel"],
+                        "conservative_max_rel": conservative,
+                        "finite": bool(err_outer["finite"] and err_abel["finite"]),
                     }
                 )
 
         case_results.append(
             {
                 "case": case.__dict__,
-                "reference_crosscheck": ref_cross,
+                "reference_crosscheck": ref_summary,
+                "reference_warning": (
+                    (not bool(ref_summary["finite"]))
+                    or float(ref_summary["max_rel"]) > REFERENCE_WARN
+                ),
                 "rows": rows,
             }
         )
@@ -250,6 +292,7 @@ def main() -> None:
                     "method": method,
                     "n_u": n_u,
                     "worst_case_max_rel": max(row["conservative_max_rel"] for row in matches),
+                    "all_finite": all(row["finite"] for row in matches),
                     "median_hot_s": float(statistics.median(row["hot_s"] for row in matches)),
                     "max_hot_s": max(row["hot_s"] for row in matches),
                 }
@@ -263,7 +306,7 @@ def main() -> None:
             candidates = [
                 row
                 for row in aggregate_rows
-                if row["method"] == method and row["worst_case_max_rel"] <= tol
+                if row["all_finite"] and row["worst_case_max_rel"] <= tol
             ]
             best[key][method] = (
                 min(candidates, key=lambda row: row["median_hot_s"])
@@ -271,17 +314,22 @@ def main() -> None:
                 else None
             )
 
-    worst_ref_cross = max(result["reference_crosscheck"] for result in case_results)
+    worst_ref_cross = max(
+        float(result["reference_crosscheck"]["max_rel"]) for result in case_results
+    )
+    warned_cases = [result["case"]["name"] for result in case_results if result["reference_warning"]]
     print("Robust eta=2 outer-integration benchmark (CPU float64)")
     print(
-        f"cases={len(cases)}, R/Re=[0.02, 5], "
+        f"cases={len(cases)}, R/Re=[0.005, 10], "
         f"worst reference cross-check={worst_ref_cross:.3e}"
     )
-    print("method    n_u   worst_max_rel   median_hot_ms   max_hot_ms")
+    print(f"reference-warning cases: {warned_cases or 'none'}")
+    print("method    n_u   worst_max_rel   finite   median_hot_ms   max_hot_ms")
     for row in aggregate_rows:
         print(
             f"{row['method']:<8} {row['n_u']:>5} "
             f"{row['worst_case_max_rel']:>15.3e} "
+            f"{str(row['all_finite']):>7} "
             f"{1e3 * row['median_hot_s']:>15.3f} "
             f"{1e3 * row['max_hot_s']:>12.3f}"
         )
@@ -307,17 +355,32 @@ def main() -> None:
             f"{fmt(values['q']):>7} {('---' if ratio is None else f'{ratio:.3f}x'):>13}"
         )
 
+    print("\nPer-case reference diagnostics")
+    for result in case_results:
+        case = result["case"]
+        ref = result["reference_crosscheck"]
+        print(
+            f"{case['name']:<28} beta=({case['beta_0']:+.2f},{case['beta_inf']:+.2f}) "
+            f"ra/Re={case['r_a_over_re']:.3g} rs/Re={case['rs_over_re']:.3g} "
+            f"ref_rel={float(ref['max_rel']):.3e} "
+            f"near_zero={float(ref['near_zero_fraction']):.2f} "
+            f"warn={result['reference_warning']}"
+        )
+
     payload = {
         "runtime": {
             "jax_backend": jax.default_backend(),
             "jax_enable_x64": bool(jax.config.read("jax_enable_x64")),
             "n_radii": n_radii,
+            "R_over_re_min": 0.005,
+            "R_over_re_max": 10.0,
             "u_max": u_max,
             "n_kernel": n_kernel,
             "n_ref_outer": n_ref_outer,
             "n_ref_abel": n_ref_abel,
         },
         "worst_reference_crosscheck": worst_ref_cross,
+        "reference_warning_cases": warned_cases,
         "aggregate_rows": aggregate_rows,
         "best_at_tolerance": best,
         "case_results": case_results,
