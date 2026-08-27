@@ -1,152 +1,282 @@
 #!/usr/bin/env python3
-"""Diagnostic script: compare SersicModel deprojection methods.
+"""Benchmark spherical Sérsic deprojection methods against numerical Abel inversion.
 
-Compares numerical Abel reference against LGM, VM20, and VM20bis approximations
-for representative Sérsic indices, plotting both density profiles and relative
-error curves, plus an optional 2D (log n, log r/Re) error map.
+The numerical ``SersicModel.density_3d_numerical`` result is the reference.
+This script compares:
+
+* LGM (legacy analytical approximation),
+* VM20 (published Vitral & Mamon 2020 coefficients),
+* the current JeansPy VM20bis-style *independent refit*,
+* Simonneau & Prada (2004; SP04),
+* a VM21-style hybrid: VM20bis-style refit for n <= 3.4 and SP04 above it,
+* Ciotti, De Deo & Pellegrini (2025), independently reconstructed from the
+  asymptotic formula plus the luminosity-conservation condition for p.
+
+Important provenance note
+-------------------------
+``density_3d_VM20bis`` in the current PR uses coefficients independently
+re-fitted inside JeansPy because the historical coefficient repository cited by
+Vitral & Mamon (2021) could not be retrieved.  The plots therefore label this
+method ``VM20bis-style refit`` rather than presenting its coefficients as the
+authors' official VM20bis table.
 
 Usage
 -----
-    python scripts/compare_sersic_deprojection.py            # interactive display
-    python scripts/compare_sersic_deprojection.py output.png # save to file
+    python scripts/compare_sersic_deprojection.py
+    python scripts/compare_sersic_deprojection.py output.png
 
-The Ciotti, De Deo & Pellegrini (2025, A&A 694 A118) asymptotically matched
-approximation is noted as a future benchmark candidate; its formula is not yet
-bundled in this repository.
-
-Expected qualitative result
----------------------------
-* Near r ~ R_e all analytical methods agree with numerical Abel at the
-  percent level for moderate–high n.
-* For low n (n ≲ 1), LGM diverges at small r/Re; VM20 and VM20bis
-  substantially reduce this error within their respective validity domains.
-* VM20bis extends accurate coverage to r/Re ~ 1e-4 for n ≤ 3.4.
+When an output path is supplied, ``*_1d.png`` and ``*_2d.png`` are written.
+The script also prints representative maximum/RMS errors and rough evaluation
+costs relative to the numerical Abel reference.
 """
-import sys
-import numpy as np
-import matplotlib.pyplot as plt
-import warnings
+
+from __future__ import annotations
 
 import pathlib
+import sys
+import time
+import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from jeanspy._sersic_deprojection import (  # noqa: E402
+    ciotti2025_density,
+    ciotti2025_matching_p,
+    sp04_density,
+)
 from jeanspy.model import SersicModel  # noqa: E402
+
+
+RE_PC = 100.0
+REPRESENTATIVE_N = [0.5, 0.56, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 8.0, 10.0]
 
 
 def _safe_rel_err(rho_approx, rho_ref):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        rel = np.abs(rho_approx / rho_ref - 1.0)
+        rel = np.abs(np.asarray(rho_approx) / np.asarray(rho_ref) - 1.0)
     return np.where(np.isfinite(rel), rel, np.nan)
 
 
-def main(output_path=None):
-    re_pc = 100.0
+def _ciotti_supported(n):
+    return n == 0.5 or n == 1.0 or n >= 0.55
 
-    # ── Representative Sérsic indices ──────────────────────────────────────
-    ns = [0.5, 0.56, 0.75, 1.0, 1.5, 2.0, 4.0, 8.0, 10.0]
+
+def _evaluate(name, model, x):
+    r = np.asarray(x) * RE_PC
+    n = float(model.params.n)
+
+    if name == "LGM":
+        if not (0.5 <= n <= 10):
+            return None
+        return model.density_3d_LGM(r)
+
+    if name == "VM20":
+        if not (0.5 <= n <= 10) or np.min(x) < 1e-3 or np.max(x) > 1e3:
+            return None
+        return model.density_3d_VM20(r)
+
+    if name == "VM20bis-style refit":
+        if not (0.5 <= n <= 3.4) or np.min(x) < 1e-4 or np.max(x) > 1e3:
+            return None
+        return model.density_3d_VM20bis(r)
+
+    if name == "SP04":
+        if n <= 1.0:
+            return None
+        return sp04_density(r, re_pc=RE_PC, n=n, b=model.b)
+
+    if name == "VM21-style hybrid":
+        if not (0.5 <= n <= 10) or np.min(x) < 1e-4 or np.max(x) > 1e3:
+            return None
+        if n <= 3.4:
+            return model.density_3d_VM20bis(r)
+        return sp04_density(r, re_pc=RE_PC, n=n, b=model.b)
+
+    if name == "Ciotti+2025":
+        if not _ciotti_supported(n):
+            return None
+        return ciotti2025_density(r, re_pc=RE_PC, n=n, b=model.b)
+
+    raise ValueError(name)
+
+
+def _method_domain_x(name):
+    if name in {"VM20bis-style refit", "VM21-style hybrid", "Ciotti+2025", "SP04", "LGM"}:
+        return np.logspace(-4, 3, 150)
+    return np.logspace(-3, 3, 150)
+
+
+def _plot_1d(methods):
+    fig, axes = plt.subplots(2, 3, figsize=(17, 9), sharey=True)
+    axes = axes.ravel()
     cmap = plt.get_cmap("tab10")
 
-    # ── Figure 1: 1-D relative error curves ────────────────────────────────
-    fig, axes = plt.subplots(1, 3, figsize=(17, 5), sharey=True)
-    ax_lgm, ax_vm20, ax_vm20bis = axes
+    for ax, name in zip(axes, methods):
+        x = _method_domain_x(name)
+        for i, n in enumerate(REPRESENTATIVE_N):
+            model = SersicModel(re_pc=RE_PC, n=n, deprojection_method="numerical")
+            rho_approx = _evaluate(name, model, x)
+            if rho_approx is None:
+                continue
+            rho_num = model.density_3d_numerical(x * RE_PC)
+            err = _safe_rel_err(rho_approx, rho_num)
+            ax.loglog(x, err, lw=1.15, color=cmap(i % 10), label=f"n={n:g}")
 
-    for i, n in enumerate(ns):
-        color = cmap(i % 10)
-        m = SersicModel(re_pc=re_pc, n=n)
-
-        # LGM domain: n ∈ [0.5, 10]
-        if 0.5 <= n <= 10:
-            x_lgm = np.logspace(-3, 3, 200)
-            rho_lgm = m.density_3d_LGM(np.array(x_lgm) * re_pc)
-            rho_num_lgm = m.density_3d_numerical(np.array(x_lgm) * re_pc)
-            err_lgm = _safe_rel_err(rho_lgm, rho_num_lgm)
-            ax_lgm.loglog(x_lgm, err_lgm, color=color, lw=1.2, label=f"n={n}")
-
-        # VM20 domain: n ∈ [0.5, 10], r/Re ∈ [1e-3, 1e3]
-        if 0.5 <= n <= 10:
-            x_vm20 = np.logspace(-3, 3, 200)
-            rho_vm20 = m.density_3d_VM20(np.array(x_vm20) * re_pc)
-            rho_num_vm20 = m.density_3d_numerical(np.array(x_vm20) * re_pc)
-            err_vm20 = _safe_rel_err(rho_vm20, rho_num_vm20)
-            ax_vm20.loglog(x_vm20, err_vm20, color=color, lw=1.2, label=f"n={n}")
-
-        # VM20bis domain: n ∈ [0.5, 3.4], r/Re ∈ [1e-4, 1e3]
-        if 0.5 <= n <= 3.4:
-            x_vm20bis = np.logspace(-4, 3, 200)
-            rho_vm20bis = m.density_3d_VM20bis(np.array(x_vm20bis) * re_pc)
-            rho_num_vm20bis = m.density_3d_numerical(np.array(x_vm20bis) * re_pc)
-            err_vm20bis = _safe_rel_err(rho_vm20bis, rho_num_vm20bis)
-            ax_vm20bis.loglog(x_vm20bis, err_vm20bis, color=color, lw=1.2, label=f"n={n}")
-
-    for ax, title in zip(axes, ["LGM", "VM20", "VM20bis"]):
-        ax.axhline(0.01, color="gray", ls=":", lw=1.2, label="1% level")
-        ax.axhline(0.05, color="gray", ls="--", lw=0.8, label="5% level")
-        ax.set_xlabel(r"$r / R_e$")
-        ax.set_ylabel(r"$|\rho_\mathrm{approx}/\rho_\mathrm{num} - 1|$")
-        ax.set_title(f"Relative error: {title} vs numerical")
+        ax.axhline(1e-3, color="gray", ls="-.", lw=0.8, label="0.1%")
+        ax.axhline(1e-2, color="gray", ls=":", lw=1.0, label="1%")
+        ax.axhline(5e-2, color="gray", ls="--", lw=0.8, label="5%")
+        ax.set_xlabel(r"$r/R_e$")
+        ax.set_ylabel(r"$|\rho_\mathrm{approx}/\rho_\mathrm{num}-1|$")
+        ax.set_title(name)
+        ax.set_ylim(1e-5, 3.0)
         ax.legend(fontsize=6, ncol=2)
-        ax.set_ylim(1e-4, 3)
 
-    fig.suptitle("Sérsic 3-D deprojection: approximation vs numerical Abel reference",
-                 fontsize=12, y=1.01)
+    for ax in axes[len(methods):]:
+        ax.axis("off")
+
+    fig.suptitle("Sérsic 3-D deprojection error relative to numerical Abel inversion")
     fig.tight_layout()
+    return fig
 
-    # ── Figure 2: 2-D error map for VM20 ──────────────────────────────────
-    n_grid = np.logspace(np.log10(0.5), np.log10(10), 40)
-    x_grid = np.logspace(-3, 3, 60)
-    err_map_lgm = np.full((len(n_grid), len(x_grid)), np.nan)
-    err_map_vm20 = np.full_like(err_map_lgm, np.nan)
-    err_map_vm20bis = np.full_like(err_map_lgm, np.nan)
 
-    print("Building 2-D error map (this may take a moment)...")
+def _plot_2d(methods):
+    # Keep this diagnostic reasonably tractable: Abel inversion dominates cost.
+    n_grid = np.logspace(np.log10(0.5), np.log10(10.0), 28)
+    x_grid = np.logspace(-4, 3, 46)
+    maps = {name: np.full((len(n_grid), len(x_grid)), np.nan) for name in methods}
+
+    print("Building 2-D error maps...")
     for j, n in enumerate(n_grid):
-        m = SersicModel(re_pc=re_pc, n=n)
-        r_arr = np.array(x_grid) * re_pc
-        rho_num = m.density_3d_numerical(r_arr)
-        if 0.5 <= n <= 10:
-            rho_lgm = m.density_3d_LGM(r_arr)
-            err_map_lgm[j] = _safe_rel_err(rho_lgm, rho_num)
-            rho_vm20 = m.density_3d_VM20(r_arr)
-            err_map_vm20[j] = _safe_rel_err(rho_vm20, rho_num)
-        if 0.5 <= n <= 3.4:
-            x_bis = np.logspace(-4, 3, len(x_grid))
-            r_bis = x_bis * re_pc
-            rho_num_bis = m.density_3d_numerical(r_bis)
-            rho_vm20bis = m.density_3d_VM20bis(r_bis)
-            err_map_vm20bis[j] = _safe_rel_err(rho_vm20bis, rho_num_bis)
+        model = SersicModel(re_pc=RE_PC, n=n, deprojection_method="numerical")
+        rho_num = model.density_3d_numerical(x_grid * RE_PC)
+        for name in methods:
+            # VM20 has the narrower inner calibration boundary.
+            valid_x = x_grid >= 1e-3 if name == "VM20" else np.ones_like(x_grid, dtype=bool)
+            if not np.any(valid_x):
+                continue
+            try:
+                rho = _evaluate(name, model, x_grid[valid_x])
+            except ValueError:
+                rho = None
+            if rho is None:
+                continue
+            maps[name][j, valid_x] = _safe_rel_err(rho, rho_num[valid_x])
 
-    fig2, axs = plt.subplots(1, 3, figsize=(17, 4))
-    maps = [(err_map_lgm, "LGM", x_grid),
-            (err_map_vm20, "VM20", x_grid),
-            (err_map_vm20bis, "VM20bis", np.logspace(-4, 3, len(x_grid)))]
-
-    for ax, (err_map, title, xs) in zip(axs, maps):
-        im = ax.pcolormesh(np.log10(xs), np.log10(n_grid),
-                           np.log10(np.clip(err_map, 1e-5, None)),
-                           cmap="RdYlGn_r", vmin=-3, vmax=0)
+    fig, axes = plt.subplots(2, 3, figsize=(17, 9), sharex=True, sharey=True)
+    axes = axes.ravel()
+    for ax, name in zip(axes, methods):
+        log_err = np.log10(np.clip(maps[name], 1e-5, 1.0))
+        im = ax.pcolormesh(
+            np.log10(x_grid),
+            np.log10(n_grid),
+            log_err,
+            cmap="RdYlGn_r",
+            vmin=-3,
+            vmax=0,
+            shading="auto",
+        )
         ax.set_xlabel(r"$\log_{10}(r/R_e)$")
         ax.set_ylabel(r"$\log_{10}(n)$")
-        ax.set_title(f"{title}: $\\log_{{10}}$ relative error")
-        fig2.colorbar(im, ax=ax, label=r"$\log_{10}|\rho_\mathrm{approx}/\rho_\mathrm{num}-1|$")
+        ax.set_title(name)
+        fig.colorbar(im, ax=ax, label=r"$\log_{10}$ relative error")
 
-    fig2.suptitle("2-D error map: log10 relative error vs numerical Abel",
-                  fontsize=12, y=1.01)
-    fig2.tight_layout()
+    for ax in axes[len(methods):]:
+        ax.axis("off")
+
+    fig.suptitle("Sérsic deprojection: 2-D relative-error maps")
+    fig.tight_layout()
+    return fig, maps, n_grid, x_grid
+
+
+def _print_error_summary(methods):
+    print("\nRepresentative accuracy summary")
+    print("method                     max rel. error      RMS rel. error")
+    print("-------------------------  ------------------  ------------------")
+
+    accum = {name: [] for name in methods}
+    for n in REPRESENTATIVE_N:
+        model = SersicModel(re_pc=RE_PC, n=n, deprojection_method="numerical")
+        x = np.logspace(-3, 2, 55)
+        rho_num = model.density_3d_numerical(x * RE_PC)
+        for name in methods:
+            try:
+                rho = _evaluate(name, model, x)
+            except ValueError:
+                rho = None
+            if rho is None:
+                continue
+            err = _safe_rel_err(rho, rho_num)
+            finite = err[np.isfinite(err)]
+            if finite.size:
+                accum[name].append(finite)
+
+    for name in methods:
+        if not accum[name]:
+            continue
+        values = np.concatenate(accum[name])
+        print(f"{name:25s}  {np.max(values):18.6g}  {np.sqrt(np.mean(values**2)):18.6g}")
+
+
+def _print_runtime_summary(methods):
+    # n=2 is inside every method's mathematical/calibration domain, including
+    # the current VM20bis-style refit, which makes the rough timing comparable.
+    n = 2.0
+    model = SersicModel(re_pc=RE_PC, n=n, deprojection_method="numerical")
+    x = np.logspace(-3, 2, 100)
+    r = x * RE_PC
+
+    # Warm the Ciotti p root cache so the approximation-evaluation time is not
+    # conflated with the one-off luminosity-conservation solve.
+    ciotti2025_matching_p(n, model.b)
+
+    t0 = time.perf_counter()
+    model.density_3d_numerical(r)
+    t_num = time.perf_counter() - t0
+
+    print("\nApproximate evaluation cost at n=2 (100 radii)")
+    print(f"numerical Abel             {t_num:.6g} s   (1.0x)")
+    for name in methods:
+        t0 = time.perf_counter()
+        try:
+            rho = _evaluate(name, model, x)
+        except ValueError:
+            rho = None
+        elapsed = time.perf_counter() - t0
+        if rho is not None:
+            print(f"{name:25s} {elapsed:.6g} s   ({elapsed / t_num:.3g}x)")
+
+
+def main(output_path=None):
+    methods = [
+        "LGM",
+        "VM20",
+        "VM20bis-style refit",
+        "SP04",
+        "VM21-style hybrid",
+        "Ciotti+2025",
+    ]
+
+    fig1 = _plot_1d(methods)
+    fig2, _, _, _ = _plot_2d(methods)
+    _print_error_summary(methods)
+    _print_runtime_summary(methods)
 
     if output_path:
-        stem = pathlib.Path(output_path).stem
-        suffix = pathlib.Path(output_path).suffix or ".png"
-        p1 = pathlib.Path(output_path).parent / f"{stem}_1d{suffix}"
-        p2 = pathlib.Path(output_path).parent / f"{stem}_2d{suffix}"
-        fig.savefig(p1, dpi=150, bbox_inches="tight")
-        fig2.savefig(p2, dpi=150, bbox_inches="tight")
-        print(f"Figures saved to {p1} and {p2}")
+        path = pathlib.Path(output_path)
+        suffix = path.suffix or ".png"
+        p1 = path.parent / f"{path.stem}_1d{suffix}"
+        p2 = path.parent / f"{path.stem}_2d{suffix}"
+        fig1.savefig(p1, dpi=160, bbox_inches="tight")
+        fig2.savefig(p2, dpi=160, bbox_inches="tight")
+        print(f"\nFigures saved to {p1} and {p2}")
     else:
         plt.show()
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else None
-    main(out)
+    main(sys.argv[1] if len(sys.argv) > 1 else None)
