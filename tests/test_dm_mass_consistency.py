@@ -111,8 +111,26 @@ class TestDSSigmaLos2DMEquivalence(unittest.TestCase):
         )
 
         R_pc = jnp.asarray(np.geomspace(1.0, 1e3, 96), dtype=jnp.float32)
-        s2_nfw = np.asarray(dsph_nfw.sigmalos2(R_pc, params=params_nfw, n_u=192, u_max=1500.0), dtype=np.float64)
-        s2_zhao = np.asarray(dsph_zhao.sigmalos2(R_pc, params=params_zhao, n_u=192, u_max=1500.0), dtype=np.float64)
+        s2_nfw = np.asarray(
+            dsph_nfw.sigmalos2(
+                R_pc,
+                params=params_nfw,
+                n_u=192,
+                u_max=1500.0,
+                use_analytic_dm=True,
+            ),
+            dtype=np.float64,
+        )
+        s2_zhao = np.asarray(
+            dsph_zhao.sigmalos2(
+                R_pc,
+                params=params_zhao,
+                n_u=192,
+                u_max=1500.0,
+                use_analytic_dm=True,
+            ),
+            dtype=np.float64,
+        )
 
         self.assertTrue(np.isfinite(s2_nfw).all())
         self.assertTrue(np.isfinite(s2_zhao).all())

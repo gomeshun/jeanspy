@@ -127,6 +127,17 @@ backend-specific by design:
 | Line-of-sight dispersion | `DSphModel.sigmalos2(...)` uses the classical fixed-grid double-exponential (`dequad`) solver (also available as `sigmalos2_dequad(...)`). | `DSphModel.sigmalos2(..., backend="kernel"|"abel", ...)` uses a JAX-friendly fixed-grid solver. |
 | Numerical controls | Quadrature/grid resolution controls such as `n` and `n_kernel` are method arguments. | JIT, solver selection, grid sizes, and kernel backend are method arguments. |
 
+For `model_numpyro`, `DMModel.enclosed_mass(..., method="auto")` is the
+default model-aware choice: it uses the analytic NFW mass and the fixed-grid
+numeric mass for Zhao. The Zhao analytic mass uses
+`jax.scipy.special.betainc`; JAX does not provide autodiff through its shape
+parameters, so gradients through Zhao `a`, `b`, or `g` can fail on that path.
+The default `DSphModel.sigmalos2(..., use_analytic_dm=None)` follows the same
+choice and is the NUTS-safe path. Use `use_analytic_dm=False` (or
+`method="numeric"`) to force numeric mass, and request `method="analytic"` or
+`use_analytic_dm=True` explicitly only when the closed form is desired without
+those Zhao shape-parameter gradients.
+
 ## Example Notebooks
 
 The canonical examples are:

@@ -567,6 +567,7 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
                     backend="kernel",
                     n_u=1024,
                     u_max=5000.0,
+                    use_analytic_dm=True,
                 )
                 _assert_allclose(
                     self,
@@ -601,6 +602,7 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
             backend="kernel",
             n_u=768,
             u_max=3000.0,
+            use_analytic_dm=True,
         )
         _assert_allclose(
             self,
