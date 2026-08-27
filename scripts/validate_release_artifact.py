@@ -67,8 +67,11 @@ def validate_base(readme: Path) -> None:
     from jeanspy.model import SersicModel
 
     sersic = SersicModel(re_pc=200.0, n=1.0)
-    assert sersic.coeff.size > 0
-    assert np.isfinite(np.asarray(sersic.coeff, dtype=float)).all()
+    if sersic.coeff.size <= 0:
+        raise AssertionError("SersicModel coeff array was empty")
+    coeff_np = np.asarray(sersic.coeff, dtype=float)
+    if not np.isfinite(coeff_np).all():
+        raise AssertionError("SersicModel coeff array contained non-finite values")
 
     print("base Quick Start and packaged-data smoke tests passed")
 
