@@ -609,7 +609,7 @@ class TestModelNumPyro(unittest.TestCase):
                         params=true,
                         n_u=512,
                         u_max=3000.0,
-                        use_analytic_dm=True,
+                        dm_mass_method="analytic",
                     )
                 )
                 s2_ref = np.array(dsph_ref.sigmalos2_dequad(R, n=1024, n_kernel=128))
@@ -656,7 +656,7 @@ class TestModelNumPyro(unittest.TestCase):
                 params=params_base,
                 n_u=192,
                 u_max=1500.0,
-                use_analytic_dm=True,
+                dm_mass_method="analytic",
             ),
             dtype=np.float64,
         )
@@ -666,7 +666,7 @@ class TestModelNumPyro(unittest.TestCase):
                 params=params_zhao,
                 n_u=192,
                 u_max=1500.0,
-                use_analytic_dm=True,
+                dm_mass_method="analytic",
             ),
             dtype=np.float64,
         )
@@ -719,7 +719,7 @@ class TestModelNumPyro(unittest.TestCase):
                 params=p,
                 n_u=192,
                 u_max=1500.0,
-                use_analytic_dm=True,
+                dm_mass_method="analytic",
             )
 
         @jax.jit
@@ -729,7 +729,7 @@ class TestModelNumPyro(unittest.TestCase):
                 params=p,
                 n_u=192,
                 u_max=1500.0,
-                use_analytic_dm=True,
+                dm_mass_method="analytic",
             )
 
         s2_nfw = np.asarray(_sig2_nfw(jnp.asarray(R_pc), params_nfw), dtype=np.float64)
@@ -762,7 +762,7 @@ class TestModelNumPyro(unittest.TestCase):
                         backend="kernel",
                         n_u=224,
                         u_max=1600.0,
-                        use_analytic_dm=True,
+                        dm_mass_method="analytic",
                     ),
                     dtype=np.float64,
                 )
@@ -774,7 +774,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=896,
                         u_max=1600.0,
                         r_min_factor=0.35,
-                        use_analytic_dm=True,
+                        dm_mass_method="analytic",
                     ),
                     dtype=np.float64,
                 )
@@ -787,7 +787,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=896,
                         u_max=1600.0,
                         r_min_factor=0.35,
-                        use_analytic_dm=True,
+                        dm_mass_method="analytic",
                     ),
                     dtype=np.float64,
                 )
@@ -837,7 +837,7 @@ class TestModelNumPyro(unittest.TestCase):
                         backend="kernel",
                         n_u=192,
                         u_max=1400.0,
-                        use_analytic_dm=True,
+                        dm_mass_method="analytic",
                     )
                 )
                 abel_fn = jax.jit(
@@ -848,7 +848,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=640,
                         u_max=1400.0,
                         r_min_factor=0.35,
-                        use_analytic_dm=True,
+                        dm_mass_method="analytic",
                     )
                 )
                 auto_fn = jax.jit(
@@ -860,7 +860,7 @@ class TestModelNumPyro(unittest.TestCase):
                         n_r=640,
                         u_max=1400.0,
                         r_min_factor=0.35,
-                        use_analytic_dm=True,
+                        dm_mass_method="analytic",
                     )
                 )
 
