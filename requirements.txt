@@ -1,2 +1,3 @@
-# Default full repository environment: core package + CUDA12 NumPyro/JAX extra + debug tooling.
--e .[numpyro_cuda12,dev]
+# Default full repository environment: core package + CPU NumPyro/JAX +
+# plotting and development tooling.
+-e .[numpyro_cpu,dev,plotting]
