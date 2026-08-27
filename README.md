@@ -257,9 +257,61 @@ kernel = ConstantAnisotropyModel().kernel(
 )
 ```
 
-On GPU float32, `model_numpyro` defaults to `n_u=1024` for the kernel solver. If you need tighter agreement with a high-resolution reference, raise `n_u` explicitly on the relevant `sigmalos2()` call.
+### Kernel `sigmalos2` numerical-accuracy contract
 
-To reproduce the backend and precision comparison used during development, run:
+For calls resolved to `backend="kernel"` with the default `sqrtlog` outer
+transform, the maintained numerical target is a maximum relative error of
+`1e-3` against a high-resolution float64 kernel reference.  The regression
+metric uses a floor of `max(1e-12, 1e-9 * max(abs(reference)))` so values that
+are numerically negligible do not dominate the relative-error statistic.
+
+The deterministic stress benchmark samples the following dSph-oriented
+envelope with a Plummer tracer and NFW halo:
+
+- `0.005 <= R/Re <= 10`;
+- `0.05 <= rs/Re <= 100` and the standard benchmark truncation `r_t/Re = 40`;
+- constant anisotropy from `beta=-9` through `beta=0.98`;
+- Osipkov-Merritt transitions with `0.005 <= r_a/Re <= 50`;
+- Baes-van Hese models with `0.1 <= eta <= 10`, anisotropy edges down to
+  `beta=-9` and up to `beta=0.98`, and `0.005 <= r_a/Re <= 50`.
+
+This is a tested numerical envelope, not a proof for every continuous point in
+that box or for arbitrary tracer/halo profiles.  Zhao halos, more extreme
+anisotropy, `eta > 10`, substantially more extended tails, or radii outside the
+sampled range should be convergence-tested explicitly.
+
+The kernel defaults are tuned to the tail-dominated error found in the stress
+study: CPU float64/float32 use `n_u=128`, GPU-oriented float32 keeps
+`n_u=1024`, and both use `u_max=10000`.  The Baes inner quadrature remains
+`n_kernel=32`; constant-anisotropy JAX kernels use 32 nodes on CPU and 64 on
+GPU float32.  Increasing `n_u` at fixed, too-small `u_max` does not repair tail
+truncation, so for extended models increase `u_max` first and then increase
+`n_u` if the denser interval still changes the result appreciably.
+
+A practical convergence check is to recompute the result after increasing
+`u_max` and then doubling `n_u`.  For generic Baes models, increase `n_kernel`
+only if the inner-kernel quadrature itself is suspected.  The Abel solver is a
+useful independent cross-check, but it has a separate radial discretization
+controlled by `n_r`; the `1e-3` contract above does not automatically apply to
+an `auto` call that resolves to the Abel backend.
+
+Run the compact CI regression set with:
+
+```bash
+JAX_ENABLE_X64=true python scripts/benchmark_sigmalos2_accuracy_contract.py
+```
+
+Run the complete sampled prior-edge matrix with:
+
+```bash
+JAX_ENABLE_X64=true python scripts/benchmark_sigmalos2_accuracy_contract.py --full
+```
+
+GitHub-hosted CI has no GPU.  The benchmark therefore evaluates the
+GPU-oriented float32 numerical grid on CPU as an arithmetic/accuracy proxy;
+GPU wall-clock performance must be measured on actual accelerator hardware.
+
+To reproduce the broader backend and precision comparison used during development, run:
 
 ```bash
 python scripts/compare_runtime_modes.py
