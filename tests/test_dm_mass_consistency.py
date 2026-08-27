@@ -6,11 +6,11 @@ from scipy.integrate import quad
 
 from jeanspy.model import DMModel, NFWModel, ZhaoModel
 from jeanspy.model_numpyro import (
-    ConstantAnisotropyModel as ConstantAnisotropyModelJax,
-    DSphModel as DSphModelJax,
-    NFWModel as NFWModelJax,
-    PlummerModel as PlummerModelJax,
-    ZhaoModel as ZhaoModelJax,
+    ConstantAnisotropyModel as ConstantAnisotropyModelNumPyro,
+    DSphModel as DSphModelNumPyro,
+    NFWModel as NFWModelNumPyro,
+    PlummerModel as PlummerModelNumPyro,
+    ZhaoModel as ZhaoModelNumPyro,
 )
 
 
@@ -58,6 +58,26 @@ class TestDMEnclosureMassConsistency(unittest.TestCase):
                 self.assertIsInstance(model, DMModel)
                 self._assert_model_consistency(model, radii, rtol=rtol)
 
+    def test_enclosed_mass_spelling_is_shared_by_both_backends(self):
+        params = {"rs_pc": 350.0, "rhos_Msunpc3": 0.08, "r_t_pc": 4000.0}
+        radii = np.geomspace(0.3, 4000.0, 16)
+
+        classical = NFWModel(**params)
+        numpyro = NFWModelNumPyro()
+
+        np.testing.assert_allclose(
+            classical.enclosed_mass(radii),
+            classical.enclosure_mass(radii),
+            rtol=0.0,
+            atol=0.0,
+        )
+        np.testing.assert_allclose(
+            numpyro.enclosure_mass(jnp.asarray(radii), params=params),
+            numpyro.enclosed_mass(jnp.asarray(radii), params=params),
+            rtol=0.0,
+            atol=0.0,
+        )
+
 
 class TestDSSigmaLos2DMEquivalence(unittest.TestCase):
     def test_sigmalos2_nfw_equals_zhao_nfw_limit(self):
@@ -71,18 +91,18 @@ class TestDSSigmaLos2DMEquivalence(unittest.TestCase):
         }
         params_zhao = {**params_nfw, "a": 1.0, "b": 3.0, "g": 1.0}
 
-        dsph_nfw = DSphModelJax(
+        dsph_nfw = DSphModelNumPyro(
             submodels={
-                "StellarModel": PlummerModelJax(),
-                "DMModel": NFWModelJax(),
-                "AnisotropyModel": ConstantAnisotropyModelJax(),
+                "StellarModel": PlummerModelNumPyro(),
+                "DMModel": NFWModelNumPyro(),
+                "AnisotropyModel": ConstantAnisotropyModelNumPyro(),
             }
         )
-        dsph_zhao = DSphModelJax(
+        dsph_zhao = DSphModelNumPyro(
             submodels={
-                "StellarModel": PlummerModelJax(),
-                "DMModel": ZhaoModelJax(),
-                "AnisotropyModel": ConstantAnisotropyModelJax(),
+                "StellarModel": PlummerModelNumPyro(),
+                "DMModel": ZhaoModelNumPyro(),
+                "AnisotropyModel": ConstantAnisotropyModelNumPyro(),
             }
         )
 

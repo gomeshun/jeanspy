@@ -1,3 +1,11 @@
+"""JAX/NumPyro model backend.
+
+This module is a supported, functional API for JAX-compatible Jeans
+calculations and NumPyro inference. Model parameters are passed explicitly to
+calculation methods; the classical, stateful API remains in
+:mod:`jeanspy.model`.
+"""
+
 from __future__ import annotations
 
 from functools import lru_cache, partial
@@ -691,8 +699,8 @@ class DMModel(Model):
     ) -> jnp.ndarray:
         """Return enclosed mass with selectable backend.
 
-        Default is `numeric` to keep autodiff robust for gradient-based samplers
-        when analytic special functions (e.g. betainc) cause AD issues.
+        The default is ``analytic``; pass ``method="numeric"`` when an
+        autodiff-friendly numerical integral is preferred.
         """
         has_analytic = self.has_analytic_enclosed_mass
         if method == "analytic":
@@ -706,6 +714,12 @@ class DMModel(Model):
             return self.enclosed_mass_numeric(r_pc, params=params)
         else:
             raise ValueError(f"method must be 'analytic' or 'numeric', got {method!r}")
+
+    def enclosure_mass(
+        self, r_pc: jnp.ndarray, method: str = "analytic", *, params: Mapping[str, Any]
+    ) -> jnp.ndarray:
+        """Compatibility spelling shared with the classical backend."""
+        return self.enclosed_mass(r_pc, method=method, params=params)
 
 
 class NFWModel(DMModel):

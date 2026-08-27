@@ -60,7 +60,7 @@ def _worker(mode_name: str) -> None:
     import jax
     import jax.numpy as jnp
 
-    import jeanspy.model as legacy_mod
+    import jeanspy.model as classical_mod
     import jeanspy.model_numpyro as new_mod
 
     def sync(value):
@@ -80,9 +80,9 @@ def _worker(mode_name: str) -> None:
             sync(func())
         return _median([time_once(func) for _ in range(repeats)])
 
-    def make_legacy_dsph(params: dict[str, float]):
+    def make_classical_dsph(params: dict[str, float]):
         if {"a", "b", "g"} <= params.keys():
-            dm = legacy_mod.ZhaoModel(
+            dm = classical_mod.ZhaoModel(
                 rs_pc=params["rs_pc"],
                 rhos_Msunpc3=params["rhos_Msunpc3"],
                 a=params["a"],
@@ -91,18 +91,18 @@ def _worker(mode_name: str) -> None:
                 r_t_pc=params["r_t_pc"],
             )
         else:
-            dm = legacy_mod.NFWModel(
+            dm = classical_mod.NFWModel(
                 rs_pc=params["rs_pc"],
                 rhos_Msunpc3=params["rhos_Msunpc3"],
                 r_t_pc=params["r_t_pc"],
             )
 
-        return legacy_mod.DSphModel(
+        return classical_mod.DSphModel(
             vmem_kms=params["vmem_kms"],
             submodels={
-                "StellarModel": legacy_mod.PlummerModel(re_pc=params["re_pc"]),
+                "StellarModel": classical_mod.PlummerModel(re_pc=params["re_pc"]),
                 "DMModel": dm,
-                "AnisotropyModel": legacy_mod.ConstantAnisotropyModel(beta_ani=params["beta_ani"]),
+                "AnisotropyModel": classical_mod.ConstantAnisotropyModel(beta_ani=params["beta_ani"]),
             },
         )
 
@@ -127,16 +127,16 @@ def _worker(mode_name: str) -> None:
     def kernel_accuracy_wide_beta() -> float:
         betas = np.array([-10.0, -5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 0.9, 1.0], dtype=np.float64)
         u_np = np.geomspace(1.0 + 1e-4, 5e2, 220).astype(np.float64)
-        u_legacy = u_np[None, :]
+        u_classical = u_np[None, :]
         u_jax = jnp.asarray(u_np, dtype=jnp.float64 if jax.config.read("jax_enable_x64") else jnp.float32)[None, :]
-        R_legacy = np.asarray([100.0], dtype=np.float64)[:, None]
+        R_classical = np.asarray([100.0], dtype=np.float64)[:, None]
         R_jax = jnp.asarray([100.0], dtype=u_jax.dtype)[:, None]
 
         new_const = new_mod.ConstantAnisotropyModel()
         max_rel = 0.0
         for beta in betas:
-            legacy_const = legacy_mod.ConstantAnisotropyModel(beta_ani=float(beta))
-            ref = np.asarray(legacy_const.kernel(u_legacy, R_legacy), dtype=np.float64).reshape(-1)
+            classical_const = classical_mod.ConstantAnisotropyModel(beta_ani=float(beta))
+            ref = np.asarray(classical_const.kernel(u_classical, R_classical), dtype=np.float64).reshape(-1)
             got = np.asarray(
                 new_const.kernel(
                     u_jax,
@@ -153,19 +153,19 @@ def _worker(mode_name: str) -> None:
     def sigmalos2_accuracy(
         params: dict[str, float],
         *,
-        n_legacy: int,
+        n_classical: int,
         n_kernel: int,
         n_u: int | None = None,
         u_max: float | None = None,
     ) -> float:
-        legacy_dsph = make_legacy_dsph(params)
+        classical_dsph = make_classical_dsph(params)
         if {"a", "b", "g"} <= params.keys():
             new_dsph = make_new_zhao_dsph()
         else:
             new_dsph = make_new_dsph()
 
         R_pc = np.geomspace(max(0.1, params["re_pc"] * 0.05), params["re_pc"] * 5.0, 10).astype(np.float64)
-        ref = np.asarray(legacy_dsph.sigmalos2_dequad(R_pc, n=n_legacy, n_kernel=n_kernel), dtype=np.float64)
+        ref = np.asarray(classical_dsph.sigmalos2_dequad(R_pc, n=n_classical, n_kernel=n_kernel), dtype=np.float64)
         dtype = jnp.float64 if jax.config.read("jax_enable_x64") else jnp.float32
         params_jax = {key: jnp.asarray(value, dtype=dtype) for key, value in params.items()}
         r_pc_jax = jnp.asarray(R_pc, dtype=dtype)
@@ -239,21 +239,23 @@ def _worker(mode_name: str) -> None:
         "vmem_kms": 0.0,
     }
 
-    legacy_dsph = make_legacy_dsph(params_typical)
+    classical_dsph = make_classical_dsph(params_typical)
     new_dsph = make_new_dsph()
     dtype = jnp.float64 if jax.config.read("jax_enable_x64") else jnp.float32
     params_jax = {key: jnp.asarray(value, dtype=dtype) for key, value in params_typical.items()}
 
     u_kernel_np = np.geomspace(1.0 + 1e-4, 1e4, 4096).astype(np.float64)
-    u_kernel_legacy = u_kernel_np[None, :]
+    u_kernel_classical = u_kernel_np[None, :]
     u_kernel_jax = jnp.asarray(u_kernel_np, dtype=dtype)[None, :]
-    R_kernel_legacy = np.asarray([100.0], dtype=np.float64)[:, None]
+    R_kernel_classical = np.asarray([100.0], dtype=np.float64)[:, None]
     R_kernel_jax = jnp.asarray([100.0], dtype=dtype)[:, None]
     R_sig_np = np.geomspace(10.0, 1000.0, 24).astype(np.float64)
     R_sig_jax = jnp.asarray(R_sig_np, dtype=dtype)
 
-    legacy_kernel_fn = lambda: legacy_dsph["AnisotropyModel"].kernel(u_kernel_legacy, R_kernel_legacy)
-    legacy_sig_fn = lambda: legacy_dsph.sigmalos2_dequad(R_sig_np, n=1024, n_kernel=128)
+    classical_kernel_fn = lambda: classical_dsph["AnisotropyModel"].kernel(
+        u_kernel_classical, R_kernel_classical
+    )
+    classical_sig_fn = lambda: classical_dsph.sigmalos2_dequad(R_sig_np, n=1024, n_kernel=128)
     new_kernel_model = cast(Any, new_dsph.submodels["AnisotropyModel"])
     new_kernel_fn = lambda: new_kernel_model.kernel(
         u_kernel_jax,
@@ -285,20 +287,20 @@ def _worker(mode_name: str) -> None:
             "kernel_wide_beta_max_rel": kernel_accuracy_wide_beta(),
             "sigmalos2_typical_max_rel": sigmalos2_accuracy(
                 params_typical,
-                n_legacy=2048,
+                n_classical=2048,
                 n_kernel=256,
             ),
             "sigmalos2_boundary_max_rel": sigmalos2_accuracy(
                 params_boundary,
-                n_legacy=2048,
+                n_classical=2048,
                 n_kernel=256,
             ),
         },
         "speed_s": {
-            "model_py_kernel_hot_median": bench(legacy_kernel_fn, repeats=5, warmups=1),
+            "model_py_kernel_hot_median": bench(classical_kernel_fn, repeats=5, warmups=1),
             "model_numpyro_kernel_first": time_once(new_kernel_fn),
             "model_numpyro_kernel_hot_median": bench(new_kernel_fn, repeats=5, warmups=1),
-            "model_py_sigmalos2_hot_median": bench(legacy_sig_fn, repeats=3, warmups=0),
+            "model_py_sigmalos2_hot_median": bench(classical_sig_fn, repeats=3, warmups=0),
             "model_numpyro_sigmalos2_eager_first": time_once(new_sig_eager),
             "model_numpyro_sigmalos2_eager_hot_median": bench(new_sig_eager, repeats=3, warmups=1),
             "model_numpyro_sigmalos2_jit_first": time_once(new_sig_jit),
@@ -339,7 +341,7 @@ def _launch_worker(mode_name: str) -> dict[str, object]:
 
 
 def _print_summary(results: list[dict[str, object]]) -> None:
-    print("Accuracy (max relative error vs legacy/model.py reference)")
+    print("Accuracy (max relative error vs classical/model.py reference)")
     print("mode                 kernel        sig_typical    sig_boundary")
     for result in results:
         if "error" in result:
