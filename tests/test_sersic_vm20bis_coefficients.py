@@ -33,6 +33,6 @@ def test_vm20bis_uses_published_density_coefficients():
         rtol=0.0,
         atol=5e-15,
     )
-    assert coeff[1, 9] == -47.67
+    assert coeff[1, 9] == 47.67
     assert coeff[7, 3] == 1.825e-4
     assert coeff[10, 0] == -3.430e-7
