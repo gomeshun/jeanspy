@@ -13,6 +13,7 @@ from typing import Any, Dict, Mapping, Optional, cast
 
 # IMPORTANT: these env vars must be set before importing JAX.
 import os
+import warnings
 
 from ._jax_env import configure_jax_environment
 
@@ -33,7 +34,8 @@ DEFAULT_CONSTANT_KERNEL_BACKEND = "jax"
 DEFAULT_SIGMALOS2_BACKEND = "auto"
 DEFAULT_SIGMALOS2_JIT = True
 DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM = "sqrtlog"
-DEFAULT_BAES_KERNEL_N_QUAD = 128
+DEFAULT_BAES_KERNEL_N_QUAD = 32
+BAES_ETA_RECOMMENDED_MAX = 10.0
 
 
 def _prefers_gpu_x32() -> bool:
@@ -89,6 +91,31 @@ def _resolve_n_kernel(n_kernel: Optional[int], *, default: int) -> int:
     return resolved
 
 
+def _warn_if_baes_eta_large(eta: Any) -> None:
+    """Warn for concrete BAES eta values beyond the well-tested analysis range.
+
+    Hayashi-style dSph analyses typically use eta <= 10.  Traced JAX values
+    are intentionally ignored here so a warning callback is never inserted
+    into an MCMC hot path.
+    """
+    from jax import core
+
+    if isinstance(eta, core.Tracer):
+        return
+    try:
+        eta_arr = np.asarray(eta)
+    except (TypeError, ValueError):
+        return
+    if eta_arr.size and np.any(eta_arr > BAES_ETA_RECOMMENDED_MAX):
+        warnings.warn(
+            "Baes-van Hese eta > 10 is outside the range commonly used in "
+            "recent dSph analyses and is less thoroughly validated numerically; "
+            "consider increasing n_kernel and checking convergence.",
+            RuntimeWarning,
+            stacklevel=3,
+        )
+
+
 def get_runtime_config() -> Dict[str, Any]:
     """Return the current model_numpyro runtime configuration.
 
@@ -113,6 +140,8 @@ def get_runtime_config() -> Dict[str, Any]:
         "sigmalos2_backend_default": DEFAULT_SIGMALOS2_BACKEND,
         "sigmalos2_jit_default": DEFAULT_SIGMALOS2_JIT,
         "sigmalos2_kernel_outer_transform_default": DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,
+        "baes_kernel_n_quad_default": DEFAULT_BAES_KERNEL_N_QUAD,
+        "baes_eta_recommended_max": BAES_ETA_RECOMMENDED_MAX,
         "sigmalos2_n_u_default": _default_sigmalos2_n_u(),
         "sigmalos2_n_r_default": _default_sigmalos2_n_r(),
         "sigmalos2_u_max_default": _default_sigmalos2_u_max(),
@@ -349,11 +378,13 @@ def _baes_kernel_jax_backend(
 
     u_in = u_arr.astype(dtype)
     u_safe = jnp.maximum(u_in, one + eps)
-    r_safe = r_arr.astype(dtype)
+    tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)
+    r_safe = jnp.maximum(r_arr.astype(dtype), tiny)
     beta0 = jnp.asarray(beta_0, dtype=dtype)
     betainf = jnp.asarray(beta_inf, dtype=dtype)
-    r_a_safe = jnp.asarray(r_a, dtype=dtype)
-    eta_safe = jnp.asarray(eta, dtype=dtype)
+    q = betainf - beta0
+    r_a_safe = jnp.maximum(jnp.asarray(r_a, dtype=dtype), tiny)
+    eta_safe = jnp.maximum(jnp.asarray(eta, dtype=dtype), tiny)
 
     same_beta = jnp.reshape(
         jnp.abs(beta0 - betainf) <= jnp.asarray(1e-12, dtype=dtype),
@@ -372,21 +403,23 @@ def _baes_kernel_jax_backend(
 
         s = s_max[..., None] * t01[None, ...]
         u_int = jnp.cosh(s)
-        r_int = r_safe[..., None] * u_int
 
-        x_int = (r_int / r_a_safe) ** eta_safe
-        beta_int = (beta0 + betainf * x_int) / (1.0 + x_int)
-        log_f_int = 2.0 * beta0 * jnp.log(r_int) + (
-            2.0 * (betainf - beta0) / eta_safe
-        ) * jnp.log1p(x_int)
+        # Work in log(r/r_a).  Directly forming (r/r_a)**eta can overflow
+        # in float32 for sharp transitions even while the physical beta(r)
+        # and the required f(s)/f(r) ratio remain perfectly finite.
+        log_R_over_ra = jnp.log(r_safe / r_a_safe)
+        log_rint_over_ra = log_R_over_ra[..., None] + jnp.log(u_int)
+        log_rs_over_ra = log_R_over_ra + jnp.log(u_safe)
+        ell_int = eta_safe * log_rint_over_ra
+        ell_s = eta_safe * log_rs_over_ra
 
-        r_s = r_safe * u_safe
-        x_s = (r_s / r_a_safe) ** eta_safe
-        log_f_s = 2.0 * beta0 * jnp.log(r_s) + (
-            2.0 * (betainf - beta0) / eta_safe
-        ) * jnp.log1p(x_s)
-
-        log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)
+        beta_int = beta0 + q * jax.nn.sigmoid(ell_int)
+        log_ratio = (
+            2.0 * beta0 * (jnp.log(u_safe)[..., None] - jnp.log(u_int))
+            + (2.0 * q / eta_safe)
+            * (jax.nn.softplus(ell_s)[..., None] - jax.nn.softplus(ell_int))
+        )
+        log_ratio = jnp.clip(log_ratio, min=-80.0, max=80.0)
         integ_s = u_int * (1.0 - beta_int / (u_int**2)) * jnp.exp(log_ratio)
         weights = s_max[..., None] * w01[None, ...]
         inner = jnp.sum(weights * integ_s, axis=-1)
@@ -1015,8 +1048,13 @@ class BaesAnisotropyModel(AnisotropyModel):
         r_a = jnp.asarray(params["r_a"])
         eta = jnp.asarray(params["eta"])
 
-        x = (jnp.asarray(r_pc) / r_a) ** eta
-        return (beta_0 + beta_inf * x) / (1.0 + x)
+        r = jnp.asarray(r_pc)
+        dtype = jnp.result_type(r, beta_0, beta_inf, r_a, eta)
+        tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)
+        r_safe = jnp.maximum(r.astype(dtype), tiny)
+        r_a_safe = jnp.maximum(r_a.astype(dtype), tiny)
+        ell = eta.astype(dtype) * jnp.log(r_safe / r_a_safe)
+        return beta_0 + (beta_inf - beta_0) * jax.nn.sigmoid(ell)
 
     def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         r"""Return
@@ -1040,10 +1078,15 @@ class BaesAnisotropyModel(AnisotropyModel):
         eta = jnp.asarray(params["eta"])
 
         r = jnp.asarray(r_pc)
-        x = (r / r_a) ** eta
-        return 2.0 * beta_0 * jnp.log(r) + (
-            2.0 * (beta_inf - beta_0) / eta
-        ) * jnp.log1p(x)
+        dtype = jnp.result_type(r, beta_0, beta_inf, r_a, eta)
+        tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)
+        r_safe = jnp.maximum(r.astype(dtype), tiny)
+        r_a_safe = jnp.maximum(r_a.astype(dtype), tiny)
+        eta_safe = jnp.maximum(eta.astype(dtype), tiny)
+        ell = eta_safe * jnp.log(r_safe / r_a_safe)
+        return 2.0 * beta_0 * jnp.log(r_safe) + (
+            2.0 * (beta_inf - beta_0) / eta_safe
+        ) * jax.nn.softplus(ell)
 
     def kernel(
         self,
@@ -1051,7 +1094,7 @@ class BaesAnisotropyModel(AnisotropyModel):
         R_pc: jnp.ndarray,
         *,
         params: Mapping[str, Any],
-        n_kernel: int = 128,
+        n_kernel: int = DEFAULT_BAES_KERNEL_N_QUAD,
     ) -> jnp.ndarray:
         r"""LOSVD kernel K(u) for general BAES anisotropy via numerical integration.
 
@@ -1074,6 +1117,7 @@ class BaesAnisotropyModel(AnisotropyModel):
         n_kernel:
             Number of Gauss-Legendre nodes for the inner quadrature.
         """
+        _warn_if_baes_eta_large(params["eta"])
         return _baes_kernel_jax_backend(
             jnp.asarray(u),
             jnp.asarray(R_pc),
@@ -1377,6 +1421,8 @@ class DSphModel(Model):
             )
 
         use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)
+        if isinstance(ani, BaesAnisotropyModel) and (use_jit or backend_key == "abel"):
+            _warn_if_baes_eta_large(params["eta"])
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         dm_mass_method = self._resolve_dm_mass_method(dm, dm_mass_method)
 
