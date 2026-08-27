@@ -54,7 +54,6 @@ def test_sampler_runs_and_persists_emcee_chain(tmp_path: Path):
         loops=1,
         p0_generator=_initial_state,
         enable_convergence_check=False,
-        progress=False,
     )
 
     chain = sampler.get_chain()
