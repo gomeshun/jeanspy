@@ -14,9 +14,18 @@ def test_sampler_all_contains_only_sampler():
 
 
 def test_sampler_wildcard_import_no_legacy_names():
-    from jeanspy import sampler
+    namespace = {}
+    exec("from jeanspy.sampler import *", namespace)
+
+    assert "Sampler" in namespace
     for name in ("DSphSimulator", "Network", "Worker", "_LEGACY_SWYFT_EXPORTS"):
-        assert name not in sampler.__all__, f"{name} should not be in sampler.__all__"
+        assert name not in namespace, f"{name} should not be imported from jeanspy.sampler"
+
+
+def test_sampler_legacy_names_not_accessible():
+    from jeanspy import sampler
+
+    for name in ("DSphSimulator", "Network", "Worker", "_LEGACY_SWYFT_EXPORTS"):
         assert not hasattr(sampler, name), f"{name} should not be accessible on sampler module"
 
 
