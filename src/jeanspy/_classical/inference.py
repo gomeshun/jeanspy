@@ -212,7 +212,7 @@ class DotDict(dict):
     def __getattr__(self, key):
         if key in self:
             return self[key]
-        return super().__getattr__(key)
+        raise AttributeError(key)
 
     def __setattr__(self, key, value):
         if key in self:
