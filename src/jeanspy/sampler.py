@@ -1,4 +1,4 @@
-from typing import Any, Union, Callable, TYPE_CHECKING
+from typing import Union, Callable
 import pandas as pd
 import numpy as np
 import emcee 
@@ -16,23 +16,7 @@ from scipy.special import logsumexp
 from pprint import pprint  # kept for comments above; no longer used in code
 
 
-_LEGACY_SWYFT_EXPORTS = {"DSphSimulator", "Network", "Worker", "_raise_swyft_unavailable"}
-
-
-def __getattr__(name):
-    if name in _LEGACY_SWYFT_EXPORTS:
-        from . import swyft_legacy
-
-        value = getattr(swyft_legacy, name)
-        globals()[name] = value
-        return value
-    raise AttributeError(f"module {__name__} has no attribute {name}")
-
-
-__all__ = ["Sampler", "DSphSimulator", "Network", "Worker"]
-
-if TYPE_CHECKING:
-    from .swyft_legacy import DSphSimulator, Network, Worker
+__all__ = ["Sampler"]
 
 # Module-level logger
 logger = logging.getLogger(__name__)
