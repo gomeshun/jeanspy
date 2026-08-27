@@ -28,4 +28,4 @@ for _name, _value in list(globals().items()):
 SersicModel.__module__ = __name__
 
 # Avoid leaking facade implementation details through ordinary inspection.
-del _name, _value
+del _name, _value, _impl
