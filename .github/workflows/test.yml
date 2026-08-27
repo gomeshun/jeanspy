@@ -52,3 +52,15 @@ jobs:
 
       - name: Run tests
         run: uv run pytest -q
+
+      - name: Generate Sérsic visualization
+        run: uv run python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
+
+      - name: Upload Sérsic visualization
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sersic-deprojection-summary
+          path: |
+            artifacts/sersic_deprojection_summary.png
+            artifacts/sersic_deprojection_summary.svg
+          if-no-files-found: error
