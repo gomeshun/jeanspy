@@ -144,5 +144,3 @@ class BaesAnisotropyModel(AnisotropyModel):
         integration = dequad(integrand,1,u_expanded,n,axis=2,replace_inf_to_zero=True,replace_nan_to_zero=True)  # shape = (n_R, n_u)
 
         return integration * self.f(R_expanded[...,0]*u_expanded[...,0])/u_expanded[...,0]
-
-

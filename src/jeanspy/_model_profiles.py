@@ -269,5 +269,3 @@ class Uniform2dModel(StellarModel):
         return 1./(pi*self.params.Rmax_pc**2)*np.ones_like(R_pc)
     def cdf_R(self,R_pc):
         return (R_pc/self.params.Rmax_pc)**2
-
-

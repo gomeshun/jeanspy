@@ -354,4 +354,3 @@ class NFWModel(DMModel):
         coeff_evans[np.abs(1-y)<epsilon] = (np.pi - 38/15) + (-(64/21) + np.pi)*(y-1)
         j = C_J * 2 * pi * rhos_Msunpc3**2 * rs_pc**3 / dist_pc**2 * coeff_evans
         return j
-
