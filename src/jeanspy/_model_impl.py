@@ -624,7 +624,9 @@ class SersicModel(StellarModel):
         Returns
         -------
         float
-            ``P = log10(rho_LGM / rho_numerical)``.
+            ``P = log10(rho_corrected / rho_LGM)``, the multiplicative
+            log10 correction applied to the LGM baseline so that
+            ``rho_VM20 = rho_LGM * 10**P``.
         """
         P = 0.0
         order = coeff_table.shape[0] - 1
@@ -637,8 +639,8 @@ class SersicModel(StellarModel):
         """3-D Sérsic density using the Vitral & Mamon (2020) approximation.
 
         The VM20 approximation corrects the LGM formula with a bivariate
-        polynomial in ``log10(r / R_e)`` and ``log10(n)`` that is fitted to the
-        ratio ``log10(rho_LGM / rho_numerical)`` on the grid
+        polynomial ``P = log10(rho_corrected / rho_LGM)`` in
+        ``log10(r / R_e)`` and ``log10(n)``, calibrated on the grid
         ``0.5 ≤ n ≤ 10``, ``1e-3 ≤ r/R_e ≤ 1e3``.
 
         Formula:
@@ -646,7 +648,7 @@ class SersicModel(StellarModel):
         .. math::
 
             \\rho_\\mathrm{VM20}(r) =
-                \\rho_\\mathrm{LGM}(r) /
+                \\rho_\\mathrm{LGM}(r) \\times
                 10^{P(\\log_{10}(r/R_e),\\,\\log_{10}(n))}
 
         where the polynomial coefficients are stored in
