@@ -1243,7 +1243,7 @@ class DSphModel(Model):
         """Return the line-of-sight velocity-dispersion squared.
 
         This is the backend-neutral entry point; the classical implementation
-        uses its adaptive ``dequad`` solver.
+        uses its fixed-grid double-exponential (DE) ``dequad`` solver.
         """
         return self.sigmalos2_dequad(R_pc,n,n_kernel,ignore_RuntimeWarning)
 
