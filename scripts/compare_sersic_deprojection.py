@@ -6,19 +6,16 @@ This script compares:
 
 * LGM (legacy analytical approximation),
 * VM20 (published Vitral & Mamon 2020 coefficients),
-* the current JeansPy VM20bis-style *independent refit*,
+* VM20bis (official Vitral & Mamon 2021 coefficients),
 * Simonneau & Prada (2004; SP04),
-* a VM21-style hybrid: VM20bis-style refit for n <= 3.4 and SP04 above it,
+* the Vitral & Mamon (2021) density hybrid: VM20bis for ``n <= 3.4`` and
+  SP04 above it,
 * Ciotti, De Deo & Pellegrini (2025), independently reconstructed from the
-  asymptotic formula plus the luminosity-conservation condition for p.
+  asymptotic formula plus the luminosity-conservation condition for ``p``.
 
-Important provenance note
--------------------------
-``density_3d_VM20bis`` in the current PR uses coefficients independently
-re-fitted inside JeansPy because the historical coefficient repository cited by
-Vitral & Mamon (2021) could not be retrieved.  The plots therefore label this
-method ``VM20bis-style refit`` rather than presenting its coefficients as the
-authors' official VM20bis table.
+The VM20bis coefficients bundled with JeansPy are copied from the authors'
+public ``vitral_mamon_2020b`` repository (``coeff_dens.txt``), not refitted by
+JeansPy.
 
 Usage
 -----
@@ -80,7 +77,7 @@ def _evaluate(name, model, x):
             return None
         return model.density_3d_VM20(r)
 
-    if name == "VM20bis-style refit":
+    if name == "VM20bis":
         if not (0.5 <= n <= 3.4) or np.min(x) < 1e-4 or np.max(x) > 1e3:
             return None
         return model.density_3d_VM20bis(r)
@@ -90,7 +87,7 @@ def _evaluate(name, model, x):
             return None
         return sp04_density(r, re_pc=RE_PC, n=n, b=model.b)
 
-    if name == "VM21-style hybrid":
+    if name == "VM21 hybrid":
         if not (0.5 <= n <= 10) or np.min(x) < 1e-4 or np.max(x) > 1e3:
             return None
         if n <= 3.4:
@@ -106,7 +103,7 @@ def _evaluate(name, model, x):
 
 
 def _method_domain_x(name):
-    if name in {"VM20bis-style refit", "VM21-style hybrid", "Ciotti+2025", "SP04", "LGM"}:
+    if name in {"VM20bis", "VM21 hybrid", "Ciotti+2025", "SP04", "LGM"}:
         return np.logspace(-4, 3, 150)
     return np.logspace(-3, 3, 150)
 
@@ -155,7 +152,6 @@ def _plot_2d(methods):
         model = SersicModel(re_pc=RE_PC, n=n, deprojection_method="numerical")
         rho_num = model.density_3d_numerical(x_grid * RE_PC)
         for name in methods:
-            # VM20 has the narrower inner calibration boundary.
             valid_x = x_grid >= 1e-3 if name == "VM20" else np.ones_like(x_grid, dtype=bool)
             if not np.any(valid_x):
                 continue
@@ -223,15 +219,12 @@ def _print_error_summary(methods):
 
 
 def _print_runtime_summary(methods):
-    # n=2 is inside every method's mathematical/calibration domain, including
-    # the current VM20bis-style refit, which makes the rough timing comparable.
     n = 2.0
     model = SersicModel(re_pc=RE_PC, n=n, deprojection_method="numerical")
     x = np.logspace(-3, 2, 100)
     r = x * RE_PC
 
-    # Warm the Ciotti p root cache so the approximation-evaluation time is not
-    # conflated with the one-off luminosity-conservation solve.
+    # Warm the Ciotti p root cache so one-off root finding is not included.
     ciotti2025_matching_p(n, model.b)
 
     t0 = time.perf_counter()
@@ -255,9 +248,9 @@ def main(output_path=None):
     methods = [
         "LGM",
         "VM20",
-        "VM20bis-style refit",
+        "VM20bis",
         "SP04",
-        "VM21-style hybrid",
+        "VM21 hybrid",
         "Ciotti+2025",
     ]
 
