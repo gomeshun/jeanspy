@@ -105,8 +105,11 @@ def _worker(mode_name: str, *, quick: bool) -> None:
         u, R_kernel, params=params_eta2, n_kernel=n_kernel
     )
 
-    # Compile both paths before the accuracy comparison so conversion to NumPy
-    # does not contaminate the timing section.
+    # These measurements intentionally occur before any warmup so they include
+    # tracing/XLA compilation of each kernel evaluator.
+    first_kernel_generic = _time_once(jax, generic_kernel)
+    first_kernel_eta2 = _time_once(jax, eta2_kernel)
+
     k_generic = _sync(jax, generic_kernel())
     k_eta2 = _sync(jax, eta2_kernel())
     kernel_max_rel = _max_rel(k_eta2, k_generic)
@@ -155,7 +158,6 @@ def _worker(mode_name: str, *, quick: bool) -> None:
         jit=True,
     )
 
-    # First-call timings include tracing/XLA compilation.
     first_generic = _time_once(jax, sig_generic)
     first_eta2 = _time_once(jax, sig_eta2)
     first_abel = _time_once(jax, sig_abel)
@@ -182,8 +184,8 @@ def _worker(mode_name: str, *, quick: bool) -> None:
             "sigmalos_eta2_vs_abel_max_rel": _max_rel(s_eta2, s_abel),
         },
         "timing_s": {
-            "kernel_generic_first": _time_once(jax, generic_kernel),
-            "kernel_eta2_first": _time_once(jax, eta2_kernel),
+            "kernel_generic_first": first_kernel_generic,
+            "kernel_eta2_first": first_kernel_eta2,
             "kernel_generic_hot_median": _bench(
                 jax, generic_kernel, repeats=repeats, warmups=warmups
             ),
