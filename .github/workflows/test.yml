@@ -70,9 +70,9 @@ jobs:
       - name: Run tests
         run: uv run --python "${{ matrix.python-version }}" pytest -q
 
-      - name: Diagnose eta2 radial outer tail
+      - name: Diagnose eta2 radial kernel convergence
         if: matrix.python-version == '3.12'
-        run: JAX_ENABLE_X64=true uv run --python "${{ matrix.python-version }}" python scripts/diagnose_eta2_radial_tail.py
+        run: JAX_ENABLE_X64=true uv run --python "${{ matrix.python-version }}" python scripts/diagnose_eta2_radial_kernel.py
 
       - name: Generate Sérsic visualization
         run: uv run --python "${{ matrix.python-version }}" python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
