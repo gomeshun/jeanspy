@@ -7,6 +7,7 @@ from typing import Optional
 
 import numpy as np
 from scipy.integrate import quad
+from scipy.interpolate import interp1d
 from scipy.special import gamma
 
 from ._model_impl import SersicModel as _LegacySersicModel
@@ -61,13 +62,30 @@ class SersicModel(_LegacySersicModel):
                 f"{self._VALID_DEPROJECTION_METHODS!r}, got {deprojection_method!r}"
             )
 
-        # The historical implementation provides common Sérsic initialization
-        # (including the published VM20 coefficient table). Keep modern
-        # deprojection policy entirely in this maintained subclass so that the
-        # historical module can track the latest main-branch physics changes.
-        super().__init__(*args, **kwargs)
+        # Skip only the historical SersicModel.__init__, whose pandas
+        # ``delim_whitespace`` argument is incompatible with pandas >= 3.0.
+        # The next class in the MRO is StellarModel/Model, which performs the
+        # common parameter/submodel initialization used by all stellar models.
+        super(_LegacySersicModel, self).__init__(*args, **kwargs)
+
+        data_dir = files("jeanspy").joinpath("data")
+        bn_table = np.genfromtxt(
+            data_dir.joinpath("sersic_log10n_log10bn.csv"),
+            delimiter=",",
+            names=True,
+        )
+        self._b_interp = interp1d(
+            bn_table["log10n"],
+            bn_table["log10bn"],
+            kind="cubic",
+            assume_sorted=True,
+        )
+        self.coeff = np.loadtxt(
+            data_dir.joinpath("coeff_dens.csv"),
+            comments="#",
+        )
         self.coeff_vm20bis = np.loadtxt(
-            files("jeanspy").joinpath("data", "coeff_dens_vm20bis.csv"),
+            data_dir.joinpath("coeff_dens_vm20bis.csv"),
             comments="#",
         )
         self.deprojection_method = deprojection_method
@@ -125,7 +143,9 @@ class SersicModel(_LegacySersicModel):
 
         log_x_arr = np.log10(x_arr)
         if np.any((log_x_arr < -3.0) | (log_x_arr > 3.0)):
-            bad = np.flatnonzero((log_x_arr.ravel() < -3.0) | (log_x_arr.ravel() > 3.0))[0]
+            bad = np.flatnonzero(
+                (log_x_arr.ravel() < -3.0) | (log_x_arr.ravel() > 3.0)
+            )[0]
             x_bad = x_arr.ravel()[bad]
             raise ValueError(
                 "density_3d_VM20 is valid for 1e-3 ≤ r/R_e ≤ 1e3; "
@@ -166,7 +186,9 @@ class SersicModel(_LegacySersicModel):
 
         log_x_arr = np.log10(x_arr)
         if np.any((log_x_arr < -4.0) | (log_x_arr > 3.0)):
-            bad = np.flatnonzero((log_x_arr.ravel() < -4.0) | (log_x_arr.ravel() > 3.0))[0]
+            bad = np.flatnonzero(
+                (log_x_arr.ravel() < -4.0) | (log_x_arr.ravel() > 3.0)
+            )[0]
             x_bad = x_arr.ravel()[bad]
             raise ValueError(
                 "density_3d_VM20bis is valid for 1e-4 ≤ r/R_e ≤ 1e3; "
@@ -285,7 +307,9 @@ class SersicModel(_LegacySersicModel):
         result = np.empty_like(r_arr, dtype=float)
         numerical_mask = ~approximation_mask
         if np.any(numerical_mask):
-            result[numerical_mask] = self.density_3d_numerical(r_arr[numerical_mask])
+            result[numerical_mask] = self.density_3d_numerical(
+                r_arr[numerical_mask]
+            )
 
         if np.any(approximation_mask):
             radii = r_arr[approximation_mask]
