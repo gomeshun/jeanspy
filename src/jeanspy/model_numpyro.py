@@ -13,6 +13,7 @@ from typing import Any, Dict, Mapping, Optional, cast
 
 # IMPORTANT: these env vars must be set before importing JAX.
 import os
+import warnings
 
 from ._jax_env import configure_jax_environment
 
@@ -32,7 +33,9 @@ logger = logging.getLogger(__name__)
 DEFAULT_CONSTANT_KERNEL_BACKEND = "jax"
 DEFAULT_SIGMALOS2_BACKEND = "auto"
 DEFAULT_SIGMALOS2_JIT = True
-DEFAULT_BAES_KERNEL_N_QUAD = 128
+DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM = "sqrtlog"
+DEFAULT_BAES_KERNEL_N_QUAD = 32
+BAES_ETA_RECOMMENDED_MAX = 10.0
 
 
 def _prefers_gpu_x32() -> bool:
@@ -64,11 +67,53 @@ def _normalize_constant_kernel_backend(backend: str) -> str:
     return backend_key
 
 
+def _normalize_kernel_outer_transform(transform: str) -> str:
+    key = str(transform).strip().lower()
+    aliases = {
+        "sqrtlog": "sqrtlog",
+        "sqrt-log": "sqrtlog",
+        "sqrt_log": "sqrtlog",
+        "log": "log",
+    }
+    try:
+        return aliases[key]
+    except KeyError as exc:
+        raise ValueError(
+            "kernel_outer_transform must be 'sqrtlog' or 'log', "
+            f"got {transform!r}"
+        ) from exc
+
+
 def _resolve_n_kernel(n_kernel: Optional[int], *, default: int) -> int:
     resolved = default if n_kernel is None else int(n_kernel)
     if resolved < 8:
         raise ValueError("n_kernel must be >= 8")
     return resolved
+
+
+def _warn_if_baes_eta_large(eta: Any) -> None:
+    """Warn for concrete BAES eta values beyond the well-tested analysis range.
+
+    Hayashi-style dSph analyses typically use eta <= 10.  Traced JAX values
+    are intentionally ignored here so a warning callback is never inserted
+    into an MCMC hot path.
+    """
+    from jax import core
+
+    if isinstance(eta, core.Tracer):
+        return
+    try:
+        eta_arr = np.asarray(eta)
+    except (TypeError, ValueError):
+        return
+    if eta_arr.size and np.any(eta_arr > BAES_ETA_RECOMMENDED_MAX):
+        warnings.warn(
+            "Baes-van Hese eta > 10 is outside the range commonly used in "
+            "recent dSph analyses and is less thoroughly validated numerically; "
+            "consider increasing n_kernel and checking convergence.",
+            RuntimeWarning,
+            stacklevel=3,
+        )
 
 
 def get_runtime_config() -> Dict[str, Any]:
@@ -94,6 +139,9 @@ def get_runtime_config() -> Dict[str, Any]:
         "constant_kernel_n_quad_default": _default_constant_kernel_n_quad(),
         "sigmalos2_backend_default": DEFAULT_SIGMALOS2_BACKEND,
         "sigmalos2_jit_default": DEFAULT_SIGMALOS2_JIT,
+        "sigmalos2_kernel_outer_transform_default": DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,
+        "baes_kernel_n_quad_default": DEFAULT_BAES_KERNEL_N_QUAD,
+        "baes_eta_recommended_max": BAES_ETA_RECOMMENDED_MAX,
         "sigmalos2_n_u_default": _default_sigmalos2_n_u(),
         "sigmalos2_n_r_default": _default_sigmalos2_n_r(),
         "sigmalos2_u_max_default": _default_sigmalos2_u_max(),
@@ -116,8 +164,9 @@ def configure_runtime(
         raise TypeError(
             "Numerical runtime options are now per-call arguments. "
             "Pass backend/n_kernel to ConstantAnisotropyModel.kernel() and "
-            "backend/jit/n_u/n_r/u_max/constant_kernel_backend/n_kernel to "
-            f"DSphModel.sigmalos2(). Unsupported configure_runtime keys: {unsupported}."
+            "backend/jit/n_u/n_r/u_max/kernel_outer_transform/"
+            "constant_kernel_backend/n_kernel to DSphModel.sigmalos2(). "
+            f"Unsupported configure_runtime keys: {unsupported}."
         )
 
     if jax_enable_x64 is not None:
@@ -329,11 +378,13 @@ def _baes_kernel_jax_backend(
 
     u_in = u_arr.astype(dtype)
     u_safe = jnp.maximum(u_in, one + eps)
-    r_safe = r_arr.astype(dtype)
+    tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)
+    r_safe = jnp.maximum(r_arr.astype(dtype), tiny)
     beta0 = jnp.asarray(beta_0, dtype=dtype)
     betainf = jnp.asarray(beta_inf, dtype=dtype)
-    r_a_safe = jnp.asarray(r_a, dtype=dtype)
-    eta_safe = jnp.asarray(eta, dtype=dtype)
+    q = betainf - beta0
+    r_a_safe = jnp.maximum(jnp.asarray(r_a, dtype=dtype), tiny)
+    eta_safe = jnp.maximum(jnp.asarray(eta, dtype=dtype), tiny)
 
     same_beta = jnp.reshape(
         jnp.abs(beta0 - betainf) <= jnp.asarray(1e-12, dtype=dtype),
@@ -352,21 +403,23 @@ def _baes_kernel_jax_backend(
 
         s = s_max[..., None] * t01[None, ...]
         u_int = jnp.cosh(s)
-        r_int = r_safe[..., None] * u_int
 
-        x_int = (r_int / r_a_safe) ** eta_safe
-        beta_int = (beta0 + betainf * x_int) / (1.0 + x_int)
-        log_f_int = 2.0 * beta0 * jnp.log(r_int) + (
-            2.0 * (betainf - beta0) / eta_safe
-        ) * jnp.log1p(x_int)
+        # Work in log(r/r_a).  Directly forming (r/r_a)**eta can overflow
+        # in float32 for sharp transitions even while the physical beta(r)
+        # and the required f(s)/f(r) ratio remain perfectly finite.
+        log_R_over_ra = jnp.log(r_safe / r_a_safe)
+        log_rint_over_ra = log_R_over_ra[..., None] + jnp.log(u_int)
+        log_rs_over_ra = log_R_over_ra + jnp.log(u_safe)
+        ell_int = eta_safe * log_rint_over_ra
+        ell_s = eta_safe * log_rs_over_ra
 
-        r_s = r_safe * u_safe
-        x_s = (r_s / r_a_safe) ** eta_safe
-        log_f_s = 2.0 * beta0 * jnp.log(r_s) + (
-            2.0 * (betainf - beta0) / eta_safe
-        ) * jnp.log1p(x_s)
-
-        log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)
+        beta_int = beta0 + q * jax.nn.sigmoid(ell_int)
+        log_ratio = (
+            2.0 * beta0 * (jnp.log(u_safe)[..., None] - jnp.log(u_int))
+            + (2.0 * q / eta_safe)
+            * (jax.nn.softplus(ell_s)[..., None] - jax.nn.softplus(ell_int))
+        )
+        log_ratio = jnp.clip(log_ratio, min=-80.0, max=80.0)
         integ_s = u_int * (1.0 - beta_int / (u_int**2)) * jnp.exp(log_ratio)
         weights = s_max[..., None] * w01[None, ...]
         inner = jnp.sum(weights * integ_s, axis=-1)
@@ -995,8 +1048,13 @@ class BaesAnisotropyModel(AnisotropyModel):
         r_a = jnp.asarray(params["r_a"])
         eta = jnp.asarray(params["eta"])
 
-        x = (jnp.asarray(r_pc) / r_a) ** eta
-        return (beta_0 + beta_inf * x) / (1.0 + x)
+        r = jnp.asarray(r_pc)
+        dtype = jnp.result_type(r, beta_0, beta_inf, r_a, eta)
+        tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)
+        r_safe = jnp.maximum(r.astype(dtype), tiny)
+        r_a_safe = jnp.maximum(r_a.astype(dtype), tiny)
+        ell = eta.astype(dtype) * jnp.log(r_safe / r_a_safe)
+        return beta_0 + (beta_inf - beta_0) * jax.nn.sigmoid(ell)
 
     def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
         r"""Return
@@ -1020,10 +1078,15 @@ class BaesAnisotropyModel(AnisotropyModel):
         eta = jnp.asarray(params["eta"])
 
         r = jnp.asarray(r_pc)
-        x = (r / r_a) ** eta
-        return 2.0 * beta_0 * jnp.log(r) + (
-            2.0 * (beta_inf - beta_0) / eta
-        ) * jnp.log1p(x)
+        dtype = jnp.result_type(r, beta_0, beta_inf, r_a, eta)
+        tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)
+        r_safe = jnp.maximum(r.astype(dtype), tiny)
+        r_a_safe = jnp.maximum(r_a.astype(dtype), tiny)
+        eta_safe = jnp.maximum(eta.astype(dtype), tiny)
+        ell = eta_safe * jnp.log(r_safe / r_a_safe)
+        return 2.0 * beta_0 * jnp.log(r_safe) + (
+            2.0 * (beta_inf - beta_0) / eta_safe
+        ) * jax.nn.softplus(ell)
 
     def kernel(
         self,
@@ -1031,7 +1094,7 @@ class BaesAnisotropyModel(AnisotropyModel):
         R_pc: jnp.ndarray,
         *,
         params: Mapping[str, Any],
-        n_kernel: int = 128,
+        n_kernel: int = DEFAULT_BAES_KERNEL_N_QUAD,
     ) -> jnp.ndarray:
         r"""LOSVD kernel K(u) for general BAES anisotropy via numerical integration.
 
@@ -1054,6 +1117,7 @@ class BaesAnisotropyModel(AnisotropyModel):
         n_kernel:
             Number of Gauss-Legendre nodes for the inner quadrature.
         """
+        _warn_if_baes_eta_large(params["eta"])
         return _baes_kernel_jax_backend(
             jnp.asarray(u),
             jnp.asarray(R_pc),
@@ -1158,25 +1222,44 @@ class DSphModel(Model):
         n_kernel: Optional[int] = None,
         constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
+        kernel_outer_transform: str = DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,
         dm_mass_method: str = "auto",
     ) -> jnp.ndarray:
-        r"""Original kernel-based sigma_los^2(R) implementation.
+        r"""Kernel-based sigma_los^2(R) implementation.
 
         With u=r/R, this computes
 
             sigma_los^2(R) = 2 * \int_1^\infty du
-                [nu(uR)/Sigma(R)] [G M(uR)] K(u)/u,
+                [nu(uR)/Sigma(R)] [G M(uR)] K(u)/u.
 
-        consistent with the kernel normalization used in `model.py` and the note.
+        ``kernel_outer_transform='sqrtlog'`` uses ``log(u)=x^2``.  Since
+        ``K(u) ~ sqrt(u-1)`` at the lower endpoint, the transformed integrand
+        is smooth in ``x``.  ``'log'`` retains the legacy uniform-log(u) grid.
         """
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
         R = jnp.atleast_1d(jnp.asarray(R_pc))
+        dtype = R.dtype
         params = self._resolve_dm_params_once(params)
+        transform_key = _normalize_kernel_outer_transform(kernel_outer_transform)
 
-        # Integration grid in log(u)
-        t = jnp.linspace(jnp.log1p(u_min_eps), jnp.log(resolved_u_max), resolved_n_u)
-        u = jnp.exp(t)  # (n_u,)
+        u_max_arr = jnp.asarray(resolved_u_max, dtype=dtype)
+        if transform_key == "sqrtlog":
+            x = jnp.linspace(
+                jnp.asarray(0.0, dtype=dtype),
+                jnp.sqrt(jnp.log(u_max_arr)),
+                resolved_n_u,
+            )
+            u = jnp.exp(x * x)
+            dlogu_dx = 2.0 * x
+        else:
+            x = jnp.linspace(
+                jnp.log1p(jnp.asarray(u_min_eps, dtype=dtype)),
+                jnp.log(u_max_arr),
+                resolved_n_u,
+            )
+            u = jnp.exp(x)
+            dlogu_dx = jnp.ones_like(x)
 
         # Broadcast shapes: (n_R, n_u)
         R2d = R[:, None]
@@ -1208,19 +1291,16 @@ class DSphModel(Model):
             )
 
         K = ani.kernel(u2d, R2d, params=params, **kernel_kwargs)
+        grav = (GMsun_m3s2 * M / PARSEC_M) * 1e-6
 
-        # Following the structure in the original model.py (unit-carrying constants kept)
-        integrand_u = (
-            2.0 * (K / u2d) * (nu3 / sig2) * (GMsun_m3s2 * M / PARSEC_M) * 1e-6
-        )
-
-        # du = exp(t) dt  -> integrate over t
-        integrand_t = integrand_u * u2d
+        # du/u = dlog(u) = (dlog(u)/dx) dx.  For sqrtlog both K and
+        # dlogu_dx vanish at x=0, regularizing the lower endpoint.
+        integrand_x = 2.0 * K * (nu3 / sig2) * grav * dlogu_dx[None, :]
         if resolved_n_u > 1:
-            h = t[1] - t[0]
-            out = _simpson_uniform_last_axis(integrand_t, h)
+            h = x[1] - x[0]
+            out = _simpson_uniform_last_axis(integrand_x, h)
         else:
-            out = integrand_t[..., 0]
+            out = integrand_x[..., 0]
         # Numerical safety: sigma_los^2 should be >=0, but coarse quadrature / edge params
         # can produce tiny negatives or NaNs during MCMC initialization.
         out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
@@ -1307,6 +1387,7 @@ class DSphModel(Model):
         u_max: Optional[float] = None,
         constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
+        kernel_outer_transform: str = DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,
         r_min_factor: float = 0.5,
         dm_mass_method: str = "auto",
     ) -> jnp.ndarray:
@@ -1340,6 +1421,8 @@ class DSphModel(Model):
             )
 
         use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)
+        if isinstance(ani, BaesAnisotropyModel) and (use_jit or backend_key == "abel"):
+            _warn_if_baes_eta_large(params["eta"])
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         dm_mass_method = self._resolve_dm_mass_method(dm, dm_mass_method)
 
@@ -1353,6 +1436,11 @@ class DSphModel(Model):
         )
         constant_kernel_backend_key = _normalize_constant_kernel_backend(
             constant_kernel_backend
+        )
+        kernel_outer_transform_key = (
+            _normalize_kernel_outer_transform(kernel_outer_transform)
+            if backend_key == "kernel"
+            else DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM
         )
 
         def _eval(R_value: jnp.ndarray, params_value: Mapping[str, Any]) -> jnp.ndarray:
@@ -1373,6 +1461,7 @@ class DSphModel(Model):
                 u_max=resolved_u_max,
                 constant_kernel_backend=constant_kernel_backend_key,
                 u_min_eps=u_min_eps,
+                kernel_outer_transform=kernel_outer_transform_key,
                 dm_mass_method=dm_mass_method,
             )
 
@@ -1386,6 +1475,7 @@ class DSphModel(Model):
             resolved_n_kernel,
             resolved_u_max,
             constant_kernel_backend_key,
+            kernel_outer_transform_key,
             float(u_min_eps),
             float(r_min_factor),
             dm_mass_method,
