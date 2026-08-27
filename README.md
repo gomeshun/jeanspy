@@ -167,11 +167,11 @@ default model-aware choice: it uses the analytic NFW mass and the fixed-grid
 numeric mass for Zhao. The Zhao analytic mass uses
 `jax.scipy.special.betainc`; JAX does not provide autodiff through its shape
 parameters, so gradients through Zhao `a`, `b`, or `g` can fail on that path.
-The default `DSphModel.sigmalos2(..., use_analytic_dm=None)` follows the same
-choice and is the NUTS-safe path. Use `use_analytic_dm=False` (or
-`method="numeric"`) to force numeric mass, and request `method="analytic"` or
-`use_analytic_dm=True` explicitly only when the closed form is desired without
-those Zhao shape-parameter gradients.
+The default `DSphModel.sigmalos2(..., dm_mass_method="auto")` follows the same
+choice and is the NUTS-safe path. Use `dm_mass_method="numeric"` to force
+numeric mass, and request `method="analytic"` or
+`dm_mass_method="analytic"` explicitly only when the closed form is desired
+without those Zhao shape-parameter gradients.
 
 ## Example Notebooks
 

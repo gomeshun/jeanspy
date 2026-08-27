@@ -117,7 +117,7 @@ class TestDSSigmaLos2DMEquivalence(unittest.TestCase):
                 params=params_nfw,
                 n_u=192,
                 u_max=1500.0,
-                use_analytic_dm=True,
+                dm_mass_method="analytic",
             ),
             dtype=np.float64,
         )
@@ -127,7 +127,7 @@ class TestDSSigmaLos2DMEquivalence(unittest.TestCase):
                 params=params_zhao,
                 n_u=192,
                 u_max=1500.0,
-                use_analytic_dm=True,
+                dm_mass_method="analytic",
             ),
             dtype=np.float64,
         )

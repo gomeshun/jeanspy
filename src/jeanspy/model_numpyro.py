@@ -640,7 +640,7 @@ class PlummerModel(StellarModel):
 
 class DMModel(Model):
     required_models: Mapping[str, type[Model]] = {}
-    _default_enclosed_mass_method = "numeric"
+    analytic_enclosed_mass_autodiff_safe = False
 
     def resolve_params(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
         return params
@@ -705,9 +705,18 @@ class DMModel(Model):
         request a closed form explicitly, or ``method="numeric"`` for the
         autodiff-friendly numerical integral.
         """
-        resolved_method = (
-            self._default_enclosed_mass_method if method == "auto" else method
-        )
+        method_key = str(method).strip().lower()
+        if method_key == "auto":
+            resolved_method = (
+                "analytic"
+                if (
+                    bool(self.analytic_enclosed_mass_autodiff_safe)
+                    and self.has_analytic_enclosed_mass
+                )
+                else "numeric"
+            )
+        else:
+            resolved_method = method_key
         has_analytic = self.has_analytic_enclosed_mass
         if resolved_method == "analytic":
             if has_analytic:
@@ -732,7 +741,7 @@ class DMModel(Model):
 
 class NFWModel(DMModel):
     required_param_names = ("rs_pc", "rhos_Msunpc3", "r_t_pc")
-    _default_enclosed_mass_method = "analytic"
+    analytic_enclosed_mass_autodiff_safe = True
 
     def resolve_params(self, params: Mapping[str, Any]) -> dict[str, jnp.ndarray]:
         rs = jnp.asarray(params["rs_pc"])
@@ -772,6 +781,7 @@ class NFWModel(DMModel):
 
 class ZhaoModel(DMModel):
     required_param_names = ("rs_pc", "rhos_Msunpc3", "a", "b", "g", "r_t_pc")
+    analytic_enclosed_mass_autodiff_safe = False
 
     def mass_density_3d(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
@@ -1122,13 +1132,21 @@ class DSphModel(Model):
 
     @staticmethod
     def _resolve_dm_mass_method(
-        dm: DMModel, use_analytic_dm: Optional[bool]
+        dm: DMModel, dm_mass_method: str
     ) -> str:
-        if use_analytic_dm is None:
-            return dm._default_enclosed_mass_method
-        if use_analytic_dm and dm.has_analytic_enclosed_mass:
-            return "analytic"
-        return "numeric"
+        method_key = str(dm_mass_method).strip().lower()
+        if method_key not in {"auto", "analytic", "numeric"}:
+            raise ValueError(
+                "dm_mass_method must be 'auto', 'analytic', or 'numeric', "
+                f"got {dm_mass_method!r}"
+            )
+        if method_key == "auto":
+            return (
+                "analytic"
+                if (dm.analytic_enclosed_mass_autodiff_safe and dm.has_analytic_enclosed_mass)
+                else "numeric"
+            )
+        return method_key
 
     def sigmalos2_kernel(
         self,
@@ -1140,7 +1158,7 @@ class DSphModel(Model):
         n_kernel: Optional[int] = None,
         constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
-        use_analytic_dm: Optional[bool] = None,
+        dm_mass_method: str = "auto",
     ) -> jnp.ndarray:
         r"""Original kernel-based sigma_los^2(R) implementation.
 
@@ -1168,7 +1186,7 @@ class DSphModel(Model):
         stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]
-        dm_mass_method = self._resolve_dm_mass_method(dm, use_analytic_dm)
+        dm_mass_method = self._resolve_dm_mass_method(dm, dm_mass_method)
 
         re_pc = params["re_pc"]
         nu3 = stellar.density_3d(r, re_pc=re_pc)
@@ -1216,7 +1234,7 @@ class DSphModel(Model):
         n_r: Optional[int] = None,
         u_max: Optional[float] = None,
         r_min_factor: float = 0.5,
-        use_analytic_dm: Optional[bool] = None,
+        dm_mass_method: str = "auto",
     ) -> jnp.ndarray:
         r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms."""
         R = jnp.atleast_1d(jnp.asarray(R_pc))
@@ -1228,7 +1246,7 @@ class DSphModel(Model):
         stellar: StellarModel = self.submodels["StellarModel"]  # type: ignore[assignment]
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         ani: AnisotropyModel = self.submodels["AnisotropyModel"]  # type: ignore[assignment]
-        dm_mass_method = self._resolve_dm_mass_method(dm, use_analytic_dm)
+        dm_mass_method = self._resolve_dm_mass_method(dm, dm_mass_method)
 
         re_pc = jnp.asarray(params["re_pc"], dtype=dtype)
         r_min = jnp.maximum(
@@ -1290,7 +1308,7 @@ class DSphModel(Model):
         constant_kernel_backend: str = DEFAULT_CONSTANT_KERNEL_BACKEND,
         u_min_eps: float = 1e-6,
         r_min_factor: float = 0.5,
-        use_analytic_dm: Optional[bool] = None,
+        dm_mass_method: str = "auto",
     ) -> jnp.ndarray:
         """Compute sigma_los^2(R) via the requested backend.
 
@@ -1301,10 +1319,10 @@ class DSphModel(Model):
         ``jit`` controls whether a cached ``jax.jit`` wrapper is used around the
         selected solver. ``None`` defaults to the cached JIT path.
 
-        ``use_analytic_dm=None`` (the default) follows the DM model's
-        autodiff-safe mass method: analytic for NFW and numeric for Zhao. Set
-        it to ``True`` to request an analytic mass explicitly, or ``False`` to
-        force the numeric path.
+        ``dm_mass_method`` controls the dark-matter enclosed-mass backend and
+        must be one of ``"auto"``, ``"analytic"``, or ``"numeric"``. The
+        default ``"auto"`` follows the DM model's autodiff-safe choice:
+        analytic for NFW and numeric for Zhao.
         """
         backend_key = str(backend).strip().lower()
         ani = self.submodels["AnisotropyModel"]  # type: ignore[index]
@@ -1323,8 +1341,7 @@ class DSphModel(Model):
 
         use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
-        dm_mass_method = self._resolve_dm_mass_method(dm, use_analytic_dm)
-        resolved_use_analytic_dm = dm_mass_method == "analytic"
+        dm_mass_method = self._resolve_dm_mass_method(dm, dm_mass_method)
 
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
@@ -1346,7 +1363,7 @@ class DSphModel(Model):
                     n_r=resolved_n_r,
                     u_max=resolved_u_max,
                     r_min_factor=r_min_factor,
-                    use_analytic_dm=resolved_use_analytic_dm,
+                    dm_mass_method=dm_mass_method,
                 )
             return self.sigmalos2_kernel(
                 R_value,
@@ -1356,7 +1373,7 @@ class DSphModel(Model):
                 u_max=resolved_u_max,
                 constant_kernel_backend=constant_kernel_backend_key,
                 u_min_eps=u_min_eps,
-                use_analytic_dm=resolved_use_analytic_dm,
+                dm_mass_method=dm_mass_method,
             )
 
         if not use_jit:
