@@ -1,0 +1,187 @@
+name: Apply Baes stability patch
+
+on:
+  push:
+    branches:
+      - feature/baes-eta2-analytic-kernel
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.head_commit.message == 'Apply Baes production patch workflow'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: feature/baes-eta2-analytic-kernel
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Apply focused source patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/jeanspy/model_numpyro.py')
+          text = path.read_text()
+
+          def replace_once(old, new):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f'expected one match, got {count}: {old[:100]!r}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              'import os\n\nfrom ._jax_env import configure_jax_environment',
+              'import os\nimport warnings\n\nfrom ._jax_env import configure_jax_environment',
+          )
+          replace_once(
+              'DEFAULT_BAES_KERNEL_N_QUAD = 128\n',
+              'DEFAULT_BAES_KERNEL_N_QUAD = 32\nBAES_ETA_RECOMMENDED_MAX = 10.0\n',
+          )
+          replace_once(
+              '        "sigmalos2_kernel_outer_transform_default": DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,\n',
+              '        "sigmalos2_kernel_outer_transform_default": DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,\n'
+              '        "baes_kernel_n_quad_default": DEFAULT_BAES_KERNEL_N_QUAD,\n'
+              '        "baes_eta_recommended_max": BAES_ETA_RECOMMENDED_MAX,\n',
+          )
+
+          marker = '''def _resolve_n_kernel(n_kernel: Optional[int], *, default: int) -> int:\n    resolved = default if n_kernel is None else int(n_kernel)\n    if resolved < 8:\n        raise ValueError("n_kernel must be >= 8")\n    return resolved\n\n\n'''
+          helper = marker + '''def _warn_if_baes_eta_large(eta: Any) -> None:\n    """Warn for concrete BAES eta values beyond the well-tested analysis range.\n\n    Hayashi-style dSph analyses typically use eta <= 10.  Traced JAX values\n    are intentionally ignored here so a warning callback is never inserted\n    into an MCMC hot path.\n    """\n    from jax import core\n\n    if isinstance(eta, core.Tracer):\n        return\n    try:\n        eta_arr = np.asarray(eta)\n    except (TypeError, ValueError):\n        return\n    if eta_arr.size and np.any(eta_arr > BAES_ETA_RECOMMENDED_MAX):\n        warnings.warn(\n            "Baes-van Hese eta > 10 is outside the range commonly used in "\n            "recent dSph analyses and is less thoroughly validated numerically; "\n            "consider increasing n_kernel and checking convergence.",\n            RuntimeWarning,\n            stacklevel=3,\n        )\n\n\n'''
+          replace_once(marker, helper)
+
+          old_backend = '''    r_safe = r_arr.astype(dtype)\n    beta0 = jnp.asarray(beta_0, dtype=dtype)\n    betainf = jnp.asarray(beta_inf, dtype=dtype)\n    r_a_safe = jnp.asarray(r_a, dtype=dtype)\n    eta_safe = jnp.asarray(eta, dtype=dtype)\n'''
+          new_backend = '''    tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)\n    r_safe = jnp.maximum(r_arr.astype(dtype), tiny)\n    beta0 = jnp.asarray(beta_0, dtype=dtype)\n    betainf = jnp.asarray(beta_inf, dtype=dtype)\n    q = betainf - beta0\n    r_a_safe = jnp.maximum(jnp.asarray(r_a, dtype=dtype), tiny)\n    eta_safe = jnp.maximum(jnp.asarray(eta, dtype=dtype), tiny)\n'''
+          replace_once(old_backend, new_backend)
+
+          old_generic = '''        s = s_max[..., None] * t01[None, ...]\n        u_int = jnp.cosh(s)\n        r_int = r_safe[..., None] * u_int\n\n        x_int = (r_int / r_a_safe) ** eta_safe\n        beta_int = (beta0 + betainf * x_int) / (1.0 + x_int)\n        log_f_int = 2.0 * beta0 * jnp.log(r_int) + (\n            2.0 * (betainf - beta0) / eta_safe\n        ) * jnp.log1p(x_int)\n\n        r_s = r_safe * u_safe\n        x_s = (r_s / r_a_safe) ** eta_safe\n        log_f_s = 2.0 * beta0 * jnp.log(r_s) + (\n            2.0 * (betainf - beta0) / eta_safe\n        ) * jnp.log1p(x_s)\n\n        log_ratio = jnp.clip(log_f_s[..., None] - log_f_int, min=-80.0, max=80.0)\n'''
+          new_generic = '''        s = s_max[..., None] * t01[None, ...]\n        u_int = jnp.cosh(s)\n\n        # Work in log(r/r_a).  Directly forming (r/r_a)**eta can overflow\n        # in float32 for sharp transitions even while the physical beta(r)\n        # and the required f(s)/f(r) ratio remain perfectly finite.\n        log_R_over_ra = jnp.log(r_safe / r_a_safe)\n        log_rint_over_ra = log_R_over_ra[..., None] + jnp.log(u_int)\n        log_rs_over_ra = log_R_over_ra + jnp.log(u_safe)\n        ell_int = eta_safe * log_rint_over_ra\n        ell_s = eta_safe * log_rs_over_ra\n\n        beta_int = beta0 + q * jax.nn.sigmoid(ell_int)\n        log_ratio = (\n            2.0 * beta0 * (jnp.log(u_safe)[..., None] - jnp.log(u_int))\n            + (2.0 * q / eta_safe)\n            * (jax.nn.softplus(ell_s)[..., None] - jax.nn.softplus(ell_int))\n        )\n        log_ratio = jnp.clip(log_ratio, min=-80.0, max=80.0)\n'''
+          replace_once(old_generic, new_generic)
+
+          old_beta = '''        beta_0 = jnp.asarray(params["beta_0"])\n        beta_inf = jnp.asarray(params["beta_inf"])\n        r_a = jnp.asarray(params["r_a"])\n        eta = jnp.asarray(params["eta"])\n\n        x = (jnp.asarray(r_pc) / r_a) ** eta\n        return (beta_0 + beta_inf * x) / (1.0 + x)\n'''
+          new_beta = '''        beta_0 = jnp.asarray(params["beta_0"])\n        beta_inf = jnp.asarray(params["beta_inf"])\n        r_a = jnp.asarray(params["r_a"])\n        eta = jnp.asarray(params["eta"])\n\n        r = jnp.asarray(r_pc)\n        dtype = jnp.result_type(r, beta_0, beta_inf, r_a, eta)\n        tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)\n        r_safe = jnp.maximum(r.astype(dtype), tiny)\n        r_a_safe = jnp.maximum(r_a.astype(dtype), tiny)\n        ell = eta.astype(dtype) * jnp.log(r_safe / r_a_safe)\n        return beta_0 + (beta_inf - beta_0) * jax.nn.sigmoid(ell)\n'''
+          replace_once(old_beta, new_beta)
+
+          old_logf = '''        r = jnp.asarray(r_pc)\n        x = (r / r_a) ** eta\n        return 2.0 * beta_0 * jnp.log(r) + (\n            2.0 * (beta_inf - beta_0) / eta\n        ) * jnp.log1p(x)\n'''
+          new_logf = '''        r = jnp.asarray(r_pc)\n        dtype = jnp.result_type(r, beta_0, beta_inf, r_a, eta)\n        tiny = jnp.asarray(jnp.finfo(dtype).tiny, dtype=dtype)\n        r_safe = jnp.maximum(r.astype(dtype), tiny)\n        r_a_safe = jnp.maximum(r_a.astype(dtype), tiny)\n        eta_safe = jnp.maximum(eta.astype(dtype), tiny)\n        ell = eta_safe * jnp.log(r_safe / r_a_safe)\n        return 2.0 * beta_0 * jnp.log(r_safe) + (\n            2.0 * (beta_inf - beta_0) / eta_safe\n        ) * jax.nn.softplus(ell)\n'''
+          replace_once(old_logf, new_logf)
+
+          replace_once(
+              '        n_kernel: int = 128,\n',
+              '        n_kernel: int = DEFAULT_BAES_KERNEL_N_QUAD,\n',
+          )
+          replace_once(
+              '        return _baes_kernel_jax_backend(\n            jnp.asarray(u),\n',
+              '        _warn_if_baes_eta_large(params["eta"])\n        return _baes_kernel_jax_backend(\n            jnp.asarray(u),\n',
+          )
+
+          old_use_jit = '''        use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)\n        dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]\n'''
+          new_use_jit = '''        use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)\n        if isinstance(ani, BaesAnisotropyModel) and (use_jit or backend_key == "abel"):\n            _warn_if_baes_eta_large(params["eta"])\n        dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]\n'''
+          replace_once(old_use_jit, new_use_jit)
+
+          path.write_text(text)
+          PY
+
+      - name: Add focused regression tests
+        run: |
+          cat > tests/test_baes_kernel_prior_defaults.py <<'PY'
+          import warnings
+
+          import jax.numpy as jnp
+          import numpy as np
+          import pytest
+
+          import jeanspy.model_numpyro as mn
+          from jeanspy.model_numpyro import BaesAnisotropyModel, DSphModel, NFWModel, PlummerModel
+
+
+          def _params(*, eta=10.0, beta_0=-9.0, beta_inf=0.98, r_a=220.0, dtype=jnp.float32):
+              raw = {
+                  "re_pc": 220.0,
+                  "rs_pc": 1100.0,
+                  "rhos_Msunpc3": 7.5e-3,
+                  "r_t_pc": 8800.0,
+                  "beta_0": beta_0,
+                  "beta_inf": beta_inf,
+                  "r_a": r_a,
+                  "eta": eta,
+                  "vmem_kms": 0.0,
+              }
+              return {key: jnp.asarray(value, dtype=dtype) for key, value in raw.items()}
+
+
+          def test_baes_default_kernel_order_is_prior_backed_32():
+              assert mn.DEFAULT_BAES_KERNEL_N_QUAD == 32
+              ani = BaesAnisotropyModel()
+              params = _params()
+              u = jnp.asarray([1.01, 1.2, 2.0, 10.0], dtype=jnp.float32)
+              R = jnp.asarray(220.0, dtype=jnp.float32)
+              np.testing.assert_allclose(
+                  np.asarray(ani.kernel(u, R, params=params)),
+                  np.asarray(ani.kernel(u, R, params=params, n_kernel=32)),
+                  rtol=0.0,
+                  atol=0.0,
+              )
+
+
+          def test_baes_eta_above_ten_warns_but_eta_ten_does_not():
+              ani = BaesAnisotropyModel()
+              u = jnp.asarray([1.1, 2.0], dtype=jnp.float32)
+              R = jnp.asarray(220.0, dtype=jnp.float32)
+              with warnings.catch_warnings(record=True) as caught:
+                  warnings.simplefilter("always")
+                  ani.kernel(u, R, params=_params(eta=10.0))
+              assert not [w for w in caught if issubclass(w.category, RuntimeWarning)]
+
+              with pytest.warns(RuntimeWarning, match=r"eta > 10"):
+                  ani.kernel(u, R, params=_params(eta=20.0))
+
+
+          def test_baes_float32_eta20_remains_numerically_finite():
+              ani = BaesAnisotropyModel()
+              params = _params(eta=20.0, beta_0=-5.0, beta_inf=0.98, r_a=0.22)
+              u = jnp.asarray([1.0 + 1e-5, 1.1, 2.0, 10.0, 100.0, 1e3], dtype=jnp.float32)
+              R = jnp.asarray(220.0, dtype=jnp.float32)
+              with pytest.warns(RuntimeWarning):
+                  result = np.asarray(ani.kernel(u, R, params=params, n_kernel=64))
+              assert np.isfinite(result).all()
+              assert np.max(np.abs(result)) < 1e8
+
+
+          def test_nkernel32_matches_128_for_supported_eta_prior_projection():
+              dsph = DSphModel(
+                  submodels={
+                      "StellarModel": PlummerModel(),
+                      "DMModel": NFWModel(),
+                      "AnisotropyModel": BaesAnisotropyModel(),
+                  }
+              )
+              params = _params(eta=10.0, beta_0=-9.0, beta_inf=0.98, r_a=220.0)
+              R = jnp.asarray(np.geomspace(0.005, 10.0, 20) * 220.0, dtype=jnp.float32)
+              common = dict(
+                  params=params,
+                  backend="kernel",
+                  jit=False,
+                  n_u=256,
+                  u_max=2e4,
+                  kernel_outer_transform="sqrtlog",
+                  dm_mass_method="analytic",
+              )
+              low = np.asarray(dsph.sigmalos2(R, n_kernel=32, **common), dtype=np.float64)
+              high = np.asarray(dsph.sigmalos2(R, n_kernel=128, **common), dtype=np.float64)
+              floor = max(float(np.max(np.abs(high))) * 1e-10, 1e-12)
+              rel = np.max(np.abs(low - high) / np.maximum(np.abs(high), floor))
+              assert rel < 2e-5
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name "gomeshun"
+          git config user.email "37170876+gomeshun@users.noreply.github.com"
+          git add src/jeanspy/model_numpyro.py tests/test_baes_kernel_prior_defaults.py
+          git diff --cached --check
+          git commit -m "Stabilize Baes kernel and adopt prior-backed defaults"
+          git push origin HEAD:feature/baes-eta2-analytic-kernel
