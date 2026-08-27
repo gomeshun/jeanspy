@@ -62,11 +62,11 @@ __all__ = [
 ]
 
 
-# Preserve the historical class provenance used by repr/pickle and downstream
-# notebooks while keeping implementation modules private.
+# Preserve the historical public provenance used by repr/pickle/introspection
+# while keeping implementation modules private.
 for _name in __all__:
     _value = globals()[_name]
-    if isinstance(_value, type):
+    if hasattr(_value, "__module__"):
         _value.__module__ = __name__
 
 del _name, _value
