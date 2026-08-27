@@ -12,7 +12,7 @@ def test_vm20bis_uses_published_density_coefficients():
     The table is bundled as ``jeanspy/data/coeff_dens_vm20bis.csv``.
     """
     path = files("jeanspy").joinpath("data", "coeff_dens_vm20bis.csv")
-    coeff = np.loadtxt(path, comments="#")
+    coeff = np.loadtxt(path, comments="#", delimiter=None)
 
     assert coeff.shape == (11, 11)
     np.testing.assert_allclose(
