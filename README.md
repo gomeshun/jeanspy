@@ -16,12 +16,20 @@ JeansPy is a Python toolkit for Jeans analysis of dwarf spheroidal galaxies. It 
 
 ## Installation
 
-JeansPy requires Python 3.12 or newer.
+JeansPy supports CPython 3.12 and 3.13. The base install contains the
+numerical modeling runtime and the emcee sampler; optional JAX/NumPyro and
+plotting features are kept out of the base install.
 
 Install the base package from PyPI:
 
 ```bash
 pip install jeanspy
+```
+
+Install the plotting helpers and the `jfactor` command-line plotting support:
+
+```bash
+pip install "jeanspy[plotting]"
 ```
 
 Install the optional NumPyro and JAX stack for CPU-only environments:
@@ -36,7 +44,30 @@ Install the optional NumPyro and JAX stack for CUDA12-backed environments:
 pip install "jeanspy[numpyro_cuda12]"
 ```
 
-The base install contains the non-JAX runtime. The optional extras add the NumPyro and JAX stack together with the ArviZ storage dependencies used by `jeanspy.sampler_numpyro`.
+The base dependencies are NumPy, pandas, SciPy, emcee, and h5py. The
+`jeanspy.sampler.Sampler` API is a supported emcee-based inference feature;
+plotting imports are only needed for plotting helpers or the `jfactor`
+command-line demonstration. The NumPyro extras add JAX, NumPyro, and the
+ArviZ storage dependencies used by `jeanspy.sampler_numpyro`.
+
+### Supported environment matrix
+
+The v0.1.0 support matrix is:
+
+| Install | Python | JAX | NumPyro | Accelerator |
+| --- | --- | --- | --- | --- |
+| `jeanspy` | 3.12, 3.13 | — | — | CPU |
+| `jeanspy[numpyro_cpu]` | 3.12, 3.13 | `jax[cpu] >=0.4.35` | `numpyro[cpu] >=0.18.0` | CPU |
+| `jeanspy[numpyro_cuda12]` | 3.12, 3.13 | `jax[cuda12] >=0.7.0` | `numpyro[cuda12] >=0.20.0` | CUDA 12 |
+
+The NumPyro extras also require ArviZ 1.0, xarray 2024.11 or newer, and their
+declared storage backends. ArviZ 1.0 requires Python 3.12 and NumPy 2 or
+newer, which is why Python 3.11 is not in this release's matrix. The
+dependency ranges intentionally use API-compatible lower bounds rather than
+the versions in one development environment. CI resolves and tests the
+latest versions satisfying these ranges on both supported Python versions;
+the CUDA extra is installation-compatible but is not run on the CPU-only CI
+runner.
 
 ## Installation From Source
 
@@ -44,23 +75,27 @@ For development with `uv`:
 
 ```bash
 uv sync
+uv sync --extra plotting
 uv sync --extra numpyro_cpu
 uv sync --extra numpyro_cuda12
-uv sync --extra numpyro_cpu --extra dev
-uv sync --extra numpyro_cuda12 --extra dev
+uv sync --extra numpyro_cpu --extra dev --extra plotting
+uv sync --extra numpyro_cuda12 --extra dev --extra plotting
 ```
 
 If you prefer `pip` from a checkout:
 
 ```bash
 pip install -e .
+pip install -e ".[plotting]"
 pip install -e ".[numpyro_cpu]"
 pip install -e ".[numpyro_cuda12]"
-pip install -e ".[numpyro_cpu,dev]"
-pip install -e ".[numpyro_cuda12,dev]"
+pip install -e ".[numpyro_cpu,dev,plotting]"
+pip install -e ".[numpyro_cuda12,dev,plotting]"
 ```
 
-`requirements.txt` keeps the default CUDA12-oriented development environment used in this repository:
+`requirements.txt` is a CPU-first full development environment. It does not
+install CUDA packages; use the `numpyro_cuda12` extra explicitly when CUDA 12
+is available:
 
 ```bash
 pip install -r requirements.txt

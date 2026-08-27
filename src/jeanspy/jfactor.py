@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
 import glob
 import sys
 from scipy.constants import parsec, physical_constants
@@ -103,6 +101,7 @@ quit()
 '''
 
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
 
     argvs = sys.argv
     argc = len(argvs)

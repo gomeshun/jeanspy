@@ -8,8 +8,12 @@ on:
 
 jobs:
   base:
-    name: Base install smoke test
+    name: Base install smoke test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
     permissions:
       contents: read
 
@@ -25,14 +29,27 @@ jobs:
           enable-cache: false
 
       - name: Install base package
-        run: uv sync
+        run: uv sync --python "${{ matrix.python-version }}"
 
       - name: Run base import test
-        run: uv run --with pytest pytest tests/test_import.py -q
+        run: uv run --python "${{ matrix.python-version }}" --with pytest pytest tests/test_import.py -q
+
+      - name: Verify optional dependencies are not in the base environment
+        run: |
+          uv run --python "${{ matrix.python-version }}" python - <<'PY'
+          import importlib.util
+
+          for package in ("jax", "matplotlib", "numpyro"):
+              assert importlib.util.find_spec(package) is None, package
+          PY
 
   numpyro-cpu:
-    name: NumPyro CPU test suite
+    name: NumPyro CPU test suite (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
     permissions:
       contents: read
 
@@ -48,18 +65,18 @@ jobs:
           enable-cache: false
 
       - name: Install CPU development environment
-        run: uv sync --extra numpyro_cpu --extra dev
+        run: uv sync --python "${{ matrix.python-version }}" --extra numpyro_cpu --extra dev --extra plotting
 
       - name: Run tests
-        run: uv run pytest -q
+        run: uv run --python "${{ matrix.python-version }}" pytest -q
 
       - name: Generate Sérsic visualization
-        run: uv run python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
+        run: uv run --python "${{ matrix.python-version }}" python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
 
       - name: Upload Sérsic visualization
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: sersic-deprojection-summary
+          name: sersic-deprojection-summary-py${{ matrix.python-version }}
           path: |
             artifacts/sersic_deprojection_summary.png
             artifacts/sersic_deprojection_summary.svg

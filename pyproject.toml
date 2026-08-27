@@ -25,18 +25,17 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Astronomy",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
-    "numpy>=2.4.2",
-    "pandas>=2.3.3",
-    "scipy>=1.16.0",
-    "tqdm>=4.67.1",
-    "matplotlib>=3.10.8",
-    "astropy>=7.1.0",
+    "numpy>=1.26.0",
+    "pandas>=2.1.0",
+    "scipy>=1.12.0",
     "emcee>=3.1.6",
+    "h5py>=3.8.0",
 ]
 
 [project.urls]
@@ -46,25 +45,28 @@ Issues = "https://github.com/gomeshun/jeanspy/issues"
 Changelog = "https://github.com/gomeshun/jeanspy/releases"
 
 [project.optional-dependencies]
+plotting = [
+    "matplotlib>=3.8.0",
+]
 numpyro_cpu = [
     "arviz[zarr, h5netcdf, netcdf4]>=1.0.0",
-    "h5netcdf",
-    "h5py",
-    "netCDF4",
-    "xarray",
-    "zarr",
-    "jax[cpu]>=0.6.2",
+    "h5netcdf>=1.4.0",
+    "h5py>=3.8.0",
+    "netCDF4>=1.6.0",
+    "xarray>=2024.11.0",
+    "zarr>=2.18.0",
+    "jax[cpu]>=0.4.35",
     "numpyro[cpu]>=0.18.0",
 ]
 numpyro_cuda12 = [
     "arviz[zarr, h5netcdf, netcdf4]>=1.0.0",
-    "h5netcdf",
-    "h5py",
-    "netCDF4",
-    "xarray",
-    "zarr",
-    "jax[cuda12]>=0.6.2",
-    "numpyro[cuda12]>=0.18.0",
+    "h5netcdf>=1.4.0",
+    "h5py>=3.8.0",
+    "netCDF4>=1.6.0",
+    "xarray>=2024.11.0",
+    "zarr>=2.18.0",
+    "jax[cuda12]>=0.7.0",
+    "numpyro[cuda12]>=0.20.0",
 ]
 dev = [
     "ipykernel",

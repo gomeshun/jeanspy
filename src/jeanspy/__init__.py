@@ -39,7 +39,6 @@ _LAZY_MODULES = set(__all__) | set(_OPTIONAL_MODULES)
 _OPTIONAL_IMPORT_ROOTS = {
     "arviz",
     "h5netcdf",
-    "h5py",
     "jax",
     "jaxlib",
     "netCDF4",

@@ -3,16 +3,16 @@ revision = 3
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.14' and platform_machine == 'ARM64' and sys_platform == 'win32'",
-    "python_full_version == '3.13.*' and platform_machine == 'ARM64' and sys_platform == 'win32'",
-    "python_full_version < '3.13' and platform_machine == 'ARM64' and sys_platform == 'win32'",
     "python_full_version >= '3.14' and platform_machine != 'ARM64' and sys_platform == 'win32'",
     "python_full_version >= '3.14' and sys_platform == 'emscripten'",
     "python_full_version >= '3.14' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version == '3.13.*' and platform_machine == 'ARM64' and sys_platform == 'win32'",
     "python_full_version == '3.13.*' and platform_machine != 'ARM64' and sys_platform == 'win32'",
-    "python_full_version < '3.13' and platform_machine != 'ARM64' and sys_platform == 'win32'",
     "python_full_version == '3.13.*' and sys_platform == 'emscripten'",
-    "python_full_version < '3.13' and sys_platform == 'emscripten'",
     "python_full_version == '3.13.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version < '3.13' and platform_machine == 'ARM64' and sys_platform == 'win32'",
+    "python_full_version < '3.13' and platform_machine != 'ARM64' and sys_platform == 'win32'",
+    "python_full_version < '3.13' and sys_platform == 'emscripten'",
     "python_full_version < '3.13' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
@@ -190,7 +190,7 @@ name = "cffi"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
+    { name = "pycparser" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/eb/56/b1ba7935a17738ae8453301356628e8147c79dbb825bcbc73dc7401f9846/cffi-2.0.0.tar.gz", hash = "sha256:44d1b5909021139fe36001ae048dbdde8214afa20200eda0f64c068cac5d5529", size = 523588, upload-time = "2025-09-08T23:24:04.541Z" }
 wheels = [
@@ -770,13 +770,11 @@ name = "jeanspy"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "astropy" },
     { name = "emcee" },
-    { name = "matplotlib" },
+    { name = "h5py" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "scipy" },
-    { name = "tqdm" },
 ]
 
 [package.optional-dependencies]
@@ -814,44 +812,46 @@ numpyro-cuda12 = [
     { name = "xarray" },
     { name = "zarr" },
 ]
+plotting = [
+    { name = "matplotlib" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "adamet", marker = "extra == 'benchmark'", specifier = ">=2.0.10" },
     { name = "arviz", extras = ["zarr", "h5netcdf", "netcdf4"], marker = "extra == 'numpyro-cpu'", specifier = ">=1.0.0" },
     { name = "arviz", extras = ["zarr", "h5netcdf", "netcdf4"], marker = "extra == 'numpyro-cuda12'", specifier = ">=1.0.0" },
-    { name = "astropy", specifier = ">=7.1.0" },
     { name = "corner", marker = "extra == 'benchmark'", specifier = ">=2.2.3" },
     { name = "dynesty", marker = "extra == 'benchmark'", specifier = ">=3.0.0" },
     { name = "emcee", specifier = ">=3.1.6" },
-    { name = "h5netcdf", marker = "extra == 'numpyro-cpu'" },
-    { name = "h5netcdf", marker = "extra == 'numpyro-cuda12'" },
-    { name = "h5py", marker = "extra == 'numpyro-cpu'" },
-    { name = "h5py", marker = "extra == 'numpyro-cuda12'" },
+    { name = "h5netcdf", marker = "extra == 'numpyro-cpu'", specifier = ">=1.4.0" },
+    { name = "h5netcdf", marker = "extra == 'numpyro-cuda12'", specifier = ">=1.4.0" },
+    { name = "h5py", specifier = ">=3.8.0" },
+    { name = "h5py", marker = "extra == 'numpyro-cpu'", specifier = ">=3.8.0" },
+    { name = "h5py", marker = "extra == 'numpyro-cuda12'", specifier = ">=3.8.0" },
     { name = "ipykernel", marker = "extra == 'dev'" },
     { name = "jampy", marker = "extra == 'benchmark'", specifier = ">=8.1.4" },
-    { name = "jax", extras = ["cpu"], marker = "extra == 'numpyro-cpu'", specifier = ">=0.6.2" },
-    { name = "jax", extras = ["cuda12"], marker = "extra == 'numpyro-cuda12'", specifier = ">=0.6.2" },
-    { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "jax", extras = ["cpu"], marker = "extra == 'numpyro-cpu'", specifier = ">=0.4.35" },
+    { name = "jax", extras = ["cuda12"], marker = "extra == 'numpyro-cuda12'", specifier = ">=0.7.0" },
+    { name = "matplotlib", marker = "extra == 'plotting'", specifier = ">=3.8.0" },
     { name = "mgefit", marker = "extra == 'benchmark'", specifier = ">=6.2.6" },
     { name = "mpmath", marker = "extra == 'dev'", specifier = ">=1.3.0" },
-    { name = "netcdf4", marker = "extra == 'numpyro-cpu'" },
-    { name = "netcdf4", marker = "extra == 'numpyro-cuda12'" },
-    { name = "numpy", specifier = ">=2.4.2" },
+    { name = "netcdf4", marker = "extra == 'numpyro-cpu'", specifier = ">=1.6.0" },
+    { name = "netcdf4", marker = "extra == 'numpyro-cuda12'", specifier = ">=1.6.0" },
+    { name = "numpy", specifier = ">=1.26.0" },
     { name = "numpyro", extras = ["cpu"], marker = "extra == 'numpyro-cpu'", specifier = ">=0.18.0" },
-    { name = "numpyro", extras = ["cuda12"], marker = "extra == 'numpyro-cuda12'", specifier = ">=0.18.0" },
-    { name = "pandas", specifier = ">=2.3.3" },
+    { name = "numpyro", extras = ["cuda12"], marker = "extra == 'numpyro-cuda12'", specifier = ">=0.20.0" },
+    { name = "pandas", specifier = ">=2.1.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.2" },
-    { name = "scipy", specifier = ">=1.16.0" },
+    { name = "scipy", specifier = ">=1.12.0" },
     { name = "seaborn", marker = "extra == 'dev'" },
     { name = "sympy", marker = "extra == 'dev'" },
-    { name = "tqdm", specifier = ">=4.67.1" },
-    { name = "xarray", marker = "extra == 'numpyro-cpu'" },
-    { name = "xarray", marker = "extra == 'numpyro-cuda12'" },
-    { name = "zarr", marker = "extra == 'numpyro-cpu'" },
-    { name = "zarr", marker = "extra == 'numpyro-cuda12'" },
+    { name = "xarray", marker = "extra == 'numpyro-cpu'", specifier = ">=2024.11.0" },
+    { name = "xarray", marker = "extra == 'numpyro-cuda12'", specifier = ">=2024.11.0" },
+    { name = "zarr", marker = "extra == 'numpyro-cpu'", specifier = ">=2.18.0" },
+    { name = "zarr", marker = "extra == 'numpyro-cuda12'", specifier = ">=2.18.0" },
 ]
-provides-extras = ["numpyro-cpu", "numpyro-cuda12", "dev", "benchmark"]
+provides-extras = ["plotting", "numpyro-cpu", "numpyro-cuda12", "dev", "benchmark"]
 
 [[package]]
 name = "jedi"
@@ -1323,7 +1323,7 @@ name = "nvidia-cudnn-cu12"
 version = "9.20.0.48"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cublas-cu12", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "nvidia-cublas-cu12" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0c/77/1c382fdc5de163b2ff14d6174d12dc318c0a42302f5e3a4fbc5114ab0501/nvidia_cudnn_cu12-9.20.0.48-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:d9da9c15344323afae571751393552652c52486eab0b886530997bef664e29de", size = 664659972, upload-time = "2026-03-09T19:27:37.986Z" },
@@ -1335,7 +1335,7 @@ name = "nvidia-cufft-cu12"
 version = "11.4.1.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-nvjitlink-cu12", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "nvidia-nvjitlink-cu12" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9b/2b/76445b0af890da61b501fde30650a1a4bd910607261b209cccb5235d3daa/nvidia_cufft_cu12-11.4.1.4-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:1a28c9b12260a1aa7a8fd12f5ebd82d027963d635ba82ff39a1acfa7c4c0fbcf", size = 200822453, upload-time = "2025-06-05T20:05:27.889Z" },
@@ -1347,9 +1347,9 @@ name = "nvidia-cusolver-cu12"
 version = "11.7.5.82"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cublas-cu12", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
-    { name = "nvidia-cusparse-cu12", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
-    { name = "nvidia-nvjitlink-cu12", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "nvidia-cublas-cu12" },
+    { name = "nvidia-cusparse-cu12" },
+    { name = "nvidia-nvjitlink-cu12" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/03/99/686ff9bf3a82a531c62b1a5c614476e8dfa24a9d89067aeedf3592ee4538/nvidia_cusolver_cu12-11.7.5.82-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:62efa83e4ace59a4c734d052bb72158e888aa7b770e1a5f601682f16fe5b4fd2", size = 337869834, upload-time = "2025-06-05T20:06:53.125Z" },
@@ -1361,7 +1361,7 @@ name = "nvidia-cusparse-cu12"
 version = "12.5.10.65"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-nvjitlink-cu12", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "nvidia-nvjitlink-cu12" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5e/6f/8710fbd17cdd1d0fc3fea7d36d5b65ce1933611c31e1861da330206b253a/nvidia_cusparse_cu12-12.5.10.65-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:221c73e7482dd93eda44e65ce567c031c07e2f93f6fa0ecd3ba876a195023e83", size = 366359408, upload-time = "2025-06-05T20:07:42.501Z" },
@@ -1391,7 +1391,7 @@ name = "nvidia-nvshmem-cu12"
 version = "3.5.21"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cuda-cccl-cu12", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "nvidia-cuda-cccl-cu12" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4a/0a/8b1fb3d6d4271d3fba11c029c1326c8f3e8c971058d545ecfb428b6e7327/nvidia_nvshmem_cu12-3.5.21-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:f9c815745f8a10567fbf25d5a1d5079f778d67e94276e585a3706fbda9b490bb", size = 152481001, upload-time = "2026-02-27T00:20:03.191Z" },
@@ -1482,7 +1482,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "ptyprocess" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [

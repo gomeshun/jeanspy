@@ -4,8 +4,13 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 
 import jeanspy
 
+
 def test_version_available():
     assert hasattr(jeanspy, "__version__")
+
+
+def test_core_modules_importable():
+    from jeanspy import cmd_utilities, coord, dequad, jfactor, model, polygon
 
 
 def test_sampler_all_contains_only_sampler():
