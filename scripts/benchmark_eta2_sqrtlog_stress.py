@@ -100,14 +100,34 @@ def main() -> None:
             raw["eta"] = 2.0
         return {key: jnp.asarray(value, dtype=dtype) for key, value in raw.items()}
 
-    def projection_fn(ani, *, n_u: int, n_kernel: int, u_max: float):
-        s_max = jnp.sqrt(jnp.log(jnp.asarray(u_max, dtype=dtype)))
-        s = jnp.linspace(jnp.asarray(0.0, dtype=dtype), s_max, n_u)
-        u = jnp.exp(s * s)
-        jac = 2.0 * s
+    def projection_fn(
+        ani,
+        *,
+        n_u: int,
+        n_kernel: int,
+        u_max: float,
+        transform: str = "sqrtlog",
+        u_min_eps: float = 1e-6,
+    ):
+        if transform == "sqrtlog":
+            x_max = jnp.sqrt(jnp.log(jnp.asarray(u_max, dtype=dtype)))
+            x = jnp.linspace(jnp.asarray(0.0, dtype=dtype), x_max, n_u)
+            u = jnp.exp(x * x)
+            jac = 2.0 * x
+        elif transform == "log":
+            x = jnp.linspace(
+                jnp.log1p(jnp.asarray(u_min_eps, dtype=dtype)),
+                jnp.log(jnp.asarray(u_max, dtype=dtype)),
+                n_u,
+            )
+            u = jnp.exp(x)
+            jac = jnp.ones_like(x)
+        else:
+            raise ValueError(transform)
+
         u2d = u[None, :]
         R2d = R[:, None]
-        h = s[1] - s[0]
+        h = x[1] - x[0]
 
         @jax.jit
         def _eval(params):
@@ -117,6 +137,8 @@ def main() -> None:
             mass = dm.enclosed_mass(r, method="analytic", params=params)
             grav = (mn.GMsun_m3s2 * mass / mn.PARSEC_M) * 1e-6
             K = ani.kernel(u2d, R2d, params=params, n_kernel=n_kernel)
+            # In log(u), K/u * du = K dx.  In sqrt(log(u)),
+            # log(u)=x^2 and therefore K/u * du = 2x K dx.
             integrand = 2.0 * K * (nu3 / sigma2) * grav * jac[None, :]
             return mn._simpson_uniform_last_axis(integrand, h)
 
@@ -125,8 +147,12 @@ def main() -> None:
     # Independent robust reference: generic Baes integrates the anisotropy
     # kernel in s=arccosh(u), which remains well resolved for beta_inf -> 1.
     # Use a large outer cutoff to make small-R tail truncation negligible.
-    ref_mid_fn = projection_fn(generic, n_u=512, n_kernel=128, u_max=1e5)
-    ref_hi_fn = projection_fn(generic, n_u=1024, n_kernel=256, u_max=1e5)
+    ref_mid_fn = projection_fn(
+        generic, n_u=512, n_kernel=128, u_max=1e5, transform="sqrtlog"
+    )
+    ref_hi_fn = projection_fn(
+        generic, n_u=1024, n_kernel=256, u_max=1e5, transform="sqrtlog"
+    )
 
     case_data = []
     worst_ref_check = 0.0
@@ -139,8 +165,11 @@ def main() -> None:
         worst_ref_check = max(worst_ref_check, ref_check)
         case_data.append((case, pg, pe, ref_hi, ref_check))
 
-    print("eta=2 sqrt(log u) adversarial MCMC stress benchmark (CPU float64)")
-    print(f"cases={len(CASES)}, R/Re=[0.005,10], robust generic-reference check={worst_ref_check:.3e}")
+    print("eta=2 outer-transform adversarial MCMC stress benchmark (CPU float64)")
+    print(
+        f"cases={len(CASES)}, R/Re=[0.005,10], "
+        f"robust generic-reference check={worst_ref_check:.3e}"
+    )
     print("reference checks by case:")
     for case, _, _, _, ref_check in case_data:
         print(f"  {case.name:<28} {ref_check:.3e}")
@@ -157,10 +186,12 @@ def main() -> None:
         (256, 128),
     ]
 
-    print("\neta2 candidates, u_max=2e4")
+    print("\neta2 candidates with sqrt(log u), u_max=2e4")
     print("n_u  n_kernel  worst_rel  median_case_ms  max_case_ms  worst_case")
     for n_u, n_kernel in candidate_specs:
-        fn = projection_fn(eta2, n_u=n_u, n_kernel=n_kernel, u_max=2e4)
+        fn = projection_fn(
+            eta2, n_u=n_u, n_kernel=n_kernel, u_max=2e4, transform="sqrtlog"
+        )
         errors = []
         runtimes = []
         for case, _, pe, ref_hi, _ in case_data:
@@ -170,17 +201,20 @@ def main() -> None:
         worst_err, worst_name = max(errors, key=lambda item: item[0])
         print(
             f"{n_u:>3d} {n_kernel:>9d} {worst_err:>10.3e} "
-            f"{1e3*statistics.median(runtimes):>15.3f} {1e3*max(runtimes):>12.3f}  {worst_name}"
+            f"{1e3*statistics.median(runtimes):>15.3f} "
+            f"{1e3*max(runtimes):>12.3f}  {worst_name}"
         )
 
     # Compare against using the robust generic kernel with the same improved
     # outer transform.  This shows how much speed is specifically due to the
     # eta=2 inner evaluator rather than the sqrt(log u) outer transformation.
     generic_specs = [(32, 32), (64, 32), (64, 64), (128, 32), (128, 64)]
-    print("\ngeneric Baes with same sqrt(log u) outer transform, u_max=2e4")
+    print("\ngeneric Baes with sqrt(log u), u_max=2e4")
     print("n_u  n_kernel  worst_rel  median_case_ms  max_case_ms  worst_case")
     for n_u, n_kernel in generic_specs:
-        fn = projection_fn(generic, n_u=n_u, n_kernel=n_kernel, u_max=2e4)
+        fn = projection_fn(
+            generic, n_u=n_u, n_kernel=n_kernel, u_max=2e4, transform="sqrtlog"
+        )
         errors = []
         runtimes = []
         for case, pg, _, ref_hi, _ in case_data:
@@ -190,8 +224,52 @@ def main() -> None:
         worst_err, worst_name = max(errors, key=lambda item: item[0])
         print(
             f"{n_u:>3d} {n_kernel:>9d} {worst_err:>10.3e} "
-            f"{1e3*statistics.median(runtimes):>15.3f} {1e3*max(runtimes):>12.3f}  {worst_name}"
+            f"{1e3*statistics.median(runtimes):>15.3f} "
+            f"{1e3*max(runtimes):>12.3f}  {worst_name}"
         )
+
+    # Directly compare against the current production outer grid.  Keep the
+    # same generic Baes inner kernel and u_max so the only change is the outer
+    # coordinate.  n_kernel=32 is already sufficient for the robust generic
+    # arccosh(u) inner quadrature over this adversarial set.
+    print("\ngeneric Baes with current log(u), u_max=2e4")
+    print("n_u  n_kernel  worst_rel  median_case_ms  max_case_ms  worst_case")
+    for n_u in (64, 128, 256, 512, 1024):
+        fn = projection_fn(
+            generic, n_u=n_u, n_kernel=32, u_max=2e4, transform="log"
+        )
+        errors = []
+        runtimes = []
+        for case, pg, _, ref_hi, _ in case_data:
+            value = sync(jax, fn(pg))
+            errors.append((max_rel(value, ref_hi), case.name))
+            runtimes.append(median_runtime(jax, fn, pg))
+        worst_err, worst_name = max(errors, key=lambda item: item[0])
+        print(
+            f"{n_u:>4d} {32:>9d} {worst_err:>10.3e} "
+            f"{1e3*statistics.median(runtimes):>15.3f} "
+            f"{1e3*max(runtimes):>12.3f}  {worst_name}"
+        )
+
+    # Also record the current CPU defaults (n_u=256, u_max=2e3).  This is not
+    # an apples-to-apples transform comparison because the cutoff is smaller,
+    # but it quantifies the accuracy users currently obtain in this stress set.
+    current_default = projection_fn(
+        generic, n_u=256, n_kernel=32, u_max=2e3, transform="log"
+    )
+    default_errors = []
+    default_runtimes = []
+    for case, pg, _, ref_hi, _ in case_data:
+        value = sync(jax, current_default(pg))
+        default_errors.append((max_rel(value, ref_hi), case.name))
+        default_runtimes.append(median_runtime(jax, current_default, pg))
+    default_err, default_name = max(default_errors, key=lambda item: item[0])
+    print("\ncurrent CPU-like log(u) configuration")
+    print(
+        f"n_u=256 n_kernel=32 u_max=2e3: worst_rel={default_err:.3e}, "
+        f"median_case_ms={1e3*statistics.median(default_runtimes):.3f}, "
+        f"worst_case={default_name}"
+    )
 
 
 if __name__ == "__main__":
