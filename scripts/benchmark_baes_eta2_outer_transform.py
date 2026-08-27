@@ -129,39 +129,45 @@ def main() -> None:
         stellar = dsph.submodels["StellarModel"]
         dm = dsph.submodels["DMModel"]
         ani = dsph.submodels["AnisotropyModel"]
-        R2d = R[:, None]
-        sigma2 = stellar.density_2d(R2d, re_pc=params["re_pc"])
 
-        if transform == "sqrtlog":
-            s_max = jnp.sqrt(jnp.log(jnp.asarray(u_max, dtype=dtype)))
-            x = jnp.linspace(jnp.asarray(0.0, dtype=dtype), s_max, n_u)
-            t = x * x
-            u = jnp.exp(t)
-            jac = 2.0 * x
-        elif transform == "q":
-            q_max = jnp.sqrt(1.0 - 1.0 / jnp.asarray(u_max * u_max, dtype=dtype))
-            x = jnp.linspace(jnp.asarray(0.0, dtype=dtype), q_max, n_u)
-            one_minus_q2 = jnp.maximum(1.0 - x * x, jnp.finfo(dtype).tiny)
-            u = 1.0 / jnp.sqrt(one_minus_q2)
-            jac = x / one_minus_q2  # dt/dq for t=log(u)
-        else:
-            raise ValueError(transform)
+        def _eval():
+            R2d = R[:, None]
+            sigma2 = stellar.density_2d(R2d, re_pc=params["re_pc"])
 
-        u2d = u[None, :]
-        r = R2d * u2d
-        nu3 = stellar.density_3d(r, re_pc=params["re_pc"])
-        mass = dm.enclosed_mass(r, method="analytic", params=params)
-        grav = (mn.GMsun_m3s2 * mass / mn.PARSEC_M) * 1e-6
-        K = ani.kernel(u2d, R2d, params=params, n_kernel=n_kernel)
-        base_t = 2.0 * K * (nu3 / sigma2) * grav
-        integrand = base_t * jac[None, :]
+            if transform == "sqrtlog":
+                s_max = jnp.sqrt(jnp.log(jnp.asarray(u_max, dtype=dtype)))
+                x = jnp.linspace(jnp.asarray(0.0, dtype=dtype), s_max, n_u)
+                t = x * x
+                u = jnp.exp(t)
+                jac = 2.0 * x
+            elif transform == "q":
+                q_max = jnp.sqrt(
+                    1.0 - 1.0 / jnp.asarray(u_max * u_max, dtype=dtype)
+                )
+                x = jnp.linspace(jnp.asarray(0.0, dtype=dtype), q_max, n_u)
+                one_minus_q2 = jnp.maximum(1.0 - x * x, jnp.finfo(dtype).tiny)
+                u = 1.0 / jnp.sqrt(one_minus_q2)
+                jac = x / one_minus_q2  # dt/dq for t=log(u)
+            else:
+                raise ValueError(transform)
 
-        if n_u > 1:
-            h = x[1] - x[0]
-            value = mn._simpson_uniform_last_axis(integrand, h)
-        else:
-            value = integrand[..., 0]
-        return jax.jit(lambda: jnp.clip(jnp.nan_to_num(value), 0.0, 1e12))
+            u2d = u[None, :]
+            r = R2d * u2d
+            nu3 = stellar.density_3d(r, re_pc=params["re_pc"])
+            mass = dm.enclosed_mass(r, method="analytic", params=params)
+            grav = (mn.GMsun_m3s2 * mass / mn.PARSEC_M) * 1e-6
+            K = ani.kernel(u2d, R2d, params=params, n_kernel=n_kernel)
+            base_t = 2.0 * K * (nu3 / sigma2) * grav
+            integrand = base_t * jac[None, :]
+
+            if n_u > 1:
+                h = x[1] - x[0]
+                value = mn._simpson_uniform_last_axis(integrand, h)
+            else:
+                value = integrand[..., 0]
+            return jnp.clip(jnp.nan_to_num(value), 0.0, 1e12)
+
+        return jax.jit(_eval)
 
     def existing_log_fn(dsph: DSphModel, params: dict[str, Any], n_u: int):
         return lambda: dsph.sigmalos2(
@@ -267,7 +273,10 @@ def main() -> None:
 
     worst_ref_cross = max(result["reference_crosscheck"] for result in case_results)
     print("Robust eta=2 outer-integration benchmark (CPU float64)")
-    print(f"cases={len(cases)}, R/Re=[0.02, 5], worst reference cross-check={worst_ref_cross:.3e}")
+    print(
+        f"cases={len(cases)}, R/Re=[0.02, 5], "
+        f"worst reference cross-check={worst_ref_cross:.3e}"
+    )
     print("method    n_u   worst_max_rel   median_hot_ms   max_hot_ms")
     for row in aggregate_rows:
         print(
