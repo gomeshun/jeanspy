@@ -78,6 +78,10 @@ jobs:
         if: matrix.python-version == '3.12'
         run: JAX_ENABLE_X64=true uv run --python "${{ matrix.python-version }}" python scripts/benchmark_sigmalos2_sqrtlog_defaults.py
 
+      - name: Benchmark supported Baes prior
+        if: matrix.python-version == '3.12'
+        run: JAX_ENABLE_X64=true uv run --python "${{ matrix.python-version }}" python scripts/benchmark_baes_supported_prior.py
+
       - name: Generate Sérsic visualization
         run: uv run --python "${{ matrix.python-version }}" python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
 
