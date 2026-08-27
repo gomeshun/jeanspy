@@ -479,11 +479,29 @@ class SersicModel(StellarModel):
     required_models = {}
     
     
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
+    _VALID_DEPROJECTION_METHODS = ("approx", "numerical")
+
+    def __init__(self, *args, deprojection_method: str = "approx", **kwargs):
+        """
+        Parameters
+        ----------
+        deprojection_method : str, optional
+            Default method used by :meth:`density_3d` when no ``method``
+            keyword is passed.  ``"approx"`` uses the fast Lima Neto–Gerbal–
+            Márquez (LGM) analytical approximation; ``"numerical"`` uses the
+            slower but more accurate Abel inversion via
+            :meth:`density_3d_numerical`.  Default is ``"approx"``.
+        """
+        super().__init__(*args, **kwargs)
+        if deprojection_method not in self._VALID_DEPROJECTION_METHODS:
+            raise ValueError(
+                f"deprojection_method must be one of {self._VALID_DEPROJECTION_METHODS!r},"
+                f" got {deprojection_method!r}"
+            )
+        self.deprojection_method = deprojection_method
         df = pd.read_csv(DATA_DIR.joinpath("sersic_log10n_log10bn.csv"))
         self._b_interp = interp1d(df["log10n"].values,df["log10bn"].values,"cubic",assume_sorted=True)
-        self.coeff = pd.read_csv(DATA_DIR.joinpath("coeff_dens.csv"), comment="#", delim_whitespace=True, header=None).values
+        self.coeff = pd.read_csv(DATA_DIR.joinpath("coeff_dens.csv"), comment="#", sep=r"\s+", engine="python", header=None).values
     
     @property
     def b_approx(self):
@@ -549,15 +567,130 @@ class SersicModel(StellarModel):
         ind = (3-p)*n
         return 4 * pi * Rhalf**3 * n * gamma(ind) / b**ind
     
-    def density_3d_LGM(self,r_pc):
-        p = self.p_LGM
+    def density_3d_LGM(self, r_pc):
+        """3-D deprojected Sérsic density using the Lima Neto–Gerbal–Márquez (LGM)
+        / Prugniel–Simien analytical approximation.
+
+        The approximation formula is ``p = 1 - 0.6097/n + 0.05463/n^2`` (LGM 1999).
+        It uses the Ciotti–Bertin (1999) ``b_CB`` value rather than the exact ``b``.
+
+        .. warning::
+            This is an approximation.  Later work (Vitral & Mamon 2020) shows
+            that the error can be appreciable for low Sérsic index, especially
+            at small ``r / R_e``.  A supported nominal range is ``0.5 ≤ n ≤ 10``;
+            outside this range a :class:`ValueError` is raised.
+        """
         n = self.params.n
+        if not (0.5 <= n <= 10):
+            raise ValueError(
+                f"density_3d_LGM is supported only for 0.5 ≤ n ≤ 10; got n={n}."
+            )
+        p = self.p_LGM
         b = self.b_CB
-        x = (r_pc/self.params.re_pc)
+        x = (r_pc / self.params.re_pc)
         return x**-p * exp(-b * x**(1/n)) / self.norm_3d
-    
-    def density_3d(self,r_pc):
-        pass
+
+    def density_3d_numerical(self, r_pc, *, epsrel=1e-6, epsabs=0.0, limit=200):
+        """3-D deprojected Sérsic density via numerical spherical Abel inversion.
+
+        Uses the substitution ``R = r / cos(theta)`` to avoid the square-root
+        endpoint singularity:
+
+        .. math::
+
+            \\rho(r) = -\\frac{1}{\\pi} \\int_0^{\\pi/2}
+                \\frac{d\\Sigma}{dR}\\bigl(r/\\cos\\theta\\bigr)
+                \\, d\\theta
+
+        where the analytic derivative of the Sérsic surface density is used
+        (no finite differencing).
+
+        The ``b`` value here is the exact tabulated value (same as
+        :meth:`density_2d`), *not* the Ciotti–Bertin approximation used by LGM.
+
+        Parameters
+        ----------
+        r_pc : float or array_like
+            3-D radius in parsec.  Must be ≥ 0.
+        epsrel : float
+            Relative tolerance passed to :func:`scipy.integrate.quad`.
+        epsabs : float
+            Absolute tolerance passed to :func:`scipy.integrate.quad`.
+        limit : int
+            Maximum number of subdivisions for the adaptive integrator.
+
+        Returns
+        -------
+        float or ndarray
+            3-D density at ``r_pc``.  Returns ``np.inf`` for ``r = 0`` when
+            ``n ≥ 1`` (integrand diverges).  Returns a finite value for
+            ``n < 1`` at ``r = 0`` by evaluating ``r = 0`` via the integral.
+        """
+        n = self.params.n
+        re = self.params.re_pc
+        b = self.b
+        norm2d = self.norm
+
+        def _dsigma_dR(R):
+            # d Sigma / dR = Sigma(R) * (-b/n) * (R/re)^(1/n - 1) / re
+            return exp(-b * (R / re) ** (1 / n)) / norm2d * (-b / n) * (R / re) ** (1 / n - 1) / re
+
+        def _rho_scalar(r):
+            if r < 0:
+                raise ValueError(f"r_pc must be non-negative; got {r}.")
+            if r == 0.0:
+                if n >= 1.0:
+                    return np.inf
+                # For n < 1 the integrand is integrable; use a small but nonzero r
+                # by approaching via the same substitution at r→0.
+                # The integral is finite; evaluate at a tiny surrogate.
+                r = re * 1e-10
+            # substitution R = r / cos(theta), dR/dtheta = r sin(theta)/cos^2(theta)
+            # rho(r) = -(1/pi) int_0^{pi/2} dSigma/dR(r/cos t) * (1/cos t) dt
+            # (the 1/sqrt(R^2-r^2) * dR = 1/cos(t) * dtheta after simplification)
+            def integrand(theta):
+                R = r / np.cos(theta)
+                return _dsigma_dR(R) / np.cos(theta)
+
+            val, _ = quad(integrand, 0.0, np.pi / 2, limit=limit,
+                          epsrel=epsrel, epsabs=epsabs)
+            return -val / np.pi
+
+        scalar_input = np.ndim(r_pc) == 0
+        r_arr = np.atleast_1d(np.asarray(r_pc, dtype=float))
+        result = np.array([_rho_scalar(r) for r in r_arr.ravel()])
+        if scalar_input:
+            return float(result[0])
+        return result.reshape(r_arr.shape)
+
+    def density_3d(self, r_pc, method: Optional[str] = None):
+        """Dispatch to either the LGM approximation or the numerical Abel inversion.
+
+        Parameters
+        ----------
+        r_pc : float or array_like
+            3-D radius in parsec.
+        method : str or None
+            ``"approx"`` → :meth:`density_3d_LGM`; ``"numerical"`` →
+            :meth:`density_3d_numerical`; ``None`` → use the instance default
+            set by ``deprojection_method`` (constructor argument, default
+            ``"approx"``).
+
+        Raises
+        ------
+        ValueError
+            If *method* (or the instance default) is not one of the accepted
+            method names.
+        """
+        resolved = method if method is not None else self.deprojection_method
+        if resolved not in self._VALID_DEPROJECTION_METHODS:
+            raise ValueError(
+                f"method must be one of {self._VALID_DEPROJECTION_METHODS!r},"
+                f" got {resolved!r}"
+            )
+        if resolved == "approx":
+            return self.density_3d_LGM(r_pc)
+        return self.density_3d_numerical(r_pc)
     
     def half_light_radius(self):
         return self.params.re_pc
