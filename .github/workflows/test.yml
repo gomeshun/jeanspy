@@ -70,9 +70,9 @@ jobs:
       - name: Run tests
         run: uv run --python "${{ matrix.python-version }}" pytest -q
 
-      - name: Benchmark Baes eta=2 kernel (quick)
+      - name: Benchmark Baes eta=2 kernel
         if: matrix.python-version == '3.12'
-        run: uv run --python "${{ matrix.python-version }}" python scripts/benchmark_baes_eta2.py --modes cpu-x32 --quick
+        run: uv run --python "${{ matrix.python-version }}" python scripts/benchmark_baes_eta2.py --modes cpu-x32,cpu-x64
 
       - name: Generate Sérsic visualization
         run: uv run --python "${{ matrix.python-version }}" python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
