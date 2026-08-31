@@ -1,4 +1,5 @@
 name: Publish release to PyPI
+# Preflight trigger only: package and runtime inputs are unchanged from main.
 
 on:
   pull_request:
