@@ -1,5 +1,9 @@
+import importlib
 import pathlib
 import sys
+
+import pytest
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 
 import jeanspy
@@ -10,7 +14,13 @@ def test_version_available():
 
 
 def test_core_modules_importable():
-    from jeanspy import cmd_utilities, coord, dequad, jfactor, model, polygon
+    from jeanspy import cmd_utilities, coord, dequad, model, polygon
+
+
+def test_legacy_jfactor_module_removed():
+    assert "jfactor" not in jeanspy.__all__
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("jeanspy.jfactor")
 
 
 def test_sampler_all_contains_only_sampler():

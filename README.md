@@ -26,7 +26,7 @@ Install the base package from PyPI:
 pip install jeanspy
 ```
 
-Install the plotting helpers and the `jfactor` command-line plotting support:
+Install the optional plotting helpers:
 
 ```bash
 pip install "jeanspy[plotting]"
@@ -46,9 +46,9 @@ pip install "jeanspy[numpyro_cuda12]"
 
 The base dependencies are NumPy, pandas, SciPy, emcee, and h5py. The
 `jeanspy.sampler.Sampler` API is a supported emcee-based inference feature;
-plotting imports are only needed for plotting helpers or the `jfactor`
-command-line demonstration. The NumPyro extras add JAX, NumPyro, and the
-ArviZ storage dependencies used by `jeanspy.sampler_numpyro`.
+plotting imports are only needed for plotting helpers. The NumPyro extras add
+JAX, NumPyro, and the ArviZ storage dependencies used by
+`jeanspy.sampler_numpyro`.
 
 ### Supported environment matrix
 
@@ -128,6 +128,26 @@ print(sigma_los_kms)
 ```
 
 JeansPy does not bundle an external dwarf-galaxy database. Observational data and object-specific priors should be supplied explicitly by downstream analyses.
+
+### J-factor calculations
+
+The supported J-factor API is provided by the classical dark-matter model
+methods. The historical `jeanspy.jfactor` module and its plotting command are
+not shipped in v0.1.0. Replace standalone calls with
+`DMModel.jfactor_ullio2016` or `DMModel.jfactor_ullio2016_simple`:
+
+```python
+from jeanspy.model import NFWModel
+
+dm = NFWModel(
+    rs_pc=1000.0,
+    rhos_Msunpc3=1.0e-2,
+    r_t_pc=10000.0,
+)
+
+j_full = dm.jfactor_ullio2016(dist_pc=30000.0, roi_deg=0.5)
+j_spherical = dm.jfactor_ullio2016_simple(dist_pc=30000.0, roi_deg=0.5)
+```
 
 ## Model Backends
 
