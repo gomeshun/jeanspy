@@ -253,7 +253,19 @@ class DMModel(Model):
             )
 
     def jfactor_ullio2016_simple(self, dist_pc, roi_deg=0.5):
-        """Calculate the spherical-aperture approximation to the J-factor."""
+        """Calculate the small-angle spherical-aperture approximation.
+
+        Let ``R_max = dist_pc * sin(roi_deg)``.  This method integrates the
+        spherical luminosity only out to ``min(R_max, r_t_pc)``.
+
+        If ``R_max >= r_t_pc``, the aperture contains the entire truncated
+        halo and this reduces to Ullio & Valli (2016), Eq. (B.10), with the
+        halo boundary ``mathcal R = r_t_pc``.  If ``R_max < r_t_pc``, this is
+        instead a spherical-aperture approximation: projected contributions
+        from shells with ``R_max < r < r_t_pc`` are omitted.  Use
+        :meth:`jfactor_ullio2016` for the full finite-ROI geometry of
+        Eqs. (B.8)--(B.9).
+        """
         dist_pc, roi_deg, r_t_pc = self._validate_jfactor_inputs(
             dist_pc, roi_deg, small_angle=True
         )
@@ -280,7 +292,12 @@ class DMModel(Model):
         return C_J * 4.0 * np.pi / dist_pc**2 * integ
 
     def jfactor_ullio2016(self, dist_pc, roi_deg=0.5):
-        """Calculate the full finite-ROI Ullio & Valli (2016) J-factor."""
+        """Calculate the full finite-ROI Ullio & Valli (2016) J-factor.
+
+        Unlike :meth:`jfactor_ullio2016_simple`, this includes the projected
+        contribution from shells with ``R_max < r < r_t_pc`` when the ROI is
+        smaller than the truncated halo, following Eqs. (B.8)--(B.9).
+        """
         dist_pc, roi_deg, r_t_pc = self._validate_jfactor_inputs(
             dist_pc, roi_deg, full=True
         )
@@ -411,7 +428,15 @@ class NFWModel(DMModel):
         return 4.0 * np.pi * rs_pc**3 * rhos * value
 
     def jfactor_ullio2016_simple(self, dist_pc, roi_deg=0.5):
-        """Calculate the NFW spherical-aperture J-factor approximation."""
+        """Evaluate the NFW spherical-aperture approximation analytically.
+
+        The geometric interpretation is the same as
+        :meth:`DMModel.jfactor_ullio2016_simple`: for ``R_max >= r_t_pc`` the
+        aperture encloses the full truncated halo and corresponds to the
+        Eq. (B.10) limit; for ``R_max < r_t_pc`` it omits projected outer-shell
+        contributions.  Use :meth:`jfactor_ullio2016` for the full finite-ROI
+        geometry.
+        """
         dist_pc, roi_deg, r_t_pc = self._validate_jfactor_inputs(
             dist_pc, roi_deg, small_angle=True
         )
