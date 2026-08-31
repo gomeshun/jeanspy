@@ -14,13 +14,18 @@ def test_version_available():
 
 
 def test_core_modules_importable():
-    from jeanspy import cmd_utilities, coord, dequad, model, polygon
+    from jeanspy import dequad, model, sampler
+
+    assert dequad is not None
+    assert model is not None
+    assert sampler is not None
 
 
-def test_legacy_jfactor_module_removed():
-    assert "jfactor" not in jeanspy.__all__
-    with pytest.raises(ModuleNotFoundError):
-        importlib.import_module("jeanspy.jfactor")
+def test_removed_historical_modules_are_not_public_or_importable():
+    for name in ("cmd_utilities", "coord", "jfactor", "polygon"):
+        assert name not in jeanspy.__all__
+        with pytest.raises(ModuleNotFoundError):
+            importlib.import_module(f"jeanspy.{name}")
 
 
 def test_sampler_all_contains_only_sampler():
