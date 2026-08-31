@@ -24,7 +24,6 @@ __all__ = [
     "coord",
     "dequad",
     "model",
-    "jfactor",
     "polygon",
     "sampler",
     "cmd_utilities",
