@@ -195,15 +195,19 @@ without those Zhao shape-parameter gradients.
 
 ## Example Notebooks
 
-The canonical examples are:
+The recommended starting point is:
 
-- [`demo_model_full.ipynb`](notebooks/demo_model_full.ipynb) visualizes the stellar, anisotropy, and mass-model components. It requires the `numpyro_cpu` or `numpyro_cuda12` extra.
-- [`sampler_numpyro_demo.ipynb`](notebooks/sampler_numpyro_demo.ipynb) is the recommended starting point for the checkpointed `NumPyroSampler` workflow. It requires the `numpyro_cpu` or `numpyro_cuda12` extra.
+- [`demo_model_full.ipynb`](notebooks/demo_model_full.ipynb): a top-to-bottom Getting Started tutorial for the classical API, including stellar/DM/anisotropy components, `DSphModel`, line-of-sight velocity dispersion, J-factors, and Sérsic deprojection. It requires the `plotting` extra.
 
-Install an optional CPU environment, including the notebook kernel dependency, with:
+For gradient-based inference and checkpointed NumPyro sampling, continue with:
+
+- [`sampler_numpyro_demo.ipynb`](notebooks/sampler_numpyro_demo.ipynb): builds a reusable Jeans likelihood, runs NUTS, resumes from a checkpoint, and combines ArviZ outputs. It requires the `numpyro_cpu` or `numpyro_cuda12` extra.
+
+From a repository checkout, install the corresponding notebook environment with for example:
 
 ```bash
-uv sync --extra numpyro_cpu --extra dev
+uv sync --extra plotting --extra dev
+uv sync --extra numpyro_cpu --extra dev --extra plotting
 ```
 
 The benchmark notebook is a support tool rather than a canonical example:
@@ -219,7 +223,7 @@ uv run python scripts/benchmark_jeans_codes.py --quick --n-stars 4000 --engines 
 
 Notebook runtime outputs are intentionally not committed. The sampler writes
 its checkpoint and chunk stores below the ignored `notebooks/_demo_outputs/`
-directory.
+directory. The canonical Getting Started notebook is also executed cell-by-cell in CI so API changes cannot silently leave the public example broken.
 
 ## NumPyro And ArviZ Backends
 
