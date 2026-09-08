@@ -60,3 +60,53 @@ def test_classical_inference_runs_resumes_and_resets(tmp_path, config_kind):
     resumed.run_mcmc(2, 1, reset=True, enable_convergence_check=False)
     assert resumed.get_chain().shape == (2, 16, 6)
     assert np.isfinite(resumed.get_blobs()["lnl"]).all()
+
+
+@pytest.mark.parametrize("failure", ["raises", "shape", "nan", "dependent", "posterior"])
+def test_failed_reset_preserves_stored_chain(tmp_path, failure):
+    model = _make_model(tmp_path, "dataframe")
+    sampler = Sampler(model, _initial_state, nwalkers=16, prefix=f"{tmp_path}/")
+    sampler.run_mcmc(4, 1, enable_convergence_check=False)
+    chain, log_prob, blobs = (sampler.get_chain(), sampler.get_log_prob(), sampler.get_blobs())
+    calls = []
+
+    def invalid(n):
+        calls.append(n)
+        if n is None:
+            return _initial_state(None)
+        if failure == "raises":
+            raise ValueError("generator failed")
+        coords = _initial_state(n)
+        if failure == "shape":
+            return coords[:-1]
+        if failure == "nan":
+            coords[0, 0] = np.nan
+        if failure == "dependent":
+            coords[:] = coords[0]
+        if failure == "posterior":
+            coords[:, 0] += 1000.
+        return coords
+
+    with pytest.raises((ValueError, RuntimeError)):
+        sampler.run_mcmc(2, 1, reset=True, p0_generator=invalid)
+    assert calls == [None, 16]
+    np.testing.assert_array_equal(sampler.get_chain(), chain)
+    np.testing.assert_array_equal(sampler.get_log_prob(), log_prob)
+    np.testing.assert_array_equal(sampler.get_blobs(), blobs)
+    sampler.run_mcmc(1, 1, enable_convergence_check=False)
+    assert sampler.get_chain().shape == (5, 16, 6)
+
+
+def test_successful_reset_generates_replacement_once(tmp_path):
+    model = _make_model(tmp_path, "dataframe")
+    sampler = Sampler(model, _initial_state, nwalkers=16, prefix=f"{tmp_path}/")
+    sampler.run_mcmc(4, 1, enable_convergence_check=False)
+    calls = []
+
+    def generator(n):
+        calls.append(n)
+        return _initial_state(n)
+
+    sampler.run_mcmc(4, 1, reset=True, p0_generator=generator, enable_convergence_check=False)
+    assert calls == [None, 16]
+    assert sampler.get_chain().shape == (4, 16, 6)
