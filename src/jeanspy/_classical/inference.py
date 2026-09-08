@@ -135,10 +135,12 @@ class FlatPriorModel(Model):
         self.load_config(config)
 
     def load_config(self, config):
-        if isinstance(config, str):
+        self.fname_config = (
+            os.fspath(config) if isinstance(config, (str, os.PathLike)) else None
+        )
+        if self.fname_config is not None:
             try:
-                self.fname_config = config
-                self.data = pd.read_csv(config, index_col=0)
+                self.data = pd.read_csv(self.fname_config, index_col=0)
             except FileNotFoundError:
                 logger.error("config file '%s' is not found.", config)
                 raise
