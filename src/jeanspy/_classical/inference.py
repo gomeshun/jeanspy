@@ -294,10 +294,20 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
     def load_data(self, data, shared=False):
         """Load explicitly supplied observed kinematic data."""
+        previous_shared = getattr(self, "shared", False)
         self.shared = shared
-        self.reset_data(data.astype(self.dtype))
+        try:
+            self.reset_data(data)
+        except Exception:
+            self.shared = previous_shared
+            raise
 
     def reset_data(self, data):
+        """Replace observations while sampler workers are idle.
+
+        Shared models keep their buffer shape so existing readers stay attached.
+        Construct a new model to use a different number of observations.
+        """
         self.data = data
         lower = self.data["vlos_kms"].min()
         upper = self.data["vlos_kms"].max()
@@ -354,41 +364,61 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
     @data.setter
     def data(self, data: pd.DataFrame):
-        self._n_data = len(data)
+        fields = ("R_pc", "vlos_kms", "e_vlos_kms")
+        shape = data["R_pc"].shape
+        if self.shared and hasattr(self, "shared_shape"):
+            if shape != self.shared_shape:
+                raise ValueError(
+                    "Cannot resize shared kinematic data; construct a new model "
+                    "for a different number of observations."
+                )
+        data = data.astype(self.dtype)
+        values = {field: data[field].values for field in fields}
+        if any(array.shape != shape for array in values.values()):
+            raise ValueError("Kinematic columns must have matching shapes.")
         if not self.shared:
-            self._data = DotDict(
-                {
-                    "R_pc": data["R_pc"].values,
-                    "vlos_kms": data["vlos_kms"].values,
-                    "e_vlos_kms": data["e_vlos_kms"].values,
-                }
-            )
+            self._data = DotDict(values)
+            self._n_data = len(data)
             return
 
-        self.shared_shape = data["R_pc"].shape
-        assert self.shared_shape == data["vlos_kms"].shape
-        assert self.shared_shape == data["e_vlos_kms"].shape
-        self.buffer_size = data["R_pc"].values.nbytes
-        assert self.buffer_size == data["vlos_kms"].values.nbytes
-        assert self.buffer_size == data["e_vlos_kms"].values.nbytes
+        buffer_size = values["R_pc"].nbytes
+        handles = {}
+        arrays = {}
+        opened = []
+        created = []
+        try:
+            # Validate every segment before changing any observations or metadata.
+            for field in fields:
+                shm_name = self.shared_memory_basename + "_" + field
+                shm = getattr(self, f"shm_{field}", None)
+                if shm is None:
+                    try:
+                        shm = SharedMemory(name=shm_name, create=True, size=buffer_size)
+                        created.append(shm)
+                    except FileExistsError:
+                        shm = SharedMemory(name=shm_name, create=False)
+                    opened.append(shm)
+                if shm.size != buffer_size:
+                    raise ValueError(
+                        f"Shared memory {shm.name!r} has size {shm.size} bytes; "
+                        f"expected {buffer_size} bytes for {field}."
+                    )
+                handles[field] = shm
+                arrays[field] = np.ndarray(shape, dtype=self.dtype, buffer=shm.buf)
+        except Exception:
+            arrays.clear()
+            for shm in opened:
+                shm.close()
+            for shm in created:
+                shm.unlink()
+            raise
 
-        for field in ("R_pc", "vlos_kms", "e_vlos_kms"):
-            shm_name = self.shared_memory_basename + "_" + field
-            try:
-                shm = SharedMemory(
-                    name=shm_name,
-                    create=True,
-                    size=self.buffer_size,
-                )
-                array = np.ndarray(
-                    self.shared_shape,
-                    dtype=self.dtype,
-                    buffer=shm.buf,
-                )
-                array[:] = data[field].values
-            except FileExistsError:
-                shm = SharedMemory(name=shm_name, create=False)
-            setattr(self, f"shm_{field}", shm)
+        for field in fields:
+            arrays[field][:] = values[field]
+            setattr(self, f"shm_{field}", handles[field])
+        self._n_data = len(data)
+        self.shared_shape = shape
+        self.buffer_size = buffer_size
 
     def _release_shared_memory(self, suffix):
         if not self.shared:
