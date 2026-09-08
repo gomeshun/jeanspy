@@ -410,22 +410,31 @@ class NumPyroSampler:
         return sorted(chunk_paths, key=self._parse_chunk_index)
 
     def pending_write_count(self) -> int:
+        """Count unfinished writes without consuming their results or errors."""
         with self._futures_lock:
-            self._write_futures = [future for future in self._write_futures if not future.done()]
-            return len(self._write_futures)
+            return sum(not future.done() for future in self._write_futures)
 
     def flush(self) -> None:
         with self._futures_lock:
             futures = list(self._write_futures)
             self._write_futures.clear()
+        error = None
         for future in futures:
-            future.result()
+            try:
+                future.result()
+            except Exception as exc:
+                if error is None:
+                    error = exc
+        if error is not None:
+            raise error
 
     def close(self) -> None:
-        self.flush()
-        if self._executor is not None:
-            self._executor.shutdown(wait=True)
-            self._executor = None
+        try:
+            self.flush()
+        finally:
+            if self._executor is not None:
+                self._executor.shutdown(wait=True)
+                self._executor = None
 
     def clear_resume_state(self) -> None:
         self.mcmc.post_warmup_state = None
