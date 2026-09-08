@@ -193,6 +193,27 @@ numeric mass, and request `method="analytic"` or
 `dm_mass_method="analytic"` explicitly only when the closed form is desired
 without those Zhao shape-parameter gradients.
 
+Zhao mass supports `a > 0`, `g < 3`, finite `b` (including `b <= 3`),
+positive finite scale radius/density, and positive truncation radius. The
+requested radius must be nonnegative and finite after truncation. Its numerical
+integral removes the central cusp with a power substitution and integrates the
+outer profile in log radius, without a central cutoff. Both classical mass
+spellings and JAX `auto`/`numeric` mass accept `n_steps=128` (Gauss nodes per
+segment); JAX Jeans methods expose this as `dm_mass_n_steps`. Increase this
+independently of `n_u`/`n_r` to check mass and LOS convergence separately.
+The explicit JAX analytic path falls back to this integral at `b <= 3` or
+saturated beta arguments; the exact NFW limit still uses its stable closed form.
+
+Regression tests compare independent SciPy integration on a grid spanning
+`a=0.5..5`, `b=2..8`, `g=0..2.99`, and truncated `r/rs=1e-6..1e6`:
+relative tolerances are `1e-6` in float64 and `5e-5` in float32 for default
+numerical mass. These are tested grid bounds, not an accuracy guarantee for
+all Zhao parameters or for the outer Jeans integral. Check convergence outside
+that grid, especially closer to `g=3`. Classical invalid mass inputs raise
+`ValueError`; JAX returns NaN under eager execution and JIT. Jeans solvers
+preserve invalid mass signals, and the NumPyro likelihood rejects invalid
+velocity variances with negative infinite log probability.
+
 ## Example Notebooks
 
 The recommended starting point is:

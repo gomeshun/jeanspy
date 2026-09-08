@@ -245,6 +245,10 @@ class JeansLikelihoodModel:
     def __call__(self, R_pc: Any, vlos_kms: Any, e_vlos_kms: Any) -> None:
         params = self.sample_parameters()
         sigma2 = self.dsph_model.sigmalos2(jnp.asarray(R_pc), params=params, **self.sigmalos2_kwargs)
+        valid_sigma2 = jnp.all(jnp.isfinite(sigma2) & (sigma2 >= 0))
+        numpyro.factor("valid_sigmalos2", jnp.where(valid_sigma2, 0.0, -jnp.inf))
+        # Reject invalid models, but keep the observation distribution well-defined.
+        sigma2 = jnp.where(jnp.isfinite(sigma2) & (sigma2 >= 0), sigma2, 1.0)
         sigma2 = jnp.clip(sigma2, min=self.sigma2_bounds[0], max=self.sigma2_bounds[1])
         scale = jnp.sqrt(sigma2 + jnp.asarray(e_vlos_kms) ** 2)
         loc = self._resolve_velocity_mean(params)

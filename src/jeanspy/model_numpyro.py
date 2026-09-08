@@ -16,6 +16,7 @@ import os
 import warnings
 
 from ._jax_env import configure_jax_environment
+from ._zhao import enclosed_mass as _zhao_mass, valid_domain as _zhao_valid
 
 configure_jax_environment()
 
@@ -749,7 +750,8 @@ class DMModel(Model):
         )
 
     def enclosed_mass(
-        self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any]
+        self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any],
+        n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
         """Return enclosed mass with selectable backend.
 
@@ -757,6 +759,9 @@ class DMModel(Model):
         analytic for NFW and numeric for Zhao. Pass ``method="analytic"`` to
         request a closed form explicitly, or ``method="numeric"`` for the
         autodiff-friendly numerical integral.
+
+        ``n_steps`` sets numerical mass resolution (Zhao: Gauss nodes per
+        segment). None uses the model default; analytic methods ignore it.
         """
         method_key = str(method).strip().lower()
         if method_key == "auto":
@@ -779,17 +784,19 @@ class DMModel(Model):
                     f"{self.__class__.__name__} does not have an analytic enclosed_mass implementation"
                 )
         elif resolved_method == "numeric":
-            return self.enclosed_mass_numeric(r_pc, params=params)
+            numeric_kwargs = {} if n_steps is None else {"n_steps": n_steps}
+            return self.enclosed_mass_numeric(r_pc, params=params, **numeric_kwargs)
         else:
             raise ValueError(
                 f"method must be 'analytic', 'numeric', or 'auto', got {method!r}"
             )
 
     def enclosure_mass(
-        self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any]
+        self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any],
+        n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
         """Compatibility spelling shared with the classical backend."""
-        return self.enclosed_mass(r_pc, method=method, params=params)
+        return self.enclosed_mass(r_pc, method=method, params=params, n_steps=n_steps)
 
 
 class NFWModel(DMModel):
@@ -848,10 +855,18 @@ class ZhaoModel(DMModel):
         x = r / rs
         return rhos * x ** (-g_arr) * (1.0 + x**a_arr) ** (-(b_arr - g_arr) / a_arr)
 
+    def enclosed_mass_numeric(self, r_pc, *, params, n_steps=128):
+        """Cusp-regularized, differentiable quadrature without a central cutoff."""
+        return _zhao_mass(r_pc, params, xp=jnp, n_steps=n_steps)
+
     def enclosed_mass_betainc(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
         """Enclosed mass from the Zhao incomplete-beta closed form.
+
+        For b <= 3 (outside the beta domain), or a saturated beta argument,
+        use the regularized numerical integral. Shape autodiff is unsupported
+        on this explicit analytic path; use auto/numeric for inference.
 
         The NFW-limit branch ``(a,b,g)=(1,3,1)`` is handled analytically because
         the raw beta/betainc expression becomes indeterminate there even though
@@ -879,7 +894,7 @@ class ZhaoModel(DMModel):
             & (jnp.abs(g_arr - 1.0) <= tol)
         )
         argbeta1_safe = jnp.where(
-            is_nfw_limit, jnp.asarray(1.0, dtype=argbeta1.dtype), argbeta1
+            argbeta1 <= 0, jnp.asarray(1.0, dtype=argbeta1.dtype), argbeta1
         )
         coeff_general = 4.0 * jnp.pi * rs**3 * rhos / a_arr
         mass_general = (
@@ -891,7 +906,15 @@ class ZhaoModel(DMModel):
         coeff_nfw = 4.0 * jnp.pi * rhos * rs**3
         mass_nfw = coeff_nfw * _nfw_enclosed_mass_shape(x_raw)
 
-        return jnp.where(is_nfw_limit, mass_nfw, mass_general)
+        # The incomplete-beta domain excludes b <= 3; finite-radius mass does not.
+        fallback = self.enclosed_mass_numeric(r_pc, params=params)
+        general = jnp.where(
+            (argbeta1 > 0) & (z > 0) & (z < 1) & jnp.isfinite(mass_general),
+            mass_general,
+            fallback,
+        )
+        mass = jnp.where(is_nfw_limit, mass_nfw, general)
+        return jnp.where(_zhao_valid(jnp.asarray(r_pc), params, jnp), mass, jnp.nan)
 
     def enclosed_mass_analytic(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
@@ -1224,6 +1247,7 @@ class DSphModel(Model):
         u_min_eps: float = 1e-6,
         kernel_outer_transform: str = DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,
         dm_mass_method: str = "auto",
+        dm_mass_n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
         r"""Kernel-based sigma_los^2(R) implementation.
 
@@ -1279,7 +1303,8 @@ class DSphModel(Model):
         re_pc = params["re_pc"]
         nu3 = stellar.density_3d(r, re_pc=re_pc)
         sig2 = stellar.density_2d(R2d, re_pc=re_pc)
-        M = dm.enclosed_mass(r, method=dm_mass_method, params=params)
+        mass_kwargs = {} if dm_mass_n_steps is None else {"n_steps": dm_mass_n_steps}
+        M = dm.enclosed_mass(r, method=dm_mass_method, params=params, **mass_kwargs)
 
         kernel_kwargs: Dict[str, Any] = {}
         if isinstance(ani, ConstantAnisotropyModel):
@@ -1309,7 +1334,11 @@ class DSphModel(Model):
         # Numerical safety: sigma_los^2 should be >=0, but coarse quadrature / edge params
         # can produce tiny negatives or NaNs during MCMC initialization.
         out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
-        return jnp.clip(out, min=0.0, max=1e12)
+        return jnp.where(
+            jnp.all(jnp.isfinite(M) & (M >= 0), axis=-1),
+            jnp.clip(out, min=0.0, max=1e12),
+            jnp.nan,
+        )
 
     def sigmalos2_abel(
         self,
@@ -1320,6 +1349,7 @@ class DSphModel(Model):
         u_max: Optional[float] = None,
         r_min_factor: float = 0.5,
         dm_mass_method: str = "auto",
+        dm_mass_n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
         r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms."""
         R = jnp.atleast_1d(jnp.asarray(R_pc))
@@ -1361,7 +1391,8 @@ class DSphModel(Model):
         nu3 = stellar.density_3d(r, re_pc=re_pc)
         beta = jnp.asarray(ani.beta(r, params=params), dtype=dtype)
         f_r = jnp.asarray(ani.f(r, params=params), dtype=dtype)
-        mass = dm.enclosed_mass(r, method=dm_mass_method, params=params)
+        mass_kwargs = {} if dm_mass_n_steps is None else {"n_steps": dm_mass_n_steps}
+        mass = dm.enclosed_mass(r, method=dm_mass_method, params=params, **mass_kwargs)
 
         grav = (GMsun_m3s2 * mass / PARSEC_M) * 1e-6
         rhs_log_r = f_r * nu3 * grav / r
@@ -1377,7 +1408,11 @@ class DSphModel(Model):
         numer = 2.0 * (abel_rj - (R**2) * abel_beta_j_over_r)
         out = numer / sigma
         out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
-        return jnp.clip(out, min=0.0, max=1e12)
+        return jnp.where(
+            jnp.all(jnp.isfinite(mass) & (mass >= 0)),
+            jnp.clip(out, min=0.0, max=1e12),
+            jnp.nan,
+        )
 
     def sigmalos2(
         self,
@@ -1395,6 +1430,7 @@ class DSphModel(Model):
         kernel_outer_transform: str = DEFAULT_SIGMALOS2_KERNEL_OUTER_TRANSFORM,
         r_min_factor: float = 0.5,
         dm_mass_method: str = "auto",
+        dm_mass_n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
         """Compute sigma_los^2(R) via the requested backend.
 
@@ -1409,6 +1445,8 @@ class DSphModel(Model):
         must be one of ``"auto"``, ``"analytic"``, or ``"numeric"``. The
         default ``"auto"`` follows the DM model's autodiff-safe choice:
         analytic for NFW and numeric for Zhao.
+        ``dm_mass_n_steps`` sets the numerical mass resolution independently
+        of the outer Jeans grid. Analytic mass methods ignore this resolution.
 
         For the kernel backend, the documented ``1e-3`` accuracy target applies
         to the sampled Plummer+NFW stress envelope described in the README.
@@ -1463,6 +1501,7 @@ class DSphModel(Model):
                     u_max=resolved_u_max,
                     r_min_factor=r_min_factor,
                     dm_mass_method=dm_mass_method,
+                    dm_mass_n_steps=dm_mass_n_steps,
                 )
             return self.sigmalos2_kernel(
                 R_value,
@@ -1474,6 +1513,7 @@ class DSphModel(Model):
                 u_min_eps=u_min_eps,
                 kernel_outer_transform=kernel_outer_transform_key,
                 dm_mass_method=dm_mass_method,
+                dm_mass_n_steps=dm_mass_n_steps,
             )
 
         if not use_jit:
@@ -1490,6 +1530,7 @@ class DSphModel(Model):
             float(u_min_eps),
             float(r_min_factor),
             dm_mass_method,
+            dm_mass_n_steps,
             bool(jax.config.read("jax_enable_x64")),
             jax.default_backend(),
         )

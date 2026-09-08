@@ -6,9 +6,10 @@ from abc import abstractmethod
 
 import numpy as np
 from scipy.integrate import quad
-from scipy.special import beta, betainc, hyp2f1, k0
+from scipy.special import hyp2f1, k0
 
 from ..dequad import dequad
+from .._zhao import enclosed_mass as _zhao_mass, valid_domain as _zhao_valid
 from .core import Model
 from .jfactor import C_J, _ullio2016_inner_weight, _ullio2016_weight
 
@@ -369,40 +370,21 @@ class ZhaoModel(DMModel):
             1.0 + np.power(x, a), -(b - g) / a
         )
 
-    def enclosure_mass(self, r_pc):
-        rs_pc = self.params.rs_pc
-        rhos = self.params.rhos_Msunpc3
-        a, b, g = self.params.a, self.params.b, self.params.g
-        r_t_pc = self.params.r_t_pc
+    def enclosed_mass(self, r_pc, *, n_steps=128):
+        """Finite-radius Zhao mass for a > 0 and g < 3, including b <= 3.
 
-        r_pc_trunc = np.minimum(np.asarray(r_pc), r_t_pc)
-
-        if (
-            np.isclose(a, 1.0, atol=1e-7, rtol=0.0)
-            and np.isclose(b, 3.0, atol=1e-7, rtol=0.0)
-            and np.isclose(g, 1.0, atol=1e-7, rtol=0.0)
-        ):
-            x_nfw = r_pc_trunc / rs_pc
-            return (
-                4.0
-                * np.pi
-                * rs_pc**3
-                * rhos
-                * (np.log1p(x_nfw) - x_nfw / (1.0 + x_nfw))
+        n_steps controls Gauss-Legendre nodes per regularized segment.
+        """
+        params = {k: getattr(self.params, k) for k in self.required_param_names}
+        if not np.all(_zhao_valid(np.asarray(r_pc), params, np)):
+            raise ValueError(
+                "Invalid Zhao mass domain: require positive scales, a > 0, "
+                "g < 3, finite slopes and nonnegative truncated radii"
             )
+        return _zhao_mass(r_pc, params, xp=np, n_steps=n_steps)
 
-        x = np.power(r_pc_trunc / rs_pc, a)
-        argbeta0 = (3.0 - g) / a
-        argbeta1 = (b - 3.0) / a
-        return (
-            4.0
-            * np.pi
-            * rs_pc**3
-            * rhos
-            / a
-            * beta(argbeta0, argbeta1)
-            * betainc(argbeta0, argbeta1, x / (1.0 + x))
-        )
+    def enclosure_mass(self, r_pc, *, n_steps=128):
+        return self.enclosed_mass(r_pc, n_steps=n_steps)
 
 
 class NFWModel(DMModel):

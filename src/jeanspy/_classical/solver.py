@@ -73,6 +73,9 @@ class DSphModel(Model):
         enclosed_mass = self["DMModel"].enclosed_mass
         kernel = self["AnisotropyModel"].kernel
         r = R_pc * u
+        mass = enclosed_mass(r)
+        if not np.all(np.isfinite(mass) & (mass >= 0)):
+            raise ValueError("Dark-matter enclosed mass must be finite and nonnegative")
 
         return (
             2.0
@@ -81,7 +84,7 @@ class DSphModel(Model):
             * density_3d(r)
             / density_2d(R_pc)
             * GMsun_m3s2
-            * enclosed_mass(r)
+            * mass
             / parsec
             * 1e-6
         )
