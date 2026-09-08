@@ -141,17 +141,17 @@ class Sampler:
         self.model = model
         self.ndim = model.ndim
         self.nwalkers = model.ndim * 2 if nwalkers is None else nwalkers
-        # self.p0_generator = p0_generator  # deprecated, moved as an argument of run_mcmc
+        self.p0_generator = p0_generator
         self.kwargs = kwargs
         self.pool = pool
         self.logger = logger.getChild(self.__class__.__name__)
         blobs_dtype = [("lnl", float), *[(name, float) for name in self.model.prior_names]]
         self.logger.info("blobs_dtype: %s", blobs_dtype)
 
-        # define filename as a comination of model name and current time
-        # NOTE: replace "+" in the model name
-        import time  # noqa: F401
-        filename = prefix + "_".join([self.model.name.replace("+", "_"), model.dsph_name]) + ".h5"
+        # Keep a stable filename so another sampler can resume the stored chain.
+        model_name = self.model.name.replace("+", "_")
+        dsph_name = getattr(model, "dsph_name", None)
+        filename = prefix + model_name + (f"_{dsph_name}" if dsph_name else "") + ".h5"
         self.logger.info("filename: %s", filename)
         self.backend_name = "mcmc_wbic" if wbic else "mcmc"
         self.backend = emcee.backends.HDFBackend(filename, name=self.backend_name)
@@ -299,12 +299,18 @@ class Sampler:
 
         iterations: number of iterations for each loop
         loops: number of loops
+        reset: discard the stored chain and initialize a new run
+        p0_generator: override the constructor's initial-state generator
         """
         # Set up the backend
         # Don't forget to clear it in case the file already exists
 
         self.logger.info("Running MCMC for %d iterations in %d loops.", iterations, loops)
 
+        if p0_generator is None:
+            p0_generator = self.p0_generator
+        if (reset or self.backend.iteration == 0) and p0_generator is None:
+            raise ValueError("An initial-state generator is required for a new run.")
         # We'll track how the average autocorrelation time estimate changes
         index = 0
         autocorr = np.empty(loops)
@@ -313,10 +319,17 @@ class Sampler:
         old_tau = np.inf
 
         initial_state = None
-        if self.backend.iteration == 0:
+        if reset or self.backend.iteration == 0:
             self.check_parameter_conversion(p0_generator)
             # generate initial state
-            initial_state = p0_generator(self.nwalkers)  # type: ignore
+            initial_state = np.asarray(p0_generator(self.nwalkers), dtype=float)
+            if initial_state.shape != (self.nwalkers, self.ndim):
+                raise ValueError("Initial state must have shape (nwalkers, ndim).")
+            if not np.isfinite(initial_state).all():
+                raise ValueError("Initial state coordinates must be finite.")
+            if not kwargs.get("skip_initial_state_check", False):
+                if not emcee.ensemble.walkers_independent(initial_state):
+                    raise ValueError("Initial state walkers must be linearly independent.")
             # check if initial_state returns finite log_prob
             # if not, raise an error
             if not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state])):
@@ -327,6 +340,10 @@ class Sampler:
                         mes.append(f"p:{p}")
                         mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
                 raise RuntimeError("\n".join(mes))
+
+        # Only discard persisted samples after the replacement has passed preflight.
+        if reset:
+            self.sampler.reset()
 
         # Now we'll sample for up to  steps
         self.logger.info("iteration: %d", self.sampler.iteration)
