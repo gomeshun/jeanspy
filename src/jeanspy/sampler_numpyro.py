@@ -409,9 +409,16 @@ class NumPyroSampler:
         ]
         return sorted(chunk_paths, key=self._parse_chunk_index)
 
+    def _prune_successful_writes_locked(self) -> None:
+        self._write_futures = [
+            future for future in self._write_futures
+            if not future.done() or future.cancelled() or future.exception() is not None
+        ]
+
     def pending_write_count(self) -> int:
-        """Count unfinished writes without consuming their results or errors."""
+        """Count unfinished writes, retaining failures for flush/close."""
         with self._futures_lock:
+            self._prune_successful_writes_locked()
             return sum(not future.done() for future in self._write_futures)
 
     def flush(self) -> None:
@@ -546,6 +553,7 @@ class NumPyroSampler:
 
         future = self._executor.submit(self._write_chunk_store, chunk_index, prepared_tree)
         with self._futures_lock:
+            self._prune_successful_writes_locked()
             self._write_futures.append(future)
         return chunk_index, chunk_path, True
 
