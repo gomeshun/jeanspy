@@ -142,3 +142,79 @@ def test_numpyro_sampler_checkpoint_resume_and_chunk_loading(tmp_path, storage_b
     assert resumed_result.resumed is True
     first.close()
     resumed.close()
+
+@pytest.mark.parametrize("finish", ["flush", "close"])
+def test_polling_write_count_preserves_background_failure(tmp_path, monkeypatch, finish):
+    sampler = NumPyroSampler(object(), output_dir=tmp_path)
+
+    def fail_write(*args):
+        raise OSError("simulated disk write failure")
+
+    monkeypatch.setattr(sampler, "_write_chunk_store", fail_write)
+    try:
+        sampler.save_samples_chunk(datatree=xr.DataTree())
+        # Wait deterministically until the background write has failed.
+        with pytest.raises(OSError, match="simulated disk write failure"):
+            sampler._write_futures[0].result(timeout=10)
+        assert sampler.pending_write_count() == 0
+        assert sampler.pending_write_count() == 0
+        with pytest.raises(OSError, match="simulated disk write failure") as caught:
+            getattr(sampler, finish)()
+        import traceback
+        assert "fail_write" in [frame.name for frame in traceback.extract_tb(caught.value.__traceback__)]
+        if finish == "close":
+            assert sampler._executor is None
+    finally:
+        sampler.close()
+
+
+def test_flush_waits_for_remaining_writes_after_failure(tmp_path):
+    from concurrent.futures import Future
+
+    failed = Future()
+    failed.set_exception(OSError("first write failed"))
+
+    class ObservedFuture(Future):
+        observed = False
+
+        def result(self, timeout=None):
+            self.observed = True
+            return super().result(timeout=timeout)
+
+    successful = ObservedFuture()
+    successful.set_result(None)
+    with NumPyroSampler(object(), output_dir=tmp_path) as sampler:
+        sampler._write_futures.extend([failed, successful])
+        with pytest.raises(OSError, match="first write failed"):
+            sampler.flush()
+        assert successful.observed
+
+
+def test_status_prunes_successes_but_retains_cancellation_and_failure(tmp_path):
+    from concurrent.futures import Future, CancelledError
+
+    success, cancelled, failed, pending = (Future() for _ in range(4))
+    success.set_result(None)
+    cancelled.cancel()
+    failed.set_exception(OSError("failed write"))
+    sampler = NumPyroSampler(object(), output_dir=tmp_path)
+    try:
+        sampler._write_futures.extend([success, cancelled, failed, pending])
+        assert sampler.pending_write_count() == 1
+        assert sampler._write_futures == [cancelled, failed, pending]
+        pending.set_result(None)
+        assert sampler.pending_write_count() == 0
+        assert sampler._write_futures == [cancelled, failed]
+        with pytest.raises(CancelledError):
+            sampler.flush()
+    finally:
+        sampler.close()
+
+
+def test_submitting_writes_prunes_successes_without_status_polling(tmp_path, monkeypatch):
+    with NumPyroSampler(object(), output_dir=tmp_path) as sampler:
+        monkeypatch.setattr(sampler, "_write_chunk_store", lambda *args: None)
+        for _ in range(20):
+            sampler.save_samples_chunk(datatree=xr.DataTree())
+            sampler._write_futures[-1].result(timeout=10)
+            assert len(sampler._write_futures) == 1
