@@ -296,6 +296,11 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         self.reset_data(data.astype(self.dtype))
 
     def reset_data(self, data):
+        """Replace observations while sampler workers are idle.
+
+        Shared models keep their buffer shape so existing readers stay attached.
+        Construct a new model to use a different number of observations.
+        """
         self.data = data
         lower = self.data["vlos_kms"].min()
         upper = self.data["vlos_kms"].max()
@@ -352,6 +357,13 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
     @data.setter
     def data(self, data: pd.DataFrame):
+        if self.shared and hasattr(self, "shared_shape"):
+            if data["R_pc"].shape != self.shared_shape:
+                raise ValueError(
+                    "Cannot resize shared kinematic data; construct a new model "
+                    "for a different number of observations."
+                )
+        data = data.astype(self.dtype)
         self._n_data = len(data)
         if not self.shared:
             self._data = DotDict(
@@ -372,20 +384,22 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
         for field in ("R_pc", "vlos_kms", "e_vlos_kms"):
             shm_name = self.shared_memory_basename + "_" + field
-            try:
-                shm = SharedMemory(
-                    name=shm_name,
-                    create=True,
-                    size=self.buffer_size,
-                )
-                array = np.ndarray(
-                    self.shared_shape,
-                    dtype=self.dtype,
-                    buffer=shm.buf,
-                )
-                array[:] = data[field].values
-            except FileExistsError:
-                shm = SharedMemory(name=shm_name, create=False)
+            shm = getattr(self, f"shm_{field}", None)
+            if shm is None:
+                try:
+                    shm = SharedMemory(
+                        name=shm_name,
+                        create=True,
+                        size=self.buffer_size,
+                    )
+                except FileExistsError:
+                    shm = SharedMemory(name=shm_name, create=False)
+            array = np.ndarray(
+                self.shared_shape,
+                dtype=self.dtype,
+                buffer=shm.buf,
+            )
+            array[:] = data[field].values
             setattr(self, f"shm_{field}", shm)
 
     def _release_shared_memory(self, suffix):
