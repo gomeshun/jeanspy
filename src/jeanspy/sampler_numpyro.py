@@ -26,6 +26,7 @@ import xarray as xr
 from numpyro.infer import MCMC
 
 from .model_numpyro import DSphModel
+from ._sampling_identity import fingerprint, software_identity
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ logger = logging.getLogger(__name__)
 StorageBackend = Literal["zarr", "h5netcdf", "netcdf4"]
 
 
-_CHECKPOINT_FORMAT_VERSION = 1
+_CHECKPOINT_FORMAT_VERSION = 2
 _STORAGE_FORMAT_VERSION = 1
 _CHECKPOINT_FILENAME = "last_state.pkl"
 _METADATA_FILENAME = "metadata.json"
@@ -137,7 +138,11 @@ def _concat_draw_datasets(group_path: str, datasets: Sequence[xr.Dataset]) -> xr
 
 @dataclass(frozen=True)
 class ParameterSpec:
-    """Describe one NumPyro parameter site and its physical representation."""
+    """Describe a parameter site and its physical representation.
+
+    Without param_name, transformed values keep the sample_name dictionary key
+    and are recorded at sample_name + '_transformed' to avoid a site collision.
+    """
 
     sample_name: str
     distribution: Any
@@ -145,6 +150,32 @@ class ParameterSpec:
     transform: Callable[[Any], Any] | None = None
     record_deterministic: bool | None = None
     deterministic_name: str | None = None
+
+    def __post_init__(self):
+        for name in (self.sample_name, self.param_name, self.deterministic_name):
+            if name is not None and (not isinstance(name, str) or not name):
+                raise ValueError("Parameter site names must be nonempty strings")
+        if self.sample_name is None:
+            raise ValueError("sample_name must be a nonempty string")
+        if self.deterministic_name == self.sample_name:
+            raise ValueError("deterministic_name must differ from sample_name")
+
+    @property
+    def records_deterministic(self) -> bool:
+        if self.deterministic_name is not None:
+            return True
+        if self.record_deterministic is not None:
+            return self.record_deterministic
+        return self.transform is not None or (self.param_name or self.sample_name) != self.sample_name
+
+    @property
+    def resolved_deterministic_name(self) -> str:
+        name = self.deterministic_name or self.param_name or self.sample_name
+        if name == self.sample_name:
+            if self.deterministic_name is not None:
+                raise ValueError("deterministic_name must differ from sample_name")
+            name += "_transformed"
+        return name
 
     @classmethod
     def exp(
@@ -192,12 +223,8 @@ class ParameterSpec:
         resolved_name = self.param_name or self.sample_name
         value = self.transform(raw_value) if self.transform is not None else raw_value
 
-        record_deterministic = self.record_deterministic
-        if record_deterministic is None:
-            record_deterministic = self.transform is not None or resolved_name != self.sample_name
-
-        if self.deterministic_name is not None or record_deterministic:
-            numpyro.deterministic(self.deterministic_name or resolved_name, value)
+        if self.records_deterministic:
+            numpyro.deterministic(self.resolved_deterministic_name, value)
 
         return resolved_name, value
 
@@ -219,8 +246,22 @@ class JeansLikelihoodModel:
     ) -> None:
         self.dsph_model = dsph_model
         self.parameter_specs = tuple(parameter_specs)
+        sites = [observed_name, "valid_observations", "valid_sigmalos2", "valid_velocity_mean"]
+        names = []
+        for spec in self.parameter_specs:
+            sites.append(spec.sample_name)
+            names.append(spec.param_name or spec.sample_name)
+            if spec.records_deterministic:
+                sites.append(spec.resolved_deterministic_name)
+        if len(sites) != len(set(sites)) or len(names) != len(set(names)):
+            raise ValueError("Parameter and observation site names and physical parameter names must be unique")
         self.sigmalos2_kwargs = dict(sigmalos2_kwargs or {})
+        if len(sigma2_bounds) != 2:
+            raise ValueError("sigma2_bounds must contain exactly two limits")
         self.sigma2_bounds = (float(sigma2_bounds[0]), float(sigma2_bounds[1]))
+        if not (np.all(np.isfinite(self.sigma2_bounds))
+                and 0 < self.sigma2_bounds[0] <= self.sigma2_bounds[1]):
+            raise ValueError("sigma2_bounds must be finite, positive, and ordered")
         self.velocity_mean = velocity_mean
         self.observation_distribution = observation_distribution
         self.observed_name = observed_name
@@ -243,19 +284,35 @@ class JeansLikelihoodModel:
         return params[self.velocity_mean]
 
     def __call__(self, R_pc: Any, vlos_kms: Any, e_vlos_kms: Any) -> None:
+        R, velocity, error = (jnp.asarray(v) for v in (R_pc, vlos_kms, e_vlos_kms))
+        if (R.ndim != 1 or R.size == 0 or velocity.shape != R.shape
+                or error.shape != R.shape):
+            raise ValueError("R_pc, vlos_kms, and e_vlos_kms must be matching nonempty 1-D arrays")
+        valid_data = jnp.all(jnp.isfinite(R) & (R > 0) & jnp.isfinite(velocity)
+                             & jnp.isfinite(error) & (error >= 0))
+        numpyro.factor("valid_observations", jnp.where(valid_data, 0.0, -jnp.inf))
+        R = jnp.where(jnp.isfinite(R) & (R > 0), R, 1.0)
+        velocity = jnp.where(jnp.isfinite(velocity), velocity, 0.0)
+        error = jnp.where(jnp.isfinite(error) & (error >= 0), error, 0.0)
         params = self.sample_parameters()
-        sigma2 = self.dsph_model.sigmalos2(jnp.asarray(R_pc), params=params, **self.sigmalos2_kwargs)
+        sigma2 = jnp.asarray(self.dsph_model.sigmalos2(R, params=params, **self.sigmalos2_kwargs))
+        if sigma2.shape != R.shape:
+            raise ValueError("sigmalos2 must return one variance per observed radius")
         valid_sigma2 = jnp.all(jnp.isfinite(sigma2) & (sigma2 >= 0))
         numpyro.factor("valid_sigmalos2", jnp.where(valid_sigma2, 0.0, -jnp.inf))
         # Reject invalid models, but keep the observation distribution well-defined.
         sigma2 = jnp.where(jnp.isfinite(sigma2) & (sigma2 >= 0), sigma2, 1.0)
         sigma2 = jnp.clip(sigma2, min=self.sigma2_bounds[0], max=self.sigma2_bounds[1])
-        scale = jnp.sqrt(sigma2 + jnp.asarray(e_vlos_kms) ** 2)
-        loc = self._resolve_velocity_mean(params)
+        scale = jnp.hypot(jnp.sqrt(sigma2), error)
+        loc = jnp.asarray(self._resolve_velocity_mean(params))
+        if loc.ndim != 0 and loc.shape != R.shape:
+            raise ValueError("velocity_mean must be scalar or match the observation shape")
+        numpyro.factor("valid_velocity_mean", jnp.where(jnp.all(jnp.isfinite(loc)), 0.0, -jnp.inf))
+        loc = jnp.where(jnp.isfinite(loc), loc, 0.0)
         numpyro.sample(
             self.observed_name,
             self.observation_distribution(loc, scale),
-            obs=jnp.asarray(vlos_kms),
+            obs=velocity,
         )
 
 
@@ -303,6 +360,7 @@ class NumPyroSampler:
         self._futures_lock = Lock()
         self._chunk_index_lock = Lock()
         self._next_chunk_index = 0
+        self._analysis_identity: dict[str, str] | None = None
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.chunks_dir.mkdir(parents=True, exist_ok=True)
@@ -450,15 +508,63 @@ class NumPyroSampler:
     def clear_resume_state(self) -> None:
         self.mcmc.post_warmup_state = None
 
+    def _target_fingerprint(self) -> str:
+        kernel = self.mcmc.sampler
+        # Generated potential/postprocessing functions and compilation caches
+        # change after warmup. Hash user inputs and transition configuration.
+        settings = ("_kinetic_fn", "_num_steps", "_step_size", "_inverse_mass_matrix",
+                    "_adapt_step_size", "_adapt_mass_matrix", "_dense_mass",
+                    "_target_accept_prob", "_trajectory_length", "_algo", "_max_tree_depth",
+                    "_init_strategy", "_find_heuristic_step_size", "_forward_mode_differentiation",
+                    "_regularize_mass_matrix", "_moves", "_weights", "_randomize_split")
+        model = getattr(kernel, '_model', None)
+        return fingerprint({
+            'software': software_identity('jax', 'jaxlib', 'numpyro'),
+            'x64': bool(jax.config.jax_enable_x64),
+            'model': model if model is not None else getattr(kernel, '_potential_fn', None),
+            'kernel': type(kernel),
+            'kernel_config': {k: getattr(kernel, k) for k in settings if hasattr(kernel, k)},
+            'num_chains': self.mcmc.num_chains,
+            'chain_method': self.mcmc.chain_method,
+            'postprocess_fn': self.mcmc.postprocess_fn,
+        })
+
+    def _bind_analysis(self, args, kwargs) -> None:
+        if (self._analysis_identity is None and
+                (getattr(self.mcmc, 'last_state', None) is not None or
+                 getattr(self.mcmc, 'post_warmup_state', None) is not None)):
+            raise ValueError("Unverified in-memory MCMC state; construct a fresh MCMC instance "
+                             "and use the sampler's verified checkpoint to resume")
+        model_kwargs = {k: v for k, v in kwargs.items() if k not in {'extra_fields', 'init_params'}}
+        identity = {'target': self._target_fingerprint(), 'arguments': fingerprint((args, model_kwargs))}
+        metadata = self._read_metadata_file()
+        stored = metadata.get('analysis_identity')
+        for previous in (self._analysis_identity, stored):
+            if previous is not None and previous != identity:
+                raise ValueError("Sampling analysis identity mismatch (model, prior, data, schema, or solver). "
+                                 "Use a new output_dir for a different analysis, even with resume=False.")
+        if stored is None:
+            if self.checkpoint_path.exists() or self.list_chunk_paths():
+                raise ValueError("Existing output has no analysis identity; use a new output_dir. "
+                                 "Legacy chains cannot be resumed safely.")
+            metadata['analysis_identity'] = identity
+            tmp_path = self.metadata_path.with_suffix('.tmp')
+            tmp_path.write_text(json.dumps(metadata, indent=2, sort_keys=True), encoding='utf-8')
+            tmp_path.replace(self.metadata_path)
+        self._analysis_identity = identity
+
     def save_checkpoint(self) -> Path:
         last_state = getattr(self.mcmc, "last_state", None)
         if last_state is None:
             raise RuntimeError("Cannot save checkpoint before MCMC has produced last_state")
+        if self._analysis_identity is None or self._analysis_identity['target'] != self._target_fingerprint():
+            raise ValueError("Cannot checkpoint an unverified or changed analysis; use NumPyroSampler.run")
 
         payload = {
             "format_version": _CHECKPOINT_FORMAT_VERSION,
             "saved_at": _utc_now_iso(),
             "last_state": _to_host_tree(last_state),
+            "analysis_identity": self._analysis_identity,
         }
         tmp_path = self.checkpoint_path.with_suffix(".tmp")
         with tmp_path.open("wb") as handle:
@@ -480,6 +586,12 @@ class NumPyroSampler:
                 f"Unsupported checkpoint format version {format_version}; expected {_CHECKPOINT_FORMAT_VERSION}"
             )
 
+        identity = payload.get('analysis_identity')
+        stored = (self._read_metadata_file() or {}).get('analysis_identity')
+        if (not identity or identity != stored or identity['target'] != self._target_fingerprint()
+                or (self._analysis_identity is not None and identity != self._analysis_identity)):
+            raise ValueError("Checkpoint analysis identity mismatch; use a new output_dir for a different analysis")
+        self._analysis_identity = identity
         self.mcmc.post_warmup_state = _to_device_tree(payload["last_state"])
         return self.checkpoint_path
 
@@ -615,6 +727,7 @@ class NumPyroSampler:
         arviz_kwargs: Mapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> SamplerRunResult:
+        self._bind_analysis(args, kwargs)
         resumed = self._prepare_resume_state(resume)
         self.mcmc.run(rng_key, *args, **kwargs)
 

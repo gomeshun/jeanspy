@@ -1,0 +1,26 @@
+{
+  "numpyro_first_mean": -0.700587795580004,
+  "numpyro_saved_z": -0.5726052818373641,
+  "numpyro_saved_potential": 1.0828769375986962,
+  "numpyro_actual_potential_for_new_target": 5058.343405121335,
+  "numpyro_changed_target_auto_resumed": true,
+  "numpyro_second_draws": [
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641,
+    -0.5726052818373641
+  ],
+  "numpyro_combined_draws": 24,
+  "numpyro_fresh_target100_mean": 100.38662928729237,
+  "emcee_total_steps": 8,
+  "emcee_all_new_steps_equal_old_final": true,
+  "emcee_max_cached_log_prob_error": 5180.620774227684
+}

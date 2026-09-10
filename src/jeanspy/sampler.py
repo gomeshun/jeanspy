@@ -8,8 +8,8 @@ import logging
 from multiprocessing import Pool, cpu_count
 import itertools
 import os
-from scipy.special import logsumexp
 from pprint import pprint  # kept for comments above; no longer used in code
+from ._sampling_identity import fingerprint, software_identity
 
 
 __all__ = ["Sampler"]
@@ -144,6 +144,8 @@ class Sampler:
         self.p0_generator = p0_generator
         self.kwargs = kwargs
         self.pool = pool
+        self.wbic = bool(wbic)
+        self.log_prob = self.model.lnposterior_wbic if wbic else self.model.lnposterior
         self.logger = logger.getChild(self.__class__.__name__)
         blobs_dtype = [("lnl", float), *[(name, float) for name in self.model.prior_names]]
         self.logger.info("blobs_dtype: %s", blobs_dtype)
@@ -156,8 +158,13 @@ class Sampler:
         self.backend_name = "mcmc_wbic" if wbic else "mcmc"
         self.backend = emcee.backends.HDFBackend(filename, name=self.backend_name)
         # reset file if "reset" is True or if the file does not exist
-        if reset or not os.path.exists(filename):
+        identity = self._current_analysis_identity()
+        if reset or not self.backend.initialized:
             self.backend.reset(self.nwalkers, self.ndim)
+            self._write_analysis_identity(identity)
+        else:
+            self._check_analysis_identity(identity)
+        self._analysis_identity = identity
 
         file = self.backend.open()
         try:
@@ -180,6 +187,26 @@ class Sampler:
             pool=pool,
             **self.kwargs,
         )
+
+    def _current_analysis_identity(self):
+        return fingerprint({
+            "software": software_identity("emcee"), "model": self.model,
+            "posterior": self.log_prob, "ndim": self.ndim, "nwalkers": self.nwalkers,
+            "prior_names": self.model.prior_names, "wbic": self.wbic,
+            "sampler_options": self.kwargs,
+        })
+
+    def _write_analysis_identity(self, identity):
+        with self.backend.open("a") as handle:
+            handle[self.backend_name].attrs["jeanspy_analysis_identity"] = identity
+
+    def _check_analysis_identity(self, identity):
+        with self.backend.open("r") as handle:
+            stored = handle[self.backend_name].attrs.get("jeanspy_analysis_identity")
+        if stored != identity:
+            raise ValueError("Sampling analysis identity mismatch or missing legacy identity "
+                             "(model, prior, data, schema, or solver). Use a new prefix or "
+                             "explicitly reset to start a different analysis.")
 
     def check_parameter_conversion(self,p0_generator=None):
         """ check the conversion of parameters.
@@ -239,9 +266,14 @@ class Sampler:
     
 
     def burn_in(self, nsteps, p0_generator, **kwargs):
-        """ burn-in the sampler: run MCMC for nsteps and reset the current state by 
-        sampling from the posterior distribution.
+        """Advance warmup and continue from its final ensemble.
+
+        Warmup draws remain in the backend for compatibility. Exclude them
+        explicitly with get_chain(discard=...) when analyzing production draws.
+        The chain already samples the posterior and must not be weighted by
+        the posterior density a second time.
         """
+        self._check_analysis_identity(self._current_analysis_identity())
         self.logger.info("Burn-in the sampler for %d steps.", nsteps)
         initial_state = None
         if self.backend.iteration == 0:
@@ -262,28 +294,7 @@ class Sampler:
                               progress=True,
                               **kwargs)
         self.logger.info("Burn-in completed.")
-        p0 = self.sampler.get_chain(flat=True)
-        self.logger.debug("p0:%s", p0)
-        log_prob = self.sampler.get_log_prob(flat=True)  # type: ignore
-        prob = np.exp(log_prob)  # type: ignore
-        log_prob_tot = logsumexp(log_prob)
-        self.logger.debug("log_prob:%s", log_prob)
-        self.logger.debug("prob:%s", prob)
-        # prob /= np.sum(prob)
-        prob = np.exp(log_prob - log_prob_tot)  # normalize the probabilities
-        self.logger.info("prob:%s", prob)
-        p0, indices, counts = np.unique(p0, axis=0, return_index=True, return_counts=True)
-        prob = prob[indices] * counts
-        try:
-            idx_p0 = np.random.choice(len(p0), size=self.nwalkers, p=prob, replace=False)
-        except ValueError as e:
-            self.logger.error("Error in choosing initial state for burn-in.")
-            self.logger.error("prob: %s", prob)
-            raise e
-        p0 = p0[idx_p0]
-        # reset the current state
-        self.logger.info("Resetting the current state with %d samples.", len(p0))
-        self.sampler.run_mcmc(p0, 1, progress=True, **kwargs)
+        return self.sampler.get_last_sample()
 
 
     def run_mcmc(self,
@@ -306,6 +317,9 @@ class Sampler:
         # Don't forget to clear it in case the file already exists
 
         self.logger.info("Running MCMC for %d iterations in %d loops.", iterations, loops)
+        identity = self._current_analysis_identity()
+        if not reset:
+            self._check_analysis_identity(identity)
 
         if p0_generator is None:
             p0_generator = self.p0_generator
@@ -344,6 +358,8 @@ class Sampler:
         # Only discard persisted samples after the replacement has passed preflight.
         if reset:
             self.sampler.reset()
+            self._write_analysis_identity(identity)
+            self._analysis_identity = identity
 
         # Now we'll sample for up to  steps
         self.logger.info("iteration: %d", self.sampler.iteration)

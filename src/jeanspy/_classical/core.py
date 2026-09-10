@@ -182,6 +182,15 @@ class Model(metaclass=ABCMeta):
     def __getitem__(self, key):
         return self.submodels[key]
 
+    def sampling_identity(self, sampled_names=()):
+        """Configuration and fixed parameters, excluding changing MCMC coordinates."""
+        state = {k: v for k, v in vars(self).items()
+                 if k not in {"logger", "_parammap", "params", "submodels"}}
+        state["params"] = {k: v for k, v in self.params.items() if k not in sampled_names}
+        state["submodels"] = {k: (type(v), v.sampling_identity(sampled_names))
+                              for k, v in self.submodels.items()}
+        return state
+
     def _repr_html_(self):
         return self._as_dataframe().to_html()
 

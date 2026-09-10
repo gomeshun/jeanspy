@@ -45,6 +45,8 @@ class FittableModel(Model, metaclass=ABCMeta):
     def inverse_temparature(self):
         """Return the WBIC inverse temperature ``1/log(N_data)``."""
         n_data = self.n_data if hasattr(self, "n_data") else len(self.data)
+        if n_data <= 1:
+            raise ValueError("WBIC requires at least two observations")
         return 1 / np.log(n_data)
 
     @abstractmethod
@@ -242,6 +244,9 @@ class PhotometryPriorModel(Model):
     def sample(self, size):
         return self._sample(size=size)
 
+    def sampling_identity(self, sampled_names=()):
+        return {"loc": self.loc, "scale": self.scale}
+
 
 class DotDict(dict):
     """Dictionary with attribute access retained for historical data access."""
@@ -280,6 +285,22 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         self.vmem_prior_from_data = vmem_prior_from_data
         super().__init__(*args, **kwargs)
         self._validate_prior_schema()
+
+    def sampling_identity(self):
+        # All physical coordinates are sampled by this model's validated schema.
+        # Shared-memory handles and cached WBIC temperature are runtime state;
+        # the observations themselves are hashed for shared and ordinary models.
+        ignored = {"logger", "_parammap", "params", "submodels", "_data",
+                   "shared", "shared_shape", "buffer_size", "inverse_temparature",
+                   "shm_R_pc", "shm_vlos_kms", "shm_e_vlos_kms"}
+        state = {k: v for k, v in vars(self).items() if k not in ignored}
+        state["data"] = self.data
+        state["parameter_order"] = self.p_names_lnprob
+        state["submodels"] = {
+            k: (type(v), v.sampling_identity(self.required_param_names_combined))
+            for k, v in self.submodels.items()
+        }
+        return state
 
     def _validate_prior_schema(self):
         prior = self["FlatPriorModel"]
