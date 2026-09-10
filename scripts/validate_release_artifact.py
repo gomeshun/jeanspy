@@ -84,9 +84,12 @@ def validate_numpyro_cpu() -> None:
     import jax
     import jax.numpy as jnp
     import netCDF4  # noqa: F401
-    import numpyro.distributions as dist
     import xarray  # noqa: F401
     import zarr  # noqa: F401
+    # ArviZ can register NumPyro through lazy_loader. Initialize the parent
+    # before resolving its submodule; importing the submodule directly can
+    # leave distribution.Unit inaccessible to numpyro.factor (ArviZ 1.3).
+    from numpyro import distributions as dist
     from numpyro.handlers import seed, trace
 
     from jeanspy.model_numpyro import (

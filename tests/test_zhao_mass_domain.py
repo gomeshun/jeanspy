@@ -1,5 +1,6 @@
 """Zhao release regressions: independent mass references and inference safety."""
 from contextlib import contextmanager
+from functools import lru_cache
 from itertools import product
 
 import jax
@@ -16,7 +17,7 @@ from jeanspy.sampler_numpyro import JeansLikelihoodModel
 
 @contextmanager
 def precision(enabled):
-    previous = jax.config.jax_enable_x64
+    previous = bool(jax.config.jax_enable_x64)
     jax.config.update("jax_enable_x64", enabled)
     try:
         yield
@@ -29,6 +30,7 @@ def params(**overrides):
                      r_t_pc=10000.), **overrides)
 
 
+@lru_cache(maxsize=None)
 def reference_mass(x, a, b, g):
     # QUADPACK's algebraically weighted adaptive rule treats the cusp directly;
     # it does not use the implementation's power substitution or fixed nodes.
