@@ -17,6 +17,15 @@ from .profiles import AnisotropyModel, DMModel, StellarModel
 GMsun_m3s2 = 1.32712440018e20
 
 
+def _projected_radii(R_pc):
+    R = np.asarray(R_pc, dtype=float)
+    if R.ndim > 1 or R.size == 0:
+        raise ValueError("R_pc must be a scalar or nonempty one-dimensional array.")
+    if not np.all(np.isfinite(R) & (R > 0)):
+        raise ValueError("LOS solvers require finite R_pc > 0; the center R=0 is not supported.")
+    return np.atleast_1d(R)
+
+
 class DSphModel(Model):
     """Composite spherical Jeans model for dwarf spheroidal systems."""
 
@@ -65,7 +74,7 @@ class DSphModel(Model):
         The integration variable is :math:`u=r/R`, with domain
         :math:`1 < u < \infty`.
         """
-        R_pc = np.atleast_1d(np.asarray(R_pc))[:, np.newaxis]
+        R_pc = _projected_radii(R_pc)[:, np.newaxis]
         u = np.atleast_1d(np.asarray(u))[np.newaxis, :]
 
         density_3d = self["StellarModel"].density_3d
@@ -77,17 +86,28 @@ class DSphModel(Model):
         if not np.all(np.isfinite(mass) & (mass >= 0)):
             raise ValueError("Dark-matter enclosed mass must be finite and nonnegative")
 
-        return (
+        nu = density_3d(r)
+        sigma = density_2d(R_pc)
+        if not np.all(np.isfinite(nu) & (nu >= 0)) or not np.all(np.isfinite(sigma) & (sigma > 0)):
+            raise ValueError("Stellar density must be finite and nonnegative, with positive surface density.")
+
+        value = (
             2.0
             * kernel(u, R_pc, n=n_kernel)
             / u
-            * density_3d(r)
-            / density_2d(R_pc)
+            * nu
+            / sigma
             * GMsun_m3s2
             * mass
             / parsec
             * 1e-6
         )
+        # DE nodes include u==1 and an extremely distant underflowed tracer
+        # tail. Only these known zero-contribution locations may be discarded.
+        value = np.where((u == 1) | (nu == 0), 0.0, value)
+        if not np.isfinite(value).all():
+            raise ValueError("Nonfinite LOS integrand outside a zero-density tail or endpoint.")
+        return value
 
     def sigmalos2_dequad(
         self,
@@ -96,9 +116,12 @@ class DSphModel(Model):
         n_kernel=128,
         ignore_RuntimeWarning=True,
     ):
-        """Evaluate the LOS velocity dispersion squared with DE quadrature."""
+        """Evaluate LOS variance for finite R_pc > 0 (scalar or 1-D array).
+
+        R=0 requires a separate model-dependent central limit and is rejected.
+        """
         scalar_input = np.ndim(R_pc) == 0
-        R_array = np.atleast_1d(np.asarray(R_pc))
+        R_array = _projected_radii(R_pc)
 
         def func(u):
             return self.integrand_sigmalos2(u, R_array, n_kernel)
@@ -112,15 +135,14 @@ class DSphModel(Model):
                 np.inf,
                 axis=-1,
                 n=n,
-                replace_inf_to_zero=True,
-                replace_nan_to_zero=True,
             )
 
-        if np.any(value < 0):
-            bad = R_array[np.asarray(value) < 0]
+        invalid = ~np.isfinite(value) | (np.asarray(value) < 0)
+        if np.any(invalid):
+            bad = R_array[invalid]
             raise ValueError(
-                f"sigmalos2 is negative at R_pc = {bad} pc; "
-                f"sigmalos2 = {np.asarray(value)[np.asarray(value) < 0]}; "
+                f"sigmalos2 is nonfinite or negative at R_pc = {bad} pc; "
+                f"sigmalos2 = {np.asarray(value)[invalid]}; "
                 f"current model parameters: {self.params_all}"
             )
 

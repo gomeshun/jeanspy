@@ -330,7 +330,7 @@ def _constant_kernel_jax_backend(
     kernel_val = jnp.sum(weights * integrand, axis=-1) / u_safe
 
     kernel_val = jnp.where(u_in <= one, jnp.zeros_like(kernel_val), kernel_val)
-    return jnp.nan_to_num(kernel_val, nan=0.0, neginf=0.0, posinf=1e12)
+    return kernel_val
 
 
 @jax.jit
@@ -427,7 +427,7 @@ def _baes_kernel_jax_backend(
 
         k_val = inner / u_safe
         k_val = jnp.where(u_in <= 1.0, jnp.zeros_like(k_val), k_val)
-        return jnp.nan_to_num(k_val, nan=0.0, neginf=0.0, posinf=1e12)
+        return k_val
 
     return jax.lax.cond(same_beta, _constant_limit, _generic, operand=None)
 
@@ -502,6 +502,23 @@ def _reverse_cumtrapz_1d(y: jnp.ndarray, x: jnp.ndarray) -> jnp.ndarray:
     return jnp.concatenate([rev, jnp.zeros((1,), dtype=y.dtype)], axis=0)
 
 
+def _projected_radii(R_pc):
+    """JIT-safe positive-radius domain with per-element invalidity.
+
+    Substitute a valid radius only for internal evaluation; invalid inputs
+    are restored to NaN in the result. Using the minimum valid radius keeps
+    invalid array members from changing the Abel radial grid.
+    """
+    raw = jnp.asarray(R_pc)
+    if raw.ndim > 1 or raw.size == 0:
+        raise ValueError("R_pc must be a scalar or nonempty one-dimensional array.")
+    R = jnp.atleast_1d(raw).astype(jnp.result_type(raw, 1.0))
+    valid = jnp.isfinite(R) & (R > 0)
+    smallest = jnp.min(jnp.where(valid, R, jnp.inf))
+    replacement = jnp.where(jnp.any(valid), smallest, 1.0)
+    return jnp.where(valid, R, replacement), valid
+
+
 def _make_log_grid(
     r_min: jnp.ndarray, r_max: jnp.ndarray, n_r: int
 ) -> tuple[jnp.ndarray, jnp.ndarray]:
@@ -521,6 +538,22 @@ def _make_log_grid(
 
 # cache for abel weights keyed by flattened R and edge arrays
 _abel_weights_cache: Dict[tuple, jnp.ndarray] = {}
+
+
+def _abel_bin_weights(R_flat, r_edges):
+    """Exact bin weights without evaluating acosh at a clipped endpoint.
+
+    acosh'(1) is infinite. Evaluating it in an inactive jnp.where branch
+    poisons reverse-mode derivatives with 0*inf, even for positive R.
+    """
+    R = R_flat[:, None]
+    lo, hi = r_edges[:-1][None, :], r_edges[1:][None, :]
+    above_lo, above_hi = lo > R, hi > R
+    lo_ratio = jnp.where(above_lo, lo / R, 2.0)
+    hi_ratio = jnp.where(above_hi, hi / R, 2.0)
+    lower = jnp.where(above_lo, jnp.arccosh(lo_ratio), 0.0)
+    upper = jnp.where(above_hi, jnp.arccosh(hi_ratio), 0.0)
+    return upper - lower
 
 
 def _abel_weights(R_pc: jnp.ndarray, r_edges_pc: jnp.ndarray) -> jnp.ndarray:
@@ -544,20 +577,7 @@ def _abel_weights(R_pc: jnp.ndarray, r_edges_pc: jnp.ndarray) -> jnp.ndarray:
     r_edges = jnp.asarray(r_edges_pc)
 
     if isinstance(R_flat, core.Tracer) or isinstance(r_edges, core.Tracer):
-        # compute weights directly without touching Python-level cache
-        R2d = R_flat[:, None]
-        lo = r_edges[:-1][None, :]
-        hi = r_edges[1:][None, :]
-
-        lo_eff = jnp.maximum(lo, R2d)
-        valid = hi > R2d
-
-        dtype = jnp.result_type(R2d, r_edges)
-        one = jnp.asarray(1.0, dtype=dtype)
-        hi_ratio = jnp.maximum(hi / R2d, one)
-        lo_ratio = jnp.maximum(lo_eff / R2d, one)
-
-        return jnp.where(valid, jnp.arccosh(hi_ratio) - jnp.arccosh(lo_ratio), 0.0)
+        return _abel_bin_weights(R_flat, r_edges)
 
     key = (
         R_flat.shape,
@@ -570,20 +590,7 @@ def _abel_weights(R_pc: jnp.ndarray, r_edges_pc: jnp.ndarray) -> jnp.ndarray:
     if key in _abel_weights_cache:
         return _abel_weights_cache[key]
 
-    # compute weights as in the original implementation
-    R2d = R_flat[:, None]
-    lo = r_edges[:-1][None, :]
-    hi = r_edges[1:][None, :]
-
-    lo_eff = jnp.maximum(lo, R2d)
-    valid = hi > R2d
-
-    dtype = jnp.result_type(R2d, r_edges)
-    one = jnp.asarray(1.0, dtype=dtype)
-    hi_ratio = jnp.maximum(hi / R2d, one)
-    lo_ratio = jnp.maximum(lo_eff / R2d, one)
-
-    weights = jnp.where(valid, jnp.arccosh(hi_ratio) - jnp.arccosh(lo_ratio), 0.0)
+    weights = _abel_bin_weights(R_flat, r_edges)
     _abel_weights_cache[key] = weights
     return weights
 
@@ -1267,7 +1274,7 @@ class DSphModel(Model):
         """
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
-        R = jnp.atleast_1d(jnp.asarray(R_pc))
+        R, valid_R = _projected_radii(R_pc)
         dtype = R.dtype
         params = self._resolve_dm_params_once(params)
         transform_key = _normalize_kernel_outer_transform(kernel_outer_transform)
@@ -1331,12 +1338,10 @@ class DSphModel(Model):
             out = _simpson_uniform_last_axis(integrand_x, h)
         else:
             out = integrand_x[..., 0]
-        # Numerical safety: sigma_los^2 should be >=0, but coarse quadrature / edge params
-        # can produce tiny negatives or NaNs during MCMC initialization.
-        out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
         return jnp.where(
-            jnp.all(jnp.isfinite(M) & (M >= 0), axis=-1),
-            jnp.clip(out, min=0.0, max=1e12),
+            valid_R & jnp.isfinite(out) & (out >= 0)
+            & jnp.all(jnp.isfinite(M) & (M >= 0), axis=-1),
+            out,
             jnp.nan,
         )
 
@@ -1352,7 +1357,7 @@ class DSphModel(Model):
         dm_mass_n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
         r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms."""
-        R = jnp.atleast_1d(jnp.asarray(R_pc))
+        R, valid_R = _projected_radii(R_pc)
         dtype = R.dtype
         resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
@@ -1407,10 +1412,10 @@ class DSphModel(Model):
         sigma = stellar.density_2d(R, re_pc=re_pc)
         numer = 2.0 * (abel_rj - (R**2) * abel_beta_j_over_r)
         out = numer / sigma
-        out = jnp.nan_to_num(out, nan=0.0, neginf=0.0, posinf=1e12)
         return jnp.where(
-            jnp.all(jnp.isfinite(mass) & (mass >= 0)),
-            jnp.clip(out, min=0.0, max=1e12),
+            valid_R & jnp.isfinite(out) & (out >= 0)
+            & jnp.all(jnp.isfinite(mass) & (mass >= 0)),
+            out,
             jnp.nan,
         )
 
@@ -1441,6 +1446,11 @@ class DSphModel(Model):
         ``jit`` controls whether a cached ``jax.jit`` wrapper is used around the
         selected solver. ``None`` defaults to the cached JIT path.
 
+        R_pc must be a scalar or a nonempty 1-D array. Results are always 1-D
+        (length one for a scalar). Only finite R_pc > 0 are supported; invalid
+        elements return NaN in eager and JIT execution without contaminating
+        other elements. R=0 needs a model-dependent central-limit solver.
+
         ``dm_mass_method`` controls the dark-matter enclosed-mass backend and
         must be one of ``"auto"``, ``"analytic"``, or ``"numeric"``. The
         default ``"auto"`` follows the DM model's autodiff-safe choice:
@@ -1470,7 +1480,8 @@ class DSphModel(Model):
             )
 
         use_jit = DEFAULT_SIGMALOS2_JIT if jit is None else bool(jit)
-        if isinstance(ani, BaesAnisotropyModel) and (use_jit or backend_key == "abel"):
+        if (isinstance(ani, BaesAnisotropyModel) and "eta" in ani.required_param_names
+                and (use_jit or backend_key == "abel")):
             _warn_if_baes_eta_large(params["eta"])
         dm: DMModel = self.submodels["DMModel"]  # type: ignore[assignment]
         dm_mass_method = self._resolve_dm_mass_method(dm, dm_mass_method)
