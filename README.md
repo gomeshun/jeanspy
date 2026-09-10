@@ -375,7 +375,9 @@ Storage backend guidance:
 
 Both samplers fingerprint the model, priors, observation contents, parameter
 schema, numerical configuration, package source, and relevant library versions.
-NumPyro additionally records the model's call arguments and chain configuration.
+NumPyro additionally records the model's call arguments, chain configuration,
+active CPU/GPU backend, and JAX precision settings, since solver defaults can
+depend on the backend.
 Repeated runs and checkpoints must match this identity before any samples are
 appended or cached energies reused. A changed target requires a **new
 `output_dir`**, even with `resume=False`; also construct a new `MCMC` instance.

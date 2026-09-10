@@ -205,3 +205,14 @@ def test_series_identity_includes_labels():
     a = pd.Series([1., 2.], index=['star1', 'star2'])
     b = pd.Series([1., 2.], index=['star2', 'star1'])
     assert fingerprint(a) != fingerprint(b)
+
+
+def test_backend_precision_is_part_of_numpyro_identity(tmp_path, monkeypatch):
+    with NumPyroSampler(make_mcmc(), output_dir=tmp_path) as sampler:
+        original = sampler._target_fingerprint()
+        precision = 'high' if jax.config.jax_default_matmul_precision == 'highest' else 'highest'
+        with jax.default_matmul_precision(precision):
+            assert sampler._target_fingerprint() != original
+        assert sampler._target_fingerprint() == original
+        monkeypatch.setattr(jax, 'default_backend', lambda: 'different-platform')
+        assert sampler._target_fingerprint() != original

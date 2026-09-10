@@ -521,6 +521,10 @@ class NumPyroSampler:
         return fingerprint({
             'software': software_identity('jax', 'jaxlib', 'numpyro'),
             'x64': bool(jax.config.jax_enable_x64),
+            # Jeans defaults differ between CPU and GPU float32 execution.
+            'platform': jax.default_backend(),
+            'matmul_precision': jax.config.jax_default_matmul_precision,
+            'default_dtype_bits': getattr(jax.config, 'jax_default_dtype_bits', None),
             'model': model if model is not None else getattr(kernel, '_potential_fn', None),
             'kernel': type(kernel),
             'kernel_config': {k: getattr(kernel, k) for k in settings if hasattr(kernel, k)},
