@@ -71,7 +71,7 @@ numpyro_cuda12 = [
 dev = [
     "ipykernel",
     "mpmath>=1.3.0",
-    "pytest>=9.0.2",
+    "pytest>=9.0.3",
     "seaborn",
     "sympy",
 ]

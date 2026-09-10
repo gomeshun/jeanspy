@@ -27,7 +27,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.12", "3.13"]
-        dependencies: ${{ fromJSON(inputs.release_validation && '["locked", "fresh"]' || '["locked"]') }}
+        dependencies: ${{ fromJSON(inputs.release_validation && '["locked", "fresh", "lowest"]' || '["locked", "lowest"]') }}
     permissions:
       contents: read
 
@@ -52,9 +52,24 @@ jobs:
           uv venv --python "${{ matrix.python-version }}"
           uv pip install .
 
+      - name: Install lowest compatible base dependencies
+        if: matrix.dependencies == 'lowest'
+        run: |
+          uv venv --python "${{ matrix.python-version }}"
+          uv pip compile pyproject.toml --resolution lowest-direct \
+            --python-version "${{ matrix.python-version }}" --only-binary :all: \
+            --output-file lowest-base.txt
+          uv pip sync lowest-base.txt
+          uv pip install --no-deps .
+
+      - name: Install base test tools and check dependencies
+        run: |
+          uv pip install pytest
+          uv pip check
+
       - name: Run base numerical and inference tests
         run: >-
-          uv run --no-sync --with pytest python -m pytest -q
+          uv run --no-sync python -m pytest -q
           tests/test_import.py tests/test_jfactor_ullio2016.py
           tests/test_sampler_emcee_integration.py tests/test_classical_inference_workflow.py
           tests/test_platform_compatibility.py

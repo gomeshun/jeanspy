@@ -199,3 +199,9 @@ def test_jitted_user_transforms_keep_their_captured_parameters():
         return jax.jit(lambda value: value + offset)
     assert fingerprint(make_transform(1.)) == fingerprint(make_transform(1.))
     assert fingerprint(make_transform(1.)) != fingerprint(make_transform(2.))
+
+
+def test_series_identity_includes_labels():
+    a = pd.Series([1., 2.], index=['star1', 'star2'])
+    b = pd.Series([1., 2.], index=['star2', 'star1'])
+    assert fingerprint(a) != fingerprint(b)

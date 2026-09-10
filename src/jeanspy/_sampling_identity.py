@@ -8,6 +8,7 @@ closed instead of being identified by their memory address or repr.
 
 from collections.abc import Mapping
 from dataclasses import fields, is_dataclass
+import dis
 import functools
 import hashlib
 import importlib.metadata
@@ -30,6 +31,22 @@ def _code(code):
             code.co_freevars, code.co_cellvars, code.co_argcount,
             code.co_posonlyargcount, code.co_kwonlyargcount, code.co_flags,
             [_code(v) if isinstance(v, types.CodeType) else v for v in code.co_consts]]
+
+
+def _function_globals(function):
+    # Older inspect.getclosurevars versions search co_names, which also
+    # contains attribute names. self.logger must not capture a module-global
+    # logger (and its locks). Include only actual global loads, including those
+    # in nested comprehensions/generator code.
+    def loaded_names(code):
+        for instruction in dis.get_instructions(code):
+            if instruction.opname in {'LOAD_GLOBAL', 'LOAD_NAME'}:
+                yield instruction.argval
+        for constant in code.co_consts:
+            if isinstance(constant, types.CodeType):
+                yield from loaded_names(constant)
+    return {name: function.__globals__[name] for name in loaded_names(function.__code__)
+            if name in function.__globals__}
 
 
 class _Encoder:
@@ -58,6 +75,13 @@ class _Encoder:
             self.active.remove(id(value))
 
     def _encode(self, value):
+        if isinstance(value, pd.DataFrame):
+            return ["dataframe", self.encode(value.index.tolist()),
+                    self.encode(value.columns.tolist()),
+                    [self.encode(value[col].to_numpy()) for col in value.columns]]
+        if isinstance(value, pd.Series):
+            return ["series", self.encode(value.name), self.encode(value.index.tolist()),
+                    self.encode(value.to_numpy())]
         if isinstance(value, (np.ndarray, np.generic)) or (
                 hasattr(value, '__array__') and hasattr(value, 'dtype')):
             array = np.asarray(value)
@@ -66,12 +90,6 @@ class _Encoder:
             else:
                 content = hashlib.sha256(array.tobytes(order='C')).hexdigest()
             return ["array", str(array.dtype), array.shape, content]
-        if isinstance(value, pd.DataFrame):
-            return ["dataframe", self.encode(value.index.tolist()),
-                    self.encode(value.columns.tolist()),
-                    [self.encode(value[col].to_numpy()) for col in value.columns]]
-        if isinstance(value, pd.Series):
-            return ["series", self.encode(value.index.tolist()), self.encode(value.to_numpy())]
         if isinstance(value, Mapping):
             entries = [[self.encode(k), self.encode(v)] for k, v in value.items()]
             return ["mapping", sorted(entries, key=lambda kv: json.dumps(kv[0], sort_keys=True))]
@@ -92,7 +110,7 @@ class _Encoder:
             return ["function", _name(value), self.encode(_code(value.__code__)),
                     self.encode(value.__defaults__), self.encode(value.__kwdefaults__),
                     self.encode(closure.nonlocals),
-                    None if library else self.encode(closure.globals)]
+                    None if library else self.encode(_function_globals(value))]
         if isinstance(value, type):
             library = value.__module__.split('.')[0] in {'builtins', 'numpy', 'scipy', 'jax', 'jaxlib', 'numpyro'}
             if library:
@@ -147,7 +165,7 @@ def software_identity(*packages):
     """Include source contents: editable checkouts may share a version number."""
     root = Path(__file__).parent
     digest = hashlib.sha256()
-    for path in sorted(root.rglob('*.py')):
+    for path in sorted([*root.rglob('*.py'), *root.glob('data/*.csv')]):
         digest.update(str(path.relative_to(root)).encode())
         digest.update(path.read_bytes())
     versions = {}

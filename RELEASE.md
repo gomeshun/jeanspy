@@ -114,7 +114,7 @@ The test definitions are shared with ordinary CI:
 | Release-related PR / version tag | locked, fresh, and lowest compatible direct runtime requirements | 3.12, 3.13 | `pytest --run-mcmc`, all tests required |
 
 Base numerical/inference and optional-dependency isolation checks run on Linux,
-Windows, and macOS (locked, and additionally fresh for release validation).
+Windows, and macOS (locked and lowest, and additionally fresh for release validation).
 The complete NumPyro CPU suite runs on Linux in all listed resolution modes.
 The lowest mode resolves runtime/plotting requirements with
 `uv pip compile --resolution lowest-direct --only-binary :all:` for each Python

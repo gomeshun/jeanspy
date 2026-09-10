@@ -4,6 +4,7 @@
 [元の監査と再現結果](reviews/20260910/README.md) を保存し、
 `codex/fix-release-audit-findings` で下記の9件を修正した。
 パッケージのバージョンは未公開の `0.1.0` を維持する。
+修正PRは [#62](https://github.com/gomeshun/jeanspy/pull/62)。
 
 ## 修正内容と検証の対応
 
@@ -64,7 +65,33 @@ Python 関数の閉包、配列の内容、NumPyro 分布、組み込み Jeans �
   この最後の精度列は実GPUの測定ではなく、上記の実GPUテストとは別の検証である。
 - wheel / sdist はビルドと Twine 検証に成功。最終の依存下限変更後に再生成し、
   ソースチェックアウト外からの runtime 検証を行う。
-- 最終依存下限の全件実行、Windows/macOS、Python 3.13、fresh 構成の結果は最終 CI で記録する。
+- 最終依存下限の全件実行: **331成功 + 37 subtests**（218.70秒）。
+  古い matplotlib / pyparsing の非推奨警告と、netCDF4 import 時の ndarray サイズ警告が残るが、
+  数値試験・両 import 順序での保存／読み出し・3形式の再開は成功した。警告は抑制していない。
+- NumPy 1.26.0 / SciPy 1.12.0 を含む base 下限: **42成功**（7.00秒）。
+- Windows/macOS の base、Linux Python 3.13 の locked/fresh/lowest は最初の CI で成功。
+  Linux Python 3.12.3 では `inspect.getclosurevars` が `self.logger` の属性名を
+  モジュールのグローバル `logger` と誤認し、ロックを解析しようとして失敗した。
+  実際の `LOAD_GLOBAL` / `LOAD_NAME` だけを読み取るよう修正し、同じ Python 3.12.3 で
+  旧挙動の失敗と修正後の **28成功**（7.31秒）を確認した。属性名の衝突と入れ子の式を回帰試験に追加。
+- 関数の識別に加え、Series のラベル、JIT されたユーザー変換の閉包、同梱 CSV の内容も識別する。
+- 各OS・Python・依存構成の最終結果は [PR の checks](https://github.com/gomeshun/jeanspy/pull/62/checks)
+  と後続の検証記録で追跡する。CI 完了前に公開可能とは判定しない。
+
+## 通知された依存関係アラート
+
+ブランチを push した時点で main の `uv.lock` に22件の Dependabot アラートが通知された。
+対象は4パッケージに集中していたため、該当するロックだけを更新した。
+
+| パッケージ | 更新前 | 更新後 | 用途 |
+|---|---|---|---|
+| Pillow | 12.2.0 | 12.3.0 | 描画関連 |
+| Tornado | 6.5.5 | 6.5.8 | notebook 開発環境 |
+| pytest | 9.0.2 | 9.1.1 | テスト。宣言下限も9.0.3へ更新 |
+| Pygments | 2.19.2 | 2.21.0 | 開発・テスト表示 |
+
+GitHub が示した修正版の範囲を満たすことを確認し、JAX・NumPyro・SciPy 等の計算用ロックは維持した。
+main のアラート表示が閉じるのはマージ後であり、この記録は GitHub 側での解消済み表示を主張しない。
 
 ## 科学的な適用範囲と公開前の手順
 
