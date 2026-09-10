@@ -9,7 +9,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from scipy.stats import norm
+from scipy.stats import norm, truncnorm
 
 from .core import Model, logger
 from .profiles import ConstantAnisotropyModel, NFWModel, PlummerModel
@@ -125,7 +125,11 @@ class FittableModel(Model, metaclass=ABCMeta):
 
 
 class FlatPriorModel(Model):
-    """Flat prior over the sampling-coordinate configuration."""
+    """Finite uniform bounds in explicitly named sampling coordinates.
+
+    The DataFrame is the single source of truth for evaluation and sampling.
+    A generated template must be filled in before constructing this model.
+    """
 
     required_param_names = []
     required_models = {}
@@ -140,26 +144,52 @@ class FlatPriorModel(Model):
         )
         if self.fname_config is not None:
             try:
-                self.data = pd.read_csv(self.fname_config, index_col=0)
+                data = pd.read_csv(self.fname_config, index_col=0)
             except FileNotFoundError:
                 logger.error("config file '%s' is not found.", config)
                 raise
         else:
-            self.data = config
+            data = config
+        self.validate_config(data)
+        self.data = data.copy(deep=True)
 
-        self.lower = self.data["lower"].values
-        self.upper = self.data["upper"].values
+    @staticmethod
+    def validate_config(data):
+        if not isinstance(data, pd.DataFrame):
+            raise TypeError("Prior config must be a DataFrame or CSV path.")
+        if data.empty or not data.index.is_unique or not data.columns.is_unique:
+            raise ValueError("Prior config must have nonempty, unique parameter names and columns.")
+        if any(not isinstance(name, str) or not name for name in data.index):
+            raise ValueError("Prior parameter names must be nonempty strings.")
+        if not {"lower", "upper"}.issubset(data.columns):
+            raise ValueError("Prior config needs lower and upper columns.")
+        bounds = data[["lower", "upper"]].to_numpy(dtype=float)
+        valid = np.isfinite(bounds).all(axis=1) & (bounds[:, 0] < bounds[:, 1])
+        if not valid.all():
+            raise ValueError(
+                "Supply explicit finite prior bounds with lower < upper for: "
+                + ", ".join(data.index[~valid])
+                + ". Fill in the prior template before inference."
+            )
+
+    @property
+    def lower(self):
+        return self.data["lower"].to_numpy(dtype=float, copy=True)
+
+    @property
+    def upper(self):
+        return self.data["upper"].to_numpy(dtype=float, copy=True)
 
     def get_index(self, param_name):
         return self.data.index.get_loc(param_name)
 
     def extract_value_by_name(self, params, name):
-        assert len(params) == len(
-            self.data
-        ), f"len(param)={len(params)} != len(self.data)={len(self.data)}"
+        if np.shape(params) != (len(self.data),):
+            raise ValueError(f"Parameters must have shape ({len(self.data)},).")
         return params[self.get_index(name)]
 
     def sample(self, size=None):
+        self.validate_config(self.data)
         size = (size,) if isinstance(size, int) else size
         size = size + (len(self.lower),) if isinstance(size, tuple) else size
         try:
@@ -170,12 +200,16 @@ class FlatPriorModel(Model):
             raise
 
     def _lnprior(self, p):
-        lower = self.data["lower"].values
-        upper = self.data["upper"].values
+        self.validate_config(self.data)
+        if np.shape(p) != (len(self.data),):
+            raise ValueError(f"Parameters must have shape ({len(self.data)},).")
+        lower = self.lower
+        upper = self.upper
         return 0.0 if np.all((lower <= p) & (p <= upper)) else -np.inf
 
     @staticmethod
-    def generate_default_config_file(fname, param_names, lower=-np.inf, upper=np.inf):
+    def generate_default_config_file(fname, param_names, lower=np.nan, upper=np.nan):
+        """Write a template; unspecified bounds deliberately cannot be sampled."""
         df = pd.DataFrame({"lower": lower, "upper": upper}, index=param_names)
         df.to_csv(fname)
         logger.info("generated %s.", fname)
@@ -198,6 +232,7 @@ class PhotometryPriorModel(Model):
         self.reset_prior(loc, scale)
 
     def reset_prior(self, loc, scale):
+        self.loc, self.scale = loc, scale
         self._lnprior_func = norm(loc=loc, scale=scale).logpdf
         self._sample = norm(loc=loc, scale=scale).rvs
 
@@ -241,48 +276,43 @@ class SimpleDSphEstimationModel(FittableModel, Model):
     dtype = np.float32
     prior_names = ["flat_prior", "photometry_prior"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, vmem_prior_from_data=False, **kwargs):
+        self.vmem_prior_from_data = vmem_prior_from_data
         super().__init__(*args, **kwargs)
-        fname_config = self["FlatPriorModel"].fname_config
-        self.logger.info(
-            "%s: Please check the consistency of model parameters and config file: %s.",
-            self.__class__,
-            fname_config,
-        )
-        comparison = {
-            "config": self.p_names_lnprob,
-            "params": self.required_param_names_combined,
-        }
-        try:
-            self.logger.info("%s", pd.DataFrame(comparison))
-            consistencies = [
-                param in p
-                for p, param in zip(comparison["config"], comparison["params"])
-            ]
-            assert all(consistencies)
-        except ValueError:
-            self.logger.error("%r", comparison)
-            raise
-        except AssertionError:
-            self.logger.error("ERROR: config and params are not consistent.")
-            self.logger.error("config file: %s", fname_config)
-            self.logger.error("%r", comparison)
-            self.logger.error("%r", consistencies)
-            raise
+        self._validate_prior_schema()
+
+    def _validate_prior_schema(self):
+        prior = self["FlatPriorModel"]
+        prior.validate_config(prior.data)
+        names = self.p_names_lnprob
+        physical = [name[6:] if name.startswith(("log10_", "bfunc_")) else name for name in names]
+        if physical != self.required_param_names_combined:
+            raise ValueError(
+                "Prior names/order must match model parameters exactly after removing "
+                f"log10_ or bfunc_: expected {self.required_param_names_combined}, got {names}."
+            )
+        if "log10_re_pc" not in names:
+            raise ValueError("The photometry prior requires the sampling coordinate log10_re_pc.")
+        photometry = self["PhotometryPriorModel"]
+        if not np.isfinite(photometry.loc) or not np.isfinite(photometry.scale) or photometry.scale <= 0:
+            raise ValueError("Photometry prior needs a finite location and positive finite scale.")
 
     @property
     def p_names_lnprob(self):
         return self["FlatPriorModel"].data.index.tolist()
 
     def convert_params(self, p):
+        self._validate_prior_schema()
         p_names = self.p_names_lnprob
         param_names = self.required_param_names_combined
+        if np.shape(p) != (len(p_names),):
+            raise ValueError(f"Parameters must have shape ({len(p_names)},) in prior config order.")
 
         def convert_param(name, value):
-            if "log10_" in name:
-                return 10**value
-            if "bfunc_" in name:
-                return 1 - 10**value
+            if name.startswith("log10_"):
+                return 10.0**value
+            if name.startswith("bfunc_"):
+                return 1 - 10.0**value
             return value
 
         return pd.Series(
@@ -294,6 +324,8 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
     def load_data(self, data, shared=False):
         """Load explicitly supplied observed kinematic data."""
+        # Reject schema mistakes before allocating shared observation buffers.
+        self._validate_prior_schema()
         previous_shared = getattr(self, "shared", False)
         self.shared = shared
         try:
@@ -307,18 +339,24 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
         Shared models keep their buffer shape so existing readers stay attached.
         Construct a new model to use a different number of observations.
+        Explicit velocity-prior bounds are preserved unless the model was
+        constructed with vmem_prior_from_data=True (an empirical-prior choice).
         """
+        # Validate optional empirical bounds before committing a data update.
+        prior = self["FlatPriorModel"]
+        updated_prior = prior.data.copy(deep=True)
+        if self.vmem_prior_from_data:
+            if "vmem_kms" not in updated_prior.index:
+                raise ValueError("Data-derived velocity bounds require the vmem_kms coordinate.")
+            velocities = np.asarray(data["vlos_kms"], dtype=self.dtype)
+            updated_prior.loc["vmem_kms", ["lower", "upper"]] = [
+                velocities.min(), velocities.max()
+            ]
+            prior.validate_config(updated_prior)
         self.data = data
-        lower = self.data["vlos_kms"].min()
-        upper = self.data["vlos_kms"].max()
-        self["FlatPriorModel"].data.loc["vmem_kms", "lower"] = lower
-        self["FlatPriorModel"].data.loc["vmem_kms", "upper"] = upper
-        self.logger.info(
-            "%s: set vmem_kms prior bounds from data: lower=%.6f upper=%.6f",
-            self.__class__.__name__,
-            float(lower),
-            float(upper),
-        )
+        if self.vmem_prior_from_data:
+            prior.data = updated_prior
+        self.__dict__.pop("inverse_temparature", None)
 
     @property
     def shared_memory_basename(self):
@@ -376,6 +414,10 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         values = {field: data[field].values for field in fields}
         if any(array.shape != shape for array in values.values()):
             raise ValueError("Kinematic columns must have matching shapes.")
+        if len(shape) != 1 or not len(data) or not all(np.isfinite(v).all() for v in values.values()):
+            raise ValueError("Kinematic data must contain nonempty finite one-dimensional columns.")
+        if np.any(values["R_pc"] <= 0) or np.any(values["e_vlos_kms"] < 0):
+            raise ValueError("Kinematic data require R_pc > 0 and e_vlos_kms >= 0.")
         if not self.shared:
             self._data = DotDict(values)
             self._n_data = len(data)
@@ -461,9 +503,17 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         ]
 
     def sample(self, size=None):
+        self._validate_prior_schema()
         p = self["FlatPriorModel"].sample(size)
         idx_log10_re_pc = self["FlatPriorModel"].get_index("log10_re_pc")
-        p[..., idx_log10_re_pc] = self["PhotometryPriorModel"].sample(size)
+        prior = self["FlatPriorModel"]
+        photometry = self["PhotometryPriorModel"]
+        loc, scale = photometry.loc, photometry.scale
+        # Draw from the product of the Gaussian photometry prior and finite
+        # uniform support, so generated walkers always satisfy both priors.
+        a = (prior.lower[idx_log10_re_pc] - loc) / scale
+        b = (prior.upper[idx_log10_re_pc] - loc) / scale
+        p[..., idx_log10_re_pc] = truncnorm.rvs(a, b, loc=loc, scale=scale, size=size)
         return p
 
     def sample_data(self, size=None):
@@ -482,8 +532,16 @@ def get_default_estimation_model(
     photometry_prior_loc,
     photometry_prior_scale,
     config="priorconfig.csv",
+    *,
+    vmem_prior_from_data=False,
 ):
-    """Return the historical default classical estimation-model composition."""
+    """Compose Plummer + NFW + constant anisotropy with explicit finite priors.
+
+    ``config`` is a DataFrame or CSV in this order: vmem_kms, log10_re_pc,
+    log10_rs_pc, log10_rhos_Msunpc3, log10_r_t_pc, bfunc_beta_ani.
+    A missing CSV is created as an unfilled template, then raises ValueError.
+    Caller velocity bounds are preserved unless vmem_prior_from_data is True.
+    """
     dsph_model = DSphModel(
         submodels={
             "StellarModel": PlummerModel(),
@@ -492,25 +550,25 @@ def get_default_estimation_model(
         }
     )
 
-    if not os.path.exists(config):
-        logger.warning("config file '%s' is not found.", config)
-        logger.info("generate a default config file.")
+    names = ["vmem_kms", "log10_re_pc", "log10_rs_pc", "log10_rhos_Msunpc3",
+             "log10_r_t_pc", "bfunc_beta_ani"]
+    if isinstance(config, (str, os.PathLike)) and not os.path.exists(config):
         FlatPriorModel.generate_default_config_file(
             config,
-            dsph_model.params_all.index,
+            names,
         )
+        raise ValueError(f"Created prior template at {config}; supply explicit finite prior bounds before inference.")
+
+    prior = FlatPriorModel(config=config)
+    if prior.data.index.tolist() != names:
+        raise ValueError(f"Default model prior names/order must be {names}.")
 
     return SimpleDSphEstimationModel(
         args_load_data=[data],
+        vmem_prior_from_data=vmem_prior_from_data,
         submodels={
-            "DSphModel": DSphModel(
-                submodels={
-                    "StellarModel": PlummerModel(),
-                    "DMModel": NFWModel(),
-                    "AnisotropyModel": ConstantAnisotropyModel(),
-                }
-            ),
-            "FlatPriorModel": FlatPriorModel(config=config),
+            "DSphModel": dsph_model,
+            "FlatPriorModel": prior,
             "PhotometryPriorModel": PhotometryPriorModel(
                 loc=photometry_prior_loc,
                 scale=photometry_prior_scale,
