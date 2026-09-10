@@ -51,7 +51,7 @@ def _make_kinematic_data(n=30, seed=42):
     })
 
 
-def test_simple_dsph_estimation_model_explicit_data(tmp_path):
+def test_simple_dsph_estimation_model_explicit_data(tmp_path, classical_prior_config):
     """SimpleDSphEstimationModel.load_data accepts a DataFrame directly."""
     from jeanspy.model import (
         SimpleDSphEstimationModel,
@@ -71,7 +71,7 @@ def test_simple_dsph_estimation_model_explicit_data(tmp_path):
         "DMModel": NFWModel(),
         "AnisotropyModel": ConstantAnisotropyModel(),
     })
-    FlatPriorModel.generate_default_config_file(str(config_path), dsph_model.params_all.index)
+    classical_prior_config.to_csv(config_path)
 
     mdl = SimpleDSphEstimationModel(
         args_load_data=[data],
@@ -90,12 +90,13 @@ def test_simple_dsph_estimation_model_explicit_data(tmp_path):
     assert "vlos_kms" in mdl.data
 
 
-def test_get_default_estimation_model(tmp_path):
+def test_get_default_estimation_model(tmp_path, classical_prior_config):
     """get_default_estimation_model uses explicit data and photometry prior."""
     from jeanspy.model import get_default_estimation_model
 
     data = _make_kinematic_data()
     config_path = tmp_path / "priorconfig.csv"
+    classical_prior_config.to_csv(config_path)
 
     mdl = get_default_estimation_model(
         data=data,
