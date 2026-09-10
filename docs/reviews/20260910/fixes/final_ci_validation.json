@@ -1,0 +1,177 @@
+{
+  "source_commit": "b721022c3eaa00aa0e5e7dda286fe74d3f84f4e5",
+  "ordinary_workflow": {
+    "url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603158",
+    "conclusion": "success",
+    "successful_jobs": 16
+  },
+  "release_workflow": {
+    "url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 102820493223,
+        "name": "Build and validate distributions",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493223"
+      },
+      {
+        "id": 102820493609,
+        "name": "Release test matrix / NumPyro CPU test suite (Python 3.12, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493609",
+        "pytest_summary": "337 passed, 266 warnings, 37 subtests passed in 121.65s (0:02:01)"
+      },
+      {
+        "id": 102820493660,
+        "name": "Release test matrix / NumPyro CPU test suite (Python 3.13, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493660",
+        "pytest_summary": "337 passed, 13 warnings, 37 subtests passed in 166.24s (0:02:46)"
+      },
+      {
+        "id": 102820493675,
+        "name": "Release test matrix / Base runtime (ubuntu-latest, Python 3.13, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493675"
+      },
+      {
+        "id": 102820493705,
+        "name": "Release test matrix / Base runtime (windows-latest, Python 3.13, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493705"
+      },
+      {
+        "id": 102820493706,
+        "name": "Release test matrix / Base runtime (windows-latest, Python 3.13, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493706"
+      },
+      {
+        "id": 102820493725,
+        "name": "Release test matrix / Base runtime (ubuntu-latest, Python 3.13, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493725"
+      },
+      {
+        "id": 102820493733,
+        "name": "Release test matrix / Base runtime (macos-latest, Python 3.12, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493733"
+      },
+      {
+        "id": 102820493743,
+        "name": "Release test matrix / Base runtime (ubuntu-latest, Python 3.12, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493743"
+      },
+      {
+        "id": 102820493786,
+        "name": "Release test matrix / Base runtime (ubuntu-latest, Python 3.13, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493786"
+      },
+      {
+        "id": 102820493793,
+        "name": "Release test matrix / NumPyro CPU test suite (Python 3.13, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493793",
+        "pytest_summary": "337 passed, 15 warnings, 37 subtests passed in 165.95s (0:02:45)"
+      },
+      {
+        "id": 102820493798,
+        "name": "Release test matrix / Base runtime (windows-latest, Python 3.13, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493798"
+      },
+      {
+        "id": 102820493803,
+        "name": "Release test matrix / Base runtime (windows-latest, Python 3.12, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493803"
+      },
+      {
+        "id": 102820493804,
+        "name": "Release test matrix / Base runtime (ubuntu-latest, Python 3.12, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493804"
+      },
+      {
+        "id": 102820493805,
+        "name": "Release test matrix / Base runtime (windows-latest, Python 3.12, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493805"
+      },
+      {
+        "id": 102820493808,
+        "name": "Release test matrix / Base runtime (macos-latest, Python 3.12, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493808"
+      },
+      {
+        "id": 102820493811,
+        "name": "Release test matrix / Base runtime (macos-latest, Python 3.13, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493811"
+      },
+      {
+        "id": 102820493820,
+        "name": "Release test matrix / Base runtime (macos-latest, Python 3.12, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493820"
+      },
+      {
+        "id": 102820493844,
+        "name": "Release test matrix / NumPyro CPU test suite (Python 3.13, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493844",
+        "pytest_summary": "337 passed, 262 warnings, 37 subtests passed in 65.29s (0:01:05)"
+      },
+      {
+        "id": 102820493852,
+        "name": "Release test matrix / Base runtime (windows-latest, Python 3.12, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493852"
+      },
+      {
+        "id": 102820493858,
+        "name": "Release test matrix / NumPyro CPU test suite (Python 3.12, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493858",
+        "pytest_summary": "337 passed, 21 warnings, 37 subtests passed in 166.78s (0:02:46)"
+      },
+      {
+        "id": 102820493863,
+        "name": "Release test matrix / NumPyro CPU test suite (Python 3.12, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493863",
+        "pytest_summary": "337 passed, 7 warnings, 37 subtests passed in 163.97s (0:02:43)"
+      },
+      {
+        "id": 102820493879,
+        "name": "Release test matrix / Base runtime (macos-latest, Python 3.13, fresh)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493879"
+      },
+      {
+        "id": 102820493885,
+        "name": "Release test matrix / Base runtime (ubuntu-latest, Python 3.12, lowest)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493885"
+      },
+      {
+        "id": 102820493907,
+        "name": "Release test matrix / Base runtime (macos-latest, Python 3.13, locked)",
+        "conclusion": "success",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102820493907"
+      },
+      {
+        "id": 102821847181,
+        "name": "Publish to PyPI",
+        "conclusion": "skipped",
+        "html_url": "https://github.com/gomeshun/jeanspy/actions/runs/34461603493/job/102821847181"
+      }
+    ]
+  },
+  "scope": "MCMC enabled in all six NumPyro CPU release jobs; 18 native base configurations; distribution build and installed runtime validation; publishing skipped."
+}

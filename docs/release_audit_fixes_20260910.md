@@ -57,15 +57,34 @@ Python 関数の閉包、配列の内容、NumPyro 分布、組み込み Jeans �
 
 ## 検証結果
 
-- ロック済み Python 3.12 の全テスト: **328成功 + 37 subtests**（235.30秒）。
-  その後に import 順序の2テストと JIT 変換の識別テストを追加したため、最終 CI の件数は増える。
+最終コード `b721022c3eaa00aa0e5e7dda286fe74d3f84f4e5` で以下を確認した。
+
+- [通常CI](https://github.com/gomeshun/jeanspy/actions/runs/34461603158): **16ジョブすべて成功**。
+- [リリースCI](https://github.com/gomeshun/jeanspy/actions/runs/34461603493): **25ジョブ成功**。
+  PyPI 公開の1ジョブはタグ以外では実行しない設定どおり skipped。
+- Python 3.12 / 3.13 × locked / fresh / lowest の6構成それぞれで、MCMC を含む
+  **337テスト + 37 subtests が成功**。Linux / Windows / macOS × Python 2版 × 依存3構成の
+  base 数値・推論・optional 依存分離チェックも18構成すべて成功。
+- 最終コードの実GPU RTX 3090 / CUDA 検証も **67成功**（139.03秒）。
+  数値回帰・NumPyro 保存再開・最終追加分を含む対象識別を確認した。
+  [実行コマンドとログ](reviews/20260910/fixes/final_gpu_regressions.txt) を保存した。
+- wheel / sdist のビルド、Twine、両配布物の CPU / CUDA extras 解決、
+  インストール後の README・同梱データ・NumPyro CPU 検証が CI で成功。
+  ローカルでも最終コードから再生成して3つの隔離環境で動作を確認し、
+  配布物とインストール先の全23 Python / CSV ファイルがソースとバイト単位で一致した。
+- 各ジョブの URL とテスト件数は [CI記録](reviews/20260910/fixes/final_ci_validation.json)、
+  ローカル配布物の SHA-256・SPDX・実行結果は
+  [配布物記録](reviews/20260910/fixes/final_artifact_validation.json) に保存した。
+  アーカイブの時刻情報が異なるため、ローカル生成物のハッシュを CI 生成物のハッシュとは扱わない。
+
+修正過程と数値検証の記録:
+
+- ロック済み Python 3.12 の全テスト: **328成功 + 37 subtests**（235.30秒、追加回帰試験前）。
 - 実GPU RTX 3090 / CUDA の数値・sampler 回帰: **62成功**（50.33秒）。
 - 完全な246ケースの精度契約: CPU float64 `3.697e-4`、CPU float32 `3.716e-4`、
   GPU float32 の演算設定を CPU で計算した比較 `3.762e-4`。基準 `1e-3` をすべて満たした。
   この最後の精度列は実GPUの測定ではなく、上記の実GPUテストとは別の検証である。
-- wheel / sdist はビルドと Twine 検証に成功。最終の依存下限変更後に再生成し、
-  ソースチェックアウト外からの runtime 検証を行う。
-- 最終依存下限の全件実行: **331成功 + 37 subtests**（218.70秒）。
+- 最終依存下限を決めた時点の全件実行: **331成功 + 37 subtests**（218.70秒）。
   古い matplotlib / pyparsing の非推奨警告と、netCDF4 import 時の ndarray サイズ警告が残るが、
   数値試験・両 import 順序での保存／読み出し・3形式の再開は成功した。警告は抑制していない。
 - NumPy 1.26.0 / SciPy 1.12.0 を含む base 下限: **42成功**（7.00秒）。
@@ -75,8 +94,13 @@ Python 関数の閉包、配列の内容、NumPyro 分布、組み込み Jeans �
   実際の `LOAD_GLOBAL` / `LOAD_NAME` だけを読み取るよう修正し、同じ Python 3.12.3 で
   旧挙動の失敗と修正後の **28成功**（7.31秒）を確認した。属性名の衝突と入れ子の式を回帰試験に追加。
 - 関数の識別に加え、Series のラベル、JIT されたユーザー変換の閉包、同梱 CSV の内容も識別する。
-- 各OS・Python・依存構成の最終結果は [PR の checks](https://github.com/gomeshun/jeanspy/pull/62/checks)
-  と後続の検証記録で追跡する。CI 完了前に公開可能とは判定しない。
+  JAX の実行 backend と精度設定も含め、CPU / GPU の設定差をまたぐ状態の誤用を拒否する。
+  明示的な `sampling_identity()` は関数にも指定でき、宣言済みの状態を優先することで
+  ロック等を含む独自クラスにも適用できる。この経路の追加後の関連試験は **53成功**。
+
+以上によりコード・依存互換性・配布物はリリース候補として検証済み。
+この記録を追加する文書コミットのCIは [PR の checks](https://github.com/gomeshun/jeanspy/pull/62/checks)
+で追跡する。下記の PyPI 側設定と実際の公開操作は別途残る。
 
 ## 通知された依存関係アラート
 
