@@ -216,3 +216,32 @@ def test_backend_precision_is_part_of_numpyro_identity(tmp_path, monkeypatch):
         assert sampler._target_fingerprint() == original
         monkeypatch.setattr(jax, 'default_backend', lambda: 'different-platform')
         assert sampler._target_fingerprint() != original
+
+
+def test_explicit_identity_can_describe_opaque_state():
+    class CustomModel:
+        opaque = object()
+        def __init__(self):
+            self.center = 1.
+        def __call__(self):
+            return self.center
+        def sampling_identity(self):
+            return {'center': self.center, 'implementation_version': 1}
+    model = CustomModel()
+    previous = fingerprint(model)
+    model.opaque = object()
+    assert fingerprint(model) == previous
+    model.center = 2.
+    assert fingerprint(model) != previous
+
+
+def test_function_identity_provider_can_describe_external_state():
+    state = {'center': 1., 'opaque': object()}
+    def model():
+        return state['center']
+    model.sampling_identity = lambda: {'center': state['center']}
+    previous = fingerprint(model)
+    state['opaque'] = object()
+    assert fingerprint(model) == previous
+    state['center'] = 2.
+    assert fingerprint(model) != previous

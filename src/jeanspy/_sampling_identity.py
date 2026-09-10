@@ -49,6 +49,29 @@ def _function_globals(function):
             if name in function.__globals__}
 
 
+def _declared_implementation(value):
+    """Code identity without traversing state that an explicit provider owns."""
+    if isinstance(value, types.FunctionType):
+        return [_name(value), _code(value.__code__)]
+    cls = value if isinstance(value, type) else type(value)
+    implementation = []
+    for base in cls.__mro__:
+        if base is object:
+            continue
+        try:
+            source = inspect.getsource(base)
+        except (OSError, TypeError):
+            source = None
+        methods = {}
+        for name, method in vars(base).items():
+            if isinstance(method, (staticmethod, classmethod)):
+                method = method.__func__
+            if isinstance(method, types.FunctionType):
+                methods[name] = _code(method.__code__)
+        implementation.append([_name(base), source, methods])
+    return implementation
+
+
 class _Encoder:
     def __init__(self):
         self.active = set()
@@ -75,6 +98,12 @@ class _Encoder:
             self.active.remove(id(value))
 
     def _encode(self, value):
+        provider = getattr(value, 'sampling_identity', None)
+        if callable(provider):
+            implementation = self.encode(_declared_implementation(value))
+            if isinstance(value, type):
+                return ["declared_type", implementation]
+            return ["declared_state", implementation, self.encode(provider())]
         if isinstance(value, pd.DataFrame):
             return ["dataframe", self.encode(value.index.tolist()),
                     self.encode(value.columns.tolist()),
@@ -138,9 +167,6 @@ class _Encoder:
             return ["ellipsis"]
         if is_dataclass(value):
             return [self.encode(type(value)), self.encode({f.name: getattr(value, f.name) for f in fields(value)})]
-        provider = getattr(value, 'sampling_identity', None)
-        if callable(provider):
-            return [self.encode(type(value)), self.encode(provider())]
         module = type(value).__module__.split('.')[0]
         if module == 'scipy' and hasattr(value, 'name'):
             return ["scipy_distribution", _name(type(value)), value.name]
