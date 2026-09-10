@@ -2,7 +2,12 @@
 
 JeansPy is published from GitHub Actions with `uv` and PyPI Trusted Publishing. The release workflow is `.github/workflows/release.yml`.
 
-No long-lived PyPI API token is stored in GitHub. A version tag triggers the same artifact-validation job used on release-related pull requests; only after that job succeeds are the exact wheel and source distribution passed to the publishing job with GitHub OIDC permission.
+No long-lived PyPI API token is stored in GitHub. A version tag triggers both
+artifact validation and the full release test matrix used on release-related
+pull requests. The publishing job depends on **both** jobs succeeding; a
+build/smoke pass alone cannot publish a commit with failing tests. The exact
+validated wheel and source distribution are passed to the publishing job
+with GitHub OIDC permission.
 
 Users install the published package with:
 
@@ -75,7 +80,7 @@ git push origin main
 Before tagging, all of the following should be true:
 
 1. ordinary push/PR CI is green;
-2. the release workflow's `Build and validate distributions` job is green on the release-related PR;
+2. the release workflow's `Build and validate distributions` and `Release test matrix` jobs are green on the release-related PR;
 3. `pyproject.toml` contains the intended version;
 4. `README.md` contains the Quick Start that should be executable by a base installation;
 5. the `pypi` GitHub environment and PyPI Trusted Publisher still match the repository/workflow configuration;
@@ -92,6 +97,33 @@ uvx twine check dist/*
 The GitHub release validation is stronger than this local check because it installs the built artifacts into clean environments.
 
 ## 3. What The Release Gate Validates
+
+The `tests` job calls `./.github/workflows/test.yml` from the **same commit**
+as the caller. It does not check out `main` or trust the CI status of an older
+commit. `publish.needs` includes both `build` and `tests`, so a failed,
+cancelled or skipped dependency prevents publishing. No tag is needed to
+exercise validation: PRs changing either workflow, `pyproject.toml`, `uv.lock`,
+the README, this guide or the artifact validator run the release gate with
+publishing skipped.
+
+The test definitions are shared with ordinary CI:
+
+| Trigger | Dependency resolution | Python | MCMC |
+| --- | --- | --- | --- |
+| Ordinary push / PR | `uv sync --locked` | 3.12, 3.13 | opt-in tests skipped |
+| Release-related PR / version tag | locked **and** fresh from declared package requirements | 3.12, 3.13 | `pytest --run-mcmc`, all tests required |
+
+Both resolution modes run the base import/isolation checks and the complete
+NumPyro CPU suite. Fresh installations use `uv pip install` into a new venv;
+subsequent commands use that interpreter directly so `uv run` cannot silently
+restore locked dependencies. Resolved versions are uploaded for auditing.
+The existing numerical stress checks and examples run in the same matrix.
+CUDA extras are resolution-checked below; these runners do not validate GPU
+execution or GPU performance.
+
+The ordinary/release tests and artifact validation are read-only with respect
+to PyPI. Only the tag-only publish job has `id-token: write` and enters the
+`pypi` environment. Never push a release tag merely to test the workflow.
 
 For pull requests that change release-related files, and again for a release tag, `.github/workflows/release.yml`:
 

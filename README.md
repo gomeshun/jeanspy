@@ -64,8 +64,11 @@ The NumPyro extras also require ArviZ 1.0, xarray 2024.11 or newer, and their
 declared storage backends. ArviZ 1.0 requires Python 3.12 and NumPy 2 or
 newer, which is why Python 3.11 is not in this release's matrix. The
 dependency ranges intentionally use API-compatible lower bounds rather than
-the versions in one development environment. CI resolves and tests the
-latest versions satisfying these ranges on both supported Python versions;
+the versions in one development environment. Ordinary CI tests `uv.lock`;
+release-related PRs and tags additionally resolve and test the latest versions
+satisfying these ranges, on both supported Python versions, including opt-in
+MCMC tests. All of these tests and the built-artifact checks must pass before
+publication. The exact resolved versions are retained as CI artifacts;
 the CUDA extra is installation-compatible but is not run on the CPU-only CI
 runner.
 
@@ -128,6 +131,51 @@ print(sigma_los_kms)
 ```
 
 JeansPy does not bundle an external dwarf-galaxy database. Observational data and object-specific priors should be supplied explicitly by downstream analyses.
+
+### Classical inference with explicit priors
+
+`get_default_estimation_model(data, photometry_prior_loc,
+photometry_prior_scale, config=...)` composes Plummer + NFW + constant
+anisotropy. Supply kinematic columns `R_pc`, `vlos_kms`, and `e_vlos_kms`
+and a DataFrame or CSV with finite `lower < upper` bounds in this order:
+
+| Sampling coordinate | Physical parameter |
+| --- | --- |
+| `vmem_kms` | systemic velocity in km/s |
+| `log10_re_pc` | `re_pc = 10**log10_re_pc` |
+| `log10_rs_pc` | `rs_pc = 10**log10_rs_pc` |
+| `log10_rhos_Msunpc3` | `rhos_Msunpc3 = 10**log10_rhos_Msunpc3` |
+| `log10_r_t_pc` | `r_t_pc = 10**log10_r_t_pc` |
+| `bfunc_beta_ani` | `beta_ani = 1 - 10**bfunc_beta_ani` |
+
+The photometry prior is Gaussian in `log10_re_pc`; its location and scale
+are explicitly supplied, with a positive finite scale. A uniform prior in
+these sampling coordinates is **not** uniform in physical radius/density or
+anisotropy. Choose bounds appropriate to your scientific analysis.
+
+A missing config path produces an **unfilled template and raises ValueError**.
+Fill it in before retrying; the library does not invent universal prior ranges.
+Duplicate, missing, misordered names and nonfinite/degenerate bounds fail
+before sampling. `model.sample(size)` draws within the finite support,
+including the truncated photometry prior, and can be passed directly as the
+`p0_generator` to `jeanspy.sampler.Sampler`.
+
+`reset_data()` preserves supplied priors and invalidates cached WBIC
+temperature. The explicit `vmem_prior_from_data=True` option replaces only
+the velocity bounds by the data minimum/maximum at each reset; this is an
+empirical-prior choice and requires a nonzero velocity range. Sampling and
+prior evaluation read the same updated bounds. Shared data can only be
+updated at its original length while workers are idle.
+
+Run the reproducible synthetic example, including persisted-chain restart:
+
+```bash
+python scripts/example_classical_inference.py --output-dir /tmp/jeanspy-example
+```
+
+Use a new output directory. The script records the synthetic observations,
+explicit example priors, chain and verification result. Its short chain
+tests the workflow; it does not establish convergence or scientific coverage.
 
 ### J-factor calculations
 
@@ -213,6 +261,29 @@ that grid, especially closer to `g=3`. Classical invalid mass inputs raise
 `ValueError`; JAX returns NaN under eager execution and JIT. Jeans solvers
 preserve invalid mass signals, and the NumPyro likelihood rejects invalid
 velocity variances with negative infinite log probability.
+
+### Projected-radius domain
+
+All LOS solvers accept a scalar or a **nonempty one-dimensional** array of
+projected radii. Only **finite `R_pc > 0`** are supported. `R=0` needs a
+model-dependent central-limit calculation, which these solvers do not provide;
+it must not be approximated by an arbitrary epsilon.
+
+Classical solvers raise `ValueError` if any radius is invalid and preserve
+scalar versus vector output. JAX solvers always return a one-dimensional
+array (length one for a scalar). Invalid radius elements return NaN in both
+eager and JIT execution; valid members of a mixed array are unaffected.
+Invalid shapes raise `ValueError` in both backends. The NumPyro likelihood
+rejects invalid solver results with negative infinite log probability.
+
+Small positive radii can require much larger `u_max`: kernel radii extend only
+to `R_pc*u_max`. The default accuracy envelope starts at `R/Re=0.005`.
+The near-center regression additionally compares isotropic Plummer + NFW
+against an independent adaptive integral at `R=0.001..300 pc` for `Re=200 pc`,
+with `u_max=1e8`, `n_u=1025` (kernel) or `n_r=8192` (Abel), then refines these
+controls. These are convergence-test settings, not new universal defaults.
+The Abel method uses a piecewise radial grid: its radius derivatives are
+defined away from bin-boundary crossings, where the approximation has kinks.
 
 ## Example Notebooks
 
