@@ -1,5 +1,8 @@
 # Release readiness: issues #53–#57
 
+> Historical record for PR #61. The subsequent audit and its fixes are tracked
+> in [the release audit remediation record](release_audit_fixes_20260910.md).
+
 This work addresses the five open correctness/release issues other than
 [axisymmetric modeling #52](https://github.com/gomeshun/jeanspy/issues/52).
 It extends [PR #61](https://github.com/gomeshun/jeanspy/pull/61), starting from

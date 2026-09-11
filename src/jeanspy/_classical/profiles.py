@@ -14,6 +14,16 @@ from .core import Model
 from .jfactor import C_J, _ullio2016_inner_weight, _ullio2016_weight
 
 
+def _jfactor_quad(integrand, lo, hi, **kwargs):
+    """Do not return an unconverged or nonphysical quadrature as a J-factor."""
+    result = quad(integrand, lo, hi, full_output=True, **kwargs)
+    value, error = result[:2]
+    if len(result) != 3 or not np.isfinite(value) or value < 0:
+        detail = result[3] if len(result) > 3 else "nonfinite or negative integral"
+        raise ValueError(f"J-factor quadrature failed: {detail}")
+    return value, error
+
+
 class StellarModel(Model):
     """Base class for projected/deprojected stellar-density models."""
 
@@ -36,7 +46,16 @@ class StellarModel(Model):
 
             \int_0^{R_\mathrm{trunc}} 2\pi R\,\Sigma_\mathrm{trunc}(R)\,dR = 1.
         """
-        return self.density_2d(R_pc) / self.cdf_R(R_trunc_pc)
+        R = np.asarray(R_pc, dtype=float)
+        cutoff = np.asarray(R_trunc_pc, dtype=float)
+        if cutoff.ndim != 0 or not np.isfinite(cutoff) or cutoff <= 0:
+            raise ValueError("R_trunc_pc must be a finite positive scalar")
+        if np.any(~np.isfinite(R)) or np.any(R < 0):
+            raise ValueError("R_pc must be finite and nonnegative")
+        norm = self.cdf_R(cutoff)
+        if not np.isfinite(norm) or norm <= 0:
+            raise ValueError("Truncated stellar density must have positive finite normalization")
+        return np.where(R <= cutoff, self.density_2d(R) / norm, 0.0)
 
     @abstractmethod
     def density_2d(self, R_pc):
@@ -160,13 +179,24 @@ class Uniform2dModel(StellarModel):
     required_models = {}
 
     def density_2d(self, R_pc):
-        return np.ones_like(R_pc) / (np.pi * self.params.Rmax_pc**2)
+        R, rmax = self._validated_radii(R_pc)
+        return np.where((R >= 0) & (R <= rmax), 1.0 / (np.pi * rmax**2), 0.0)
 
     def density_3d(self, r_pc):
         raise NotImplementedError("Uniform2dModel has no 3-D density model.")
 
     def cdf_R(self, R_pc):
-        return (R_pc / self.params.Rmax_pc) ** 2
+        R, rmax = self._validated_radii(R_pc)
+        return (np.clip(R, 0.0, rmax) / rmax) ** 2
+
+    def _validated_radii(self, R_pc):
+        R = np.asarray(R_pc, dtype=float)
+        rmax = np.asarray(self.params.Rmax_pc, dtype=float)
+        if rmax.ndim != 0 or not np.isfinite(rmax) or rmax <= 0:
+            raise ValueError("Rmax_pc must be a finite positive scalar")
+        if np.any(np.isnan(R)):
+            raise ValueError("R_pc must not contain NaN")
+        return R, rmax
 
 
 class DMModel(Model):
@@ -238,7 +268,20 @@ class DMModel(Model):
                     "The full Ullio geometry supports apertures no larger than 90 degrees."
                 )
 
+        self._validate_jfactor_profile()
         return dist_pc, roi_deg, r_t_pc
+
+    def _validate_jfactor_profile(self):
+        """Subclasses must check any analytic convergence restrictions."""
+        for name in self.required_param_names:
+            if np.any(~np.isfinite(np.asarray(self.params[name], dtype=float))):
+                raise ValueError(f"J-factor profile parameter {name} must be finite")
+
+    def _jfactor_density(self, r_pc):
+        rho = float(np.asarray(self.mass_density_3d(r_pc)))
+        if not np.isfinite(rho) or rho < 0:
+            raise ValueError("J-factor density must be finite and nonnegative away from the origin")
+        return rho
 
     def assert_roi_is_enough_small(self, roi_deg):
         try:
@@ -279,10 +322,10 @@ class DMModel(Model):
         r_max_pc = min(dist_pc * np.sin(np.deg2rad(roi_deg)), r_t_pc)
 
         def integrand(r_pc):
-            rho = float(np.asarray(self.mass_density_3d(r_pc)))
+            rho = self._jfactor_density(r_pc)
             return r_pc**2 * rho**2
 
-        integ, _ = quad(
+        integ, _ = _jfactor_quad(
             integrand,
             0.0,
             r_max_pc,
@@ -314,10 +357,10 @@ class DMModel(Model):
         def inner_integrand(r_pc):
             if r_pc == 0.0:
                 return 0.0
-            rho = float(np.asarray(self.mass_density_3d(r_pc)))
+            rho = self._jfactor_density(r_pc)
             return rho**2 * float(_ullio2016_inner_weight(r_pc, dist_pc))
 
-        integ, _ = quad(
+        integ, _ = _jfactor_quad(
             inner_integrand,
             0.0,
             r_inner_pc,
@@ -331,11 +374,11 @@ class DMModel(Model):
 
             def outer_integrand(u):
                 r_pc = r_max_pc + outer_width_pc * u**2
-                rho = float(np.asarray(self.mass_density_3d(r_pc)))
+                rho = self._jfactor_density(r_pc)
                 weight = _ullio2016_weight(r_pc, 0.0, r_max_pc, dist_pc)
                 return 2.0 * outer_width_pc * u * rho**2 * float(weight)
 
-            outer, _ = quad(
+            outer, _ = _jfactor_quad(
                 outer_integrand,
                 0.0,
                 1.0,
@@ -360,6 +403,13 @@ class ZhaoModel(DMModel):
     name = "Zhao Model"
     required_param_names = ["rs_pc", "rhos_Msunpc3", "a", "b", "g", "r_t_pc"]
     required_models = {}
+
+    def _validate_jfactor_profile(self):
+        super()._validate_jfactor_profile()
+        if (not np.all(_zhao_valid(np.asarray(1.0), self.params, np))
+                or np.any(np.asarray(self.params.g) >= 1.5)):
+            raise ValueError("Finite Zhao J-factor requires positive scales, a > 0, and g < 1.5; "
+                             "steeper central cusps have divergent annihilation luminosity")
 
     def mass_density_3d(self, r_pc):
         rs_pc = self.params.rs_pc
@@ -391,6 +441,11 @@ class NFWModel(DMModel):
     name = "NFW Model"
     required_param_names = ["rs_pc", "rhos_Msunpc3", "r_t_pc"]
     required_models = {}
+
+    def _validate_jfactor_profile(self):
+        super()._validate_jfactor_profile()
+        if np.any(np.asarray(self.params.rs_pc) <= 0) or np.any(np.asarray(self.params.rhos_Msunpc3) <= 0):
+            raise ValueError("NFW J-factor requires positive rs_pc and rhos_Msunpc3")
 
     def mass_density_3d(self, r_pc):
         rs_pc = self.params.rs_pc
@@ -438,52 +493,43 @@ class NFWModel(DMModel):
         return j
 
     def jfactor_evans2016(self, dist_pc, roi_deg=0.5):
-        """Evaluate the Evans et al. (2016) NFW J-factor fitting formula."""
-        self.assert_roi_is_enough_small(roi_deg)
+        """Evaluate the small-angle, infinite-LOS Evans et al. (2016) formula.
 
-        def func_x(s):
-            epsilon = 1e-8
-            s = np.atleast_1d(s)
-            if np.any(s < 0):
-                raise ValueError("The Evans J-factor variable must be non-negative.")
-            ret = np.full_like(s, np.nan, dtype=float)
-            cond_1 = s < 1.0 - epsilon
-            cond_2 = s > 1.0 + epsilon
-            cond_3 = np.abs(1.0 - s) <= epsilon
-            ret[cond_1] = np.arccosh(1.0 / s[cond_1]) / np.sqrt(
-                1.0 - s[cond_1] ** 2
-            )
-            ret[cond_2] = np.arccos(1.0 / s[cond_2]) / np.sqrt(
-                s[cond_2] ** 2 - 1.0
-            )
-            ret[cond_3] = (
-                1.0
-                - 2.0 * (s[cond_3] - 1.0) / 3.0
-                + 7.0 * (s[cond_3] - 1.0) ** 2 / 15.0
-            )
-            return ret
-
-        roi_pc = dist_pc * np.deg2rad(roi_deg)
-        rs_pc = self.params.rs_pc
-        rhos = self.params.rhos_Msunpc3
-        r_t_pc = self.params.r_t_pc
-        r_max_pc = np.minimum(roi_pc, r_t_pc)
-        y = np.atleast_1d(np.asarray(r_max_pc / rs_pc, dtype=float))
-        delta = 1.0 - y**2
-        coeff_evans = (
-            2.0 * y * (7.0 * y - 4.0 * y**3 + 3.0 * np.pi * delta**2)
-            + 6.0
-            * (2.0 * delta**3 - 2.0 * delta - y**4)
-            * func_x(y)
-        ) / (6.0 * delta**2)
-        near_one = np.abs(1.0 - y) < 1e-8
-        coeff_evans[near_one] = (
-            np.pi
-            - 38.0 / 15.0
-            + (-64.0 / 21.0 + np.pi) * (y[near_one] - 1.0)
+        This historical approximation caps the *projected aperture* at r_t_pc;
+        it does not truncate the density along the line of sight. For a halo
+        truncated in three dimensions use jfactor_ullio2016 instead.
+        """
+        dist_pc, roi_deg, r_t_pc = self._validate_jfactor_inputs(
+            dist_pc, roi_deg, small_angle=True
         )
-        result = C_J * 2.0 * np.pi * rhos**2 * rs_pc**3 / dist_pc**2 * coeff_evans
-        return result[0] if np.ndim(r_max_pc) == 0 else result
+        r_max_pc = np.minimum(dist_pc * np.deg2rad(roi_deg), r_t_pc)
+        rs_pc, rhos = self.params.rs_pc, self.params.rhos_Msunpc3
+        y = np.asarray(r_max_pc / rs_pc, dtype=float)
+        shape = y.shape
+        y = y.reshape(-1)
+        delta = (1.0 - y) * (1.0 + y)
+        coeff = np.empty_like(y)
+        near = np.abs(delta) <= 0.2
+        # X(y) = sum(delta**n / (2*n+1)); cancel the constant and linear
+        # terms symbolically before dividing the Evans numerator by delta**2.
+        # Twenty terms give an absolute remainder < 1e-16 on |delta| <= 0.2.
+        series = [-38.0 / 15.0] + [
+            2.0 / (2*n - 1) - 1.0 / (2*n + 1) - 1.0 / (2*n + 5)
+            for n in range(1, 21)
+        ]
+        coeff[near] = np.pi * y[near] + np.polynomial.polynomial.polyval(delta[near], series)
+        far = ~near
+        s, d = y[far], delta[far]
+        x = np.empty_like(s)
+        below = s < 1.0
+        x[below] = np.arccosh(1.0 / s[below]) / np.sqrt(d[below])
+        x[~below] = np.arccos(1.0 / s[~below]) / np.sqrt(-d[~below])
+        coeff[far] = (2*s*(7*s - 4*s**3 + 3*np.pi*d**2)
+                      + 6*(2*d**3 - 2*d - s**4)*x) / (6*d**2)
+        result = C_J * 2*np.pi*rhos**2*rs_pc**3 / dist_pc**2 * coeff.reshape(shape)
+        if np.any(~np.isfinite(result)) or np.any(result <= 0):
+            raise ValueError("Evans J-factor evaluation is nonfinite or nonpositive")
+        return result.item() if result.ndim == 0 else result
 
 
 class AnisotropyModel(Model):

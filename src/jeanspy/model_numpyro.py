@@ -9,6 +9,7 @@ calculation methods; the classical, stateful API remains in
 from __future__ import annotations
 
 from functools import lru_cache, partial
+import operator
 from typing import Any, Dict, Mapping, Optional, cast
 
 # IMPORTANT: these env vars must be set before importing JAX.
@@ -651,6 +652,10 @@ class Model:
     def __getitem__(self, key: str) -> "Model":
         return self.submodels[key]
 
+    def sampling_identity(self):
+        """Model configuration without the derived compilation cache."""
+        return {k: v for k, v in vars(self).items() if k != "_jit_cache"}
+
 
 class StellarModel(Model):
     required_models: Mapping[str, type[Model]] = {}
@@ -729,16 +734,20 @@ class DMModel(Model):
         This default path is AD-friendly and avoids special-function gradient issues.
         If `r_t_pc` exists in `params`, radius is truncated at that value.
         """
-        r = jnp.asarray(r_pc)
-        dtype = jnp.result_type(r)
-
+        if operator.index(n_steps) < 2:
+            raise ValueError("n_steps must be an integer >= 2")
+        if not np.isfinite(t_min) or not 0 < t_min < 1:
+            raise ValueError("t_min must be finite and strictly between 0 and 1")
+        dtype = jnp.result_type(jnp.asarray(r_pc), *(jnp.asarray(params[k]) for k in self.required_param_names), 1.0)
+        r = jnp.asarray(r_pc, dtype=dtype)
+        valid = self.valid_mass_domain(r, params=params)
         if "r_t_pc" in params:
             r_t = jnp.asarray(params["r_t_pc"], dtype=dtype)
-            r = jnp.minimum(r.astype(dtype), r_t)
-        else:
-            r = r.astype(dtype)
+            r = jnp.minimum(r, r_t)
 
-        r_pos = jnp.maximum(r, jnp.asarray(0.0, dtype=dtype))
+        # Evaluate zero/invalid radii at a finite placeholder to avoid 0 * inf
+        # at a central cusp. Only valid zero radii are mapped to zero mass.
+        r_pos = jnp.where(valid & (r > 0), r, 1.0)
         t = jnp.linspace(
             jnp.asarray(t_min, dtype=dtype), jnp.asarray(1.0, dtype=dtype), int(n_steps)
         )
@@ -747,8 +756,22 @@ class DMModel(Model):
         rho = self.mass_density_3d(r_grid, params=params)
         integrand_t = 4.0 * jnp.pi * (r_grid**2) * rho * r_pos[..., None]
         mass = _trapz(integrand_t, t, axis=-1)
-        mass = jnp.where(r <= 0.0, jnp.zeros_like(mass), mass)
-        return jnp.nan_to_num(mass, nan=0.0, neginf=0.0, posinf=1e12)
+        valid = valid & jnp.all(jnp.isfinite(rho) & (rho >= 0), axis=-1)
+        return jnp.where(valid, jnp.where(r == 0, 0.0, mass), jnp.nan)
+
+    def valid_mass_domain(self, r_pc, *, params):
+        """Dynamic validity mask; custom profiles may impose stricter domains."""
+        r = jnp.asarray(r_pc)
+        valid = (r >= 0) & ~jnp.isnan(r)
+        for name in self.required_param_names:
+            value = jnp.asarray(params[name])
+            if name == "r_t_pc":
+                valid = valid & (value > 0) & ~jnp.isnan(value)
+            else:
+                valid = valid & jnp.isfinite(value)
+            if name in ("rs_pc", "rhos_Msunpc3"):
+                valid = valid & (value > 0)
+        return valid & jnp.isfinite(jnp.minimum(r, params.get("r_t_pc", jnp.inf)))
 
     @property
     def has_analytic_enclosed_mass(self) -> bool:
@@ -843,7 +866,8 @@ class NFWModel(DMModel):
         x = r / rs
         # M(r) = 4π ρs rs^3 [ ln(1+x) - x/(1+x) ]
         coeff = jnp.asarray(resolved["nfw_mass_coeff"])
-        return coeff * _nfw_enclosed_mass_shape(x)
+        mass = coeff * _nfw_enclosed_mass_shape(x)
+        return jnp.where(self.valid_mass_domain(r_pc, params=params), mass, jnp.nan)
 
 
 class ZhaoModel(DMModel):

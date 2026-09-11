@@ -1,0 +1,70 @@
+{
+  "baseline_commit": "719a3165ff26877ce87a19915825f08ea6791ae5",
+  "artifacts": [
+    {
+      "name": ".gitignore",
+      "size_bytes": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "name": "jeanspy-0.1.0-py3-none-any.whl",
+      "size_bytes": 78582,
+      "sha256": "05870782fa1799275948532c298341e5566b6e26e64eb326552ece9917e24dec"
+    },
+    {
+      "name": "jeanspy-0.1.0.tar.gz",
+      "size_bytes": 121615,
+      "sha256": "49ed2296e1cd9258957f8ea2693d60777676656367d20197e77359bfded9569a"
+    }
+  ],
+  "wheel_payload_files_matching_checkout": [
+    "jeanspy/__init__.py",
+    "jeanspy/_jax_env.py",
+    "jeanspy/_model_impl.py",
+    "jeanspy/_sersic_deprojection.py",
+    "jeanspy/_zhao.py",
+    "jeanspy/baes_eta2.py",
+    "jeanspy/dequad.py",
+    "jeanspy/hyp2f1_jax.py",
+    "jeanspy/model.py",
+    "jeanspy/model_numpyro.py",
+    "jeanspy/sampler.py",
+    "jeanspy/sampler_numpyro.py",
+    "jeanspy/sersic.py",
+    "jeanspy/_classical/__init__.py",
+    "jeanspy/_classical/core.py",
+    "jeanspy/_classical/inference.py",
+    "jeanspy/_classical/jfactor.py",
+    "jeanspy/_classical/profiles.py",
+    "jeanspy/_classical/solver.py",
+    "jeanspy/data/coeff_dens.csv",
+    "jeanspy/data/coeff_dens_vm20bis.csv",
+    "jeanspy/data/sersic_log10n_log10bn.csv"
+  ],
+  "full_suite_result": "275 passed, 11 warnings, 37 subtests passed in 157.15s (0:02:37)",
+  "gpu_sampler_result": "10 passed in 23.61s",
+  "gpu_device": "NVIDIA GeForce RTX 3090",
+  "gpu_driver": "595.84",
+  "pypi_public_json_status": 404,
+  "github_environment_pypi_exists": true,
+  "pypi_trusted_publisher_status": "unverified; not publicly exposed",
+  "lower_dependency_import_result": "pandas, h5py and netCDF4 raise ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject",
+  "lower_dependency_metadata_check": "uv pip check: All installed packages are compatible",
+  "review_changes": "report and reproduction artifacts only; no runtime or test changes",
+  "wheel_base_smoke": "passed in a new environment; package imported from installed wheel",
+  "sdist_base_smoke": "passed in a new environment; package imported from installed sdist",
+  "wheel_cpu_smoke": "NumPyro CPU artifact smoke test passed; fresh dependencies",
+  "twine_check": "wheel and sdist passed",
+  "fresh_cpu_versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.5",
+    "jax": "0.11.1",
+    "numpyro": "0.21.0",
+    "arviz": "1.3.0",
+    "h5py": "3.16.0",
+    "netCDF4": "1.7.4",
+    "xarray": "2026.7.0",
+    "zarr": "3.3.0"
+  }
+}

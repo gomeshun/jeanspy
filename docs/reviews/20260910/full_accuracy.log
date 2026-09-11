@@ -1,0 +1,9 @@
+Reuse stateless models; all numerical settings unchanged.
+sigmalos2 kernel numerical-accuracy contract
+target: max relative error <= 1.0e-03
+metric floor: max(|reference|, 1e-09 * max|reference|, 1e-12)
+reference: CPU float64 kernel, n_u=1024, n_kernel=256, u_max=100000
+cases=246, R/Re=[0.005,10]
+cpu-float64                   worst_rel=3.697e-04 median_hot_ms=0.969 worst_case=baes-radial-max-rs100-eta4-ra1
+cpu-float32                   worst_rel=3.716e-04 median_hot_ms=0.501 worst_case=baes-radial-max-rs100-eta4-ra1
+gpu-float32-numerical-proxy   worst_rel=3.762e-04 median_hot_ms=1.432 worst_case=baes-radial-max-rs100-eta4-ra1

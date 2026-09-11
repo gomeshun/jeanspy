@@ -17,13 +17,17 @@ env:
 
 jobs:
   base:
-    name: Base install smoke test (Python ${{ matrix.python-version }}, ${{ matrix.dependencies }})
-    runs-on: ubuntu-latest
+    name: Base runtime (${{ matrix.os }}, Python ${{ matrix.python-version }}, ${{ matrix.dependencies }})
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.12", "3.13"]
-        dependencies: ${{ fromJSON(inputs.release_validation && '["locked", "fresh"]' || '["locked"]') }}
+        dependencies: ${{ fromJSON(inputs.release_validation && '["locked", "fresh", "lowest"]' || '["locked", "lowest"]') }}
     permissions:
       contents: read
 
@@ -48,12 +52,31 @@ jobs:
           uv venv --python "${{ matrix.python-version }}"
           uv pip install .
 
-      - name: Run base import test
-        run: uv run --no-sync --with pytest pytest tests/test_import.py -q
+      - name: Install lowest compatible base dependencies
+        if: matrix.dependencies == 'lowest'
+        run: |
+          uv venv --python "${{ matrix.python-version }}"
+          uv pip compile pyproject.toml --resolution lowest-direct \
+            --python-version "${{ matrix.python-version }}" --only-binary :all: \
+            --output-file lowest-base.txt
+          uv pip sync lowest-base.txt
+          uv pip install --no-deps .
+
+      - name: Install base test tools and check dependencies
+        run: |
+          uv pip install pytest
+          uv pip check
+
+      - name: Run base numerical and inference tests
+        run: >-
+          uv run --no-sync python -m pytest -q
+          tests/test_import.py tests/test_jfactor_ullio2016.py
+          tests/test_sampler_emcee_integration.py tests/test_classical_inference_workflow.py
+          tests/test_platform_compatibility.py
 
       - name: Verify optional dependencies are not in the base environment
         run: |
-          .venv/bin/python - <<'PY'
+          uv run --no-sync python - <<'PY'
           import importlib.util
 
           for package in ("jax", "matplotlib", "numpyro"):
@@ -67,7 +90,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.12", "3.13"]
-        dependencies: ${{ fromJSON(inputs.release_validation && '["locked", "fresh"]' || '["locked"]') }}
+        dependencies: ${{ fromJSON(inputs.release_validation && '["locked", "fresh", "lowest"]' || '["locked", "lowest"]') }}
     permissions:
       contents: read
 
@@ -91,6 +114,20 @@ jobs:
         run: |
           uv venv --python "${{ matrix.python-version }}"
           uv pip install ".[numpyro_cpu,dev,plotting]"
+
+      - name: Install lowest compatible direct runtime dependencies
+        if: matrix.dependencies == 'lowest'
+        run: |
+          uv venv --python "${{ matrix.python-version }}"
+          uv pip compile pyproject.toml --extra numpyro_cpu --extra plotting \
+            --resolution lowest-direct --python-version "${{ matrix.python-version }}" \
+            --only-binary :all: --output-file lowest-runtime.txt
+          uv pip sync lowest-runtime.txt
+          uv pip install --no-deps .
+          uv pip install pytest mpmath
+
+      - name: Check installed dependency compatibility
+        run: uv pip check
 
       - name: Record resolved versions
         run: uv pip freeze > artifacts-dependencies.txt

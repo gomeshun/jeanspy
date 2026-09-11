@@ -166,6 +166,13 @@ the velocity bounds by the data minimum/maximum at each reset; this is an
 empirical-prior choice and requires a nonzero velocity range. Sampling and
 prior evaluation read the same updated bounds. Shared data can only be
 updated at its original length while workers are idle.
+WBIC requires at least two observations; an ordinary likelihood can use one.
+
+`Sampler` checks the saved analysis identity before restarting or appending.
+Changing observations or priors requires a new output prefix, or an explicit
+`reset=True` to discard that backend's chain. `burn_in()` continues from the
+final warmup ensemble; its draws remain stored for compatibility. Exclude them
+with `get_chain(discard=n_warmup)` and the corresponding log-probability methods.
 
 Run the reproducible synthetic example, including persisted-chain restart:
 
@@ -196,6 +203,19 @@ dm = NFWModel(
 j_full = dm.jfactor_ullio2016(dist_pc=30000.0, roi_deg=0.5)
 j_spherical = dm.jfactor_ullio2016_simple(dist_pc=30000.0, roi_deg=0.5)
 ```
+
+Annihilation luminosity imposes a stricter central-cusp condition than mass:
+Zhao J-factors require **`g < 1.5`**, even though enclosed mass exists for
+`g < 3`. Divergent cusps and failed quadratures raise `ValueError`; no implicit
+central cutoff is introduced. NFW/Zhao profile scales must be finite and
+positive. The Evans NFW method uses a stable series around `R/rs=1`. It retains
+the historical infinite-line-of-sight approximation with the projected
+aperture capped at `r_t_pc`; this is not a three-dimensional truncation.
+Use `jfactor_ullio2016` for that geometry.
+
+`StellarModel.density_2d_truncated(R, R_trunc)` vanishes outside the cutoff and
+integrates to one over the whole plane. `Uniform2dModel` likewise has support
+only inside its disk, and its radial CDF saturates at one outside the disk.
 
 ## Model Backends
 
@@ -276,6 +296,13 @@ eager and JIT execution; valid members of a mixed array are unaffected.
 Invalid shapes raise `ValueError` in both backends. The NumPyro likelihood
 rejects invalid solver results with negative infinite log probability.
 
+`JeansLikelihoodModel` requires three matching, nonempty one-dimensional
+observation arrays. It never broadcasts a velocity column of shape `(N, 1)`
+against radii of shape `(N,)`. All observations must be finite, radii positive,
+and measurement errors nonnegative. Invalid dynamic values are rejected with
+negative infinite log probability, including under JIT; shape errors raise
+`ValueError`. A custom velocity mean must be scalar or have shape `(N,)`.
+
 Small positive radii can require much larger `u_max`: kernel radii extend only
 to `R_pc*u_max`. The default accuracy envelope starts at `R/Re=0.005`.
 The near-center regression additionally compares isotropic Plummer + NFW
@@ -284,6 +311,15 @@ with `u_max=1e8`, `n_u=1025` (kernel) or `n_r=8192` (Abel), then refines these
 controls. These are convergence-test settings, not new universal defaults.
 The Abel method uses a piecewise radial grid: its radius derivatives are
 defined away from bin-boundary crossings, where the approximation has kinks.
+
+Numerical convergence does not establish a nonnegative stellar distribution
+function or calibrated statistical intervals. For a finite central potential,
+the central cusp/anisotropy condition is `gamma_star >= 2*beta_0`
+([An & Evans 2006](https://arxiv.org/abs/astro-ph/0511686)). In particular,
+a cored Plummer tracer with an NFW halo and constant `beta_ani > 0` violates
+this necessary condition. Radial-anisotropy stress tests check the formal
+Jeans integrals, not the physical admissibility of those models. Choose priors
+and perform distribution-function and coverage checks for the scientific use.
 
 ## Example Notebooks
 
@@ -334,6 +370,39 @@ Storage backend guidance:
 - `netcdf4`: good when compatibility with external NetCDF tooling matters most
 
 `NumPyroSampler` defaults to `storage_backend="zarr"`, while still allowing `storage_backend="h5netcdf"` or `storage_backend="netcdf4"`.
+
+### Safe restart contract
+
+Both samplers fingerprint the model, priors, observation contents, parameter
+schema, numerical configuration, package source, and relevant library versions.
+NumPyro additionally records the model's call arguments, chain configuration,
+active CPU/GPU backend, and JAX precision settings, since solver defaults can
+depend on the backend.
+Repeated runs and checkpoints must match this identity before any samples are
+appended or cached energies reused. A changed target requires a **new
+`output_dir`**, even with `resume=False`; also construct a new `MCMC` instance.
+`load_checkpoint()` verifies the target immediately and `run()` verifies the
+observations before using the loaded state. Raw MCMC state produced outside
+the wrapper is not adopted automatically.
+
+Pre-identity checkpoints and emcee backends remain readable as historical
+results but cannot safely resume. Preserve them and start a new output location;
+do not copy metadata from another analysis to bypass the check. A dependency or
+source upgrade conservatively requires a new chain as well.
+
+Ordinary NumPyro distributions, parameter specs, arrays, Python closures, and
+the supplied Jeans models are supported automatically. Custom models with
+hidden state (for example file contents, remote data, or opaque extension
+objects) must expose a `sampling_identity()` method returning a deterministic
+mapping of all target-defining state. This user-supplied contract must change
+whenever that state changes. The guard cannot infer arbitrary Python side
+effects. Treat low-level manual sample stores as user-supplied data.
+
+`ParameterSpec.exp` and `.pow10` accept an omitted `param_name`: the transformed
+value then keeps `sample_name` as its parameter-dictionary key and is recorded
+at `sample_name + "_transformed"`. Supply `param_name` to map it to a physical
+Jeans parameter. Duplicate sample, observation, or physical parameter names
+are rejected.
 
 ## JAX Runtime Configuration
 

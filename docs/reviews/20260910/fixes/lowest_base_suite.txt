@@ -1,0 +1,13 @@
+..........................................                               [100%]
+=============================== warnings summary ===============================
+tests/test_classical_inference_workflow.py::test_classical_inference_runs_resumes_and_resets[dataframe]
+tests/test_classical_inference_workflow.py::test_classical_inference_runs_resumes_and_resets[path]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[dataframe]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[dataframe]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[path]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[path]
+  /tmp/jeanspy-release-lowest-base312/lib/python3.12/site-packages/emcee/autocorr.py:38: RuntimeWarning: invalid value encountered in divide
+    acf /= acf[0]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+42 passed, 6 warnings in 7.00s

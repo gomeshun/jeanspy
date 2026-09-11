@@ -1,0 +1,74 @@
+{
+  "source_commit": "b721022c3eaa00aa0e5e7dda286fe74d3f84f4e5",
+  "artifacts": [
+    {
+      "filename": "jeanspy-0.1.0-py3-none-any.whl",
+      "size_bytes": 86434,
+      "sha256": "4965c66c936b30544f04970a71b303f66b052522691567fbd252a4f32ce5a073",
+      "source_payload_files_verified": 23,
+      "version": "0.1.0",
+      "license_expression": "BSD-3-Clause",
+      "twine_check": "passed"
+    },
+    {
+      "filename": "jeanspy-0.1.0.tar.gz",
+      "size_bytes": 136619,
+      "sha256": "49a4262eb4f878dd5818b05c95a74365b8836266eee81cd6d250da6c21e8bf98",
+      "source_payload_files_verified": 23,
+      "version": "0.1.0",
+      "license_expression": "BSD-3-Clause",
+      "twine_check": "passed"
+    }
+  ],
+  "installed_artifacts": [
+    {
+      "environment": "/tmp/jeanspy-release-final-wheel-base",
+      "source_payload_files_verified": 23,
+      "runtime_smoke": "passed",
+      "runtime_smoke_log": [
+        "jeanspy imported from /tmp/jeanspy-release-final-wheel-base/lib/python3.12/site-packages/jeanspy/__init__.py",
+        "[4.42046919 4.21841733 4.22716713]",
+        "base Quick Start and packaged-data smoke tests passed"
+      ],
+      "working_directory": "/tmp",
+      "environment_variables": {
+        "GITHUB_WORKSPACE": "/home/gomesu/workspace/dev_jeanspy/jeanspy",
+        "PYTHONPATH": ""
+      },
+      "validator": "scripts/validate_release_artifact.py"
+    },
+    {
+      "environment": "/tmp/jeanspy-release-final-sdist-base",
+      "source_payload_files_verified": 23,
+      "runtime_smoke": "passed",
+      "runtime_smoke_log": [
+        "jeanspy imported from /tmp/jeanspy-release-final-sdist-base/lib/python3.12/site-packages/jeanspy/__init__.py",
+        "[4.42046919 4.21841733 4.22716713]",
+        "base Quick Start and packaged-data smoke tests passed"
+      ],
+      "working_directory": "/tmp",
+      "environment_variables": {
+        "GITHUB_WORKSPACE": "/home/gomesu/workspace/dev_jeanspy/jeanspy",
+        "PYTHONPATH": ""
+      },
+      "validator": "scripts/validate_release_artifact.py"
+    },
+    {
+      "environment": "/tmp/jeanspy-release-final-wheel-cpu",
+      "source_payload_files_verified": 23,
+      "runtime_smoke": "passed",
+      "runtime_smoke_log": [
+        "jeanspy imported from /tmp/jeanspy-release-final-wheel-cpu/lib/python3.12/site-packages/jeanspy/__init__.py",
+        "NumPyro CPU artifact smoke test passed"
+      ],
+      "working_directory": "/tmp",
+      "environment_variables": {
+        "GITHUB_WORKSPACE": "/home/gomesu/workspace/dev_jeanspy/jeanspy",
+        "PYTHONPATH": "",
+        "JAX_PLATFORMS": "cpu"
+      },
+      "validator": "scripts/validate_release_artifact.py"
+    }
+  ],
+  "note": "Locally rebuilt artifacts at the recorded source commit. GitHub builds its own artifacts from that commit; archive hashes can differ due to timestamps."
+}

@@ -1,4 +1,4 @@
-from numpy import sinh,cosh,exp,log,pi,arange,isnan,isinf,float64,float128
+from numpy import sinh,cosh,exp,log,pi,arange,isnan,isinf,float64
 from functools import lru_cache
 import numpy as np
 import warnings

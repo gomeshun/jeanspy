@@ -110,16 +110,35 @@ The test definitions are shared with ordinary CI:
 
 | Trigger | Dependency resolution | Python | MCMC |
 | --- | --- | --- | --- |
-| Ordinary push / PR | `uv sync --locked` | 3.12, 3.13 | opt-in tests skipped |
-| Release-related PR / version tag | locked **and** fresh from declared package requirements | 3.12, 3.13 | `pytest --run-mcmc`, all tests required |
+| Ordinary push / PR | locked and lowest compatible direct runtime requirements | 3.12, 3.13 | opt-in tests skipped |
+| Release-related PR / version tag | locked, fresh, and lowest compatible direct runtime requirements | 3.12, 3.13 | `pytest --run-mcmc`, all tests required |
 
-Both resolution modes run the base import/isolation checks and the complete
-NumPyro CPU suite. Fresh installations use `uv pip install` into a new venv;
+Base numerical/inference and optional-dependency isolation checks run on Linux,
+Windows, and macOS (locked and lowest, and additionally fresh for release validation).
+The complete NumPyro CPU suite runs on Linux in all listed resolution modes.
+The lowest mode resolves runtime/plotting requirements with
+`uv pip compile --resolution lowest-direct --only-binary :all:` for each Python
+version, then adds the test tools. It checks actual imports, inference, and
+storage, because dependency metadata alone cannot detect a NumPy binary ABI
+mismatch. Fresh installations use `uv pip install` into a new venv;
 subsequent commands use that interpreter directly so `uv run` cannot silently
 restore locked dependencies. Resolved versions are uploaded for auditing.
 The existing numerical stress checks and examples run in the same matrix.
 CUDA extras are resolution-checked below; these runners do not validate GPU
-execution or GPU performance.
+execution or GPU performance. Record a separate GPU smoke result when changing
+JAX numerical or sampler code.
+
+The binary-compatibility floors are pandas 2.2.2, h5py 3.11.0, and netCDF4 1.7.4.
+netCDF4 1.7.2 passed an isolated import but failed to write after h5py 3.11.0
+had been imported on Linux; 1.7.4 passed both import orders and read/write
+checks. Dedicated subprocess tests cover both orders. The storage floors are
+xarray 2025.3.1 and Zarr 3.0.8, whose DataTree/Zarr APIs passed the actual
+three-backend sampler tests; xarray 2024.11.0 failed with Zarr 3.
+These permit NumPy 1.x/2.x where the complete dependency set allows it; the CPU
+ArviZ stack itself currently requires NumPy 2 or newer. See the
+[pandas 2.2.2 release notes](https://pandas.pydata.org/pandas-docs/stable/whatsnew/v2.2.2.html)
+for its first generally NumPy-2-compatible wheels. The actual lowest versions
+vary with Python and wheel availability and are recorded by each job.
 
 The ordinary/release tests and artifact validation are read-only with respect
 to PyPI. Only the tag-only publish job has `id-token: write` and enters the

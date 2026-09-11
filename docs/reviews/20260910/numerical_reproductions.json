@@ -1,0 +1,148 @@
+{
+  "versions": {
+    "jeanspy": "0.1.0",
+    "numpy": "2.4.3",
+    "scipy": "1.17.1",
+    "jax": "0.9.1",
+    "numpyro": "0.20.0",
+    "mpmath": "1.3.0"
+  },
+  "nfw_integer_numeric_mass": [
+    0.0,
+    0.0
+  ],
+  "nfw_float_numeric_mass": [
+    553056.6201518071,
+    24271429.496604126
+  ],
+  "nfw_analytic_mass": [
+    553057.1416425044,
+    24271590.540348217
+  ],
+  "nan_density_numeric_mass": [
+    0.0
+  ],
+  "nan_density_numeric_likelihood": -1.612085713764743,
+  "likelihood_shapes": {
+    "vector": {
+      "log_density": -7.738328029659266,
+      "log_prob_shape": [
+        3
+      ]
+    },
+    "column": {
+      "log_density": -23.1972803282902,
+      "log_prob_shape": [
+        3,
+        3
+      ]
+    },
+    "negative_error": {
+      "log_density": -7.738328029659266,
+      "log_prob_shape": [
+        3
+      ]
+    }
+  },
+  "zhao_jfactor_cusps": [
+    {
+      "g": 1.0,
+      "returned": 1.0876437490754829e+17,
+      "mathematically_finite": true,
+      "warnings": []
+    },
+    {
+      "g": 1.49,
+      "returned": 2.6806408465299673e+19,
+      "mathematically_finite": true,
+      "warnings": []
+    },
+    {
+      "g": 1.5,
+      "returned": 1.1904760179622496e+20,
+      "mathematically_finite": false,
+      "warnings": [
+        "The maximum number of subdivisions (300) has been achieved.\n  If increasing the limit yields no improvement it is advised to analyze \n  the integrand in order to determine the difficulties.  If the position of a \n  local difficulty can be determined (singularity, discontinuity) one will \n  probably gain from splitting up the interval and calling the integrator \n  on the subranges.  Perhaps a special-purpose integrator should be used."
+      ]
+    },
+    {
+      "g": 1.6,
+      "returned": -4.3832079966058353e+18,
+      "mathematically_finite": false,
+      "warnings": [
+        "The integral is probably divergent, or slowly convergent."
+      ]
+    },
+    {
+      "g": 2.5,
+      "returned": 2.5122161640258232e+19,
+      "mathematically_finite": false,
+      "warnings": [
+        "The integral is probably divergent, or slowly convergent."
+      ]
+    }
+  ],
+  "evans_near_scale_radius": [
+    {
+      "y_minus_one": -1e-05,
+      "returned": 1.7344752804951485e+17,
+      "mpmath_70_digit_reference": 1.6997489310492656e+17,
+      "relative_error": 0.02043028167956895,
+      "warnings": []
+    },
+    {
+      "y_minus_one": -1e-06,
+      "returned": 1.3640001465643282e+18,
+      "mpmath_70_digit_reference": 1.6997512945200656e+17,
+      "relative_error": 7.024704266805465,
+      "warnings": []
+    },
+    {
+      "y_minus_one": -1e-07,
+      "returned": -3.4590865771311923e+21,
+      "mpmath_70_digit_reference": 1.6997515308646163e+17,
+      "relative_error": -20351.54250177172,
+      "warnings": []
+    },
+    {
+      "y_minus_one": 0.0,
+      "returned": 1.6997515571250938e+17,
+      "mpmath_70_digit_reference": 1.6997515571250934e+17,
+      "relative_error": 2.220446049250313e-16,
+      "warnings": [
+        "invalid value encountered in divide"
+      ]
+    },
+    {
+      "y_minus_one": 1e-07,
+      "returned": -4.1858558358061017e+20,
+      "mpmath_70_digit_reference": 1.699751583385565e+17,
+      "relative_error": -2463.627996185604,
+      "warnings": []
+    },
+    {
+      "y_minus_one": 1e-06,
+      "returned": 9.848662207055305e+17,
+      "mpmath_70_digit_reference": 1.6997518197295536e+17,
+      "relative_error": 4.794176592570037,
+      "warnings": []
+    },
+    {
+      "y_minus_one": 1e-05,
+      "returned": 1.704365595296116e+17,
+      "mpmath_70_digit_reference": 1.6997541831441456e+17,
+      "relative_error": 0.0027129876765121796,
+      "warnings": []
+    }
+  ],
+  "spatial_support": {
+    "plummer_truncated_density_at_400_for_cutoff_200": 6.366197723675814e-07,
+    "plummer_truncated_total_probability": 2.0,
+    "uniform_density_at_400_for_radius_200": 7.957747154594767e-06,
+    "uniform_cdf_at_400_for_radius_200": 4.0
+  },
+  "parameter_spec_default_name": {
+    "exp": "AssertionError: all sites must have unique names but got `log_re` duplicated",
+    "pow10": "AssertionError: all sites must have unique names but got `log_re` duplicated"
+  }
+}
