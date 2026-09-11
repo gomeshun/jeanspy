@@ -5,21 +5,23 @@ JeansPy exposes two related classical J-factor methods:
 - `DMModel.jfactor_ullio2016(...)`: the full finite-ROI Ullio & Valli (2016) geometry.
 - `DMModel.jfactor_ullio2016_simple(...)`: a spherical-aperture approximation.
 
+The reference geometry is derived in [Ullio & Valli (2016), Appendix B](https://arxiv.org/abs/1603.07721), Eqs. (B.8)--(B.10).
+
 Let
 
-\[
+$$
 R_{\max}=D\sin\theta_{\max}
-\]
+$$
 
-be the projected aperture radius and let `r_t` be the halo truncation radius, so that the model is assumed to have no density for `r > r_t`.
+be the projected aperture radius and let `r_t` be the halo truncation radius, with the observer outside the halo (`D > r_t`). These J-factor integrals treat the density as zero for `r > r_t`; this does not imply that a direct call to `mass_density_3d(r)` applies the same cutoff.
 
 ## Full finite-ROI method
 
 `jfactor_ullio2016(...)` evaluates the Ullio & Valli finite-aperture geometry. When `R_max < r_t`, it includes the contribution from shells with
 
-\[
+$$
 R_{\max} < r < r_t
-\]
+$$
 
 whose projected radius still lies inside the observed aperture. This is the recommended reference calculation for a general finite ROI.
 
@@ -27,10 +29,10 @@ whose projected radius still lies inside the observed aperture. This is the reco
 
 The generic `jfactor_ullio2016_simple(...)` integrates
 
-\[
+$$
 J_{\rm simple}=\frac{4\pi}{D^2}
 \int_0^{\min(R_{\max},r_t)} r^2\rho^2(r)\,dr.
-\]
+$$
 
 Its interpretation depends on the relative sizes of the aperture and the truncated halo:
 
