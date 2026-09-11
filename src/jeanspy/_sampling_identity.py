@@ -188,7 +188,11 @@ def fingerprint(value):
 
 
 def software_identity(*packages):
-    """Include source contents: editable checkouts may share a version number."""
+    """Recheck source, data and dependency versions at persistence boundaries.
+
+    Do not cache across calls: an editable checkout or installed dependency can
+    change between sampler runs within the same process.
+    """
     root = Path(__file__).parent
     digest = hashlib.sha256()
     for path in sorted([*root.rglob('*.py'), *root.glob('data/*.csv')]):

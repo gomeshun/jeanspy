@@ -35,6 +35,30 @@ def snapshot(path):
     return {p.relative_to(path): p.read_bytes() for p in Path(path).rglob('*') if p.is_file()}
 
 
+@pytest.mark.parametrize('has_previous_run', [False, True])
+def test_numpyro_missing_metadata_stops_before_sampling(tmp_path, monkeypatch, has_previous_run):
+    with NumPyroSampler(make_mcmc(), output_dir=tmp_path, async_writes=False) as sampler:
+        if has_previous_run:
+            sampler.run(jax.random.PRNGKey(0), save_samples=False)
+        sampler.metadata_path.unlink()
+        before = snapshot(tmp_path)
+        identity = sampler._analysis_identity
+        state = sampler.mcmc.post_warmup_state
+        last_state = sampler.mcmc.last_state
+
+        def forbidden(*args, **kwargs):
+            pytest.fail('MCMC must not run without verifiable metadata')
+
+        monkeypatch.setattr(sampler.mcmc, 'run', forbidden)
+        for resume in [True, False, 'auto']:
+            with pytest.raises(ValueError, match='metadata is missing.*analysis identity'):
+                sampler.run(jax.random.PRNGKey(1), resume=resume)
+            assert snapshot(tmp_path) == before
+            assert sampler._analysis_identity is identity
+            assert sampler.mcmc.post_warmup_state is state
+            assert sampler.mcmc.last_state is last_state
+
+
 def test_numpyro_prior_and_data_mismatch_preserves_output(tmp_path):
     observed = jnp.array([0., .1])
     with NumPyroSampler(make_mcmc(), output_dir=tmp_path, async_writes=False) as first:

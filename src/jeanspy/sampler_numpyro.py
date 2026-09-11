@@ -542,6 +542,11 @@ class NumPyroSampler:
         model_kwargs = {k: v for k, v in kwargs.items() if k not in {'extra_fields', 'init_params'}}
         identity = {'target': self._target_fingerprint(), 'arguments': fingerprint((args, model_kwargs))}
         metadata = self._read_metadata_file()
+        if metadata is None:
+            raise ValueError(
+                "Sampler metadata is missing; cannot verify analysis identity. "
+                "Restore the original metadata.json or use a new output_dir."
+            )
         stored = metadata.get('analysis_identity')
         for previous in (self._analysis_identity, stored):
             if previous is not None and previous != identity:

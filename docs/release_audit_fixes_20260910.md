@@ -5,6 +5,7 @@
 `codex/fix-release-audit-findings` で下記の9件を修正した。
 パッケージのバージョンは未公開の `0.1.0` を維持する。
 修正PRは [#62](https://github.com/gomeshun/jeanspy/pull/62)。
+2026-09-11 のレビュー指摘への対応は [追加修正と判断](pr62_review_followup_20260911.md) を参照。
 
 ## 修正内容と検証の対応
 
