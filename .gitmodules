@@ -10,3 +10,7 @@
 [submodule "external/gravsphere"]
 	path = external/gravsphere
 	url = https://github.com/justinread/gravsphere
+[submodule "jeanspy_paper"]
+	path = jeanspy_paper
+	url = git@github.com:gomeshun/jeanspy_paper.git
+	branch = main
