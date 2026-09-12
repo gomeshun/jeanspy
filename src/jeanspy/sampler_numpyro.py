@@ -26,6 +26,7 @@ import xarray as xr
 from numpyro.infer import MCMC
 
 from .model_numpyro import DSphModel
+from ._axisymmetric_params import validate_param_names
 from ._sampling_identity import fingerprint, software_identity
 
 
@@ -325,6 +326,10 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
     that dictionary are radians. Both q and q_projected parameterizations are
     supported by the axisymmetric forward model.
 
+    Parameter names and a named velocity mean are checked at construction.
+    With ``parameter_postprocess``, its output is checked after the callback
+    instead; construction does not execute user callbacks or sample priors.
+
     ``sigma2_bounds`` are admissibility limits: variances outside the interval
     receive zero likelihood, without clipping a finite prediction to a bound.
     """
@@ -338,6 +343,13 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
         if any(np.ndim(v) != 0 or not (np.isfinite(v) or (k == "r_t_pc" and v == np.inf))
                for k, v in self.fixed_params.items()):
             raise ValueError("fixed_params must contain finite scalar physical values")
+        if self.parameter_postprocess is None:
+            self._validate_parameter_names(names | self.fixed_params.keys())
+
+    def _validate_parameter_names(self, names):
+        validate_param_names(names)
+        if not callable(self.velocity_mean) and self.velocity_mean not in names:
+            raise ValueError(f"Missing velocity_mean parameter: {self.velocity_mean!r}")
 
     def sample_parameters(self):
         params = dict(self.fixed_params)
@@ -346,6 +358,7 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
             params[name] = value
         if self.parameter_postprocess is not None:
             params = dict(self.parameter_postprocess(dict(params)))
+        self._validate_parameter_names(params)
         return params
 
     def sampling_identity(self):

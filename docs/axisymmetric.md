@@ -203,7 +203,15 @@ mcmc = MCMC(NUTS(likelihood), num_warmup=100, num_samples=100,
 sites. Sampled and fixed physical names must be disjoint; optional
 postprocessing receives their combined dictionary. The NumPyro likelihood
 also accepts the existing configurable velocity-mean and observation-distribution
-hooks. Its `sigma2_bounds` are rejection limits (default 1e-12 to 1e12 in
+hooks. Without postprocessing, construction checks required and supported
+physical names, exactly one of `q` and `q_projected`, and the parameter selected
+by a named `velocity_mean` (default `vmem_kms`). A callable mean does not require
+`vmem_kms`. With postprocessing, these checks apply to its output immediately
+before evaluating the forward model; construction does not execute callbacks or
+sample priors. Configuration errors raise `ValueError`, while inadmissible
+physical proposals still receive log probability minus infinity.
+
+Its `sigma2_bounds` are rejection limits (default 1e-12 to 1e12 in
 (km/s)²); finite variances outside them are rejected, never clipped into range.
 
 Both inference paths reject inadmissible Jeans moments with log probability

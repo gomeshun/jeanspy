@@ -91,6 +91,84 @@ def test_bad_shapes_and_duplicate_fixed_names_fail_early():
         make_model(parameter_specs=[ParameterSpec("valid_observations", dist.Normal(0., 1.))])
 
 
+@pytest.mark.parametrize("changes,match", [
+    (dict(fixed_params={**FIXED, "rs_typo": 500.}), "Unknown.*rs_typo"),
+    (dict(parameter_specs=[ParameterSpec("rho", dist.Uniform(.01, .2),
+                                        param_name="rho_typo")]), "Unknown.*rho_typo"),
+    (dict(fixed_params={k: v for k, v in FIXED.items() if k != "re_pc"}), "Missing.*re_pc"),
+    (dict(parameter_specs=[ParameterSpec("vmem_kms", dist.Normal(0., 20.))]),
+     "Missing.*rhos_Msunpc3"),
+    (dict(fixed_params={k: v for k, v in FIXED.items() if k != "q"}), "exactly one"),
+    (dict(fixed_params={**FIXED, "q_projected": .8}), "exactly one"),
+    (dict(parameter_specs=[ParameterSpec("q_projected", dist.Uniform(.8, 1.))],
+          fixed_params={**FIXED, "rhos_Msunpc3": .1, "vmem_kms": 0.}), "exactly one"),
+    (dict(parameter_specs=[], fixed_params={**FIXED, "rhos_Msunpc3": .1}),
+     "Missing velocity_mean.*vmem_kms"),
+    (dict(velocity_mean="missing_mean"), "Missing velocity_mean.*missing_mean"),
+])
+def test_configuration_errors_fail_at_construction(changes, match):
+    with pytest.raises(ValueError, match=match):
+        make_model(**changes)
+
+
+def test_constructor_does_not_execute_user_callbacks_or_priors():
+    def must_not_run(*args):
+        raise AssertionError("User callbacks must not run during construction")
+
+    make_model(parameter_specs=[ParameterSpec("rho", must_not_run,
+                       param_name="rhos_Msunpc3", transform=must_not_run)],
+               velocity_mean=must_not_run)
+    # A postprocessor may supply every physical parameter from an empty input.
+    make_model(parameter_specs=[], fixed_params={}, parameter_postprocess=must_not_run)
+
+
+def test_callable_mean_does_not_require_vmem_parameter():
+    fixed = {**FIXED, "rhos_Msunpc3": .1}
+    model = make_model(parameter_specs=[], fixed_params=fixed, velocity_mean=lambda _: 2.)
+    reference = make_model(parameter_specs=[], fixed_params={**fixed, "vmem_kms": 2.})
+    np.testing.assert_allclose(log_density(model, (), DATA, {})[0],
+                               log_density(reference, (), DATA, {})[0], rtol=1e-12)
+
+
+def test_postprocess_can_add_remove_and_rename_parameters():
+    fixed = {k: v for k, v in FIXED.items() if k != "rs_pc"}
+    fixed.update(scale_seed=500., q_projected=.8)
+
+    def postprocess(params):
+        params["rhos_Msunpc3"] = 10.**params.pop("log10_rhos")
+        params["rs_pc"] = params.pop("scale_seed")
+        params["vmem_kms"] = 2.
+        params.pop("q_projected")
+        return params
+
+    model = make_model(fixed_params=fixed, parameter_specs=[
+        ParameterSpec("log10_rhos", dist.Uniform(-1.5, -.5))], parameter_postprocess=postprocess)
+    density = jax.jit(lambda p: log_density(model, (), DATA, p)[0])
+    params = dict(log10_rhos=-1.)
+    reference = make_model(parameter_specs=[],
+                           fixed_params={**FIXED, "rhos_Msunpc3": .1, "vmem_kms": 2.})
+    np.testing.assert_allclose(density(params), log_density(reference, (), DATA, {})[0], rtol=1e-12)
+    assert np.isfinite(jax.grad(density)(params)["log10_rhos"])
+    assert model.fixed_params == fixed
+
+
+@pytest.mark.parametrize("params,match", [
+    ({**FIXED, "rhos_Msunpc3": .1, "vmem_kms": 0., "typo": 1.}, "Unknown.*typo"),
+    ({**FIXED, "vmem_kms": 0.}, "Missing.*rhos_Msunpc3"),
+    ({**FIXED, "rhos_Msunpc3": .1, "vmem_kms": 0., "q_projected": .8}, "exactly one"),
+    ({**FIXED, "rhos_Msunpc3": .1}, "Missing velocity_mean.*vmem_kms"),
+])
+def test_bad_postprocess_schema_fails_before_forward_evaluation(params, match):
+    class UnexpectedForward:
+        def sigmalos2(self, *args, **kwargs):
+            raise AssertionError("The forward model must not run for an invalid schema")
+
+    model = make_model(dsph_model=UnexpectedForward(), parameter_specs=[], fixed_params={},
+                       parameter_postprocess=lambda _: params)
+    with pytest.raises(ValueError, match=match):
+        log_density(model, (), DATA, {})
+
+
 def test_variance_bounds_reject_instead_of_clipping():
     m = make_model(sigma2_bounds=(1e-12, 1e-6))
     assert float(log_density(m, (), DATA, dict(log10_rhos=-1., vmem_kms=0.))[0]) == -np.inf

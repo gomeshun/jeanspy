@@ -4,7 +4,7 @@ Recorded 2026-09-12 for the axisymmetric inference extension of PR #63, built
 on `17bc27081fecf3ed68a53a3570291d7b351cbd1b`. The model scope and numerical
 contracts are in [the API documentation](../docs/axisymmetric.md).
 
-## Checks and observed results
+## Initial checks and observed results
 
 | Check | Result |
 | --- | --- |
@@ -32,6 +32,26 @@ pandas 3.0.5 and h5py 3.16.0. CPU environments additionally resolved JAX/JAXlib
 GPU execution. The CI matrix covers Python 3.12/3.13, locked/lowest direct
 dependencies and Windows/macOS/Linux base environments, with fresh resolutions
 and opt-in MCMC in the release-validation matrix.
+
+## Review follow-up: parameter configuration checks
+
+The NumPyro likelihood now checks the combined fixed/sampled physical names
+at construction: unknown or missing names, conflicting flattening parameters,
+and a missing named velocity mean raise `ValueError` immediately. These checks
+share the forward solver's schema and do not evaluate priors or callbacks.
+A callable mean does not require `vmem_kms`. When a postprocessor changes the
+dictionary, its output is checked before the forward solver runs. Invalid
+physical proposals continue to receive log probability minus infinity.
+
+Sixteen regression cases cover these errors, callback preservation, transformed
+parameters, JIT/gradients, and postprocessors that add, remove or rename keys.
+The full repository suite was rerun after this change with the CPU/float64
+environment above: **456 tests and 37 subtests passed in 230.88 s**, including
+all **114 axisymmetric tests** and real sampler persistence/restart checks.
+There were no skips. The 21 warnings comprised 16 short-chain autocorrelation
+warnings, four headless plotting warnings and the existing ensemble walker-count
+recommendation. The separate artifact-environment results above predate this
+follow-up; the PR CI rebuilds and validates the updated wheel and sdist.
 
 ## Reproduction
 

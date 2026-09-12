@@ -11,20 +11,26 @@ class InvalidAxisymmetricModelError(ValueError):
     """A physical proposal or its numerical Jeans moments are inadmissible."""
 
 
+def validate_param_names(names):
+    """Check the physical schema without evaluating parameter values."""
+    names = set(names)
+    unknown = names - SUPPORTED
+    if unknown:
+        raise ValueError(f"Unknown axisymmetric parameters: {sorted(unknown)}")
+    missing = REQUIRED - names
+    if missing:
+        raise ValueError(f"Missing axisymmetric parameters: {sorted(missing)}")
+    if ("q" in names) == ("q_projected" in names):
+        raise ValueError("Supply exactly one of q and q_projected")
+
+
 def resolve_params(params, xp):
     """Return safe finite parameters and a scalar validity mask.
 
     Invalid traced proposals use a benign evaluation point and are rejected by
     the caller. This prevents NaN gradients from invalid inactive branches.
     """
-    unknown = params.keys() - SUPPORTED
-    if unknown:
-        raise ValueError(f"Unknown axisymmetric parameters: {sorted(unknown)}")
-    missing = REQUIRED - params.keys()
-    if missing:
-        raise ValueError(f"Missing axisymmetric parameters: {sorted(missing)}")
-    if ("q" in params) == ("q_projected" in params):
-        raise ValueError("Supply exactly one of q and q_projected")
+    validate_param_names(params)
     p = {k: xp.asarray(params.get(k, v), dtype=float) for k, v in DEFAULTS.items()}
     p.update({k: xp.asarray(params[k], dtype=float) for k in REQUIRED})
     shape = xp.asarray(params.get("q", params.get("q_projected")), dtype=float)
