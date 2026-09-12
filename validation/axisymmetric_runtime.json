@@ -1,0 +1,57 @@
+{
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+  "backend": "cpu",
+  "x64": true,
+  "stars": 8,
+  "params": {
+    "re_pc": 300.0,
+    "rs_pc": 500.0,
+    "rhos_Msunpc3": 0.1,
+    "q": 0.7,
+    "Q": 0.8,
+    "alpha": 2.0,
+    "beta": 3.0,
+    "gamma": 0.8,
+    "beta_z": -0.3,
+    "inclination": 1.1,
+    "r_t_pc": 3000.0
+  },
+  "versions": {
+    "numpy": "2.4.3",
+    "scipy": "1.17.1",
+    "jax": "0.9.1",
+    "jaxlib": "0.9.1"
+  },
+  "runs": [
+    {
+      "order": 32,
+      "numpy_seconds": 0.07178996014408767,
+      "jax_first_seconds": 0.56823061988689,
+      "jax_warm_seconds": 0.009197592968121171,
+      "grad_first_seconds": 1.473847361980006,
+      "grad_warm_seconds": 0.03304825001396239,
+      "backend_max_relative_difference": 6.661338147750939e-16,
+      "gradient_finite": true
+    },
+    {
+      "order": 64,
+      "numpy_seconds": 0.4747201690915972,
+      "jax_first_seconds": 0.46961032086983323,
+      "jax_warm_seconds": 0.030323770828545094,
+      "grad_first_seconds": 1.8043535880278796,
+      "grad_warm_seconds": 0.16148391691967845,
+      "backend_max_relative_difference": 4.440892098500626e-16,
+      "gradient_finite": true
+    },
+    {
+      "order": 96,
+      "numpy_seconds": 1.5402026840019971,
+      "jax_first_seconds": 0.6024432759732008,
+      "jax_warm_seconds": 0.10462749912403524,
+      "grad_first_seconds": 1.846901062875986,
+      "grad_warm_seconds": 0.47640729299746454,
+      "backend_max_relative_difference": 4.440892098500626e-16,
+      "gradient_finite": true
+    }
+  ]
+}

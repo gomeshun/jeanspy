@@ -73,7 +73,23 @@ def validate_base(readme: Path) -> None:
     if not np.isfinite(coeff_np).all():
         raise AssertionError("SersicModel coeff array contained non-finite values")
 
-    print("base Quick Start and packaged-data smoke tests passed")
+    from jeanspy.model import AxisymmetricDSphModel, AxisymmetricDSphEstimationModel
+    import pandas as pd
+    axis = AxisymmetricDSphModel(16, 16, 16)
+    fixed = dict(re_pc=300., rs_pc=500., q=.7, Q=.8, beta_z=-.3, r_t_pc=3000.)
+    observations = dict(x_pc=[0., -100., 200.], y_pc=[0., 40., -50.],
+                        vlos_kms=[1., -2., 3.], e_vlos_kms=[0., 1., 2.])
+    prior = pd.DataFrame(dict(lower=[-1.5, -20.], upper=[-.5, 20.]),
+                         index=["log10_rhos_Msunpc3", "vmem_kms"])
+    fit = AxisymmetricDSphEstimationModel(observations, prior, dsph_model=axis, fixed_params=fixed)
+    if not np.isfinite(fit.lnposterior([-1., 0.])).all():
+        raise AssertionError("Packaged axisymmetric inference was nonfinite")
+    params = fit.convert_params([-1., 0.])
+    if not axis.jfactor(80000., .5, params=params, n_mu=16, n_phi=16, n_radial=32) > 0:
+        raise AssertionError("Packaged axisymmetric J-factor was not positive")
+    if not axis.dfactor(80000., .5, params=params, n_mu=16, n_phi=16, n_radial=32) > 0:
+        raise AssertionError("Packaged axisymmetric D-factor was not positive")
+    print("base Quick Start, packaged-data and axisymmetric inference/factor smoke tests passed")
 
 
 def validate_numpyro_cpu() -> None:
@@ -170,7 +186,21 @@ def validate_numpyro_cpu() -> None:
     if model_trace["vlos"]["is_observed"] is not True:
         raise AssertionError(f"vlos trace entry was not observed: {model_trace['vlos']!r}")
 
-    print("NumPyro CPU artifact smoke test passed")
+    from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel
+    from jeanspy.sampler_numpyro import AxisymmetricJeansLikelihoodModel
+    from numpyro.infer.util import log_density
+    axis = AxisymmetricDSphModel(16, 16, 16)
+    fixed = dict(re_pc=300., rs_pc=500., q=.7, Q=.8, beta_z=-.3, r_t_pc=3000.)
+    axis_likelihood = AxisymmetricJeansLikelihoodModel(axis,
+        [ParameterSpec.pow10("log10_rho", dist.Uniform(-1.5, -.5), param_name="rhos_Msunpc3"),
+         ParameterSpec("vmem_kms", dist.Normal(0., 20.))], fixed_params=fixed)
+    observations = dict(x_pc=jnp.array([0., -100., 200.]), y_pc=jnp.array([0., 40., -50.]),
+                        vlos_kms=jnp.array([1., -2., 3.]), e_vlos_kms=jnp.array([0., 1., 2.]))
+    def target(logrho):
+        return log_density(axis_likelihood, (), observations, dict(log10_rho=logrho, vmem_kms=0.))[0]
+    if not np.isfinite(float(target(-1.))) or not np.isfinite(float(jax.grad(target)(-1.))):
+        raise AssertionError("Packaged axisymmetric likelihood or gradient was nonfinite")
+    print("NumPyro CPU spherical and axisymmetric artifact smoke tests passed")
 
 
 def main() -> None:

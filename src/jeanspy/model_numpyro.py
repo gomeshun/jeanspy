@@ -1577,7 +1577,11 @@ class DSphModel(Model):
         return compiled(R_pc, params)
 
 
+from .axisymmetric_numpyro import AxisymmetricDSphModel
+
+
 __all__ = [
+    "AxisymmetricDSphModel",
     "Model",
     "PlummerModel",
     "ZhaoModel",

@@ -26,6 +26,7 @@ import xarray as xr
 from numpyro.infer import MCMC
 
 from .model_numpyro import DSphModel
+from ._axisymmetric_params import validate_param_names
 from ._sampling_identity import fingerprint, software_identity
 
 
@@ -314,6 +315,82 @@ class JeansLikelihoodModel:
             self.observation_distribution(loc, scale),
             obs=velocity,
         )
+
+
+class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
+    """NumPyro likelihood for signed sky coordinates and zero mean streaming.
+
+    Uses the same ParameterSpec and NumPyroSampler contracts as the spherical
+    likelihood. ``fixed_params`` and sampled physical names must be disjoint;
+    optional postprocessing receives their combined dictionary. All angles in
+    that dictionary are radians. Both q and q_projected parameterizations are
+    supported by the axisymmetric forward model.
+
+    Parameter names and a named velocity mean are checked at construction.
+    With ``parameter_postprocess``, its output is checked after the callback
+    instead; construction does not execute user callbacks or sample priors.
+
+    ``sigma2_bounds`` are admissibility limits: variances outside the interval
+    receive zero likelihood, without clipping a finite prediction to a bound.
+    """
+
+    def __init__(self, dsph_model, parameter_specs, *, fixed_params=None, **kwargs):
+        super().__init__(dsph_model, parameter_specs, **kwargs)
+        self.fixed_params = dict(fixed_params or {})
+        names = {spec.param_name or spec.sample_name for spec in self.parameter_specs}
+        if names & self.fixed_params.keys():
+            raise ValueError("Sampled physical names must be disjoint from fixed_params")
+        if any(np.ndim(v) != 0 or not (np.isfinite(v) or (k == "r_t_pc" and v == np.inf))
+               for k, v in self.fixed_params.items()):
+            raise ValueError("fixed_params must contain finite scalar physical values")
+        if self.parameter_postprocess is None:
+            self._validate_parameter_names(names | self.fixed_params.keys())
+
+    def _validate_parameter_names(self, names):
+        validate_param_names(names)
+        if not callable(self.velocity_mean) and self.velocity_mean not in names:
+            raise ValueError(f"Missing velocity_mean parameter: {self.velocity_mean!r}")
+
+    def sample_parameters(self):
+        params = dict(self.fixed_params)
+        for spec in self.parameter_specs:
+            name, value = spec.sample()
+            params[name] = value
+        if self.parameter_postprocess is not None:
+            params = dict(self.parameter_postprocess(dict(params)))
+        self._validate_parameter_names(params)
+        return params
+
+    def sampling_identity(self):
+        return dict(vars(self))
+
+    def __call__(self, x_pc, y_pc, vlos_kms, e_vlos_kms):
+        x, y, velocity, error = (jnp.asarray(v, dtype=float)
+                                for v in (x_pc, y_pc, vlos_kms, e_vlos_kms))
+        if (x.ndim != 1 or x.size == 0
+                or any(v.shape != x.shape for v in (y, velocity, error))):
+            raise ValueError("x_pc, y_pc, vlos_kms and e_vlos_kms must be matching nonempty 1-D arrays")
+        valid_data = jnp.all(jnp.isfinite(x) & jnp.isfinite(y) & jnp.isfinite(velocity)
+                             & jnp.isfinite(error) & (error >= 0))
+        numpyro.factor("valid_observations", jnp.where(valid_data, 0., -jnp.inf))
+        x, y, velocity = (jnp.where(jnp.isfinite(v), v, 0.) for v in (x, y, velocity))
+        error = jnp.where(jnp.isfinite(error) & (error >= 0), error, 0.)
+        params = self.sample_parameters()
+        sigma2 = jnp.asarray(self.dsph_model.sigmalos2(x, y, params=params, **self.sigmalos2_kwargs))
+        if sigma2.shape != x.shape:
+            raise ValueError("sigmalos2 must return one variance per sky position")
+        admissible = (jnp.isfinite(sigma2) & (sigma2 >= self.sigma2_bounds[0])
+                      & (sigma2 <= self.sigma2_bounds[1]))
+        numpyro.factor("valid_sigmalos2", jnp.where(jnp.all(admissible), 0., -jnp.inf))
+        sigma2 = jnp.where(admissible, sigma2, 1.)
+        loc = jnp.asarray(self._resolve_velocity_mean(params))
+        if loc.ndim != 0 and loc.shape != x.shape:
+            raise ValueError("velocity_mean must be scalar or match the observation shape")
+        numpyro.factor("valid_velocity_mean", jnp.where(jnp.all(jnp.isfinite(loc)), 0., -jnp.inf))
+        loc = jnp.where(jnp.isfinite(loc), loc, 0.)
+        numpyro.sample(self.observed_name,
+                       self.observation_distribution(loc, jnp.hypot(jnp.sqrt(sigma2), error)),
+                       obs=velocity)
 
 
 @dataclass(frozen=True)
@@ -766,6 +843,7 @@ class NumPyroSampler:
 
 
 __all__ = [
+    "AxisymmetricJeansLikelihoodModel",
     "JeansLikelihoodModel",
     "NumPyroSampler",
     "ParameterSpec",
