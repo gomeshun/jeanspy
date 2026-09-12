@@ -1,0 +1,138 @@
+name: Documentation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build English documentation and execute examples
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      JEANSPY_JAX_PLATFORM: cpu
+      JEANSPY_JAX_ENABLE_X64: "true"
+      MPLBACKEND: Agg
+      MPLCONFIGDIR: /tmp/jeanspy-docs-mpl
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    outputs:
+      version: ${{ steps.identity.outputs.version }}
+      commit: ${{ steps.identity.outputs.commit }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: false
+      - name: Install locked documentation environment
+        run: uv sync --locked --python 3.12 --extra docs --extra numpyro_cpu --extra plotting --extra dev
+      - name: Record source and documentation version
+        id: identity
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          DOCS_VERSION=dev
+          if [ "$GITHUB_EVENT_NAME" = release ]; then
+            DOCS_VERSION="$RELEASE_TAG"
+          fi
+          echo "JEANSPY_DOCS_VERSION=$DOCS_VERSION" >> "$GITHUB_ENV"
+          echo "version=$DOCS_VERSION" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Generate public API inventory
+        run: |
+          uv run --no-sync python scripts/generate_api_docs.py
+          uv run --no-sync python scripts/generate_comparison_docs.py
+          uv run --no-sync python scripts/generate_bibliography.py
+      - name: Execute short examples and verify version preservation
+        run: uv run --no-sync python -m pytest -q tests/test_docs_examples.py tests/test_docs_versions.py
+      - name: Build HTML with warnings as errors
+        run: uv run --no-sync sphinx-build -W --keep-going -b html docs/source docs/_build/html
+      - name: Run documented doctests
+        run: uv run --no-sync sphinx-build -W --keep-going -b doctest docs/source docs/_build/doctest
+      - name: Check local HTML files and anchors
+        run: uv run --no-sync python scripts/check_docs_links.py docs/_build/html
+      - name: Retain PR HTML and API inventory
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: documentation-html
+          path: |
+            docs/_build/html/
+            docs/api_inventory.json
+          if-no-files-found: error
+
+  publish:
+    name: Publish versioned GitHub Pages documentation
+    needs: build
+    if: >-
+      github.event_name == 'release' ||
+      (github.ref == 'refs/heads/main' && github.event_name != 'pull_request')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: jeanspy-pages-publication
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: documentation-html
+          path: downloaded-docs
+      - name: Load previously published versions
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git fetch origin gh-pages
+            git worktree add site FETCH_HEAD
+          else
+            git worktree add --detach site
+            git -C site switch --orphan gh-pages
+            git -C site rm -rf --ignore-unmatch .
+          fi
+      - name: Stage development or immutable release documentation
+        env:
+          DOCS_VERSION: ${{ needs.build.outputs.version }}
+          SOURCE_COMMIT: ${{ needs.build.outputs.commit }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          EXTRA=()
+          if [ "$IS_PRERELEASE" = true ]; then EXTRA+=(--prerelease); fi
+          uv run --isolated --no-project --python 3.12 --with packaging python \
+            scripts/stage_docs_site.py --html-dir downloaded-docs/_build/html \
+            --site-dir site --version "$DOCS_VERSION" --commit "$SOURCE_COMMIT" "${EXTRA[@]}"
+      - name: Preserve documentation history
+        env:
+          DOCS_VERSION: ${{ needs.build.outputs.version }}
+          SOURCE_COMMIT: ${{ needs.build.outputs.commit }}
+        run: |
+          git -C site config user.name github-actions[bot]
+          git -C site config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git -C site add --all
+          if ! git -C site diff --cached --quiet; then
+            git -C site commit -m "Publish $DOCS_VERSION documentation from $SOURCE_COMMIT"
+            git -C site push origin HEAD:gh-pages
+          fi
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: site
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

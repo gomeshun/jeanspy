@@ -48,7 +48,7 @@ def baes_eta2_kernel_jax(
 ) -> jnp.ndarray:
     r"""Evaluate the ``eta=2`` BAES kernel from its Appell-F1 representation.
 
-    Write
+    Write::
 
         p = beta_0,
         q = beta_inf - beta_0,
@@ -56,7 +56,7 @@ def baes_eta2_kernel_jax(
         z1 = 1 - u^{-2},
         z2 = (u^2 - 1) / (u^2 + a^2).
 
-    The exact closed form is
+    The exact closed form is::
 
         K = sqrt(z1) [
             F1(1;p,q;3/2;z1,z2)
@@ -66,7 +66,7 @@ def baes_eta2_kernel_jax(
 
     JAX does not currently provide Appell F1 directly.  We therefore evaluate
     the *Euler representation of this closed form* on a fixed Gauss--Legendre
-    grid.  For a=1 in the first Appell argument,
+    grid.  For a=1 in the first Appell argument::
 
         F1(1;p,q;3/2;z1,z2)
           = integral_0^1 dy

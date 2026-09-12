@@ -231,7 +231,48 @@ class ParameterSpec:
 
 
 class JeansLikelihoodModel:
-    """Callable NumPyro model for line-of-sight velocity inference."""
+    """Callable spherical NumPyro model for line-of-sight velocity inference.
+
+    Parameters
+    ----------
+    dsph_model : jeanspy.model_numpyro.DSphModel
+        Functional JAX forward model. Its LOS variance is in (km/s)**2.
+    parameter_specs : sequence of ParameterSpec
+        Ordered sample sites, priors and transformations to physical parameters.
+        Priors are densities in the named sampling coordinates.
+    sigmalos2_kwargs : mapping or None, optional
+        Static integration settings passed to the forward ``sigmalos2`` method.
+    sigma2_bounds : pair of float, optional
+        Positive ordered rejection limits in (km/s)**2. Values outside these
+        limits are rejected with log probability minus infinity, not clipped.
+    velocity_mean : str or callable, optional
+        Physical parameter name (default ``vmem_kms``) or a function of the
+        parameter mapping returning the velocity mean in km/s.
+    observation_distribution : callable, optional
+        Distribution factory accepting a mean and standard deviation in km/s;
+        defaults to ``numpyro.distributions.Normal``.
+    observed_name : str, optional
+        NumPyro observation-site name, default ``vlos``.
+    parameter_postprocess : callable or None, optional
+        Optional mapping-to-mapping physical-parameter transformation. A traced
+        likelihood requires a JAX-compatible callable.
+
+    Notes
+    -----
+    Calling the instance takes matching 1-D arrays ``R_pc``, ``vlos_kms`` and
+    ``e_vlos_kms`` (pc, km/s, km/s), and adds observation and validity sites to
+    the active NumPyro trace. Radii must be finite and positive; errors finite
+    and nonnegative. The standard likelihood conditions on the observed radii.
+    Physical-parameter gradients use the JAX forward path and differentiable
+    transforms in the admissible interior. This class does not calculate J/D
+    factors or establish a positive phase-space distribution function.
+
+    Raises
+    ------
+    ValueError
+        Sample, deterministic or observation sites collide; physical parameter
+        names repeat; or the variance rejection limits are invalid.
+    """
 
     def __init__(
         self,

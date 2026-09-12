@@ -68,20 +68,48 @@ def dequad(func,a,b,n,
            replace_nan_to_zero=False,
            reshape_ws = None,
            verbose=False):
-    '''
-    func: func(ndarray_in) = ndarray_out
-    axis: define the axis of ndarray_out to use integrate.
-    
-    Note: If "func" is like func: array(n,) -> array(m,n),
-              f(x) * w ~ (m,n) * (n,) ~ (m,n) * (1,n)
-          then works well (axis should set as axis=1). 
-          
-          Similarly, funcions like: array(n,) -> array(m1,m2,...,n),
-              f(x) * w ~ (m1,m2,...,n) * (n,) ~ (m1,m2,...,n) * (1,1,...,n)
-          then works well (axis should set to be last axis). 
+    """Integrate a vectorized function with fixed double-exponential nodes.
 
-          Integration axis of func should be the last axis by default, but you can change it by "axis" argument.
-    '''
+    Parameters
+    ----------
+    func : callable
+        Receives nodes of shape ``(n,)`` and returns values whose integration
+        axis has length ``n``. For output ``(m, n)``, the default axis works.
+    a, b : float
+        Integration limits in the input coordinate's units. Supported domains
+        are finite intervals, ``(a, +inf)`` and the two-sided infinite line.
+    n : int
+        Number of nodes; use at least two and check refinement explicitly.
+    axis : int, optional
+        Axis summed in the function output, default ``-1``.
+    xp : module, optional
+        Array namespace for node construction; NumPy by default. Validation
+        and replacement logic use NumPy, so this is not a traced JAX API.
+    replace_inf_to_zero, replace_nan_to_zero : bool, optional
+        Replace the corresponding weighted values with zero. Both default
+        to false; enabling either can discard real numerical failures.
+    reshape_ws : tuple or None, optional
+        Optional shape for broadcasting weights against function output.
+    verbose : bool, optional
+        Print the weighted integrand if true.
+
+    Returns
+    -------
+    scalar or ndarray
+        Weighted sum with the integration axis removed, in function-output
+        units times integration-coordinate units. No error estimate is returned.
+
+    Warns
+    -----
+    UserWarning
+        Nonfinite weighted values are present and their replacement is disabled.
+
+    Examples
+    --------
+    >>> from jeanspy.dequad import dequad
+    >>> bool(np.isclose(dequad(lambda x: x**2, 0., 1., 256), 1. / 3.))
+    True
+    """
     xs,ws = generate_x_w(a,b,n,xp)
     fs = func(xs)
     ws = ws if reshape_ws is None else ws.reshape(reshape_ws)

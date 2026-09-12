@@ -1,0 +1,4 @@
+:root { --pst-color-primary: #23558b; --pst-color-link: #23558b; }
+.bd-main .bd-content .bd-article-container { max-width: 66rem; }
+table { font-size: .92rem; }
+.bd-article-container h1 { letter-spacing: -.02em; }
