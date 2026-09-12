@@ -58,7 +58,15 @@ def main():
             returned_moments_finite=bool(np.isfinite(result.model).all()), warnings=[
                 dict(message=str(w.message), filename=Path(w.filename).name, line=w.lineno,
                      source_sha256=hashlib.sha256(Path(w.filename).read_bytes()).hexdigest()) for w in caught]))
-    args.output.write_text(json.dumps(report, indent=2, allow_nan=False)+"\n")
+    def json_safe(value):
+        if isinstance(value, float) and not np.isfinite(value):
+            return str(value)
+        if isinstance(value, dict):
+            return {key: json_safe(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [json_safe(item) for item in value]
+        return value
+    args.output.write_text(json.dumps(json_safe(report), indent=2, allow_nan=False)+"\n")
     print(json.dumps([dict(nrad=r["nrad"], nang=r["nang"], spectral=r["spectral_derivs"],
         warnings=r["warnings"], finite=r["returned_moments_finite"]) for r in report["runs"]], indent=2))
 

@@ -16,3 +16,10 @@ Run `scripts/diagnose_jam9_warnings.py --output <new-file.json>` in the pinned
 JAM 9 environment with `OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1`. If the warning
 does not recur, retain that outcome rather than expanding the investigation
 without recording a new question.
+
+The first diagnostic execution reached output serialization, which failed
+because the coarse JAM results contain NaNs. Its exception log is retained in
+`jam9_warning_diagnostic_execution_failure.txt`. The writer is corrected to
+preserve these values as the JSON string `nan`, matching the original primary
+report. A repeat with unchanged calculations is solely to recover this missing
+diagnostic output; it does not replace the original primary result.
