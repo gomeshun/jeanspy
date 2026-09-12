@@ -383,7 +383,12 @@ class AxisymmetricDSphEstimationModel:
                          np.hypot(np.sqrt(sigma2), self._data.e_vlos_kms))
 
     def sampling_identity(self):
-        """Hash data, priors, fixed physics, parameter order and numerical settings."""
+        """Return host metadata describing the complete sampling target.
+
+        The dictionary contains the forward model, copied observations, prior
+        table, fixed parameters, optional photometric prior and coordinate order.
+        The persistence layer hashes this material; this method returns no hash.
+        """
         return dict(dsph_model=self.dsph_model, data=self._data.as_kwargs(),
                     prior=self.prior.data, fixed_params=self.fixed_params,
                     photometry_prior=self.photometry_prior, parameter_order=self.p_names_lnprob)

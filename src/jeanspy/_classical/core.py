@@ -44,7 +44,11 @@ class Parameters(MutableMapping):
     **Differentiation.** No physical-parameter automatic differentiation on this
     API.
 
-    **Examples.** Parameters({'``re_pc``': 300.}).``to_series``().
+    Examples
+    --------
+    >>> from jeanspy.model import Parameters
+    >>> float(Parameters({"re_pc": 300.}).to_series()["re_pc"])
+    300.0
     """
 
     __slots__ = ("_data",)
