@@ -22,12 +22,14 @@ __version__ = _load_version()
 
 __all__ = [
     "axisymmetric",
+    "axisymmetric_inference",
     "dequad",
     "model",
     "sampler",
 ]
 
 _OPTIONAL_MODULES = {
+    "axisymmetric_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
     "model_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
     "sampler_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
 }

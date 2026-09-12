@@ -230,3 +230,50 @@ class AxisymmetricJeans:
             local = si*si*((1-cos2)*vr + cos2*vp) + ci*ci*vz
             result[index] = np.sum(weight*self.tracer.density(R, Z)*local)/surface[index]
         return result[()] if result.ndim == 0 else result
+
+
+@dataclass(frozen=True)
+class AxisymmetricDSphModel:
+    """Parameter-dictionary forward API shared with the JAX backend.
+
+    Required: re_pc, rs_pc, rhos_Msunpc3 and exactly one of q/q_projected.
+    Optional: Q, alpha, beta, gamma, beta_z, inclination (radians).
+    """
+    n_force: int = 96
+    n_vertical: int = 96
+    n_los: int = 96
+
+    def __post_init__(self):
+        for n in (self.n_force, self.n_vertical, self.n_los):
+            _rule(n)
+
+    def sampling_identity(self):
+        return dict(n_force=self.n_force, n_vertical=self.n_vertical, n_los=self.n_los)
+
+    def _model(self, params):
+        from ._axisymmetric_params import resolve_params
+        p, valid = resolve_params(params, np)
+        if not valid:
+            raise ValueError("Invalid axisymmetric physical parameters or inclination/flattening")
+        p = {k: float(v) for k, v in p.items()}
+        return AxisymmetricJeans(
+            PlummerTracer(p["re_pc"], p["q"]),
+            ZhaoHalo(p["rhos_Msunpc3"], p["rs_pc"], p["Q"], p["alpha"], p["beta"], p["gamma"]),
+            p["beta_z"], p["inclination"], self.n_force, self.n_vertical, self.n_los,
+        )
+
+    def sigmalos2(self, x_pc, y_pc, *, params):
+        return self._model(params).los_second_moment(x_pc, y_pc)
+
+    def intrinsic_moments(self, R_pc, z_pc, *, params):
+        return self._model(params).intrinsic_moments(R_pc, z_pc)
+
+    def potential_gradient(self, R_pc, z_pc, *, params):
+        return self._model(params).halo.potential_gradient(R_pc, z_pc, self.n_force)
+
+    def surface_density(self, x_pc, y_pc, *, params):
+        m = self._model(params)
+        return m.tracer.surface_density(x_pc, y_pc, m.inclination)
+
+
+__all__.append("AxisymmetricDSphModel")
