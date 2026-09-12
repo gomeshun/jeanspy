@@ -88,6 +88,10 @@ def run_configuration(report, save, configuration, call):
 
 def worker(output):
     report = json.loads(output.read_text())
+    if (report.get("status") != "running"
+            or report.get("supervisor_pid") != os.getppid()
+            or report.get("script_sha256") != digest(__file__)):
+        raise ValueError("The internal worker requires its active supervisor's new report")
     started = time.perf_counter()
     def save():
         report["worker_elapsed_seconds"] = time.perf_counter() - started
@@ -175,6 +179,7 @@ def main():
         raise FileExistsError(args.output)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     report = dict(started_utc=datetime.now(timezone.utc).isoformat(),
+        supervisor_pid=os.getpid(),
         protocol_sha256=digest(ROOT / "validation/release/jam9_protocol.json"),
         diagnostic_plan_sha256=digest(ROOT / "validation/release/jam9_warning_diagnostic.md"),
         script_sha256=digest(__file__), status="running", runs=[],

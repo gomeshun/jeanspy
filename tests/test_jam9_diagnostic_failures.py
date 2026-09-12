@@ -52,6 +52,15 @@ def test_early_exit_is_not_reported_as_completed(tmp_path):
     assert json.loads(output.read_text())["status"] == "worker_exited_without_completion"
 
 
+def test_internal_worker_cannot_replace_an_old_report(tmp_path):
+    output = tmp_path / "report.json"
+    output.write_text('{"status": "completed", "runs": [{"moments": [[1.0]]}]}\n')
+    before = output.read_bytes()
+    with pytest.raises(ValueError, match="active supervisor"):
+        module.worker(output)
+    assert output.read_bytes() == before
+
+
 @pytest.mark.skipif(sys.platform != "linux", reason="The frozen diagnostic targets Linux")
 def test_address_space_bound_is_set_in_a_child():
     code = ("import importlib.util, resource; "
