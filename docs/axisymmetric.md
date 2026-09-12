@@ -334,11 +334,19 @@ Automated checks cover:
 
 The independent [JAM benchmark](../validation/axisymmetric_jam_reference.json)
 records two oblate/prolate Zhao cases, all MGE coefficients, package versions,
-a kernel SHA256 and numerical refinements. Reproduce it with:
+a kernel SHA256, effective calculation paths and numerical refinements.
+Reproduce it with the stored MGE coefficients:
 
 ```bash
-python scripts/validate_axisymmetric_jam.py --output validation/axisymmetric_jam_reference.json
+python scripts/validate_axisymmetric_jam.py \
+    --reuse-mge validation/axisymmetric_jam_reference.json \
+    --output /tmp/axisymmetric_jam_recheck.json
 ```
+
+Omit `--reuse-mge` to refit the MGE approximations with requested Gaussian
+budgets of 32 and 48. Nonnegative fitting can retain fewer components; the
+report records both the requested and retained counts. It stores both sets
+of coefficients so an integration recheck can hold the approximation fixed.
 
 It uses Cappellari (2008) equation (28) as implemented by jampy, independently
 of JeansPy's three nested integrations. The JAM gravitational constant is
@@ -347,14 +355,33 @@ JeansPy/reference differences are 1.13e-5 and 2.87e-5 in second moments; MGE
 order refinement changes the reference by at most 7.75e-4. The declared
 agreement gate is 3e-3, accounting for the MGE approximation.
 
-A material limitation of the comparison is retained: jampy 8.1.4's default
-high-level quadrature differs from the resolved kernel integral by up to
-1.27% and 2.46% for the final broad MGEs. Therefore the reference integrates
-the unchanged JAM analytic kernel with adaptive quadrature in log(u), and
-checks a wider interval and tighter tolerance. The raw high-level outputs are
-stored too; they are not presented as having passed the benchmark. This does
-not reproduce the Hayashi galaxy fits or establish coverage/calibration of a
-real-data inference.
+In jampy 8.1.4, `interp=False` at the public entry point overrides
+`analytic_los=True` and selects numerical LOS integration with internally
+interpolated intrinsic moments. The analytic benchmark therefore requests
+`interp=True` and checks that the returned `vel2` tensor is `None`, confirming
+the analytic path. With these ten positions, no PSF or pixel averaging and
+`nrad*nang > 10`, that path evaluates each requested position directly rather
+than interpolating an output grid.
+
+The public analytic path agrees with the independently integrated kernel to
+7.39e-9 and 1.75e-10 in relative second moments. Direct calls to JAM's standard
+`quad1d` and SciPy quadrature with explicit breakpoints in u confirm the
+log(u) integral. There is no evidence in these cases that JAM's standard
+one-dimensional kernel quadrature fails to resolve the MGE.
+
+The report also retains the `interp=False` numerical-LOS results. At the
+default 20-by-10 intrinsic grid, their maximum differences are 1.27% and
+2.46%. Increasing only that grid to 40-by-20 reduces them to 0.233% and
+0.441%; using an 80-by-40 grid, 3000 LOS points and `epsrel=1e-6` reduces
+them to 0.0596% and 0.115%. This establishes resolution dependence in the
+numerical path, not a discrepancy in the analytic JAM equation. Those
+finite-grid residuals are not global error bounds.
+
+The two cases and ten positions do not establish an accuracy guarantee over
+all parameters. MGE approximation and JeansPy quadrature still need their own
+refinement checks. These JAM cases have no halo cutoff; finite-cutoff checks
+are covered by separate tests. The benchmark does not reproduce the Hayashi
+galaxy fits or establish coverage/calibration of a real-data inference.
 
 The [workflow validation record](../validation/axisymmetric_workflow.md)
 collects the integration-test results, persisted example runs and installed

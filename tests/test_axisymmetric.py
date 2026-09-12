@@ -137,6 +137,13 @@ def test_independent_jam_equation_fixture():
     model = AxisymmetricDSphModel(96, 96, 96)
     for case in reference["cases"]:
         assert case["passed"]
+        # The independent reference must also agree with the public JAM
+        # analytic-LOS path. A numerical-LOS result accidentally selected by
+        # interp=False is not an interchangeable analytic reference.
+        analytic = case["reference"]["public_analytic_los"]
+        assert analytic["effective_path"] == "analytic_los"
+        assert_allclose(analytic["sigma2"], case["reference"]["sigma2"],
+                         rtol=reference["acceptance"]["public_analytic_los_rtol"])
         value = model.sigmalos2(reference["x_pc"], reference["y_pc"], params=case["params"])
         assert_allclose(value, case["reference"]["sigma2"],
                          rtol=reference["acceptance"]["jeanspy_vs_resolved_jam_rtol"])

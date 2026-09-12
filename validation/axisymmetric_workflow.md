@@ -73,11 +73,73 @@ existing release workflow performs these steps before any publication.
 two oblate/prolate comparisons against the independent Cappellari (2008) JAM
 analytic LOS kernel, MGE coefficients, kernel/source hashes and refinement
 results. Relative second-moment differences are 1.13e-5 and 2.87e-5; MGE-order
-changes are below 7.75e-4, within the declared 3e-3 comparison gate. The raw
-high-level JAM outputs differ by up to 1.27% and 2.46% because its default
-quadrature does not resolve these broad MGEs. Those outputs are retained as a
-failed comparison, and the unchanged kernel is resolved separately using
-adaptive quadrature in log(u), with interval/tolerance refinement.
+changes are below 7.75e-4, within the declared 3e-3 comparison gate.
+
+### Correction of the JAM calculation-path diagnosis
+
+Rechecking the original comparison identified a configuration error in the
+benchmark: `analytic_los=True, interp=False` selects **numerical** LOS
+integration in jampy 8.1.4. Its constructor overrides `analytic_los` when
+`interp=False`. The previous attribution of the 1.27% / 2.46% differences to
+an unresolved one-dimensional analytic-kernel integral was incorrect.
+
+The corrected benchmark retains the same MGE coefficients from the fit with
+a requested Gaussian budget of 48, as well as the original coordinates,
+physics and gravitational-constant conversion. It verifies the
+effective path through the returned `vel2` tensor: `None` for analytic LOS,
+populated for numerical LOS. The analytic call uses `interp=True`; for ten
+positions and no PSF/pixel convolution, its 20-by-10 output-grid threshold
+selects direct evaluation of all requested positions. No output interpolation
+is introduced by this correction.
+
+Relative differences below are maxima over ten positions in each case,
+against the independently integrated analytic kernel, in **second moments**:
+
+| Calculation | Oblate halo Q=0.55 | Prolate halo Q=1.3 |
+| --- | ---: | ---: |
+| Original call: numerical LOS, 20-by-10 intrinsic grid, 1500 LOS points, epsrel=1e-2 | 1.27e-2 | 2.46e-2 |
+| Numerical LOS, 40-by-20 intrinsic grid; other settings unchanged | 2.33e-3 | 4.41e-3 |
+| Numerical LOS, 80-by-40 intrinsic grid, 3000 LOS points, epsrel=1e-6 | 5.96e-4 | 1.15e-3 |
+| Correct public analytic-LOS path | 7.39e-9 | 1.75e-10 |
+| JeansPy, 128 nodes per integral | 1.13e-5 | 2.87e-5 |
+
+The first refinement isolates a contribution from the intrinsic grid. The
+last numerical refinement changes several settings together and does not
+separate their individual errors. The unchanged JAM kernel is also integrated
+using its standard `quad1d`, adaptive quadrature in log(u) with interval and
+tolerance refinement, and direct u quadrature with explicit breakpoints. All
+agree within the declared 1e-7 kernel-comparison gate. The numerical LOS
+results remain recorded as resolution diagnostics; they are not labeled as
+analytic-LOS results or as evidence of a failure of JAM's kernel quadrature.
+
+The original report's SHA256 is recorded in `reused_mge_report_sha256`, and
+the corrected JSON stores coefficients for both requested Gaussian budgets
+(32 and 48), the actual retained component counts, explicit
+requested settings, observed path, all comparison outputs and script hash.
+The original report remains available in commit `dcaf7e6`. Reproduce the
+integration checks without refitting either MGE:
+
+```bash
+python scripts/validate_axisymmetric_jam.py \
+    --reuse-mge validation/axisymmetric_jam_reference.json \
+    --output /tmp/axisymmetric_jam_recheck.json
+```
+
+The corrected public analytic path, independently integrated kernel and
+finest numerical LOS comparison must meet their recorded gates. The runner
+also checks that the numerical differences decrease across these three
+resolutions. These tests concern the specified two cases and ten positions;
+the MGE-order change is a convergence diagnostic, not a rigorous total-error
+bound. These JAM cases use untruncated halos.
+
+The focused recheck (`tests/test_axisymmetric.py` and
+`tests/test_source_syntax.py`) passed all 28 tests. The regenerated reference
+also passes the public analytic-path agreement check in the ordinary
+axisymmetric regression test. Repeating the documented command with both
+stored MGE fits reproduced every recorded case result exactly. The original
+fine-fit coefficients, log-integrated moments and numerical-LOS output arrays
+were also unchanged from the original report. No JeansPy production solver code was changed
+for this benchmark correction.
 
 The automated tests also compare to analytic spherical Plummer moments,
 existing spherical Jeans and finite-cone J calculations, Poisson/Jeans
