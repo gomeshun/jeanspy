@@ -600,8 +600,10 @@ class DMModel(Model):
     Notes
     -----
     **Inputs and units.** Subclasses supply ``mass_density_3d`` and
-    ``enclosed_mass``/``enclosure_mass``. J-factor methods take scalar
-    ``dist_pc`` and ``roi_deg`` (cone half-angle in degrees).
+    ``enclosed_mass``/``enclosure_mass``. The base numerical J-factor methods
+    require scalar ``dist_pc``, ``roi_deg`` (cone half-angle in degrees) and
+    ``r_t_pc``. NFW overrides the simple approximation and also supplies an
+    Evans formula; these analytic methods support broadcastable geometry.
 
     **Returns and shape.** Mass in Msun; density in Msun/pc^3; J factor in GeV^2
     cm^-5.
@@ -752,10 +754,10 @@ class DMModel(Model):
         Notes
         -----
         **Inputs and units.** ``dist_pc`` is observer distance in pc; ``roi_deg`` is
-        cone half-angle in degrees. Scalar inputs are the usual case; mutually
-        broadcastable arrays are supported by these classical helpers.
+        cone half-angle in degrees. Distance, aperture and the stored ``r_t_pc``
+        must all be scalars; array geometry raises ValueError.
 
-        **Returns and shape.** J in GeV^2 cm^-5, with broadcast geometry shape.
+        **Returns and shape.** A scalar J in GeV^2 cm^-5.
 
         **Validity.** Small-aperture spherical approximation; outer shells projected
         into the cone are omitted. Require a positive finite halo cutoff and a
@@ -797,10 +799,10 @@ class DMModel(Model):
         Notes
         -----
         **Inputs and units.** ``dist_pc`` is observer distance in pc; ``roi_deg`` is
-        cone half-angle in degrees. Scalar inputs are the usual case; mutually
-        broadcastable arrays are supported by these classical helpers.
+        cone half-angle in degrees. Distance, aperture and the stored ``r_t_pc``
+        must all be scalars; array geometry raises ValueError.
 
-        **Returns and shape.** J in GeV^2 cm^-5, with broadcast geometry shape.
+        **Returns and shape.** A scalar J in GeV^2 cm^-5.
 
         **Validity.** Full finite-distance cone; 0<``roi_deg``<=90,
         ``dist_pc``>``r_t_pc``. Require a positive finite halo cutoff and a
@@ -1045,10 +1047,11 @@ class NFWModel(DMModel):
         Notes
         -----
         **Inputs and units.** ``dist_pc`` is observer distance in pc; ``roi_deg`` is
-        cone half-angle in degrees. Scalar inputs are the usual case; mutually
-        broadcastable arrays are supported by these classical helpers.
+        cone half-angle in degrees. This NFW analytic override supports mutually
+        broadcastable distances, apertures and model parameters. The inherited
+        full-cone ``jfactor_ullio2016`` method requires scalar geometry.
 
-        **Returns and shape.** J in GeV^2 cm^-5, with broadcast geometry shape.
+        **Returns and shape.** J in GeV^2 cm^-5, with the broadcast input shape.
 
         **Validity.** Small-aperture spherical approximation; outer shells projected
         into the cone are omitted. Require a positive finite halo cutoff and a
@@ -1085,7 +1088,8 @@ class NFWModel(DMModel):
         **Inputs and units.** ``dist_pc`` in pc and ``roi_deg`` in degrees, positive
         finite broadcastable values; stored NFW scales/cutoff.
 
-        **Returns and shape.** J in GeV^2 cm^-5, scalar for scalar geometry.
+        **Returns and shape.** J in GeV^2 cm^-5, with the broadcast input shape;
+        scalar for scalar inputs.
 
         **Validity.** Small-angle formula: the projected aperture is capped at
         ``r_t_pc`` but the LOS density is untruncated. It is a different integral
