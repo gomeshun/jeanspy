@@ -33,6 +33,8 @@ from ._sampling_identity import fingerprint, software_identity
 logger = logging.getLogger(__name__)
 
 
+#: Accepted sample-store names; install the dependencies for the selected backend.
+#: These host-side I/O choices do not affect the physical differentiation graph.
 StorageBackend = Literal["zarr", "h5netcdf", "netcdf4"]
 
 
@@ -139,10 +141,35 @@ def _concat_draw_datasets(group_path: str, datasets: Sequence[xr.Dataset]) -> xr
 
 @dataclass(frozen=True)
 class ParameterSpec:
-    """Describe a parameter site and its physical representation.
+    r"""Describe a parameter site and its physical representation.
 
     Without param_name, transformed values keep the sample_name dictionary key
     and are recorded at sample_name + '_transformed' to avoid a site collision.
+
+    Notes
+    -----
+    **Inputs and units.** ``sample_name`` names a NumPyro sample site;
+    distribution is a distribution or zero-argument factory; ``param_name``
+    names the physical parameter; transform is a callable;
+    ``record_deterministic``/``deterministic_name`` control recorded transformed
+    sites. exp and pow10 constructors set exponential/base-10 transforms.
+
+    **Returns and shape.** Specification object. ``build_distribution`` returns
+    a NumPyro distribution; sample returns (``physical_name``,
+    ``physical_value``) and records its configured sample/deterministic sites.
+
+    **Validity.** Priors live in the sampled coordinate. Transforming the value
+    does not turn a log-uniform prior into a uniform prior in physical units.
+
+    **Errors.** Invalid/duplicate names and inconsistent deterministic-site
+    configuration raise.
+
+    **Backend.** NumPyro/JAX.
+
+    **Differentiation.** Transforms/distributions must support the intended JAX
+    derivatives; discrete sample sites are not NUTS coordinates.
+
+    **Examples.** ``examples/docs_inference.py``
     """
 
     sample_name: str
@@ -163,6 +190,12 @@ class ParameterSpec:
 
     @property
     def records_deterministic(self) -> bool:
+        """Whether this specification records a deterministic physical-parameter site.
+
+        An explicit deterministic_name enables recording; otherwise an explicit
+        record_deterministic flag wins, then transform/renaming determines the
+        default. Returns bool.
+        """
         if self.deterministic_name is not None:
             return True
         if self.record_deterministic is not None:
@@ -171,6 +204,12 @@ class ParameterSpec:
 
     @property
     def resolved_deterministic_name(self) -> str:
+        """Return the deterministic-site name without colliding with sample_name.
+
+        Explicit deterministic_name takes precedence, followed by param_name.
+        If the inferred name equals sample_name, append _transformed. An
+        explicit deterministic_name equal to sample_name raises ValueError.
+        """
         name = self.deterministic_name or self.param_name or self.sample_name
         if name == self.sample_name:
             if self.deterministic_name is not None:
@@ -187,6 +226,14 @@ class ParameterSpec:
         param_name: str | None = None,
         deterministic_name: str | None = None,
     ) -> "ParameterSpec":
+        """Construct a specification whose physical value is exp(sample_value).
+
+        ``sample_name`` identifies the NumPyro site and ``distribution`` is its
+        prior in natural-logarithmic coordinates. Optional param_name chooses
+        the physical dictionary key; deterministic_name chooses the recorded
+        physical site. Returns a ParameterSpec with deterministic recording
+        enabled. The distribution is not a prior on the exponentiated value.
+        """
         return cls(
             sample_name=sample_name,
             distribution=distribution,
@@ -205,6 +252,14 @@ class ParameterSpec:
         param_name: str | None = None,
         deterministic_name: str | None = None,
     ) -> "ParameterSpec":
+        """Construct a specification whose physical value is 10**sample_value.
+
+        ``sample_name`` identifies the NumPyro site and ``distribution`` is its
+        prior in base-ten logarithmic coordinates. Optional param_name chooses
+        the physical dictionary key; deterministic_name chooses the recorded
+        physical site. Returns a ParameterSpec with deterministic recording
+        enabled. The distribution is not a prior on the exponentiated value.
+        """
         return cls(
             sample_name=sample_name,
             distribution=distribution,
@@ -215,11 +270,25 @@ class ParameterSpec:
         )
 
     def build_distribution(self) -> Any:
+        """Resolve an existing distribution or call a zero-argument factory.
+
+        Returns the supplied NumPyro distribution unchanged, or the factory
+        result. Factory exceptions propagate; downstream NumPyro execution
+        checks whether the result is a usable distribution.
+        """
         if isinstance(self.distribution, dist.Distribution):
             return self.distribution
         return self.distribution() if callable(self.distribution) else self.distribution
 
     def sample(self) -> tuple[str, Any]:
+        """Create the NumPyro sample site and return its named physical value.
+
+        Returns (resolved parameter name, transformed value). The distribution
+        is defined in sample coordinates; transform is then applied and, when
+        configured, a deterministic site records the physical value. Execute
+        under NumPyro inference or a seeded handler. Units/shapes follow the
+        distribution and physical transform.
+        """
         raw_value = numpyro.sample(self.sample_name, self.build_distribution())
         resolved_name = self.param_name or self.sample_name
         value = self.transform(raw_value) if self.transform is not None else raw_value
@@ -231,7 +300,7 @@ class ParameterSpec:
 
 
 class JeansLikelihoodModel:
-    """Callable spherical NumPyro model for line-of-sight velocity inference.
+    r"""Callable spherical NumPyro model for line-of-sight velocity inference.
 
     Parameters
     ----------
@@ -266,6 +335,35 @@ class JeansLikelihoodModel:
     Physical-parameter gradients use the JAX forward path and differentiable
     transforms in the admissible interior. This class does not calculate J/D
     factors or establish a positive phase-space distribution function.
+
+    **Inputs and units.** ``dsph_model`` is the matching JAX model;
+    ``parameter_specs`` is a sequence of ParameterSpec; the axisymmetric
+    subclass accepts ``fixed_params`` for complementary scalars; the spherical
+    class uses ``parameter_postprocess`` to assemble additional fixed
+    parameters. Velocity mean and sigmalos2 options are explicit. Calling the
+    spherical model takes ``R_pc``/``vlos_kms``/``e_vlos_kms``; the axisymmetric
+    model takes ``x_pc``/``y_pc`` instead of ``R_pc``. Observation arrays are
+    matching finite nonempty 1-D arrays.
+
+    **Returns and shape.** __call__ returns None while registering NumPyro
+    sample, deterministic and likelihood sites; ``sample_parameters`` returns
+    the transformed parameter mapping. Variance includes measurement error
+    squared.
+
+    **Validity.** Positions in pc and velocities/errors in km/s, errors>=0.
+    Gaussian LOS closure at fixed positions. The standard class does not add
+    membership mixtures, velocity-cut normalization or binaries.
+
+    **Errors.** Bad schema/shape and sampled/fixed collisions raise;
+    inadmissible forward variances are rejected with minus-infinite density.
+
+    **Backend.** NumPyro with JAX forward model.
+
+    **Differentiation.** Supported continuous physical parameters are traceable.
+    J/D factors are not likelihood sites. Verify derivatives for custom prior
+    transforms.
+
+    **Examples.** ``examples/docs_numpyro_inference.py``
 
     Raises
     ------
@@ -310,6 +408,12 @@ class JeansLikelihoodModel:
         self.parameter_postprocess = parameter_postprocess
 
     def sample_parameters(self) -> dict[str, Any]:
+        """Draw ParameterSpec values inside a NumPyro model execution.
+
+        Returns the physical-parameter mapping after parameter_postprocess, if
+        supplied. Execute under NumPyro inference or a seeded handler. Parameter
+        units and shapes follow the individual specifications.
+        """
         params: dict[str, Any] = {}
         for parameter_spec in self.parameter_specs:
             param_name, value = parameter_spec.sample()
@@ -359,7 +463,7 @@ class JeansLikelihoodModel:
 
 
 class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
-    """NumPyro likelihood for signed sky coordinates and zero mean streaming.
+    r"""NumPyro likelihood for signed sky coordinates and zero mean streaming.
 
     Uses the same ParameterSpec and NumPyroSampler contracts as the spherical
     likelihood. ``fixed_params`` and sampled physical names must be disjoint;
@@ -373,6 +477,37 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
 
     ``sigma2_bounds`` are admissibility limits: variances outside the interval
     receive zero likelihood, without clipping a finite prediction to a bound.
+
+    Notes
+    -----
+    **Inputs and units.** ``dsph_model`` is the matching JAX model;
+    ``parameter_specs`` is a sequence of ParameterSpec; the axisymmetric
+    subclass accepts ``fixed_params`` for complementary scalars; the spherical
+    class uses ``parameter_postprocess`` to assemble additional fixed
+    parameters. Velocity mean and sigmalos2 options are explicit. Calling the
+    spherical model takes ``R_pc``/``vlos_kms``/``e_vlos_kms``; the axisymmetric
+    model takes ``x_pc``/``y_pc`` instead of ``R_pc``. Observation arrays are
+    matching finite nonempty 1-D arrays.
+
+    **Returns and shape.** __call__ returns None while registering NumPyro
+    sample, deterministic and likelihood sites; ``sample_parameters`` returns
+    the transformed parameter mapping. Variance includes measurement error
+    squared.
+
+    **Validity.** Positions in pc and velocities/errors in km/s, errors>=0.
+    Gaussian LOS closure at fixed positions. The standard class does not add
+    membership mixtures, velocity-cut normalization or binaries.
+
+    **Errors.** Bad schema/shape and sampled/fixed collisions raise;
+    inadmissible forward variances are rejected with minus-infinite density.
+
+    **Backend.** NumPyro with JAX forward model.
+
+    **Differentiation.** Supported continuous physical parameters are traceable.
+    J/D factors are not likelihood sites. Verify derivatives for custom prior
+    transforms.
+
+    **Examples.** ``examples/docs_numpyro_inference.py``
     """
 
     def __init__(self, dsph_model, parameter_specs, *, fixed_params=None, **kwargs):
@@ -393,6 +528,13 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
             raise ValueError(f"Missing velocity_mean parameter: {self.velocity_mean!r}")
 
     def sample_parameters(self):
+        """Draw named physical parameters inside a NumPyro model execution.
+
+        Combines fixed_params with the sampled ParameterSpec values, then applies
+        parameter_postprocess if supplied. Returns a physical-parameter mapping;
+        invalid parameter names raise ValueError. Run under NumPyro inference or
+        a seeded handler, not as an unseeded standalone random-number call.
+        """
         params = dict(self.fixed_params)
         for spec in self.parameter_specs:
             name, value = spec.sample()
@@ -403,6 +545,11 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
         return params
 
     def sampling_identity(self):
+        """Return model attributes for deterministic sampling-target identification.
+
+        The host dictionary includes the forward model, prior specifications and
+        fixed settings; it is metadata rather than a physical prediction.
+        """
         return dict(vars(self))
 
     def __call__(self, x_pc, y_pc, vlos_kms, e_vlos_kms):
@@ -436,6 +583,29 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
 
 @dataclass(frozen=True)
 class SamplerRunResult:
+    r"""Report one NumPyroSampler run and persistence request.
+
+    Notes
+    -----
+    **Inputs and units.** resumed and ``write_submitted`` are booleans;
+    ``checkpoint_path``/``chunk_path`` are paths or None; ``chunk_index`` is an
+    integer or None.
+
+    **Returns and shape.** Frozen result record. ``write_submitted`` does not by
+    itself confirm an asynchronous write finished.
+
+    **Validity.** Inspect returned paths after flush/close before claiming
+    durable completion.
+
+    **Errors.** No numerical-domain validation.
+
+    **Backend.** Python metadata.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``
+    """
     resumed: bool
     checkpoint_path: Path | None
     chunk_index: int | None
@@ -444,7 +614,7 @@ class SamplerRunResult:
 
 
 class NumPyroSampler:
-    """Composition-based helper around numpyro.infer.MCMC.
+    r"""Composition-based helper around numpyro.infer.MCMC.
 
     It keeps the wrapped ``MCMC`` instance untouched while adding:
 
@@ -452,6 +622,37 @@ class NumPyroSampler:
     - checkpoint save/load of ``last_state``,
     - chunked ArviZ 1.0 persistence using backend-backed DataTree stores,
     - optional background writes for heavy output serialization.
+
+    Notes
+    -----
+    **Inputs and units.** mcmc is numpyro.infer.MCMC; ``output_dir`` is a
+    filesystem path; ``storage_backend`` chooses zarr/netcdf4/h5netcdf;
+    ``async_writes`` toggles the writer; ``arviz_converter`` optionally returns
+    xarray.DataTree. run(``rng_key``,\*args,\*\*kwargs) forwards data to the
+    model, with explicit resume/save/write flags.
+
+    **Returns and shape.** run returns SamplerRunResult. Samples use ArviZ
+    chain/draw dimensions; ``load_samples``(combine=True) returns a combined
+    DataTree, False a list. ``save_samples_chunk`` returns
+    (index,path,submitted). ``save_checkpoint``/``load_checkpoint`` return
+    paths; flush/close return None after awaiting writes.
+
+    **Validity.** Use a context manager or close/flush before relying on
+    completed files. resume='auto' checks available state; resume=True requires
+    valid state. Metadata binds data, prior, model/source/dependencies and
+    effective runtime configuration. A checkpoint contains trusted Python
+    serialization; open only your trusted analysis output.
+
+    **Errors.** Missing/inconsistent analysis metadata or checkpoint identity
+    raises before restarting. Write failures propagate from flush/close. Use a
+    new directory for a changed analysis.
+
+    **Backend.** NumPyro/JAX inference, host-side ArviZ storage.
+
+    **Differentiation.** The model may be differentiated; sampling control, disk
+    I/O and checkpoint state are not differentiable.
+
+    **Examples.** ``examples/docs_numpyro_inference.py``
     """
 
     def __init__(
@@ -496,22 +697,27 @@ class NumPyroSampler:
 
     @property
     def checkpoint_path(self) -> Path:
+        """Return the Path for the trusted, pickled NumPyro transition-state checkpoint."""
         return self.output_dir / _CHECKPOINT_FILENAME
 
     @property
     def metadata_path(self) -> Path:
+        """Return the Path for persisted format and sampling-identity metadata."""
         return self.output_dir / _METADATA_FILENAME
 
     @property
     def chunks_dir(self) -> Path:
+        """Return the Path containing persisted sample chunks."""
         return self.output_dir / _CHUNKS_DIRNAME
 
     @property
     def chunk_suffix(self) -> str:
+        """Return the filename suffix for the selected sample-storage backend."""
         return self._storage_config["suffix"]
 
     @property
     def uses_directory_stores(self) -> bool:
+        """Whether the selected backend stores each sample chunk as a directory."""
         return bool(self._storage_config["directory_store"])
 
     def _read_metadata_file(self) -> dict[str, Any] | None:
@@ -578,6 +784,24 @@ class NumPyroSampler:
         return f"{_CHUNK_PREFIX}{chunk_index:04d}{self.chunk_suffix}"
 
     def list_chunk_paths(self) -> list[Path]:
+        r"""Find sample chunks in index order.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments.
+
+        **Returns and shape.** List of Paths; an empty list means no saved chunks
+        were found.
+
+        **Validity.** Lists recognized chunk names in this directory; it does not
+        inspect their scientific content or verify identity.
+
+        **Errors.** Filesystem access errors may propagate; an empty directory
+        returns an empty list.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         if not self.chunks_dir.exists():
             return []
         chunk_paths = [
@@ -602,6 +826,23 @@ class NumPyroSampler:
             return sum(not future.done() for future in self._write_futures)
 
     def flush(self) -> None:
+        r"""Wait for outstanding sample writes.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments.
+
+        **Returns and shape.** None; asynchronous exceptions propagate.
+
+        **Validity.** Waits for outstanding writes and propagates their failures; it
+        does not change the MCMC target or validate a checkpoint.
+
+        **Errors.** A pending write's exception is re-raised after waiting for the
+        submitted futures.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         with self._futures_lock:
             futures = list(self._write_futures)
             self._write_futures.clear()
@@ -616,6 +857,22 @@ class NumPyroSampler:
             raise error
 
     def close(self) -> None:
+        r"""Finish writes and shut down the background writer.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments; also called by context-manager exit.
+
+        **Returns and shape.** None; failures propagate.
+
+        **Validity.** Finish pending writes before releasing the executor. Prefer a
+        context manager to ensure this happens.
+
+        **Errors.** Write failures propagate after the executor is shut down.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         try:
             self.flush()
         finally:
@@ -624,6 +881,23 @@ class NumPyroSampler:
                 self._executor = None
 
     def clear_resume_state(self) -> None:
+        r"""Clear the in-memory warmup-resume pointer.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments.
+
+        **Returns and shape.** None; sets mcmc.``post_warmup_state``=None. It does
+        not delete or reset persisted analysis files.
+
+        **Validity.** Affects only the in-memory ``post_warmup_state`` pointer. A
+        later auto-resume can still use ``last_state`` or an on-disk checkpoint.
+
+        **Errors.** No additional validation or documented domain exception.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         self.mcmc.post_warmup_state = None
 
     def _target_fingerprint(self) -> str:
@@ -681,6 +955,24 @@ class NumPyroSampler:
         self._analysis_identity = identity
 
     def save_checkpoint(self) -> Path:
+        r"""Save trusted NumPyro transition state.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments; requires a ``last_state`` and bound
+        analysis identity.
+
+        **Returns and shape.** Path of the written checkpoint.
+
+        **Validity.** A completed MCMC ``last_state`` and an unchanged bound
+        analysis are required. The file contains Python pickle data.
+
+        **Errors.** RuntimeError before ``last_state`` exists; ValueError for
+        unverified/changed analysis. Filesystem errors propagate.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         last_state = getattr(self.mcmc, "last_state", None)
         if last_state is None:
             raise RuntimeError("Cannot save checkpoint before MCMC has produced last_state")
@@ -701,6 +993,26 @@ class NumPyroSampler:
         return self.checkpoint_path
 
     def load_checkpoint(self) -> Path:
+        r"""Load a trusted matching transition state.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments; reads this output directory's checkpoint
+        and metadata.
+
+        **Returns and shape.** Checkpoint Path; sets ``post_warmup_state`` only
+        after identity checks.
+
+        **Validity.** Read only a trusted checkpoint. Stored target/metadata
+        identity is checked here; supplied observation arguments are checked later
+        by run.
+
+        **Errors.** FileNotFoundError for a missing checkpoint; ValueError for
+        format/identity mismatch. Pickle and filesystem errors propagate.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         if not self.checkpoint_path.exists():
             raise FileNotFoundError(f"Checkpoint not found: {self.checkpoint_path}")
 
@@ -747,6 +1059,24 @@ class NumPyroSampler:
         return False
 
     def to_datatree(self, **arviz_kwargs: Any) -> xr.DataTree:
+        r"""Convert the wrapped MCMC result to ArviZ storage.
+
+        Notes
+        -----
+        **Inputs and units.** Keyword arguments forwarded to ``arviz_converter``.
+
+        **Returns and shape.** xarray.DataTree with chain/draw dimensions; the
+        converter must return this format.
+
+        **Validity.** The wrapped MCMC must contain a result supported by the chosen
+        converter.
+
+        **Errors.** TypeError if the converter returns anything other than
+        xarray.DataTree; converter exceptions propagate.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         datatree = self.arviz_converter(self.mcmc, **arviz_kwargs)
         if not isinstance(datatree, xr.DataTree):
             raise TypeError("Expected ArviZ converter to return xarray.DataTree")
@@ -785,6 +1115,26 @@ class NumPyroSampler:
         wait: bool = False,
         **arviz_kwargs: Any,
     ) -> tuple[int, Path, bool]:
+        r"""Write an ArviZ sample chunk.
+
+        Notes
+        -----
+        **Inputs and units.** Optional datatree; wait=True writes synchronously;
+        other keywords go to the converter.
+
+        **Returns and shape.** Tuple (``chunk_index``, path, ``write_submitted``).
+        False in the third entry means the write was synchronous.
+
+        **Validity.** The sampler assigns a fresh chunk index. Wait for flush/close
+        before relying on an asynchronous write.
+
+        **Errors.** FileExistsError prevents replacing a reserved chunk. Conversion,
+        array loading and write failures propagate; asynchronous failures are raised
+        by flush/close.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         prepared_tree = datatree if datatree is not None else self.to_datatree(**arviz_kwargs)
         prepared_tree = prepared_tree.load()
         chunk_index = self._reserve_chunk_index()
@@ -810,6 +1160,25 @@ class NumPyroSampler:
             datatree.close()
 
     def load_samples(self, *, combine: bool = True) -> xr.DataTree | list[xr.DataTree]:
+        r"""Read persisted sample chunks.
+
+        Notes
+        -----
+        **Inputs and units.** combine=True concatenates matching draw dimensions;
+        False retains separate trees.
+
+        **Returns and shape.** Combined xarray.DataTree or ordered list of
+        DataTrees. Pending writes are flushed first.
+
+        **Validity.** Reads this directory's chunks. Completed arrays are loaded
+        into memory before closing backing stores.
+
+        **Errors.** FileNotFoundError when no chunks exist. Pending-write, reader
+        and concatenation errors propagate.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         self.flush()
         chunk_paths = self.list_chunk_paths()
         if not chunk_paths:
@@ -822,6 +1191,27 @@ class NumPyroSampler:
 
     @staticmethod
     def combine_trees(trees: Sequence[xr.DataTree]) -> xr.DataTree:
+        r"""Combine compatible ArviZ chunks.
+
+        Notes
+        -----
+        **Inputs and units.** Nonempty sequence of DataTrees from the same analysis,
+        with consistent groups, variables and nondraw coordinates.
+
+        **Returns and shape.** DataTree concatenated over draws, with draw
+        coordinates renumbered from zero. No independent sampling-identity
+        verification occurs here.
+
+        **Validity.** Supply chunks from the same analysis. Static groups must be
+        equal. The draw-group concatenation uses xarray compat=override and is not a
+        general identity validator.
+
+        **Errors.** ValueError for an empty list, missing groups, inconsistent
+        draw-axis presence or changed static groups. Other xarray errors propagate.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         if not trees:
             raise ValueError("trees must contain at least one DataTree")
 
@@ -854,6 +1244,27 @@ class NumPyroSampler:
         arviz_kwargs: Mapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> SamplerRunResult:
+        r"""Run one chunk and optionally persist it.
+
+        Notes
+        -----
+        **Inputs and units.** ``rng_key`` plus model data arguments; resume is
+        auto/True/False. ``save_checkpoint``/``save_samples``/``wait_for_write``
+        control persistence; ``arviz_kwargs`` are conversion options.
+
+        **Returns and shape.** SamplerRunResult; wait for flush/close before relying
+        on asynchronous files.
+
+        **Validity.** Use an unchanged model, prior, observations and numerical
+        configuration when resuming. Identity is checked before sampling.
+
+        **Errors.** ValueError for identity mismatch or invalid resume mode;
+        FileNotFoundError for required missing state. Model, NumPyro and storage
+        exceptions propagate.
+
+        **Differentiation.** Host-side sampling/storage control; this method has no
+        physical-parameter derivative.
+        """
         self._bind_analysis(args, kwargs)
         resumed = self._prepare_resume_state(resume)
         self.mcmc.run(rng_key, *args, **kwargs)

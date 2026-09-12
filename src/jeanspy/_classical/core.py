@@ -16,11 +16,35 @@ logger = logging.getLogger("jeanspy.model")
 
 
 class Parameters(MutableMapping):
-    """Lightweight mapping used for stateful model parameters.
+    r"""Lightweight mapping used for stateful model parameters.
 
     The container preserves the small subset of the historical ``pandas.Series``
     surface used by JeansPy while supporting attribute access and predictable
     shallow/deep copy semantics.
+
+    Notes
+    -----
+    **Inputs and units.** An optional mapping plus keyword values; keys are
+    strings and units belong to the stored values.
+
+    **Returns and shape.** Parameters.copy is shallow; deepcopy separates nested
+    values. Parameters.index and .values are lists, not NumPy arrays or dict
+    methods; ``to_series`` returns a pandas Series. DotDict follows dict
+    operations; assignment to an existing key through an attribute changes the
+    key.
+
+    **Validity.** Container operations have no physical validation. DotDict new
+    attributes need not become keys.
+
+    **Errors.** Missing mapping keys raise KeyError; missing attributes raise
+    AttributeError.
+
+    **Backend.** Python host-side containers.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** Parameters({'``re_pc``': 300.}).``to_series``().
     """
 
     __slots__ = ("_data",)
@@ -86,6 +110,11 @@ class Parameters(MutableMapping):
         other: Mapping[str, Any] | "Parameters" | pd.Series,
         **kw: Any,
     ) -> None:
+        """Merge a mapping, Parameters or Series, then keyword replacements.
+
+        Returns None. Values retain their units and are not deep-copied or
+        physically validated; later entries replace existing keys.
+        """
         if isinstance(other, pd.Series):
             self._data.update(other.to_dict())
         elif isinstance(other, Parameters):
@@ -96,17 +125,37 @@ class Parameters(MutableMapping):
             self._data.update(kw)
 
     def to_series(self) -> pd.Series:
+        r"""Convert parameter storage to a pandas Series.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments.
+
+        **Returns and shape.** Series named params, preserving key order; values
+        keep their original units.
+        """
         return pd.Series(self._data, name="params")
 
     @property
     def index(self):
+        """Return parameter names as an insertion-ordered list of strings."""
         return list(self._data.keys())
 
     @property
     def values(self):
+        """Return stored values as an insertion-ordered list, retaining their units."""
         return list(self._data.values())
 
     def copy(self) -> "Parameters":
+        r"""Make a shallow parameter copy.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments.
+
+        **Returns and shape.** New Parameters mapping; nested mutable values remain
+        shared. Use copy.deepcopy for them.
+        """
         return Parameters(self._data)
 
     def __deepcopy__(self, memo):
@@ -118,7 +167,33 @@ class Parameters(MutableMapping):
 
 
 class Model(metaclass=ABCMeta):
-    """Base class for stateful classical model components."""
+    r"""Base class for stateful classical model components.
+
+    Notes
+    -----
+    **Inputs and units.** ``show_init`` is a logging flag; submodels maps
+    required role names to component instances; \*\*params sets scalar physical
+    parameters. Subclasses declare required names and roles.
+
+    **Returns and shape.** A mutable model; model[role] returns its submodel.
+    update(``new_params``, \*\*kwargs) mutates the owning components and returns
+    None. ``params_all`` is a flattened Parameters copy;
+    ``params_all_with_model_name`` retains role-qualified names.
+
+    **Validity.** This is a subclassing interface. Unspecified parameters are
+    initialized to NaN; supply all physical values before numerical evaluation.
+    target is retained but ignored by update.
+
+    **Errors.** Missing subclass declarations raise AttributeError; mismatched
+    roles or unknown parameters raise ValueError.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** See the spherical quickstart and composition guide.
+    """
 
     def __init__(self, show_init=False, submodels=None, **params):
         self.name = self.__class__.__name__
@@ -203,6 +278,11 @@ class Model(metaclass=ABCMeta):
 
     @property
     def params_all(self):
+        """Return a flattened Parameters copy of this model and its submodels.
+
+        Values retain their physical units. Later submodels overwrite duplicate
+        names; use ``params_all_with_model_name`` to retain role-qualified names.
+        """
         merged = Parameters(self.params)
         for model in self.submodels.values:
             merged.update(model.params_all)
@@ -210,6 +290,11 @@ class Model(metaclass=ABCMeta):
 
     @property
     def params_all_with_model_name(self):
+        """Return a new Parameters mapping with submodel-role prefixes.
+
+        Nested names use ``role:parameter`` notation. Values retain their physical
+        units; this operation copies the mapping, not nested mutable values.
+        """
         merged = Parameters()
         merged.update(self.params)
         for name, model in self.submodels.items():
@@ -225,15 +310,36 @@ class Model(metaclass=ABCMeta):
 
     @property
     def required_param_names_combined(self):
+        """Return this model's and all nested submodels' required parameter names.
+
+        The result is a list in traversal order; duplicate names are retained.
+        """
         result = self.required_param_names[:]
         for model in self.submodels.values:
             result.extend(model.required_param_names_combined)
         return result
 
     def is_required_param_names(self, param_names_candidates):
+        """Test a sequence of names against this component's required parameters.
+
+        Returns a list of bool with the same length and order as
+        ``param_names_candidates``. Submodel requirements are not included.
+        """
         return [p in self.required_param_names for p in param_names_candidates]
 
     def update(self, new_params=None, target: str = "all", **kwargs):
+        r"""Replace named parameters in the owning components.
+
+        Notes
+        -----
+        **Inputs and units.** ``new_params`` is an optional
+        mapping/Parameters/Series; keyword values are additional replacements. Names
+        are physical names declared by this model and its components; target is
+        ignored.
+
+        **Returns and shape.** None; mutates component parameters. ``params_all``
+        returns the resulting flattened copy.
+        """
         del target  # retained for API compatibility
         merged: Dict[str, Any] = {}
         if new_params is not None:

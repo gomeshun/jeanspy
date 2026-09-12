@@ -1,5 +1,5 @@
 from numpy import sinh,cosh,exp,log,pi,arange,isnan,isinf,float64
-from functools import lru_cache
+from functools import lru_cache, wraps
 import numpy as np
 import warnings
 
@@ -7,6 +7,25 @@ DEBUG = False
 BUF_DEBUG = None
 
 def hashable(x):
+    r"""Test whether Python can hash an object.
+
+    Notes
+    -----
+    **Inputs and units.** x is any Python object.
+
+    **Returns and shape.** bool; catches TypeError from hash(x).
+
+    **Validity.** Hashability is not a check of array content identity.
+
+    **Errors.** Exceptions other than TypeError propagate.
+
+    **Backend.** Python host.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** hashable((1,2)) is True; hashable(np.array([1])) is False.
+    """
     try:
         hash(x)
         return True
@@ -15,7 +34,31 @@ def hashable(x):
 
 # 関数を Memoize するデコレータ.
 def memorize(callable):
+    r"""Cache a callable for hashable argument tuples.
+
+    Notes
+    -----
+    **Inputs and units.** callable is a Python function; the wrapper accepts its
+    positional/keyword arguments.
+
+    **Returns and shape.** Wrapped callable with an in-memory cache; unhashable
+    arguments bypass caching.
+
+    **Validity.** Pure functions only; key order follows supplied kwargs.
+    Mutable returned values are shared cached objects.
+
+    **Errors.** Original callable exceptions propagate.
+
+    **Backend.** Python host.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** Used internally for quadrature nodes; use dequad for numerical
+    integration.
+    """
     cache = {}
+    @wraps(callable)
     def wrapper(*args, **kwargs):
         key = args + tuple(kwargs.items())
         if not hashable(key):
@@ -28,13 +71,34 @@ def memorize(callable):
 #@lru_cache(maxsize = 1)
 @memorize
 def generate_x_w(a,b,n,xp=np):
-    '''
-    x = phi(t)
-    w = phi'(t)
-    
-    if a and b is scalar, xs and ws has shape (n,)
-    if a or b is an array (n_edge,), return has shape () 
-    '''
+    r"""Construct nodes and weights for fixed double-exponential quadrature.
+
+    Parameters
+    ----------
+    a, b : float
+        Scalar interval endpoints in the integration coordinate's units.
+        Supported intervals are finite ``(a, b)``, ``(a, +inf)`` and
+        ``(-inf, +inf)``. Vector-valued endpoints are not a supported contract.
+    n : int
+        Number of nodes, at least two. Refine this count to check convergence.
+    xp : module, optional
+        Array namespace for the coordinate transform; NumPy by default.
+        Node selection and interval checks still use NumPy.
+
+    Returns
+    -------
+    x, w : ndarray
+        Nodes and weights, each shape ``(n,)`` for scalar endpoints. Weights
+        include the coordinate transformation and integration step. Both
+        arrays have the integration coordinate's units.
+
+    Notes
+    -----
+    Invalid interval combinations or orders are not uniformly validated.
+    This host-side node generator is not an end-to-end JAX tracing contract.
+    Hashable arguments reuse cached arrays; returned arrays must not be
+    mutated if that cache is to remain valid. See ``examples/docs_numerics.py``.
+    """
     #print("generate_x_w in",a,b,width,mN,pN)
     pi2 = xp.pi/2
     
@@ -68,7 +132,7 @@ def dequad(func,a,b,n,
            replace_nan_to_zero=False,
            reshape_ws = None,
            verbose=False):
-    """Integrate a vectorized function with fixed double-exponential nodes.
+    r"""Integrate a vectorized function with fixed double-exponential nodes.
 
     Parameters
     ----------
@@ -103,6 +167,21 @@ def dequad(func,a,b,n,
     -----
     UserWarning
         Nonfinite weighted values are present and their replacement is disabled.
+
+    Notes
+    -----
+    **Validity.** Refine n to verify convergence; nonfinite replacement can
+    discard failures.
+
+    **Errors.** Nonfinite weighted values issue warnings unless the explicit
+    replacement option is enabled.
+
+    **Backend.** NumPy CPU; xp is not an end-to-end JAX contract.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_numerics.py``
 
     Examples
     --------

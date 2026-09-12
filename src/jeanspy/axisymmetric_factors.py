@@ -14,6 +14,10 @@ from .axisymmetric import ZhaoHalo, _inclination, _positive, _rule
 
 __all__ = ["jfactor", "dfactor", "C_J", "C_D"]
 
+#: Convert a numerical J factor from Msun^2/pc^5 to GeV^2/cm^5.
+C_J: float
+
+#: Convert a numerical D factor from Msun/pc^2 to GeV/cm^2.
 C_D = (solar_mass_kg * kg_eV / 1e9) / (parsec * 100)**2
 
 
@@ -80,11 +84,59 @@ def _factor(halo, dist_pc, roi_deg, inclination, power, n_mu, n_phi, n_radial):
 
 def jfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
             n_mu=96, n_phi=96, n_radial=128):
-    """Return integral rho^2 ds dOmega in GeV^2 cm^-5 (gamma must be < 1.5)."""
+    r"""Return integral rho^2 ds dOmega in GeV^2 cm^-5 (gamma must be < 1.5).
+
+    Notes
+    -----
+    **Inputs and units.** halo is ZhaoHalo; ``dist_pc`` is scalar observer
+    distance (pc); ``roi_deg`` is scalar cone half-angle; inclination is
+    radians; ``n_mu``/``n_phi``/``n_radial`` are integers >=16.
+
+    **Returns and shape.** Nonnegative Python float in GeV^2 cm^-5; zero
+    aperture gives zero.
+
+    **Validity.** Require explicit finite ``r_t_pc``, observer distance >
+    ``r_t_pc``\*max(1,Q), 0<=``roi_deg``<90 and gamma<1.5 (finite central
+    annihilation integral). ``n_phi`` uses a periodic rule; refine all orders.
+
+    **Errors.** Invalid geometry/domain/order raises ValueError; wrong halo type
+    raises TypeError.
+
+    **Backend.** NumPy/SciPy CPU postprocessing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_factors.py``
+    """
     return C_J*_factor(halo, dist_pc, roi_deg, inclination, 2, n_mu, n_phi, n_radial)
 
 
 def dfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
             n_mu=96, n_phi=96, n_radial=128):
-    """Return integral rho ds dOmega in GeV cm^-2."""
+    r"""Return integral rho ds dOmega in GeV cm^-2.
+
+    Notes
+    -----
+    **Inputs and units.** halo is ZhaoHalo; ``dist_pc`` is scalar observer
+    distance (pc); ``roi_deg`` is scalar cone half-angle; inclination is
+    radians; ``n_mu``/``n_phi``/``n_radial`` are integers >=16.
+
+    **Returns and shape.** Nonnegative Python float in GeV cm^-2; zero aperture
+    gives zero.
+
+    **Validity.** Require explicit finite ``r_t_pc``, observer distance >
+    ``r_t_pc``\*max(1,Q), 0<=``roi_deg``<90 and gamma<2 under the ZhaoHalo
+    constructor domain. ``n_phi`` uses a periodic rule; refine all orders.
+
+    **Errors.** Invalid geometry/domain/order raises ValueError; wrong halo type
+    raises TypeError.
+
+    **Backend.** NumPy/SciPy CPU postprocessing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_factors.py``
+    """
     return C_D*_factor(halo, dist_pc, roi_deg, inclination, 1, n_mu, n_phi, n_radial)

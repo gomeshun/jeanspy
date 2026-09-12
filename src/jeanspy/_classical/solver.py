@@ -27,7 +27,37 @@ def _projected_radii(R_pc):
 
 
 class DSphModel(Model):
-    """Composite spherical Jeans model for dwarf spheroidal systems."""
+    r"""Composite spherical Jeans model for dwarf spheroidal systems.
+
+    Notes
+    -----
+    **Inputs and units.** submodels must contain StellarModel, DMModel and
+    AnisotropyModel; ``vmem_kms`` sets mean velocity. ``sigmalos2_dequad`` uses
+    n outer and ``n_kernel`` inner nodes; sigmalos2 dispatches to that same
+    route. ``R_pc`` is scalar or nonempty 1-D projected radius; ``r_pc`` is
+    intrinsic radius (pc).
+
+    **Returns and shape.** sigmar2 and sigmat2 return intrinsic radial and
+    one-component tangential variances in (km/s)^2. sigmalos2 and
+    ``sigmalos2_dequad`` return LOS variance arrays with input shape, or a
+    scalar for scalar input. ``sigmalos_dequad`` returns km/s.
+    ``integrand_sigmalos2``(u,``R_pc``) has shape (``N_R``,``N_u``).
+
+    **Validity.** Finite positive projected radii; no central-limit LOS solver.
+    Tracer has vanishing outer pressure. Numerical orders and adaptive
+    tolerances are part of the analysis configuration.
+
+    **Errors.** Malformed/invalid projected radii or nonphysical mass, density
+    and integrand values raise ValueError. Adaptive reference integration may
+    issue SciPy integration warnings.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_spherical.py``
+    """
 
     name = "DSphModel"
     required_param_names = ["vmem_kms"]
@@ -60,11 +90,37 @@ class DSphModel(Model):
         return value
 
     def sigmar2(self, r_pc):
-        """Return the radial velocity dispersion squared at ``r_pc``."""
+        r"""Return the radial velocity dispersion squared at ``r_pc``.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is a scalar or NumPy array of positive
+        intrinsic radii in pc.
+
+        **Returns and shape.** Variance in (km/s)^2, following input shape; scalar
+        input is a zero-dimensional NumPy array.
+
+        **Validity.** Uses adaptive integration to infinite radius with vanishing
+        outer pressure. The intrinsic helpers do not apply all LOS input validation
+        checks.
+        """
         return np.vectorize(self._sigmar2)(r_pc)
 
     def sigmat2(self, r_pc):
-        """Return the tangential velocity dispersion squared at ``r_pc``."""
+        r"""Return the tangential velocity dispersion squared at ``r_pc``.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is a scalar or NumPy array of positive
+        intrinsic radii in pc.
+
+        **Returns and shape.** Variance in (km/s)^2, following input shape; scalar
+        input is a zero-dimensional NumPy array.
+
+        **Validity.** Uses adaptive integration to infinite radius with vanishing
+        outer pressure. The intrinsic helpers do not apply all LOS input validation
+        checks.
+        """
         beta = self["AnisotropyModel"].beta(r_pc)
         return self.sigmar2(r_pc) * (1.0 - beta)
 
@@ -116,9 +172,18 @@ class DSphModel(Model):
         n_kernel=128,
         ignore_RuntimeWarning=True,
     ):
-        """Evaluate LOS variance for finite R_pc > 0 (scalar or 1-D array).
+        r"""Evaluate LOS variance for finite R_pc > 0 (scalar or 1-D array).
 
         R=0 requires a separate model-dependent central limit and is rejected.
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc`` is positive finite scalar or nonempty
+        one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
+        the anisotropy-kernel order.
+
+        **Returns and shape.** Variance in (km/s)^2, or dispersion in km/s for
+        ``sigmalos_dequad``; scalar for scalar input, otherwise (N,).
         """
         scalar_input = np.ndim(R_pc) == 0
         R_array = _projected_radii(R_pc)
@@ -157,7 +222,17 @@ class DSphModel(Model):
         n_kernel=128,
         ignore_RuntimeWarning=True,
     ):
-        """Return the LOS velocity dispersion in km/s."""
+        r"""Return the LOS velocity dispersion in km/s.
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc`` is positive finite scalar or nonempty
+        one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
+        the anisotropy-kernel order.
+
+        **Returns and shape.** Variance in (km/s)^2, or dispersion in km/s for
+        ``sigmalos_dequad``; scalar for scalar input, otherwise (N,).
+        """
         return np.sqrt(
             self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
         )
@@ -169,7 +244,17 @@ class DSphModel(Model):
         n_kernel=128,
         ignore_RuntimeWarning=True,
     ):
-        """Backend-neutral entry point for classical LOS dispersion squared."""
+        r"""Backend-neutral entry point for classical LOS dispersion squared.
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc`` is positive finite scalar or nonempty
+        one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
+        the anisotropy-kernel order.
+
+        **Returns and shape.** Variance in (km/s)^2, or dispersion in km/s for
+        ``sigmalos_dequad``; scalar for scalar input, otherwise (N,).
+        """
         return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
 
 

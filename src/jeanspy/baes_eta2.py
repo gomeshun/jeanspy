@@ -25,6 +25,8 @@ import jax
 import jax.numpy as jnp
 
 
+#: Default fixed quadrature node count for the eta=2 Baes kernel.
+#: Refine this static numerical setting when checking kernel convergence.
 DEFAULT_BAES_ETA2_KERNEL_N_QUAD = 96
 
 
@@ -81,6 +83,29 @@ def baes_eta2_kernel_jax(
     This routine is intended as the JAX-friendly evaluator of the analytic
     reduction.  ``baes_eta2_kernel_appell_reference`` below provides an
     independent high-precision Appell-F1 reference for validation.
+
+    Notes
+    -----
+    **Inputs and units.** u>=1 and ``R_pc``>0, ``beta_0``/``beta_inf``
+    dimensionless, ``r_a``>0 in pc, ``n_kernel`` static. See the exact signature
+    for supported quadrature options.
+
+    **Returns and shape.** Dimensionless kernel with broadcast array shape.
+
+    **Validity.** Use the documented eta=2 domain and refine quadrature for
+    extreme anisotropies or scales.
+
+    **Errors.** This low-level helper clamps radii/arguments and replaces
+    nonfinite kernel values; a finite output is not evidence of valid inputs.
+    Validate the physical domain before calling it.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Differentiable continuous physical parameters in the
+    supported regime.
+
+    **Examples.** ``examples/docs_numerics.py``
     """
     u_arr, r_arr = jnp.broadcast_arrays(jnp.asarray(u), jnp.asarray(R_pc))
     dtype = jnp.result_type(u_arr, r_arr, beta_0, beta_inf, r_a)
@@ -147,6 +172,27 @@ def baes_eta2_kernel_appell_reference(
     hot path.  ``mpmath`` is a development dependency of jeanspy and is loaded
     lazily here.  It evaluates the exact three-term Appell-F1 expression quoted
     in :func:`baes_eta2_kernel_jax`.
+
+    Notes
+    -----
+    **Inputs and units.** Broadcastable u/``R_pc`` arrays and scalar
+    ``beta_0``/``beta_inf``/``r_a`` with the units/domain of the JAX eta=2
+    kernel; dps sets mpmath working precision.
+
+    **Returns and shape.** NumPy dimensionless kernel array with the broadcast
+    u/``R_pc`` shape.
+
+    **Validity.** Independent numerical check; not the production JAX inference
+    route.
+
+    **Errors.** mpmath evaluation/convergence exceptions can propagate.
+
+    **Backend.** Python/mpmath CPU.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_numerics.py``
     """
     try:
         import mpmath as mp
@@ -204,11 +250,40 @@ class BaesEta2AnisotropyModel(BaesAnisotropyModel):
     subclass of the generic NumPyro ``BaesAnisotropyModel`` so existing
     ``DSphModel`` kernel plumbing (including ``n_kernel`` forwarding) works
     unchanged.
+
+    Notes
+    -----
+    **Inputs and units.** Physical params ``beta_0``,``beta_inf`` and positive
+    ``r_a`` (pc); eta is fixed at two. beta/f use radius in pc; kernel uses
+    dimensionless u=r/R and projected radius in pc.
+
+    **Returns and shape.** Dimensionless anisotropy/kernel and integrating
+    factor f.
+
+    **Validity.** This specialized model is not the arbitrary-eta Baes model.
+    Check the stated supported prior envelope.
+
+    **Errors.** Invalid proposals may yield nonfinite values; downstream
+    likelihood rejects invalid forward variance.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Continuous ``beta_0``/``beta_inf``/``r_a`` derivatives
+    on the supported fixed-rule path.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
 
     required_param_names = ("beta_0", "beta_inf", "r_a")
 
     def beta(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Return dimensionless eta=2 Baes anisotropy with radius-array shape.
+
+        r_pc and the positive params['r_a'] are in pc; beta_0 and beta_inf
+        are dimensionless. Continuous parameters support JAX differentiation
+        within the class domain; this helper does not validate that domain.
+        """
         beta_0 = jnp.asarray(params["beta_0"])
         beta_inf = jnp.asarray(params["beta_inf"])
         r_a = jnp.asarray(params["r_a"])
@@ -216,6 +291,13 @@ class BaesEta2AnisotropyModel(BaesAnisotropyModel):
         return (beta_0 + beta_inf * x) / (1.0 + x)
 
     def f(self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]) -> jnp.ndarray:
+        """Return the eta=2 radial Jeans integrating factor on JAX arrays.
+
+        Positive r_pc and params['r_a'] are in pc; beta_0 and beta_inf are
+        dimensionless. The arbitrary factor normalization cancels in the
+        Jeans solution. Shape follows r_pc; valid continuous parameters are
+        differentiable. The origin requires a model-dependent limit.
+        """
         beta_0 = jnp.asarray(params["beta_0"])
         beta_inf = jnp.asarray(params["beta_inf"])
         r_a = jnp.asarray(params["r_a"])
@@ -231,6 +313,13 @@ class BaesEta2AnisotropyModel(BaesAnisotropyModel):
         params: Mapping[str, Any],
         n_kernel: int = DEFAULT_BAES_ETA2_KERNEL_N_QUAD,
     ) -> jnp.ndarray:
+        """Return the dimensionless eta=2 LOS kernel with broadcast u/R_pc shape.
+
+        u=r/R must be at least one and R_pc must be positive, in pc. params
+        supplies beta_0, beta_inf and r_a. n_kernel is a static integer node
+        count; refine it to check convergence. Physical-parameter derivatives
+        follow baes_eta2_kernel_jax and its documented domain restrictions.
+        """
         return baes_eta2_kernel_jax(
             jnp.asarray(u),
             jnp.asarray(R_pc),

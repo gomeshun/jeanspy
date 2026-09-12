@@ -6,7 +6,6 @@ import tomllib
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "docs"))
 os.environ.setdefault("JEANSPY_JAX_PLATFORM", "cpu")
 os.environ.setdefault("JEANSPY_JAX_ENABLE_X64", "true")
 os.environ.setdefault("MPLBACKEND", "Agg")
@@ -112,7 +111,5 @@ def preserve_source_alias_anchors(app, doctree):
 
 
 def setup(app):
-    from api_contracts import append_contract
-    app.connect("autodoc-process-docstring", append_contract, priority=900)
     app.connect("doctree-read", qualify_imported_types)
     app.connect("doctree-read", preserve_source_alias_anchors)

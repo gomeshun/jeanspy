@@ -1,0 +1,97 @@
+{
+  "baseline_commit": "12615b6e593efb1f094f2c7b1d0738f011e99e84",
+  "change": "API-specific documentation now lives in source docstrings and doc-comments. Sphinx has no external API prose table or docstring append hook.",
+  "public_exports": 74,
+  "documentation_validation": "The API generator requires a source description for every public export and package-defined public method/property, including inherited definitions and cached properties.",
+  "html_build": {
+    "status": "passed",
+    "warnings": 0
+  },
+  "doctest_build": {
+    "status": "passed",
+    "tests": 2,
+    "failures": 0,
+    "warnings": 0
+  },
+  "existing_tests": {
+    "status": "passed",
+    "passed": 11,
+    "seconds": 20.07,
+    "command": "python -m pytest -q tests/test_docs_examples.py tests/test_docs_versions.py tests/test_source_syntax.py"
+  },
+  "internal_links": {
+    "html_pages": 128,
+    "local_links_checked": 13430,
+    "broken_links": []
+  },
+  "runtime_introspection": {
+    "axisymmetric_help_has_units": true,
+    "restart_help_has_identity": true,
+    "quadrature_signature_parameters": [
+      "a",
+      "b",
+      "n",
+      "xp"
+    ],
+    "quadrature_docstring_visible": true,
+    "cache_preserves_return_identity": true
+  },
+  "numerical_ast_comparison": {
+    "baseline": "12615b6e593efb1f094f2c7b1d0738f011e99e84",
+    "source_files": 25,
+    "non_documentation_differences": [],
+    "allowed_metadata_changes": [
+      "functools.wraps on the dequad cache wrapper",
+      "unassigned float annotations for imported public constants"
+    ],
+    "note": "AST comparison removes documentation strings/comments and only the two declared metadata changes. It does not assert checkpoint compatibility: software identity hashes complete source files."
+  },
+  "distribution_archives": [
+    {
+      "artifact": "jeanspy-0.1.0-py3-none-any.whl",
+      "bytes": 132944,
+      "sha256": "d698ecc96f51e62a4a7c5cbd2750ac3df64e1342ba7854c2b751f77259d373dc",
+      "files": 33,
+      "verified_source_files": 28
+    },
+    {
+      "artifact": "jeanspy-0.1.0.tar.gz",
+      "bytes": 529336,
+      "sha256": "9da8271b9a76e23413dba82a59e0d5058b2987d679b73b67e50656eaa3bc31d8",
+      "files": 185,
+      "verified_source_files": 120
+    }
+  ],
+  "twine_check": "Both archives passed.",
+  "checkpoint_compatibility": "Existing checkpoints must still use the matching complete source version. The conservative source-identity guard is unchanged; docstring changes are not exempted.",
+  "environment_notes": [
+    "The first sandbox doctest build passed both examples but could not resolve external intersphinx inventories. Repeating it with network access passed without warnings."
+  ],
+  "runtime_source_sha256": {
+    "src/jeanspy/__init__.py": "f2134c34567b2cfc530c39380201b2b734a503a51308396bbd79484cfa6bb745",
+    "src/jeanspy/_axisymmetric_params.py": "93235bf5233a12bac6e9a80991db44d36c7cebed8d94fa064152095580e4712a",
+    "src/jeanspy/_classical/__init__.py": "303f79d4512f42501139e724ef95c732e530927e7172f0740ed50eeb6fd3a7b4",
+    "src/jeanspy/_classical/core.py": "ac1f9b8f3c0ce7f62df9dcbcaa95c7915da9458d92ed7315678ec91272139e2e",
+    "src/jeanspy/_classical/inference.py": "2a31e89e9d2c0dfd31203ebe3472cffbcf9e3e41e8d53b770e3f69e4bd13800e",
+    "src/jeanspy/_classical/jfactor.py": "6bb094c788f4410b19d4b33b478b67923b94125e199355f935412fcc22d9cc0d",
+    "src/jeanspy/_classical/profiles.py": "caa065e0bbf4946c8f76ca654bf6dbd27bc175f8a617e6e95f9d9f1c973d2131",
+    "src/jeanspy/_classical/solver.py": "90ae1616a9d4478c7e6482f5a8cd23f9f06c751d638a9cf635b28df7927fe401",
+    "src/jeanspy/_jax_env.py": "70ac1afc652c2ef3f250603b623794083b78130b4fc7044076b6d8af8db148b2",
+    "src/jeanspy/_model_impl.py": "ffd8c87d3b2a09ff89aef48c0cfbc1f09cf6d24d357345d23ed8be013dca320c",
+    "src/jeanspy/_sampling_identity.py": "ca87e62dc3bff542a21d9ea2b6ee5425504ac483c0a8eaa01203e6a1ce3058a5",
+    "src/jeanspy/_sersic_deprojection.py": "004c5566448698ecfe536096c3fc8d5c348a8d4e1610042763c77568c0f3d821",
+    "src/jeanspy/_zhao.py": "e7b9cc51321f7fb20ea0413ee99dab50d94d33e77a44fe4877ec1f608f849578",
+    "src/jeanspy/axisymmetric.py": "41a1f1b4aaf4a626bcdc80cb8d8f9b597c99f3aab4fe522a3f47cac224b8fe8c",
+    "src/jeanspy/axisymmetric_factors.py": "b1d94116c5200f6be9e3cdc878f55f4287963a28a89ff7521dd3567274a0b7ef",
+    "src/jeanspy/axisymmetric_inference.py": "7001ec35a00aac8b3649837bc4fbb78450767ef01d15d8efb2645be4d9f8ae9b",
+    "src/jeanspy/axisymmetric_numpyro.py": "3b31afb115df9866c8a75111325d13dafac98934755f0edee2bd8dca402f5c5d",
+    "src/jeanspy/baes_eta2.py": "397f116ecabc24bdb565b4d49af556e127019e06add94d6443c2bc4874fad502",
+    "src/jeanspy/dequad.py": "0a4b0bb9f4993a50bb84aa73d424979907c1ee052bccfd2ebaa7f82d81512e79",
+    "src/jeanspy/hyp2f1_jax.py": "93d1f2678ff6950ebf8aa8685bcf71430dab780aa17ca6842cc9d77898987abd",
+    "src/jeanspy/model.py": "58f78ecac527af945707e76d6af0316485bf3fd902b0e532297f673ee0ed6648",
+    "src/jeanspy/model_numpyro.py": "b80493650441241b650d53dab0871ec1a2a7e06784902b80363c454c023d81ca",
+    "src/jeanspy/sampler.py": "c3aed0607224aa30295cd5a50add4f652c6b7fe30d8e0d6dbbc4c8241cc223d4",
+    "src/jeanspy/sampler_numpyro.py": "fe0b879ac9d4fb29b9ecc8ac34b4a42d0a62d1ece9050aa4ebddc9bd4c6f29de",
+    "src/jeanspy/sersic.py": "24c972e865f6557026a1d75e1ce283ea1a6217af16f07f537f1dee70c3e2cb13"
+  }
+}

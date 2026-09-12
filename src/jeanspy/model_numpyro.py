@@ -119,7 +119,7 @@ def _warn_if_baes_eta_large(eta: Any) -> None:
 
 
 def get_runtime_config() -> Dict[str, Any]:
-    """Return the current model_numpyro runtime configuration.
+    r"""Return the current model_numpyro runtime configuration.
 
     Notes
     -----
@@ -129,6 +129,25 @@ def get_runtime_config() -> Dict[str, Any]:
       future traces/compilations.
     - Numerical integration choices are per-call options on ``sigmalos2`` and
       ``ConstantAnisotropyModel.kernel`` rather than process-wide settings.
+
+    **Inputs and units.** ``configure_runtime`` accepts ``jax_enable_x64``;
+    ``get_runtime_config`` takes no arguments. Device selection should be set
+    through environment variables before JAX initialization.
+
+    **Returns and shape.** Dictionary of effective runtime settings and
+    numerical defaults.
+
+    **Validity.** Changing precision after tracing can create a different
+    numerical analysis and restart identity.
+
+    **Errors.** Unsupported legacy options are rejected rather than silently
+    changing device behavior.
+
+    **Backend.** Host configuration of JAX.
+
+    **Differentiation.** Configuration choices are static, not differentiable.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
     return {
         "jax_platform_requested": os.environ.get(
@@ -155,11 +174,32 @@ def configure_runtime(
     jax_enable_x64: Optional[bool] = None,
     **legacy_kwargs: Any,
 ) -> Dict[str, Any]:
-    """Update global runtime knobs used by model_numpyro.
+    r"""Update global runtime knobs used by model_numpyro.
 
     Only JAX precision remains process-wide. Numerical integration choices are
     passed per call to ``DSphModel.sigmalos2`` or
     ``ConstantAnisotropyModel.kernel``.
+
+    Notes
+    -----
+    **Inputs and units.** ``configure_runtime`` accepts ``jax_enable_x64``;
+    ``get_runtime_config`` takes no arguments. Device selection should be set
+    through environment variables before JAX initialization.
+
+    **Returns and shape.** Dictionary of effective runtime settings and
+    numerical defaults.
+
+    **Validity.** Changing precision after tracing can create a different
+    numerical analysis and restart identity.
+
+    **Errors.** Unsupported legacy options are rejected rather than silently
+    changing device behavior.
+
+    **Backend.** Host configuration of JAX.
+
+    **Differentiation.** Configuration choices are static, not differentiable.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
     if legacy_kwargs:
         unsupported = ", ".join(sorted(legacy_kwargs))
@@ -619,7 +659,7 @@ def _abel_transform_piecewise_constant(
 
 
 class Model:
-    """Minimal model container designed to work well with NumPyro.
+    r"""Minimal model container designed to work well with NumPyro.
 
     Design goals:
     - Keep parameter grouping + submodel composition (like the existing model.py)
@@ -628,6 +668,29 @@ class Model:
 
     Notes:
     - This base class intentionally implements only what is needed for MCMC demos/tests.
+
+    Notes
+    -----
+    **Inputs and units.** submodels maps the exact role names declared by the
+    concrete class; no physical values are stored here. Numerical methods
+    receive explicit parameters.
+
+    **Returns and shape.** A component container with __getitem__ role access
+    and ``sampling_identity`` without JIT cache.
+
+    **Validity.** Physical parameter dictionaries hold scalar values; radius
+    arrays are broadcast independently. Use vmap to batch parameter
+    dictionaries.
+
+    **Errors.** Missing/extra submodel roles raise ValueError.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Composition is static; differentiation applies to
+    array-valued numerical method arguments.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
 
     # Kept as metadata only; NumPyro models typically pass params explicitly.
@@ -668,24 +731,71 @@ class StellarModel(Model):
 
 
 class PlummerModel(StellarModel):
-    r"""Plummer surface/volume density normalized so that \int 2πR Σ(R) dR = 1."""
+    r"""Plummer surface/volume density normalized so that \int 2πR Σ(R) dR = 1.
+
+    Notes
+    -----
+    **Inputs and units.** ``density_2d(R_pc, re_pc=...)`` and
+    ``density_3d(r_pc, re_pc=...)`` use pc.
+    ``sample_R(key, n, re_pc=...)`` takes a JAX random key and static sample
+    count.
+
+    **Returns and shape.** pc^-2 or pc^-3 density with broadcast input shape;
+    ``log_prob_R`` includes 2\*pi\*R and is the log radial PDF; ``sample_R``
+    returns shape (n,) radii in pc.
+
+    **Validity.** Positive ``re_pc``, nonnegative radius; ``log_prob_R`` is
+    minus infinity outside its support.
+
+    **Errors.** Low-level density expressions can produce NaN/inf for invalid
+    parameters.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Physical scales and valid radii are differentiable;
+    random keys and sample counts are not.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
+    """
 
     required_param_names = ("re_pc",)
 
     def density_2d(self, R_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
+        """Return unit-normalized Plummer surface density in pc^-2 on JAX.
+
+        ``R_pc`` is a projected scalar/array radius in pc and ``re_pc`` is the
+        positive projected half-light scale in pc. Output follows broadcasting;
+        the expression is differentiable within the valid domain. This elementary
+        helper does not validate physical parameter values.
+        """
         re = jnp.asarray(re_pc)
         x2 = (R_pc / re) ** 2
         return 1.0 / (jnp.pi * re**2) * (1.0 + x2) ** (-2.0)
 
     def density_3d(self, r_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
+        """Return unit-normalized Plummer density in pc^-3 on the JAX backend.
+
+        ``r_pc`` is an intrinsic scalar/array radius in pc and ``re_pc`` is the
+        positive projected half-light scale in pc. Output follows broadcasting;
+        the expression is differentiable within the valid domain. This elementary
+        helper does not validate physical parameter values.
+        """
         re = jnp.asarray(re_pc)
         x2 = (r_pc / re) ** 2
         return (3.0 / (4.0 * jnp.pi * re**3)) * (1.0 + x2) ** (-2.5)
 
     def log_prob_R(self, R_pc: jnp.ndarray, *, re_pc: Any) -> jnp.ndarray:
-        """Log-pdf of observed projected radius R (i.e. p(R) dR).
+        r"""Log-pdf of observed projected radius R (i.e. p(R) dR).
 
         p(R) = 2πR Σ(R) = 2R/re^2 * (1 + (R/re)^2)^(-2)
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc`` and positive ``re_pc`` in pc, broadcastable.
+
+        **Returns and shape.** Natural log radial PDF including 2\*pi\*R, with
+        broadcast shape; minus infinity off support.
         """
         re = jnp.asarray(re_pc)
         R = jnp.asarray(R_pc)
@@ -694,9 +804,17 @@ class PlummerModel(StellarModel):
         return logp
 
     def sample_R(self, key: jax.Array, n: int, *, re_pc: Any) -> jnp.ndarray:
-        """Sample projected radii using the analytic inverse CDF.
+        r"""Sample projected radii using the analytic inverse CDF.
 
         CDF(R) = R^2 / (R^2 + re^2)  ->  R = re * sqrt(u/(1-u)).
+
+        Notes
+        -----
+        **Inputs and units.** key is a JAX random key; n is a static nonnegative
+        count; ``re_pc`` is positive scale in pc.
+
+        **Returns and shape.** Array (n,) of radii in pc. Split keys explicitly
+        before repeated independent draws.
         """
         u = jax.random.uniform(key, shape=(n,), minval=0.0, maxval=1.0)
         u = jnp.clip(u, 1e-12, 1.0 - 1e-12)
@@ -709,6 +827,11 @@ class DMModel(Model):
     analytic_enclosed_mass_autodiff_safe = False
 
     def resolve_params(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
+        """Return the physical parameter mapping unchanged for the generic halo.
+
+        Subclasses may add reusable mass coefficients. This base hook performs
+        no validation or copying.
+        """
         return params
 
     def mass_density_3d(
@@ -729,10 +852,19 @@ class DMModel(Model):
         n_steps: int = 256,
         t_min: float = 1e-6,
     ) -> jnp.ndarray:
-        """Numerically compute enclosed mass via 4π∫ρ(r)r²dr.
+        r"""Numerically compute enclosed mass via 4π∫ρ(r)r²dr.
 
         This default path is AD-friendly and avoids special-function gradient issues.
         If `r_t_pc` exists in `params`, radius is truncated at that value.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
+        dictionary. ``enclosed_mass``/``enclosure_mass`` select
+        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+
+        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        matching radius shape. Invalid dynamic proposals yield NaN.
         """
         if operator.index(n_steps) < 2:
             raise ValueError("n_steps must be an integer >= 2")
@@ -775,6 +907,7 @@ class DMModel(Model):
 
     @property
     def has_analytic_enclosed_mass(self) -> bool:
+        """Whether this halo exposes a callable analytic enclosed-mass implementation."""
         return hasattr(self, "enclosed_mass_analytic") and callable(
             getattr(self, "enclosed_mass_analytic")
         )
@@ -783,7 +916,7 @@ class DMModel(Model):
         self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any],
         n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
-        """Return enclosed mass with selectable backend.
+        r"""Return enclosed mass with selectable backend.
 
         The default ``auto`` method uses each model's autodiff-safe default:
         analytic for NFW and numeric for Zhao. Pass ``method="analytic"`` to
@@ -792,6 +925,15 @@ class DMModel(Model):
 
         ``n_steps`` sets numerical mass resolution (Zhao: Gauss nodes per
         segment). None uses the model default; analytic methods ignore it.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
+        dictionary. ``enclosed_mass``/``enclosure_mass`` select
+        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+
+        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        matching radius shape. Invalid dynamic proposals yield NaN.
         """
         method_key = str(method).strip().lower()
         if method_key == "auto":
@@ -825,15 +967,63 @@ class DMModel(Model):
         self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any],
         n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
-        """Compatibility spelling shared with the classical backend."""
+        r"""Compatibility spelling shared with the classical backend.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
+        dictionary. ``enclosed_mass``/``enclosure_mass`` select
+        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+
+        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        matching radius shape. Invalid dynamic proposals yield NaN.
+        """
         return self.enclosed_mass(r_pc, method=method, params=params, n_steps=n_steps)
 
 
 class NFWModel(DMModel):
+    r"""Functional spherical halo density and mass.
+
+    Notes
+    -----
+    **Inputs and units.** params contains ``rs_pc``, ``rhos_Msunpc3`` and
+    ``r_t_pc``; Zhao also needs a,b,g. NFW ``resolve_params`` derives and
+    returns the mass normalization from these scale parameters. ``r_pc`` is
+    nonnegative pc; method is auto/analytic/numeric; ``n_steps`` is a static
+    mass quadrature order.
+
+    **Returns and shape.** Density Msun/pc^3; mass Msun within
+    min(``r_pc``,``r_t_pc``), matching radius shape. ``enclosure_mass`` is an
+    alias; ``valid_mass_domain`` returns a Boolean mask. Classical/JAX density
+    methods themselves evaluate the untruncated profile.
+
+    **Validity.** Positive scales/cutoff; Zhao a>0 and g<3. Finite-radius mass
+    allows b<=3. Analytic NFW has a stable small-radius expression.
+
+    **Errors.** Invalid physical mass proposals yield NaN. Unsupported
+    mass-method names raise ValueError.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** auto chooses analytic NFW and cusp-regularized numeric
+    Zhao. Zhao ``enclosed_mass_betainc``/analytic does not support autodiff in
+    shape parameters; use auto/numeric for that purpose. Hard-cutoff boundaries
+    need separate treatment.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
+    """
     required_param_names = ("rs_pc", "rhos_Msunpc3", "r_t_pc")
     analytic_enclosed_mass_autodiff_safe = True
 
     def resolve_params(self, params: Mapping[str, Any]) -> dict[str, jnp.ndarray]:
+        """Resolve NFW scales and cache their mass coefficient as JAX arrays.
+
+        Requires rs_pc and r_t_pc in pc, and rhos_Msunpc3 in Msun/pc^3; a missing
+        key raises KeyError. Returns those entries and nfw_mass_coeff in Msun.
+        Continuous expressions are differentiable; physical-domain validation
+        is performed by the mass/likelihood paths that consume them.
+        """
         rs = jnp.asarray(params["rs_pc"])
         rhos = jnp.asarray(params["rhos_Msunpc3"])
         r_t = jnp.asarray(params["r_t_pc"])
@@ -848,6 +1038,15 @@ class NFWModel(DMModel):
     def mass_density_3d(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
+        r"""Evaluate functional spherical halo density.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is a physical
+        scalar dictionary.
+
+        **Returns and shape.** Untruncated density in Msun/pc^3 with radius shape.
+        """
         resolved = self.resolve_params(params)
         rs = jnp.asarray(resolved["rs_pc"])
         rhos = jnp.asarray(resolved["rhos_Msunpc3"])
@@ -858,6 +1057,17 @@ class NFWModel(DMModel):
     def enclosed_mass_analytic(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
+        r"""Evaluate functional spherical halo mass.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
+        dictionary. ``enclosed_mass``/``enclosure_mass`` select
+        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+
+        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        matching radius shape. Invalid dynamic proposals yield NaN.
+        """
         resolved = self.resolve_params(params)
         rs = jnp.asarray(resolved["rs_pc"])
         r_t = jnp.asarray(resolved["r_t_pc"])
@@ -871,12 +1081,52 @@ class NFWModel(DMModel):
 
 
 class ZhaoModel(DMModel):
+    r"""Functional spherical halo density and mass.
+
+    Notes
+    -----
+    **Inputs and units.** params contains ``rs_pc``, ``rhos_Msunpc3`` and
+    ``r_t_pc``; Zhao also needs a,b,g. NFW ``resolve_params`` derives and
+    returns the mass normalization from these scale parameters. ``r_pc`` is
+    nonnegative pc; method is auto/analytic/numeric; ``n_steps`` is a static
+    mass quadrature order.
+
+    **Returns and shape.** Density Msun/pc^3; mass Msun within
+    min(``r_pc``,``r_t_pc``), matching radius shape. ``enclosure_mass`` is an
+    alias; ``valid_mass_domain`` returns a Boolean mask. Classical/JAX density
+    methods themselves evaluate the untruncated profile.
+
+    **Validity.** Positive scales/cutoff; Zhao a>0 and g<3. Finite-radius mass
+    allows b<=3. Analytic NFW has a stable small-radius expression.
+
+    **Errors.** Invalid physical mass proposals yield NaN. Unsupported
+    mass-method names raise ValueError.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** auto chooses analytic NFW and cusp-regularized numeric
+    Zhao. Zhao ``enclosed_mass_betainc``/analytic does not support autodiff in
+    shape parameters; use auto/numeric for that purpose. Hard-cutoff boundaries
+    need separate treatment.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
+    """
     required_param_names = ("rs_pc", "rhos_Msunpc3", "a", "b", "g", "r_t_pc")
     analytic_enclosed_mass_autodiff_safe = False
 
     def mass_density_3d(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
+        r"""Evaluate functional spherical halo density.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is a physical
+        scalar dictionary.
+
+        **Returns and shape.** Untruncated density in Msun/pc^3 with radius shape.
+        """
         rs = jnp.asarray(params["rs_pc"])
         rhos = jnp.asarray(params["rhos_Msunpc3"])
         a_arr = jnp.asarray(params["a"])
@@ -887,7 +1137,17 @@ class ZhaoModel(DMModel):
         return rhos * x ** (-g_arr) * (1.0 + x**a_arr) ** (-(b_arr - g_arr) / a_arr)
 
     def enclosed_mass_numeric(self, r_pc, *, params, n_steps=128):
-        """Cusp-regularized, differentiable quadrature without a central cutoff."""
+        r"""Cusp-regularized, differentiable quadrature without a central cutoff.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
+        dictionary. ``enclosed_mass``/``enclosure_mass`` select
+        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+
+        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        matching radius shape. Invalid dynamic proposals yield NaN.
+        """
         return _zhao_mass(r_pc, params, xp=jnp, n_steps=n_steps)
 
     def enclosed_mass_betainc(
@@ -950,6 +1210,17 @@ class ZhaoModel(DMModel):
     def enclosed_mass_analytic(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
+        r"""Evaluate functional spherical halo mass.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
+        dictionary. ``enclosed_mass``/``enclosure_mass`` select
+        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+
+        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        matching radius shape. Invalid dynamic proposals yield NaN.
+        """
         return self.enclosed_mass_betainc(r_pc, params=params)
 
 
@@ -989,6 +1260,32 @@ class ConstantAnisotropyModel(AnisotropyModel):
         f(r) = r^{2 beta_ani}
 
     and K(u) has a closed form involving Gauss hypergeometric function.
+
+    Notes
+    -----
+    **Inputs and units.** params follows the corresponding classical profile
+    names: ``beta_ani``, or ``r_a``, or ``beta_0``/``beta_inf``/``r_a``/eta.
+    Radii in pc and u=r/R dimensionless. kernel backend/order arguments are
+    static numerical choices.
+
+    **Returns and shape.** Dimensionless beta/kernel and integrating factor f,
+    with broadcast shape.
+
+    **Validity.** Require finite beta<1, positive transition radius/sharpness
+    where applicable. Baes large eta needs numerical refinement; the default
+    solver chooses Abel for general Baes.
+
+    **Errors.** Invalid static backend/options raise; invalid physical proposals
+    can produce NaN. Warnings flag known sharp-transition limitations.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Use the JAX kernel path. The explicit SciPy callback
+    route is a reference, not a fully differentiated physical-parameter path.
+    Verify gradients near branch and anisotropy limits.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
 
     required_param_names = ("beta_ani",)
@@ -1088,6 +1385,30 @@ class BaesAnisotropyModel(AnisotropyModel):
         sigma_los^2(R) = 2 * \int du [nu(uR)/Sigma(R)] * GM(uR) * K(u)/u
 
     so `K(u)` itself is computed without an extra prefactor 2 in the inner integral.
+
+    **Inputs and units.** params follows the corresponding classical profile
+    names: ``beta_ani``, or ``r_a``, or ``beta_0``/``beta_inf``/``r_a``/eta.
+    Radii in pc and u=r/R dimensionless. kernel backend/order arguments are
+    static numerical choices.
+
+    **Returns and shape.** Dimensionless beta/kernel and integrating factor f,
+    with broadcast shape.
+
+    **Validity.** Require finite beta<1, positive transition radius/sharpness
+    where applicable. Baes large eta needs numerical refinement; the default
+    solver chooses Abel for general Baes.
+
+    **Errors.** Invalid static backend/options raise; invalid physical proposals
+    can produce NaN. Warnings flag known sharp-transition limitations.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Use the JAX kernel path. The explicit SciPy callback
+    route is a reference, not a fully differentiated physical-parameter path.
+    Verify gradients near branch and anisotropy limits.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
 
     required_param_names = ("beta_0", "beta_inf", "r_a", "eta")
@@ -1190,6 +1511,32 @@ class OsipkovMerrittModel(AnisotropyModel):
 
         beta(r) = r^2 / (r^2 + r_a^2),
         f(r)    = 1 + r^2/r_a^2.
+
+    Notes
+    -----
+    **Inputs and units.** params follows the corresponding classical profile
+    names: ``beta_ani``, or ``r_a``, or ``beta_0``/``beta_inf``/``r_a``/eta.
+    Radii in pc and u=r/R dimensionless. kernel backend/order arguments are
+    static numerical choices.
+
+    **Returns and shape.** Dimensionless beta/kernel and integrating factor f,
+    with broadcast shape.
+
+    **Validity.** Require finite beta<1, positive transition radius/sharpness
+    where applicable. Baes large eta needs numerical refinement; the default
+    solver chooses Abel for general Baes.
+
+    **Errors.** Invalid static backend/options raise; invalid physical proposals
+    can produce NaN. Warnings flag known sharp-transition limitations.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Use the JAX kernel path. The explicit SciPy callback
+    route is a reference, not a fully differentiated physical-parameter path.
+    Verify gradients near branch and anisotropy limits.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
 
     required_param_names = ("r_a",)
@@ -1222,7 +1569,7 @@ class OsipkovMerrittModel(AnisotropyModel):
 
 
 class DSphModel(Model):
-    """Minimal Jeans model for sigma_los(R) using a fixed quadrature grid.
+    r"""Minimal Jeans model for sigma_los(R) using a fixed quadrature grid.
 
     This implementation is intentionally limited:
     - StellarModel: currently assumed to be PlummerModel-compatible interface
@@ -1230,6 +1577,34 @@ class DSphModel(Model):
     - AnisotropyModel: any subclass implementing beta/f/kernel consistently
 
     It is sufficient for demonstrating MCMC with AIES/NUTS in tests.
+
+    Notes
+    -----
+    **Inputs and units.** Compose StellarModel, DMModel and AnisotropyModel;
+    params supplies all physical scalars. ``R_pc`` is scalar or nonempty 1-D pc.
+    backend is auto/kernel/abel; jit controls cached compilation.
+    ``n_u``/``n_kernel`` set outer/kernel rules; ``n_r`` sets Abel grid;
+    ``u_max`` sets radial extent; ``dm_mass_n_steps`` sets mass integration
+    independently.
+
+    **Returns and shape.** Always a 1-D array of LOS variances in (km/s)^2,
+    length one for scalar ``R_pc``.
+
+    **Validity.** Finite R>0. Kernel auto selects constant/Osipkov-Merritt;
+    general Baes uses Abel. The published preliminary accuracy envelope is not a
+    universal error bound; refine each new domain.
+
+    **Errors.** Invalid shape/backend/options raise ValueError; invalid dynamic
+    radii or physical values yield NaN.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Physical parameters on the supported JAX mass/kernel
+    paths; static quadrature and backend choices are not differentiated.
+    Abel-grid boundaries and finite integration extent affect accuracy.
+
+    **Examples.** ``examples/docs_jax_spherical.py``
     """
 
     required_param_names = ("vmem_kms",)
@@ -1295,6 +1670,17 @@ class DSphModel(Model):
         of ``1e-3`` on the documented Plummer+NFW dSph stress benchmark.  For
         more extended or otherwise tail-sensitive models, increase ``u_max``
         before increasing ``n_u``; then double ``n_u`` to verify convergence.
+
+        Notes
+        -----
+        **Inputs and units.** Positive ``R_pc`` in pc, scalar or nonempty 1-D array;
+        params contains physical scalars. Use the signature's static
+        numerical/backend options; ``n_u`` and ``n_kernel`` apply to the kernel
+        route, ``n_r`` and ``u_max`` to the Abel grid, and ``dm_mass_n_steps`` to
+        the mass integral.
+
+        **Returns and shape.** Always a one-dimensional array of variances in
+        (km/s)^2, length one for scalar input.
         """
         resolved_n_u = _default_sigmalos2_n_u() if n_u is None else int(n_u)
         resolved_u_max = _default_sigmalos2_u_max() if u_max is None else float(u_max)
@@ -1380,7 +1766,19 @@ class DSphModel(Model):
         dm_mass_method: str = "auto",
         dm_mass_n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
-        r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms."""
+        r"""Compute sigma_los^2(R) via a 1D Jeans solve and two Abel transforms.
+
+        Notes
+        -----
+        **Inputs and units.** Positive ``R_pc`` in pc, scalar or nonempty 1-D array;
+        params contains physical scalars. Use the signature's static
+        numerical/backend options; ``n_u`` and ``n_kernel`` apply to the kernel
+        route, ``n_r`` and ``u_max`` to the Abel grid, and ``dm_mass_n_steps`` to
+        the mass integral.
+
+        **Returns and shape.** Always a one-dimensional array of variances in
+        (km/s)^2, length one for scalar input.
+        """
         R, valid_R = _projected_radii(R_pc)
         dtype = R.dtype
         resolved_n_r = _default_sigmalos2_n_r() if n_r is None else int(n_r)
@@ -1461,7 +1859,7 @@ class DSphModel(Model):
         dm_mass_method: str = "auto",
         dm_mass_n_steps: Optional[int] = None,
     ) -> jnp.ndarray:
-        """Compute sigma_los^2(R) via the requested backend.
+        r"""Compute sigma_los^2(R) via the requested backend.
 
         ``backend`` may be ``'abel'``, ``'kernel'``, or ``'auto'``.  When set to
         ``'auto'`` the choice is made based on the anisotropy model:
@@ -1487,6 +1885,17 @@ class DSphModel(Model):
         Outside that envelope, test convergence by increasing ``u_max`` first
         and then doubling ``n_u``.  The Abel backend has a separate radial-grid
         convergence control, ``n_r``.
+
+        Notes
+        -----
+        **Inputs and units.** Positive ``R_pc`` in pc, scalar or nonempty 1-D array;
+        params contains physical scalars. Use the signature's static
+        numerical/backend options; ``n_u`` and ``n_kernel`` apply to the kernel
+        route, ``n_r`` and ``u_max`` to the Abel grid, and ``dm_mass_n_steps`` to
+        the mass integral.
+
+        **Returns and shape.** Always a one-dimensional array of variances in
+        (km/s)^2, length one for scalar input.
         """
         backend_key = str(backend).strip().lower()
         ani = self.submodels["AnisotropyModel"]  # type: ignore[index]
