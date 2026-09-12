@@ -14,7 +14,8 @@ import jax
 import jax.numpy as jnp
 
 from .axisymmetric import G, _rule
-from ._axisymmetric_params import resolve_params
+from ._axisymmetric_params import force_limit, resolve_params
+from ._zhao import enclosed_mass as _zhao_mass
 
 __all__ = ["AxisymmetricDSphModel"]
 
@@ -52,6 +53,8 @@ class AxisymmetricDSphModel:
 
     def _force(self, R, z, p):
         t, w = (jnp.asarray(v) for v in _rule(self.n_force))
+        limit, derivative = force_limit(R, z, p["Q"], p["r_t_pc"], jnp)
+        t, w = limit[..., None]*t, limit[..., None]*w
         D = jnp.sqrt(1+(p["Q"]**2-1)*t*t)
         RR, zz = R[..., None], z[..., None]
         m2 = t*t*(RR*RR+(zz/D)**2)
@@ -61,12 +64,21 @@ class AxisymmetricDSphModel:
         logtransition = jnp.logaddexp(0., p["alpha"]*logx)
         rho = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*logx+
                 (p["gamma"]-p["beta"])/p["alpha"]*logtransition)
+        # At a cored origin the force vanishes, but its coordinate derivative
+        # is proportional to the central density, not the benign log placeholder.
+        rho = jnp.where(m2 > 0, rho, p["rhos_Msunpc3"])
         slope = -p["gamma"]+(p["gamma"]-p["beta"])*jax.nn.sigmoid(p["alpha"]*logx)
         common = 4*jnp.pi*G*p["Q"]*w*rho*t*t
         gR = R*jnp.sum(common/D, axis=-1)
         gz = z*jnp.sum(common/D**3, axis=-1)
         ratio = RR*t*t/jnp.where(m2 > 0, m2, 1.)
         dgz = z*jnp.sum(common/D**3*slope*ratio, axis=-1)
+        rt = jnp.where(jnp.isfinite(p["r_t_pc"]), p["r_t_pc"], p["rs_pc"])
+        edge_logx = jnp.log(rt/p["rs_pc"])
+        edge_density = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*edge_logx +
+            (p["gamma"]-p["beta"])/p["alpha"]*jnp.logaddexp(0., p["alpha"]*edge_logx))
+        edge_D = jnp.sqrt(1+(p["Q"]**2-1)*limit**2)
+        dgz += 4*jnp.pi*G*p["Q"]*z*edge_density*limit**2/edge_D**3*derivative
         return gR, gz, dgz
 
     def _nu(self, R, z, p):
@@ -96,7 +108,7 @@ class AxisymmetricDSphModel:
         p, valid = resolve_params(params, jnp)
         R, z, coords_valid = _coords(R_pc, z_pc)
         coords_valid = coords_valid & (R >= 0)
-        moments = self._intrinsic(jnp.maximum(R, 0.), z, p)
+        moments = self._intrinsic(jnp.where(R >= 0, R, 0.), z, p)
         physical = jnp.all(jnp.isfinite(moments)&(moments >= 0), axis=0)
         return tuple(jnp.where(valid & coords_valid & physical, v, jnp.nan) for v in moments)
 
@@ -105,7 +117,7 @@ class AxisymmetricDSphModel:
         p, valid = resolve_params(params, jnp)
         R, z, coords_valid = _coords(R_pc, z_pc)
         valid = valid & coords_valid & (R >= 0) & ~((R == 0)&(z == 0)&(p["gamma"] > 0))
-        return tuple(jnp.where(valid, g, jnp.nan) for g in self._force(jnp.maximum(R,0.),z,p)[:2])
+        return tuple(jnp.where(valid, g, jnp.nan) for g in self._force(jnp.where(R >= 0, R, 0.),z,p)[:2])
 
     @partial(jax.jit, static_argnums=0)
     def surface_density(self, x_pc, y_pc, *, params):
@@ -114,6 +126,39 @@ class AxisymmetricDSphModel:
         qp = jnp.sqrt(jnp.cos(p["inclination"])**2+p["q"]**2*jnp.sin(p["inclination"])**2)
         surface = (1+(x*x+(y/qp)**2)/p["re_pc"]**2)**(-2)/(jnp.pi*p["re_pc"]**2*qp)
         return jnp.where(valid & coords_valid, surface, jnp.nan)
+
+    @partial(jax.jit, static_argnums=0)
+    def density_3d(self, R_pc, z_pc, *, params):
+        """Unit-normalized stellar density in pc^-3."""
+        p, valid = resolve_params(params, jnp)
+        R, z, coords_valid = _coords(R_pc, z_pc)
+        value = self._nu(R, z, p)*3/(4*jnp.pi*p["q"]*p["re_pc"]**3)
+        return jnp.where(valid & coords_valid & (R >= 0), value, jnp.nan)
+
+    @partial(jax.jit, static_argnums=0)
+    def mass_density_3d(self, R_pc, z_pc, *, params):
+        """Halo density, including the optional ellipsoidal cutoff."""
+        p, valid = resolve_params(params, jnp)
+        R, z, coords_valid = _coords(R_pc, z_pc)
+        m = _sqrt_nonnegative(R*R+(z/p["Q"])**2)
+        logx = jnp.log(jnp.where(m > 0, m/p["rs_pc"], 1.))
+        rho = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*logx +
+                  (p["gamma"]-p["beta"])/p["alpha"]*jnp.logaddexp(0., p["alpha"]*logx))
+        rho = jnp.where(m == 0, jnp.where(p["gamma"] == 0, p["rhos_Msunpc3"], jnp.inf), rho)
+        rho = jnp.where(m <= p["r_t_pc"], rho, 0.)
+        return jnp.where(valid & coords_valid & (R >= 0), rho, jnp.nan)
+
+    @partial(jax.jit, static_argnums=0, static_argnames=("n_steps",))
+    def enclosed_mass(self, m_pc, *, params, n_steps=128):
+        """Mass in Msun inside the spheroid m <= m_pc (with truncation)."""
+        p, valid = resolve_params(params, jnp)
+        r = jnp.asarray(m_pc, dtype=float)
+        if not r.size:
+            raise ValueError("m_pc must be nonempty")
+        mass_params = dict(rs_pc=p["rs_pc"], rhos_Msunpc3=p["rhos_Msunpc3"],
+                           a=p["alpha"], b=p["beta"], g=p["gamma"], r_t_pc=p["r_t_pc"])
+        mass = p["Q"]*_zhao_mass(r, mass_params, xp=jnp, n_steps=n_steps)
+        return jnp.where(valid, mass, jnp.nan)
 
     @partial(jax.jit, static_argnums=0)
     def sigmalos2(self, x_pc, y_pc, *, params):

@@ -87,3 +87,36 @@ def test_float32_parity():
         value=m.sigmalos2(jnp.array([0.,100.,1000.]),0.,params=P)
         assert value.dtype==jnp.float32
         np.testing.assert_allclose(value,NumpyModel(48,48,48).sigmalos2([0.,100.,1000.],0.,params=P),rtol=3e-5)
+
+
+@pytest.mark.parametrize("Q", [.45, 1., 1.7])
+def test_finite_halo_backend_parity_and_gradients(Q):
+    p = {**P, "Q": Q, "r_t_pc": 600.}
+    a, b = NumpyModel(48, 64, 64), JaxModel(48, 64, 64)
+    x, y = np.array([0., 100., 800.]), np.array([0., 50., 900.])
+    for name, args in [("potential_gradient", (x[1:], y[1:])),
+                       ("intrinsic_moments", (x, y)), ("sigmalos2", (x, y)),
+                       ("density_3d", (x, y)), ("mass_density_3d", (x, y)),
+                       ("enclosed_mass", (np.array([0., 500., 900., np.inf]),))]:
+        np.testing.assert_allclose(getattr(a, name)(*args, params=p),
+                                   getattr(b, name)(*args, params=p), rtol=3e-10, atol=1e-12)
+    f = lambda rt: b.sigmalos2(700., 400., params={**p, "r_t_pc": rt})
+    h = .01
+    np.testing.assert_allclose(jax.grad(f)(600.), (f(600.+h)-f(600.-h))/(2*h), rtol=3e-4, atol=1e-7)
+
+
+def test_core_origin_force_coordinate_derivative():
+    from jeanspy.axisymmetric import G
+    p = {**P, "Q": 1., "alpha": 2., "beta": 5., "gamma": 0.}
+    m = JaxModel(32, 32, 32)
+    gradient = jax.jacfwd(lambda x: jnp.array(m.potential_gradient(x[0], x[1], params=p)))(jnp.zeros(2))
+    np.testing.assert_allclose(gradient, np.eye(2)*4*np.pi*G*p["rhos_Msunpc3"]/3, rtol=1e-12)
+
+
+def test_nearly_faceon_round_photometry_deprojection():
+    from jeanspy.axisymmetric import intrinsic_axis_ratio
+    p = {k: v for k, v in P.items() if k != "q"}
+    p.update(q_projected=1., inclination=1e-9)
+    assert intrinsic_axis_ratio(1., 1e-9) == 1.
+    np.testing.assert_allclose(JaxModel(24, 24, 24).sigmalos2(30., 10., params=p),
+                               NumpyModel(24, 24, 24).sigmalos2(30., 10., params=p), rtol=1e-11)

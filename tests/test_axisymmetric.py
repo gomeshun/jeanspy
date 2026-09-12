@@ -113,6 +113,9 @@ def test_geometry_and_domains(plummer):
     with pytest.raises(ValueError):
         replace(plummer,beta_z=.99).intrinsic_moments(1000.,0.)
     assert np.isfinite(plummer.los_second_moment(0.,0.))
+    replace(plummer, n_force=np.int64(32))
+    with pytest.raises(ValueError):
+        replace(plummer, n_force=np.float64(32.))
 
 
 def test_existing_spherical_solver():
@@ -124,3 +127,16 @@ def test_existing_spherical_solver():
     new=AxisymmetricJeans(PlummerTracer(300),ZhaoHalo(.1,500))
     R=np.array([10.,100.,300.,1000.])
     assert_allclose(new.los_second_moment(R,0),old.sigmalos2(R),rtol=3e-4)
+
+
+def test_independent_jam_equation_fixture():
+    import json
+    from pathlib import Path
+    from jeanspy.axisymmetric import AxisymmetricDSphModel
+    reference = json.loads((Path(__file__).parents[1]/"validation/axisymmetric_jam_reference.json").read_text())
+    model = AxisymmetricDSphModel(96, 96, 96)
+    for case in reference["cases"]:
+        assert case["passed"]
+        value = model.sigmalos2(reference["x_pc"], reference["y_pc"], params=case["params"])
+        assert_allclose(value, case["reference"]["sigma2"],
+                         rtol=reference["acceptance"]["jeanspy_vs_resolved_jam_rtol"])

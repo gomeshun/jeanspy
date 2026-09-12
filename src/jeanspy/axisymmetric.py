@@ -11,8 +11,12 @@ import numpy as np
 from scipy.constants import parsec
 from scipy.special import roots_legendre
 
+from ._axisymmetric_params import InvalidAxisymmetricModelError, force_limit
+from ._zhao import enclosed_mass as _zhao_mass
+
 G = 1.32712440018e20 / parsec * 1e-6
-__all__ = ["AxisymmetricJeans", "PlummerTracer", "ZhaoHalo", "intrinsic_axis_ratio"]
+__all__ = ["AxisymmetricJeans", "PlummerTracer", "ZhaoHalo", "intrinsic_axis_ratio",
+           "InvalidAxisymmetricModelError"]
 
 
 def _positive(name, value):
@@ -32,10 +36,14 @@ def _coordinates(R, z):
     return R, z
 
 
-@lru_cache(maxsize=16)
 def _rule(n):
     if isinstance(n, bool) or not isinstance(n, (int, np.integer)) or n < 16:
         raise ValueError("quadrature orders must be integers >= 16")
+    return _cached_rule(int(n))
+
+
+@lru_cache(maxsize=16)
+def _cached_rule(n):
     x, w = roots_legendre(n)
     return (x + 1) / 2, w / 2
 
@@ -46,7 +54,7 @@ def intrinsic_axis_ratio(q_projected, inclination):
     _inclination(inclination)
     if q_projected > 1 or inclination == 0:
         raise ValueError("require q_projected <= 1 and nonzero inclination")
-    q2 = (q_projected**2 - np.cos(inclination)**2) / np.sin(inclination)**2
+    q2 = 1-(1-q_projected)*(1+q_projected)/np.sin(inclination)**2
     if q2 <= 0:
         raise ValueError("projected flattening is incompatible with inclination")
     return np.sqrt(q2)
@@ -102,6 +110,7 @@ class ZhaoHalo:
     alpha: float = 1.0
     beta: float = 3.0
     gamma: float = 1.0
+    r_t_pc: float = np.inf
 
     def __post_init__(self):
         for name in ("rho_s", "r_s", "Q", "alpha"):
@@ -110,6 +119,8 @@ class ZhaoHalo:
             raise ValueError("beta must be finite and > 2")
         if not np.isfinite(self.gamma) or not 0 <= self.gamma < 2:
             raise ValueError("gamma must be in [0, 2)")
+        if not np.isscalar(self.r_t_pc) or np.isnan(self.r_t_pc) or self.r_t_pc <= 0:
+            raise ValueError("r_t_pc must be positive (infinity is allowed)")
 
     def _density_slope(self, m):
         with np.errstate(divide="ignore", invalid="ignore"):
@@ -122,7 +133,18 @@ class ZhaoHalo:
 
     def density(self, R, z):
         R, z = _coordinates(R, z)
-        return self._density_slope(np.hypot(R, z / self.Q))[0]
+        m = np.hypot(R, z / self.Q)
+        return np.where(m <= self.r_t_pc, self._density_slope(m)[0], 0.)
+
+    def enclosed_mass(self, m_pc, *, n_steps=128):
+        """Mass inside the spheroid m <= m_pc, truncated at r_t_pc, in Msun."""
+        radius = np.asarray(m_pc, dtype=float)
+        if (radius.size == 0 or np.any(np.isnan(radius)) or np.any(radius < 0)
+                or np.any(~np.isfinite(np.minimum(radius, self.r_t_pc)))):
+            raise ValueError("Require nonnegative m_pc with finite min(m_pc, r_t_pc)")
+        p = dict(rs_pc=self.r_s, rhos_Msunpc3=self.rho_s, a=self.alpha,
+                 b=self.beta, g=self.gamma, r_t_pc=self.r_t_pc)
+        return self.Q * _zhao_mass(radius, p, xp=np, n_steps=n_steps)
 
     def _gradients(self, R, z, n):
         R, z = _coordinates(R, z)
@@ -130,6 +152,8 @@ class ZhaoHalo:
         if self.gamma > 0 and np.any((R == 0) & (z == 0)):
             raise ValueError("force evaluation at the exact cusp origin is not supported")
         t, w = _rule(n)
+        limit, derivative = force_limit(R, z, self.Q, self.r_t_pc, np)
+        t, w = limit[..., None]*t, limit[..., None]*w
         D = np.sqrt(1 + (self.Q*self.Q - 1)*t*t)
         RR, zz = R[..., None], z[..., None]
         m = t * np.sqrt(RR*RR + (zz/D)**2)
@@ -140,11 +164,25 @@ class ZhaoHalo:
         # d(gz)/dR analytically, avoiding differences of integrated pressures.
         ratio = np.divide(RR*t*t, m*m, out=np.zeros_like(m), where=m > 0)
         dgz = z * np.sum(common / D**3 * slope * ratio, axis=-1)
+        if np.isfinite(self.r_t_pc):
+            rho_edge = self._density_slope(self.r_t_pc)[0]
+            D_edge = np.sqrt(1+(self.Q*self.Q-1)*limit*limit)
+            dgz += 4*np.pi*G*self.Q*z*rho_edge*limit**2/D_edge**3*derivative
         return gR, gz, dgz
 
     def potential_gradient(self, R, z, n=96):
         """Return (dPhi/dR, dPhi/dz), opposite to gravitational acceleration."""
         return self._gradients(R, z, n)[:2]
+
+    def jfactor(self, dist_pc, roi_deg, *, inclination=np.pi/2, **quadrature):
+        """Finite-cone annihilation factor in GeV^2 cm^-5; finite r_t_pc required."""
+        from .axisymmetric_factors import jfactor
+        return jfactor(self, dist_pc, roi_deg, inclination=inclination, **quadrature)
+
+    def dfactor(self, dist_pc, roi_deg, *, inclination=np.pi/2, **quadrature):
+        """Finite-cone decay factor in GeV cm^-2; finite r_t_pc required."""
+        from .axisymmetric_factors import dfactor
+        return dfactor(self, dist_pc, roi_deg, inclination=inclination, **quadrature)
 
 
 @dataclass(frozen=True)
@@ -199,7 +237,8 @@ class AxisymmetricJeans:
         vphi2 = (P + R*dP) / ((1-self.beta_z)*nu) + R*gR
         moments = np.stack([vR2, vz2, vphi2])
         if np.any(~np.isfinite(moments)) or np.any(moments < 0):
-            raise ValueError("nonfinite or negative intrinsic second moment; check model and convergence")
+            raise InvalidAxisymmetricModelError(
+                "nonfinite or negative intrinsic second moment; check model and convergence")
         return vR2, vz2, vphi2
 
     def los_second_moment(self, x, y):
@@ -254,11 +293,12 @@ class AxisymmetricDSphModel:
         from ._axisymmetric_params import resolve_params
         p, valid = resolve_params(params, np)
         if not valid:
-            raise ValueError("Invalid axisymmetric physical parameters or inclination/flattening")
+            raise InvalidAxisymmetricModelError(
+                "Invalid axisymmetric physical parameters or inclination/flattening")
         p = {k: float(v) for k, v in p.items()}
         return AxisymmetricJeans(
             PlummerTracer(p["re_pc"], p["q"]),
-            ZhaoHalo(p["rhos_Msunpc3"], p["rs_pc"], p["Q"], p["alpha"], p["beta"], p["gamma"]),
+            ZhaoHalo(p["rhos_Msunpc3"], p["rs_pc"], p["Q"], p["alpha"], p["beta"], p["gamma"], p["r_t_pc"]),
             p["beta_z"], p["inclination"], self.n_force, self.n_vertical, self.n_los,
         )
 
@@ -274,6 +314,25 @@ class AxisymmetricDSphModel:
     def surface_density(self, x_pc, y_pc, *, params):
         m = self._model(params)
         return m.tracer.surface_density(x_pc, y_pc, m.inclination)
+
+    def density_3d(self, R_pc, z_pc, *, params):
+        """Unit-normalized stellar density in pc^-3."""
+        return self._model(params).tracer.density(R_pc, z_pc)
+
+    def mass_density_3d(self, R_pc, z_pc, *, params):
+        """Halo density in Msun pc^-3, including the optional ellipsoidal cutoff."""
+        return self._model(params).halo.density(R_pc, z_pc)
+
+    def enclosed_mass(self, m_pc, *, params, n_steps=128):
+        return self._model(params).halo.enclosed_mass(m_pc, n_steps=n_steps)
+
+    def jfactor(self, dist_pc, roi_deg, *, params, **quadrature):
+        model = self._model(params)
+        return model.halo.jfactor(dist_pc, roi_deg, inclination=model.inclination, **quadrature)
+
+    def dfactor(self, dist_pc, roi_deg, *, params, **quadrature):
+        model = self._model(params)
+        return model.halo.dfactor(dist_pc, roi_deg, inclination=model.inclination, **quadrature)
 
 
 __all__.append("AxisymmetricDSphModel")
