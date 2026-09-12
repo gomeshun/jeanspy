@@ -10,7 +10,7 @@ JeansPy is a Python toolkit for Jeans analysis of dwarf spheroidal galaxies. It 
 ## Highlights
 
 - Velocity-dispersion and mass-model calculations based on the Jeans equations
-- [Axisymmetric Jeans forward models](docs/axisymmetric.md) following Hayashi & Chiba, with flattened tracers/halos and inclination-dependent LOS moments
+- [Axisymmetric Jeans models and inference](docs/axisymmetric.md) following Hayashi & Chiba, with NumPy/JAX solvers, emcee/NumPyro sampling, restart checks, and finite-cone J/D factors
 - Optional JAX and NumPyro workflows for gradient-based inference
 - ArviZ-compatible posterior storage using `zarr`, `h5netcdf`, or `netCDF4`
 - A standard `src` layout suitable for library use, scripts, and notebooks

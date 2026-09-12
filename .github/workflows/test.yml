@@ -72,6 +72,8 @@ jobs:
           uv run --no-sync python -m pytest -q
           tests/test_import.py tests/test_jfactor_ullio2016.py
           tests/test_sampler_emcee_integration.py tests/test_classical_inference_workflow.py
+          tests/test_axisymmetric.py tests/test_axisymmetric_inference.py
+          tests/test_axisymmetric_truncation.py tests/test_axisymmetric_factors.py
           tests/test_platform_compatibility.py
 
       - name: Verify optional dependencies are not in the base environment
@@ -155,6 +157,18 @@ jobs:
 
       - name: Run classical inference and restart example
         run: .venv/bin/python scripts/example_classical_inference.py --output-dir "$RUNNER_TEMP/classical-example"
+
+      - name: Run axisymmetric inference and restart examples
+        if: matrix.python-version == '3.12' && matrix.dependencies == 'locked'
+        env:
+          JEANSPY_JAX_ENABLE_X64: 'true'
+        run: |
+          for backend in classical numpyro; do
+            for run in 1 2; do
+              .venv/bin/python examples/axisymmetric_inference.py --backend "$backend" \
+                --output-dir "$RUNNER_TEMP/axisymmetric-$backend" --nodes 16 --warmup 6 --draws 4
+            done
+          done
 
       - name: Upload Sérsic visualization
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
