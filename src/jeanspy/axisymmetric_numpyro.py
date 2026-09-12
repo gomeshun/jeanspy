@@ -35,10 +35,46 @@ def _sqrt_nonnegative(x):
 
 @dataclass(frozen=True)
 class AxisymmetricDSphModel:
-    """Same parameters and units as axisymmetric.AxisymmetricDSphModel.
+    r"""Same parameters and units as axisymmetric.AxisymmetricDSphModel.
 
     Fixed quadrature settings are static under JIT. lax.map with rematerialized
     per-star evaluation bounds intermediate memory when differentiating catalogs.
+
+    Notes
+    -----
+    **Inputs and units.** params requires ``re_pc``, ``rs_pc`` (pc),
+    ``rhos_Msunpc3`` (Msun/pc^3), and exactly one of q or ``q_projected``.
+    Optional Q, alpha, beta, gamma, ``beta_z`` and inclination (radians) have
+    the defaults shown in the axisymmetric guide. ``r_t_pc`` is a positive
+    ellipsoidal cutoff (pc). Use alpha/beta/gamma; spherical a/b/g names are not
+    accepted. Physical parameter dictionaries hold scalar values; radius arrays
+    are broadcast independently. Use vmap to batch parameter dictionaries.
+    Constructor node counts ``n_force``/``n_vertical``/``n_los`` are static
+    integers >=16.
+
+    **Returns and shape.** sigmalos2 and ``intrinsic_moments`` return (km/s)^2;
+    ``density_3d`` is normalized pc^-3, ``surface_density`` pc^-2,
+    ``mass_density_3d`` Msun/pc^3, ``enclosed_mass`` Msun inside an ellipsoid;
+    ``potential_gradient`` is (km/s)^2/pc. Coordinates broadcast; intrinsic
+    moments and forces are tuples of matching arrays.
+
+    **Validity.** Cylindrical alignment with constant ``beta_z``; same physical
+    restrictions as AxisymmetricJeans. Scalar sky inputs yield scalars; centers
+    are allowed for projected moments.
+
+    **Errors.** Invalid dynamic parameters yield NaN, including under jit.
+    Schema/shape/configuration errors raise before evaluation; likelihood
+    rejects invalid variances.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Physical scalar parameters and supported coordinate
+    values are differentiable in admissible smooth regions. Node counts, schema
+    decisions, rejection masks and hard-cutoff boundaries are not continuous
+    model parameters. J/D methods are not part of this JAX class.
+
+    **Examples.** ``examples/docs_axisymmetric.py``; ``examples/docs_jax.py``
     """
     n_force: int = 96
     n_vertical: int = 96
@@ -49,6 +85,11 @@ class AxisymmetricDSphModel:
             _rule(n)
 
     def sampling_identity(self):
+        """Return the three fixed quadrature orders used to identify a sampling target.
+
+        The host dictionary contains n_force, n_vertical and n_los. This metadata
+        helper has no physical-parameter derivative.
+        """
         return dict(n_force=self.n_force, n_vertical=self.n_vertical, n_los=self.n_los)
 
     def _force(self, R, z, p):
@@ -105,6 +146,17 @@ class AxisymmetricDSphModel:
 
     @partial(jax.jit, static_argnums=0)
     def intrinsic_moments(self, R_pc, z_pc, *, params):
+        r"""Evaluate the intrinsic Jeans second moments.
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc >= 0`` and signed ``z_pc`` in pc, broadcastable;
+        params supplies the physical dictionary.
+
+        **Returns and shape.** Tuple (vR2,vz2,vphi2), each in (km/s)^2 with the
+        broadcast coordinate shape. vphi2 is the total azimuthal second moment; no
+        rotation/dispersion split is assigned.
+        """
         p, valid = resolve_params(params, jnp)
         R, z, coords_valid = _coords(R_pc, z_pc)
         coords_valid = coords_valid & (R >= 0)
@@ -114,6 +166,16 @@ class AxisymmetricDSphModel:
 
     @partial(jax.jit, static_argnums=0)
     def potential_gradient(self, R_pc, z_pc, *, params):
+        r"""Evaluate derivatives of the gravitational potential.
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc >= 0``, signed ``z_pc`` in pc and explicit
+        params.
+
+        **Returns and shape.** Tuple (dPhi/dR,dPhi/dz) in (km/s)^2/pc; gravitational
+        acceleration has the opposite sign.
+        """
         p, valid = resolve_params(params, jnp)
         R, z, coords_valid = _coords(R_pc, z_pc)
         valid = valid & coords_valid & (R >= 0) & ~((R == 0)&(z == 0)&(p["gamma"] > 0))
@@ -121,6 +183,16 @@ class AxisymmetricDSphModel:
 
     @partial(jax.jit, static_argnums=0)
     def surface_density(self, x_pc, y_pc, *, params):
+        r"""Evaluate the projected spheroidal Plummer tracer.
+
+        Notes
+        -----
+        **Inputs and units.** Signed ``x_pc``/``y_pc`` in pc and explicit params;
+        coordinates broadcast.
+
+        **Returns and shape.** Normalized surface density in pc^-2 with the
+        broadcast coordinate shape.
+        """
         p, valid = resolve_params(params, jnp)
         x,y,coords_valid = _coords(x_pc,y_pc)
         qp = jnp.sqrt(jnp.cos(p["inclination"])**2+p["q"]**2*jnp.sin(p["inclination"])**2)
@@ -150,7 +222,16 @@ class AxisymmetricDSphModel:
 
     @partial(jax.jit, static_argnums=0, static_argnames=("n_steps",))
     def enclosed_mass(self, m_pc, *, params, n_steps=128):
-        """Mass in Msun inside the spheroid m <= m_pc (with truncation)."""
+        r"""Mass in Msun inside the spheroid m <= m_pc (with truncation).
+
+        Notes
+        -----
+        **Inputs and units.** ``m_pc >= 0`` is the ellipsoidal radius in pc; params
+        supplies halo scales, slopes, Q and cutoff.
+
+        **Returns and shape.** Msun inside R^2+z^2/Q^2<=``min(m_pc, r_t_pc)``^2,
+        matching ``m_pc`` shape.
+        """
         p, valid = resolve_params(params, jnp)
         r = jnp.asarray(m_pc, dtype=float)
         if not r.size:
@@ -162,6 +243,16 @@ class AxisymmetricDSphModel:
 
     @partial(jax.jit, static_argnums=0)
     def sigmalos2(self, x_pc, y_pc, *, params):
+        r"""Project a cylindrically aligned second moment.
+
+        Notes
+        -----
+        **Inputs and units.** Signed ``x_pc``/``y_pc`` in pc, broadcastable
+        scalar/arrays; params is the explicit physical dictionary.
+
+        **Returns and shape.** LOS second moment in (km/s)^2 with the broadcast
+        coordinate shape, including scalar output.
+        """
         p, valid = resolve_params(params, jnp)
         x,y,coords_valid = _coords(x_pc,y_pc)
         t,w = (jnp.asarray(v) for v in _rule(self.n_los))

@@ -17,7 +17,37 @@ from .solver import DSphModel
 
 
 class FittableModel(Model, metaclass=ABCMeta):
-    """Base class for stateful models that expose likelihood/prior methods."""
+    """Subclassing interface for stateful likelihoods and prior terms.
+
+    Parameters
+    ----------
+    args_load_data : list
+        Positional arguments forwarded to the concrete load_data method.
+    kwargs_load_data : dict or None, optional
+        Keyword arguments forwarded to load_data; None means an empty mapping.
+    *args, **kwargs
+        Model component and physical parameter initialization arguments.
+
+    Raises
+    ------
+    TypeError
+        The data-loading arguments have the wrong container types, or an
+        abstract subclass has not implemented the required interface.
+    AttributeError
+        The initialized concrete model does not declare prior_names.
+
+    Notes
+    -----
+    Concrete subclasses define observation shapes and units, sampling-vector
+    order, conversion to physical parameters, and likelihood/prior terms.
+    Calling a target method updates the stateful components. lnposterior
+    returns the total log posterior followed by log likelihood and individual
+    log priors for emcee blobs. WBIC requires more than one observation.
+
+    This NumPy/SciPy host interface does not support physical-parameter JAX
+    tracing. See SimpleDSphEstimationModel for the spherical kinematic target
+    and ``examples/docs_inference.py`` for a complete short storage example.
+    """
 
     def __init__(self, args_load_data=None, kwargs_load_data=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,10 +65,20 @@ class FittableModel(Model, metaclass=ABCMeta):
 
     @abstractmethod
     def convert_params(self, p):
+        """Map a sampling-coordinate vector p to named physical parameters.
+
+        Subclasses define vector order, transforms and units. This abstract
+        interface raises NotImplementedError.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def load_data(self, *args, **kwargs):
+        """Load observations in a concrete estimation model.
+
+        Subclasses define the accepted arguments and validation. This abstract
+        interface raises NotImplementedError.
+        """
         raise NotImplementedError
 
     @cached_property
@@ -54,6 +94,15 @@ class FittableModel(Model, metaclass=ABCMeta):
         raise NotImplementedError
 
     def lnlikelihoods(self, p, *args, **kwargs):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Per-star log densities, shape (N,).
+        """
         params = self.convert_params(p)
         self.update(params)
         return self._lnlikelihoods(*args, **kwargs)
@@ -63,6 +112,15 @@ class FittableModel(Model, metaclass=ABCMeta):
         return -np.inf if np.isnan(value) else value
 
     def lnlikelihood(self, p, *args, **kwargs):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Scalar sum of log likelihoods.
+        """
         params = self.convert_params(p)
         self.update(params)
         return self._lnlikelihood(*args, **kwargs)
@@ -72,15 +130,40 @@ class FittableModel(Model, metaclass=ABCMeta):
         raise NotImplementedError
 
     def lnpriors(self, p, *args, **kwargs):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Sequence of log prior contributions in
+        ``prior_names`` order.
+        """
         params = self.convert_params(p)
         self.update(params)
         return self._lnpriors(p, *args, **kwargs)
 
     @property
     def blobs_dtype(self):
+        """Return emcee blob fields for log likelihood and individual log priors.
+
+        The list contains (name, float) pairs in the same order as the values
+        returned by lnposterior after its first element.
+        """
         return [("lnl", float), *((name, float) for name in self.prior_names)]
 
     def lnposterior(self, p, *args, **kwargs):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Tuple (logposterior, loglikelihood,
+        individual prior terms) for emcee blobs.
+        """
         params = self.convert_params(p)
         self.update(params)
         lnl = -np.inf
@@ -106,6 +189,16 @@ class FittableModel(Model, metaclass=ABCMeta):
         return result
 
     def lnposterior_wbic(self, p, *args, **kwargs):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Tuple using loglikelihood/log(N) plus the original
+        prior; requires N>1.
+        """
         params = self.convert_params(p)
         self.update(params)
         lnl = -np.inf
@@ -123,14 +216,40 @@ class FittableModel(Model, metaclass=ABCMeta):
 
     @cached_property
     def ndim(self):
+        """Number of flattened physical parameters, cached on first access."""
         return len(self.params_all)
 
 
 class FlatPriorModel(Model):
-    """Finite uniform bounds in explicitly named sampling coordinates.
+    r"""Finite uniform bounds in explicitly named sampling coordinates.
 
     The DataFrame is the single source of truth for evaluation and sampling.
     A generated template must be filled in before constructing this model.
+
+    Notes
+    -----
+    **Inputs and units.** config is a pandas DataFrame indexed by ordered
+    parameter names, with finite lower/upper columns, or a CSV path.
+    sample(size) uses NumPy's random state. ``generate_default_config_file``
+    writes a CSV template.
+
+    **Returns and shape.** A validated prior object; sample returns coordinates
+    with trailing parameter axis. lower/upper are array copies.
+    ``extract_value_by_name`` expects exactly one parameter vector.
+
+    **Validity.** Unique nonempty names and lower<upper. Bounds apply before
+    log/power transforms. Unfilled default NaN bounds are intentionally unusable
+    for inference.
+
+    **Errors.** Invalid schema/bounds/vector shape raise ValueError or
+    TypeError; missing CSV raises FileNotFoundError.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``
     """
 
     required_param_names = []
@@ -141,6 +260,12 @@ class FlatPriorModel(Model):
         self.load_config(config)
 
     def load_config(self, config):
+        """Load and copy uniform-prior bounds from a DataFrame or CSV path.
+
+        CSV input uses its first column as the parameter-name index. The bounds
+        are checked by validate_config before replacing stored data. Returns
+        None; file, parse and validation errors propagate.
+        """
         self.fname_config = (
             os.fspath(config) if isinstance(config, (str, os.PathLike)) else None
         )
@@ -157,6 +282,13 @@ class FlatPriorModel(Model):
 
     @staticmethod
     def validate_config(data):
+        """Validate a DataFrame of explicit finite uniform-prior bounds.
+
+        The nonempty index contains unique parameter names; columns must include
+        unique lower and upper bounds with lower < upper in each row. Returns
+        None. A non-DataFrame raises TypeError; invalid schema or bounds raise
+        ValueError. Use load_config to read a CSV path first.
+        """
         if not isinstance(data, pd.DataFrame):
             raise TypeError("Prior config must be a DataFrame or CSV path.")
         if data.empty or not data.index.is_unique or not data.columns.is_unique:
@@ -176,21 +308,42 @@ class FlatPriorModel(Model):
 
     @property
     def lower(self):
+        """Return a float array copy of lower bounds, shape (ndim,), in prior order."""
         return self.data["lower"].to_numpy(dtype=float, copy=True)
 
     @property
     def upper(self):
+        """Return a float array copy of upper bounds, shape (ndim,), in prior order."""
         return self.data["upper"].to_numpy(dtype=float, copy=True)
 
     def get_index(self, param_name):
+        """Return the index of the named parameter in the validated prior table.
+
+        An unknown param_name raises KeyError.
+        """
         return self.data.index.get_loc(param_name)
 
     def extract_value_by_name(self, params, name):
+        """Extract one named sampling coordinate from a vector of shape (ndim,).
+
+        Values retain the prior-coordinate units, including logarithmic units.
+        A wrong shape raises ValueError; an unknown name raises KeyError.
+        """
         if np.shape(params) != (len(self.data),):
             raise ValueError(f"Parameters must have shape ({len(self.data)},).")
         return params[self.get_index(name)]
 
     def sample(self, size=None):
+        r"""Draw from the finite sampling-coordinate bounds.
+
+        Notes
+        -----
+        **Inputs and units.** size is a sample count, tuple of sample axes or None;
+        uses NumPy's global random state.
+
+        **Returns and shape.** Uniform coordinates with trailing parameter axis;
+        size=None returns one vector.
+        """
         self.validate_config(self.data)
         size = (size,) if isinstance(size, int) else size
         size = size + (len(self.lower),) if isinstance(size, tuple) else size
@@ -219,7 +372,30 @@ class FlatPriorModel(Model):
 
 
 class PhotometryPriorModel(Model):
-    """Gaussian prior for ``log10(re_pc)``."""
+    r"""Gaussian prior for ``log10(re_pc)``.
+
+    Notes
+    -----
+    **Inputs and units.** loc and scale are location and standard deviation in
+    log10(pc); sample(size) uses SciPy's random state.
+    ``reset_prior(loc,scale)`` replaces that distribution.
+
+    **Returns and shape.** A prior object; sample returns log10 radii, not
+    physical pc.
+
+    **Validity.** Finite loc and positive finite scale are required by the
+    estimation model.
+
+    **Errors.** Invalid prior values are rejected when composing
+    SimpleDSphEstimationModel.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``
+    """
 
     required_param_names = []
     required_models = {}
@@ -234,6 +410,12 @@ class PhotometryPriorModel(Model):
         self.reset_prior(loc, scale)
 
     def reset_prior(self, loc, scale):
+        """Replace the Gaussian prior on log10 half-light radius in pc.
+
+        ``loc`` and positive ``scale`` are the mean and standard deviation in
+        log10(pc). Returns None and replaces the stored log-PDF and sampler.
+        This helper delegates domain behavior to scipy.stats.norm.
+        """
         self.loc, self.scale = loc, scale
         self._lnprior_func = norm(loc=loc, scale=scale).logpdf
         self._sample = norm(loc=loc, scale=scale).rvs
@@ -242,14 +424,54 @@ class PhotometryPriorModel(Model):
         return self._lnprior_func(log10_re_pc)
 
     def sample(self, size):
+        r"""Draw a log-radius prior value.
+
+        Notes
+        -----
+        **Inputs and units.** size is a sample count/shape or None, following SciPy
+        normal-distribution sampling.
+
+        **Returns and shape.** Samples in log10(pc), not physical radii; shape
+        follows size.
+        """
         return self._sample(size=size)
 
     def sampling_identity(self, sampled_names=()):
+        """Return the Gaussian photometric-prior location and scale in log10(pc).
+
+        The host metadata dictionary excludes random/runtime state.
+        sampled_names is accepted for the common interface and is unused.
+        """
         return {"loc": self.loc, "scale": self.scale}
 
 
 class DotDict(dict):
-    """Dictionary with attribute access retained for historical data access."""
+    r"""Dictionary with attribute access retained for historical data access.
+
+    Notes
+    -----
+    **Inputs and units.** An optional mapping plus keyword values; keys are
+    strings and units belong to the stored values.
+
+    **Returns and shape.** Parameters.copy is shallow; deepcopy separates nested
+    values. Parameters.index and .values are lists, not NumPy arrays or dict
+    methods; ``to_series`` returns a pandas Series. DotDict follows dict
+    operations; assignment to an existing key through an attribute changes the
+    key.
+
+    **Validity.** Container operations have no physical validation. DotDict new
+    attributes need not become keys.
+
+    **Errors.** Missing mapping keys raise KeyError; missing attributes raise
+    AttributeError.
+
+    **Backend.** Python host-side containers.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** Parameters({'``re_pc``': 300.}).``to_series``().
+    """
 
     def __getattr__(self, key):
         if key in self:
@@ -270,7 +492,39 @@ class DotDict(dict):
 
 
 class SimpleDSphEstimationModel(FittableModel, Model):
-    """Kinematics-only classical dwarf-spheroidal estimation model."""
+    r"""Kinematics-only classical dwarf-spheroidal estimation model.
+
+    Notes
+    -----
+    **Inputs and units.** SimpleDSphEstimationModel composes DSphModel,
+    FlatPriorModel and PhotometryPriorModel. ``args_load_data=[data]`` supplies
+    a DataFrame with ``R_pc``, ``vlos_kms`` and ``e_vlos_kms``;
+    ``kwargs_load_data`` may contain shared=True. Parameter vectors follow
+    ``p_names_lnprob`` exactly. ``log10_`` names map to ``10**p``; ``bfunc_``
+    names map to ``1-10**p``.
+
+    **Returns and shape.** lnlikelihoods gives (N,) log densities; lnlikelihood
+    sums them. lnpriors returns prior terms. lnposterior returns (logposterior,
+    loglikelihood, individual prior terms) for emcee blobs. sample draws starting
+    coordinates; ``sample_data`` simulates velocities at supplied positions.
+
+    **Validity.** Nonempty finite 1-D data, R>0, error>=0; mean/error in km/s.
+    The historical observation storage dtype is float32.
+    ``vmem_prior_from_data`` defaults to False. WBIC uses
+    ``inverse_temparature = 1/log(N)`` and requires N>1. Shared data cannot be
+    resized.
+
+    **Errors.** Invalid prior order/schema/data raise ValueError. FittableModel
+    requires a list ``args_load_data``. Shared buffers must be released with
+    ``release_shared_memory`` after workers stop.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``
+    """
 
     required_param_names = []
     required_models = {
@@ -287,6 +541,12 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         self._validate_prior_schema()
 
     def sampling_identity(self):
+        """Describe the persisted target using observations, priors and parameter order.
+
+        Returns host metadata for the sampler's identity checks. Shared-memory
+        handles, loggers and cached runtime state are excluded; observation
+        values are included for both shared and ordinary storage.
+        """
         # All physical coordinates are sampled by this model's validated schema.
         # Shared-memory handles and cached WBIC temperature are runtime state;
         # the observations themselves are hashed for shared and ordinary models.
@@ -320,9 +580,21 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
     @property
     def p_names_lnprob(self):
+        """Return sampling-coordinate names in the exact order expected by lnposterior."""
         return self["FlatPriorModel"].data.index.tolist()
 
     def convert_params(self, p):
+        r"""Map sampling coordinates to physical parameters.
+
+        Notes
+        -----
+        **Inputs and units.** One parameter vector in exact prior order; ``log10_``
+        and ``bfunc_`` prefixes identify the supported transforms.
+
+        **Returns and shape.** Named physical parameters with pc, Msun/pc^3, km/s,
+        radians and dimensionless quantities as appropriate. The axisymmetric result
+        also incorporates ``fixed_params``.
+        """
         self._validate_prior_schema()
         p_names = self.p_names_lnprob
         param_names = self.required_param_names_combined
@@ -381,12 +653,19 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
     @property
     def shared_memory_basename(self):
+        """Return the observation-buffer name for this instance, or None if unshared."""
         if not self.shared:
             return None
         return f"SimpleDSphEstimationModel_{id(self)}"
 
     @property
     def data(self):
+        """Access stored radii, velocities and velocity errors as named arrays.
+
+        Columns R_pc, vlos_kms and e_vlos_kms have shape (N,) and units pc, km/s
+        and km/s. Shared mode returns views of the shared buffers and raises
+        FileNotFoundError or AttributeError if they have not been initialized.
+        """
         if not self.shared:
             return self._data
 
@@ -419,6 +698,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
     @property
     def n_data(self):
+        """Return the number of observed stars as an integer."""
         return self._n_data
 
     @data.setter
@@ -501,6 +781,11 @@ class SimpleDSphEstimationModel(FittableModel, Model):
             self.logger.info("shared memory '%s' is already released.", name)
 
     def release_shared_memory(self):
+        """Close and release this model's three shared observation buffers.
+
+        Returns None. Existing array views must no longer be used after their
+        buffers are released.
+        """
         self._release_shared_memory("_R_pc")
         self._release_shared_memory("_vlos_kms")
         self._release_shared_memory("_e_vlos_kms")
@@ -524,6 +809,14 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         ]
 
     def sample(self, size=None):
+        """Draw sampling-coordinate vectors from the specified joint prior.
+
+        Uniform bounds apply to every coordinate; the log-radius coordinate
+        is drawn from the product of those bounds and the Gaussian photometric
+        prior. ``size=None`` returns (ndim,); a sample count/shape precedes that
+        parameter axis. Uses the NumPy/SciPy global random state. Invalid prior
+        schemas raise ValueError before sampling.
+        """
         self._validate_prior_schema()
         p = self["FlatPriorModel"].sample(size)
         idx_log10_re_pc = self["FlatPriorModel"].get_index("log10_re_pc")
@@ -538,6 +831,14 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         return p
 
     def sample_data(self, size=None):
+        """Draw conditional Gaussian LOS velocities at the stored positions.
+
+        The mean is vmem_kms and the variance is the predicted LOS variance plus
+        the squared stored measurement error, in (km/s)^2. ``size=None`` returns
+        a broadcast vector of shape (N,); explicit sizes must be compatible with
+        that per-star shape. Uses SciPy's global random state. Positions and
+        measurement errors remain fixed; this is not a phase-space DF sampler.
+        """
         s2 = self["DSphModel"].sigmalos2_dequad(self.data.R_pc)
         err2 = self.data.e_vlos_kms**2
         vmem_kms = self["DSphModel"].params.vmem_kms
@@ -556,12 +857,34 @@ def get_default_estimation_model(
     *,
     vmem_prior_from_data=False,
 ):
-    """Compose Plummer + NFW + constant anisotropy with explicit finite priors.
+    r"""Compose Plummer + NFW + constant anisotropy with explicit finite priors.
 
     ``config`` is a DataFrame or CSV in this order: vmem_kms, log10_re_pc,
     log10_rs_pc, log10_rhos_Msunpc3, log10_r_t_pc, bfunc_beta_ani.
     A missing CSV is created as an unfilled template, then raises ValueError.
     Caller velocity bounds are preserved unless vmem_prior_from_data is True.
+
+    Notes
+    -----
+    **Inputs and units.** data is an observed DataFrame; config is a finite
+    ordered prior DataFrame or CSV path; ``photometry_prior_loc``/scale specify
+    the Gaussian in log10(``re_pc``).
+
+    **Returns and shape.** SimpleDSphEstimationModel with the standard
+    Plummer/NFW/constant-anisotropy components.
+
+    **Validity.** A convenience constructor does not choose scientifically
+    justified prior bounds for the caller.
+
+    **Errors.** Missing/invalid data or prior configuration raises; templates
+    must be completed first.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``
     """
     dsph_model = DSphModel(
         submodels={

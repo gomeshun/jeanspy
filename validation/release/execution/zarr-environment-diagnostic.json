@@ -1,0 +1,32 @@
+{
+  "status": "host_full_suite_passed",
+  "minimal_sandbox": {
+    "command": "timeout 15s python -c import-zarr-and-open-local-group",
+    "exit_code": 124,
+    "last_output": "before open"
+  },
+  "minimal_host": {
+    "operation": "same open_group in a separate temporary path",
+    "exit_code": 0,
+    "last_output": "opened"
+  },
+  "targeted_sandbox": {
+    "exit_code": 124,
+    "timeout_seconds": 240,
+    "stack": "Zarr sync future waiting while the IO loop waits in epoll"
+  },
+  "targeted_host": {
+    "exit_code": 0,
+    "passed": 1,
+    "seconds": 13.11,
+    "cpu_affinity": "0-7"
+  },
+  "conclusion": "Environment-dependent Zarr async IO wait reproduced outside JeansPy. Exact sandbox mechanism not established. No library code changed for this diagnostic.",
+  "full_suite_host": {
+    "passed": 469,
+    "warnings": 11,
+    "subtests_passed": 37,
+    "seconds": 238.17,
+    "command": "JEANSPY_JAX_PLATFORM=cpu JEANSPY_JAX_ENABLE_X64=true OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 timeout --signal=TERM --kill-after=10s 1800s taskset -c 0-7 python -m pytest --run-mcmc -q -o faulthandler_timeout=180"
+  }
+}

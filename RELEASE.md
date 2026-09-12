@@ -96,6 +96,25 @@ uvx twine check dist/*
 
 The GitHub release validation is stronger than this local check because it installs the built artifacts into clean environments.
 
+### Distribution layout
+
+The importable package lives in `src/jeanspy`; its three Sersic coefficient
+tables live in `src/jeanspy/data` and are accessed through `importlib.resources`.
+The wheel contains this runtime package and distribution metadata. The source
+distribution additionally includes the test fixtures, executable examples,
+output-free notebooks, validation reference and support scripts needed by the
+tests. `MANIFEST.in` makes these source-test dependencies explicit.
+
+After a clean build, run `python scripts/check_distribution_contents.py dist`.
+It checks required files byte-for-byte against the source, including all
+runtime modules and data, and rejects generated chains and notebook outputs.
+The release workflow also runs this check before installing the artifacts.
+
+The `benchmark` extra retains JamPy 8.x for the existing cylindrical-quadrature
+reference. JamPy 9 removed that solver and uses a different public API and
+alignment; its spectral benchmark uses a separate pinned environment. Neither
+JamPy version is a base/runtime dependency of JeansPy.
+
 ## 3. What The Release Gate Validates
 
 The `tests` job calls `./.github/workflows/test.yml` from the **same commit**

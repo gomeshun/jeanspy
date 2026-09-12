@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "wheel_payload_identical_to_independently_tested_v2": true,
+  "tested_wheel_sha256": "d1d0f545683fef7ce8c1355ed63ac81e098134e1ced0da9a0251bf2e530b2371",
+  "final_wheel_sha256": "17a710a0d656e156ad98ea1ecb3d59b0e168d74d9376dc2a48298a2df85a4794",
+  "verified_members": 33,
+  "base_wheel": "passed outside checkout",
+  "base_sdist": "passed outside checkout",
+  "numpyro_cpu_wheel": "passed outside checkout",
+  "sdist_tests": "16 passed in 2.92s",
+  "note": "v3 adds the HTML-link audit script and updated documentation to the sdist; runtime and wheel metadata payloads are unchanged from the tested v2 artifact."
+}

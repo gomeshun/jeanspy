@@ -1,0 +1,37 @@
+........................................................................ [ 15%]
+........................................................................ [ 30%]
+...................................................................... [ 45%]
+............................................. [ 55%]
+................................................................ [ 68%]
+........................................................................ [ 84%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+=============================== warnings summary ===============================
+tests/test_classical_inference_workflow.py::test_classical_inference_runs_resumes_and_resets[dataframe]
+tests/test_classical_inference_workflow.py::test_classical_inference_runs_resumes_and_resets[path]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[dataframe]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[dataframe]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[path]
+tests/test_classical_inference_workflow.py::test_default_model_samples_finite_posterior_and_restarts[path]
+  /tmp/jeanspy-release-env/lib/python3.12/site-packages/emcee/autocorr.py:38: RuntimeWarning: invalid value encountered in divide
+    acf /= acf[0]
+
+tests/test_demo_notebook.py::test_canonical_getting_started_notebook_executes
+  /tmp/jeanspy-release-docs/notebooks/demo_model_full.ipynb#cell-5:16: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+
+tests/test_demo_notebook.py::test_canonical_getting_started_notebook_executes
+  /tmp/jeanspy-release-docs/notebooks/demo_model_full.ipynb#cell-7:20: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+
+tests/test_demo_notebook.py::test_canonical_getting_started_notebook_executes
+  /tmp/jeanspy-release-docs/notebooks/demo_model_full.ipynb#cell-9:22: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+
+tests/test_demo_notebook.py::test_canonical_getting_started_notebook_executes
+  /tmp/jeanspy-release-docs/notebooks/demo_model_full.ipynb#cell-13:16: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+
+tests/test_model_numpyro.py::TestModelNumPyro::test_jeans_demo_aies_runs
+  /tmp/jeanspy-release-env/lib/python3.12/site-packages/numpyro/infer/ensemble.py:143: UserWarning: Setting n_chains to at least 2*n_params is strongly recommended.
+  n_chains: 8, n_params: 6
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+469 passed, 11 warnings, 37 subtests passed in 238.17s (0:03:58)

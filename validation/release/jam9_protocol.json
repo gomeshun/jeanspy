@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "protocol_id": "jam9-plummer-isotropic-v1",
+  "created_utc": "2026-09-12T15:27:00Z",
+  "status": "frozen_before_first_execution",
+  "baseline_commit": "1a0ad4028d26af1df389ebdfdf992285ec50f8bb",
+  "purpose": "Independent accuracy validation of current JAM 9.0.2, with the same physical equations in meridionally isotropic cases; no inference or performance superiority claim.",
+  "jam_version": "9.0.2",
+  "mgefit_version": "6.2.6",
+  "physical": {"a_pc": 300.0, "mass_Msun": 10000000.0, "tracer_q": [1.0, 0.7], "halo_Q": 1.0, "alpha": 2.0, "beta": 5.0, "gamma": 0.0, "beta_z": 0.0, "jam_beta": 0.0, "inclination_rad": 1.1, "cutoff": "infinite"},
+  "intrinsic_coordinates_pc": {"R": [10.0, 50.0, 100.0, 300.0, 900.0, 70.0], "z": [40.0, 100.0, 0.0, 200.0, 500.0, -110.0]},
+  "sky_coordinates_pc": {"x": [10.0, 100.0, 300.0, 900.0, 0.0, 70.0], "y": [0.0, 0.0, 50.0, 100.0, 300.0, -110.0]},
+  "jeanspy_orders": [64, 96, 128],
+  "jam_intrinsic": {"rmin_pc": 0.1, "rmax_pc": 100000.0, "resolutions": [[45, 9], [75, 15], [120, 21]], "spectral_derivs": true, "finest_analytic_derivative_control": true},
+  "jam_projection": {"resolutions": [{"ngauss": 24, "nang": 9, "nlos": 30}, {"ngauss": 32, "nang": 15, "nlos": 60}, {"ngauss": 48, "nang": 21, "nlos": 90}], "interp": false, "spectral_derivs": true, "sigmapsf": 0.0, "pixsize": 0.0, "moment": "zz", "ml": 1.0},
+  "mge_fit": {"rmin_pc": 0.01, "rmax_pc": 100000.0, "samples": 600, "inner_slope": 0, "outer_slope": 5, "assessment_range_pc": [1.0, 10000.0]},
+  "acceptance": {"jeanspy_analytic_relative": 0.0001, "jam_analytic_relative": 0.005, "finest_cross_code_relative": 0.005, "jeanspy_refinement_relative": 0.001, "jam_refinement_relative": 0.005, "mge_density_relative": 0.005},
+  "budget": {"wall_seconds": 600, "cpu_threads": 1, "address_space_gib": 16, "retries": 0},
+  "failure_rule": "Retain every point, resolution, warning and exception. No changed thresholds or replacement cases after seeing output. Any follow-up requires a new labeled protocol; original failures remain.",
+  "interpretation": "JAM 9 uses spherical alignment and JeansPy cylindrical alignment. beta=beta_z=0 removes meridional tilt/alignment differences. The potential is supplied analytically in both JAM conditions; projected JAM requires an MGE tracer, whose approximation and refinement are reported separately. These cases do not establish equivalence for nonzero anisotropy, flattened potentials, cusps, or posterior calibration. Timings include setup and are diagnostic only."
+}

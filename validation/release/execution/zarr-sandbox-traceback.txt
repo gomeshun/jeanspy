@@ -1,0 +1,64 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /tmp/jeanspy-release-env/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/jeanspy-release-docs
+configfile: pyproject.toml
+plugins: zarr-3.1.5
+collecting ... collected 1 item
+
+tests/test_axisymmetric_numpyro_inference.py::test_real_axisymmetric_nuts_checkpoint_and_identity[zarr] Timeout (0:01:00)!
+Thread 0x000072ee9b43f6c0 (most recent call first):
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/selectors.py", line 468 in select
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 1961 in _run_once
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 645 in run_forever
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/threading.py", line 1012 in run
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/threading.py", line 1032 in _bootstrap
+
+Thread 0x000072ef949d5740 (most recent call first):
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/threading.py", line 355 in wait
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/threading.py", line 655 in wait
+  File "/home/gomesu/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 305 in wait
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/zarr/core/sync.py", line 152 in sync
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/zarr/api/synchronous.py", line 549 in open_group
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/xarray/backends/zarr.py", line 1925 in _get_open_params
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/xarray/backends/zarr.py", line 722 in open_group
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/xarray/backends/writers.py", line 666 in get_writable_zarr_store
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/xarray/backends/writers.py", line 973 in _datatree_to_zarr
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/xarray/core/datatree.py", line 2157 in to_zarr
+  File "/tmp/jeanspy-release-docs/src/jeanspy/sampler_numpyro.py", line 764 in _write_chunk_store
+  File "/tmp/jeanspy-release-docs/src/jeanspy/sampler_numpyro.py", line 794 in save_samples_chunk
+  File "/tmp/jeanspy-release-docs/src/jeanspy/sampler_numpyro.py", line 872 in run
+  File "/tmp/jeanspy-release-docs/tests/test_axisymmetric_numpyro_inference.py", line 187 in test_real_axisymmetric_nuts_checkpoint_and_identity
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/python.py", line 167 in pytest_pyfunc_call
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/python.py", line 1707 in runtest
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/runner.py", line 184 in pytest_runtest_call
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/runner.py", line 250 in <lambda>
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/runner.py", line 361 in from_call
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/runner.py", line 249 in call_and_report
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/runner.py", line 139 in runtestprotocol
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/runner.py", line 118 in pytest_runtest_protocol
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/main.py", line 408 in pytest_runtestloop
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/main.py", line 384 in _main
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/main.py", line 330 in wrap_session
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/main.py", line 377 in pytest_cmdline_main
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/config/__init__.py", line 229 in _main
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/_pytest/config/__init__.py", line 253 in _console_main
+  File "/tmp/jeanspy-release-env/lib/python3.12/site-packages/pytest/__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main

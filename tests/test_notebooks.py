@@ -58,6 +58,10 @@ def test_generated_notebook_artifacts_are_ignored():
         "notebooks/example.pkl",
     )
     for path in generated:
+        if not (ROOT / ".git").exists():
+            # An sdist has no Git metadata, but must exclude runtime outputs.
+            assert not (ROOT / path).exists(), f"{path} must not be distributed"
+            continue
         result = subprocess.run(
             ["git", "check-ignore", "--quiet", path],
             cwd=ROOT,

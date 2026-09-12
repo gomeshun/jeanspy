@@ -23,12 +23,33 @@ __all__ = ["AxisymmetricKinematicData", "AxisymmetricDSphEstimationModel"]
 
 @dataclass(frozen=True, eq=False)
 class AxisymmetricKinematicData:
-    """Finite matching 1-D observations, in pc and km/s, copied on construction.
+    r"""Finite matching 1-D observations, in pc and km/s, copied on construction.
 
     Sky x follows the line of nodes (the projected major axis for an oblate
     tracer); y is the perpendicular sky coordinate. Position-angle rotation and
     angular-to-physical conversion must be applied before constructing the data.
     Both signed coordinates and the projected center are supported.
+
+    Notes
+    -----
+    **Inputs and units.** ``x_pc``, ``y_pc``, ``vlos_kms`` and ``e_vlos_kms``
+    are matching nonempty finite 1-D arrays; pc and km/s. ``from_data`` accepts
+    the supported mapping/table or an existing data object.
+
+    **Returns and shape.** An immutable data container; ``as_kwargs`` returns
+    the four arrays under their public names; len is N.
+
+    **Validity.** Signed sky coordinates include the center; velocity errors
+    must be nonnegative.
+
+    **Errors.** Missing fields, mismatched shapes or invalid values raise.
+
+    **Backend.** NumPy host arrays.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``
     """
     x_pc: np.ndarray
     y_pc: np.ndarray
@@ -77,7 +98,7 @@ def _physical_name(name):
 
 
 class AxisymmetricDSphEstimationModel:
-    """Unbinned Gaussian LOS inference with the classical sampler protocol.
+    r"""Unbinned Gaussian LOS inference with the classical sampler protocol.
 
     ``prior`` is a :class:`FlatPriorModel`, a DataFrame, or a CSV with finite
     ``lower``/``upper`` bounds. Its row order defines the sampler coordinates.
@@ -88,6 +109,35 @@ class AxisymmetricDSphEstimationModel:
     ``log10_re_pc``. A uniform ``cos_inclination`` coordinate gives an isotropic
     orientation prior restricted to its explicitly supplied bounds. The solver
     also enforces physically admissible deprojection and nonnegative moments.
+
+    Notes
+    -----
+    **Inputs and units.** data follows AxisymmetricKinematicData; prior is
+    FlatPriorModel or ordered lower/upper DataFrame; ``fixed_params``
+    complements sampled names; ``dsph_model`` is a NumPy AxisymmetricDSphModel.
+    p is shape (ndim,) in prior order; ``log10_`` and ``bfunc_`` transforms are
+    explicit.
+
+    **Returns and shape.** Per-star/summed log likelihoods and prior terms.
+    lnposterior returns posterior plus diagnostic blobs; sample(size,rng=...)
+    generates admissible starting coordinates; ``sample_data(p,rng=...)`` gives
+    simulated data.
+
+    **Validity.** Gaussian LOS velocity likelihood at fixed positions;
+    ``beta_z`` is distinct from spherical anisotropy. Exactly one of
+    intrinsic/projected tracer flattening must be specified. Photometric prior
+    is optional and explicit.
+
+    **Errors.** Malformed schema/data or sampled/fixed collisions raise
+    ValueError; inadmissible proposals give minus-infinite posterior. sample
+    raises after ``max_attempts`` if no valid point is found.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``
     """
     name = "AxisymmetricDSphEstimationModel"
 
@@ -105,27 +155,37 @@ class AxisymmetricDSphEstimationModel:
 
     @property
     def p_names_lnprob(self):
+        """Return sampling-coordinate names in their validated prior-table order."""
         return self.prior.data.index.tolist()
 
     @property
     def ndim(self):
+        """Return the integer number of free sampling coordinates."""
         return len(self.p_names_lnprob)
 
     @property
     def prior_names(self):
+        """Return log-prior term names in blob order, including optional photometry."""
         names = ["flat_prior", "physical_domain"]
         return names + (["photometry_prior"] if self.photometry_prior is not None else [])
 
     @property
     def blobs_dtype(self):
+        """Return emcee blob fields for the log likelihood and ordered log-prior terms."""
         return [("lnl", float), *((name, float) for name in self.prior_names)]
 
     @property
     def n_data(self):
+        """Return the integer number of observed stars."""
         return len(self._data)
 
     @property
     def data(self):
+        """Return a validated copy of the stored axisymmetric kinematic catalogue.
+
+        The AxisymmetricKinematicData arrays have shape (N,); x_pc/y_pc are in pc
+        and velocities/errors are in km/s.
+        """
         return AxisymmetricKinematicData.from_data(self._data)
 
     @property
@@ -163,6 +223,17 @@ class AxisymmetricDSphEstimationModel:
                 raise ValueError("Photometry prior needs a finite location and positive finite scale")
 
     def convert_params(self, p):
+        r"""Map sampling coordinates to physical parameters.
+
+        Notes
+        -----
+        **Inputs and units.** One parameter vector in exact prior order; ``log10_``
+        and ``bfunc_`` prefixes identify the supported transforms.
+
+        **Returns and shape.** Named physical parameters with pc, Msun/pc^3, km/s,
+        radians and dimensionless quantities as appropriate. The axisymmetric result
+        also incorporates ``fixed_params``.
+        """
         self._validate_schema()
         p = np.asarray(p, dtype=float)
         if p.shape != (self.ndim,):
@@ -193,10 +264,27 @@ class AxisymmetricDSphEstimationModel:
         return norm.logpdf(self._data.vlos_kms, loc=mean, scale=scale)
 
     def lnlikelihoods(self, p):
-        """Return one log likelihood per star, including measurement errors."""
+        r"""Return one log likelihood per star, including measurement errors.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Per-star log densities, shape (N,).
+        """
         return self._lnlikelihoods(self.convert_params(p))
 
     def lnlikelihood(self, p):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Scalar sum of log likelihoods.
+        """
         return float(np.sum(self.lnlikelihoods(p)))
 
     def _lnpriors(self, p, params):
@@ -209,6 +297,16 @@ class AxisymmetricDSphEstimationModel:
         return result
 
     def lnpriors(self, p):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Sequence of log prior contributions in
+        ``prior_names`` order.
+        """
         return self._lnpriors(p, self.convert_params(p))
 
     def _posterior(self, p, temperature):
@@ -220,9 +318,29 @@ class AxisymmetricDSphEstimationModel:
         return (lnl + sum(priors), lnl, *priors)
 
     def lnposterior(self, p):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Tuple (logposterior, loglikelihood,
+        individual prior terms) for emcee blobs.
+        """
         return self._posterior(p, 1.)
 
     def lnposterior_wbic(self, p):
+        r"""Evaluate the explicit kinematic inference target.
+
+        Notes
+        -----
+        **Inputs and units.** p is one parameter vector of shape (ndim,) in
+        ``p_names_lnprob`` order. Uses already loaded observations.
+
+        **Returns and shape.** Tuple using loglikelihood/log(N) plus the original
+        prior; requires N>1.
+        """
         return self._posterior(p, self.inverse_temparature)
 
     def sample(self, size=None, *, rng=None, max_attempts=1000):
@@ -265,7 +383,12 @@ class AxisymmetricDSphEstimationModel:
                          np.hypot(np.sqrt(sigma2), self._data.e_vlos_kms))
 
     def sampling_identity(self):
-        """Hash data, priors, fixed physics, parameter order and numerical settings."""
+        """Return host metadata describing the complete sampling target.
+
+        The dictionary contains the forward model, copied observations, prior
+        table, fixed parameters, optional photometric prior and coordinate order.
+        The persistence layer hashes this material; this method returns no hash.
+        """
         return dict(dsph_model=self.dsph_model, data=self._data.as_kwargs(),
                     prior=self.prior.data, fixed_params=self.fixed_params,
                     photometry_prior=self.photometry_prior, parameter_order=self.p_names_lnprob)

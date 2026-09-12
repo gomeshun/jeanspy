@@ -1,0 +1,19 @@
+include LICENSE README.md RELEASE.md
+recursive-include src/jeanspy/data *.csv
+recursive-include tests *.py
+recursive-include examples *.py
+recursive-include notebooks *.ipynb
+recursive-include scripts *.py
+include validation/axisymmetric_jam_reference.json
+include validation/release/comparison.json
+include validation/release/references.json
+include validation/release/jam9_protocol.json
+include validation/release/jam9_plummer_v1.json
+include validation/release/jam9_warning_diagnostic.md
+include validation/release/jam9_warning_diagnostic.json
+include validation/release/jam9_warning_diagnostic_execution_failure.txt
+recursive-include validation/release/environments *.txt *.json *.toml
+recursive-include docs *.md *.rst *.py *.css *.json *.bib *.svg *.png *.pdf
+prune docs/_build
+prune docs/source/api
+global-exclude __pycache__ *.py[cod]
