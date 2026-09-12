@@ -28,8 +28,17 @@ def check(directory: Path) -> list[dict]:
                for base, suffix in [("tests", ".py"), ("examples", ".py"),
                                     ("notebooks", ".ipynb"), ("scripts", ".py")]
                for p in (ROOT / base).rglob("*" + suffix)}
+    # Mirror the intended documentation source payload in MANIFEST.in. Build
+    # output and the regenerated API tree must not affect an archive check.
+    docs_suffixes = {".md", ".rst", ".py", ".css", ".json", ".bib", ".svg", ".png", ".pdf"}
+    support.update({p.relative_to(ROOT).as_posix(): p
+                    for p in (ROOT / "docs").rglob("*")
+                    if p.is_file() and p.suffix in docs_suffixes
+                    and not p.is_relative_to(ROOT / "docs/_build")
+                    and not p.is_relative_to(ROOT / "docs/source/api")
+                    and "__pycache__" not in p.parts})
     support.update({name: ROOT / name for name in
-                    ["README.md", "LICENSE", "pyproject.toml", "MANIFEST.in",
+                    ["README.md", "RELEASE.md", "LICENSE", "pyproject.toml", "MANIFEST.in",
                      "validation/axisymmetric_jam_reference.json",
                      "validation/release/jam9_protocol.json",
                      "validation/release/jam9_plummer_v1.json"]})

@@ -41,10 +41,13 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           DOCS_VERSION=dev
+          DOCS_REF=main
           if [ "$GITHUB_EVENT_NAME" = release ]; then
             DOCS_VERSION="$RELEASE_TAG"
+            DOCS_REF="$(git rev-parse HEAD)"
           fi
           echo "JEANSPY_DOCS_VERSION=$DOCS_VERSION" >> "$GITHUB_ENV"
+          echo "JEANSPY_DOCS_REF=$DOCS_REF" >> "$GITHUB_ENV"
           echo "version=$DOCS_VERSION" >> "$GITHUB_OUTPUT"
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Generate public API inventory
