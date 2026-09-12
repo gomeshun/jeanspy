@@ -224,10 +224,12 @@ class Sampler:
             params = self.model.convert_params(p0)
             self.logger.info("p0: %s", p0)
             self.logger.info("params:\n%s", params)
-            # NOTE: Instead of above lines, we use comparison dataframe
-            # Here we note that params is a pandas.Series and p0 is a numpy.ndarray
-            comparison = pd.DataFrame({"p0":p0,"params":params})
-            self.logger.info("comparison:\n%s", comparison)
+            # A model may combine sampled coordinates with additional fixed
+            # physical parameters, so these two collections need not have the
+            # same length. Log named sampling coordinates without aligning
+            # unrelated rows of the physical parameter dictionary.
+            coordinates = pd.Series(p0, index=getattr(self.model, "p_names_lnprob", None))
+            self.logger.info("sampling coordinates:\n%s", coordinates)
     
     def set_wrapper_function(self):
         # NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.
@@ -443,7 +445,10 @@ class Sampler:
         """ get the dataframe from the backend.
         """
         chain = self.backend.get_chain(flat=True,thin=thin,discard=discard)
-        columns = self.model.submodels["FlatPriorModel"].data.index.tolist()
+        if hasattr(self.model, "p_names_lnprob"):
+            columns = self.model.p_names_lnprob
+        else:
+            columns = self.model.submodels["FlatPriorModel"].data.index.tolist()
         df = pd.DataFrame(chain,columns=columns)
         if with_lnprob:
             log_prob = self.backend.get_log_prob(flat=True,thin=thin,discard=discard)

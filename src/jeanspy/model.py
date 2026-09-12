@@ -70,3 +70,10 @@ for _name in __all__:
         _value.__module__ = __name__
 
 del _name, _value
+
+# Additive axisymmetric API. Preserve the defining modules of the independent
+# forward/inference classes, including the public paths introduced in PR #63.
+from .axisymmetric import AxisymmetricDSphModel
+from .axisymmetric_inference import AxisymmetricDSphEstimationModel, AxisymmetricKinematicData
+
+__all__ += ["AxisymmetricDSphModel", "AxisymmetricDSphEstimationModel", "AxisymmetricKinematicData"]

@@ -37,7 +37,8 @@ EXPECTED_PUBLIC_NAMES = {
 
 
 def test_public_model_api_is_explicit():
-    assert set(model.__all__) == EXPECTED_PUBLIC_NAMES
+    assert set(model.__all__) == EXPECTED_PUBLIC_NAMES | {
+        "AxisymmetricDSphModel", "AxisymmetricDSphEstimationModel", "AxisymmetricKinematicData"}
     assert not hasattr(model, "np")
     assert not hasattr(model, "pd")
     assert not hasattr(model, "integrate")

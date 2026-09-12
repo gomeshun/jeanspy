@@ -22,6 +22,7 @@ __version__ = _load_version()
 
 __all__ = [
     "axisymmetric",
+    "axisymmetric_factors",
     "axisymmetric_inference",
     "dequad",
     "model",
