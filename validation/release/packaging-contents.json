@@ -1,0 +1,16 @@
+[
+  {
+    "artifact": "jeanspy-0.1.0-py3-none-any.whl",
+    "bytes": 104488,
+    "sha256": "17a710a0d656e156ad98ea1ecb3d59b0e168d74d9376dc2a48298a2df85a4794",
+    "files": 33,
+    "verified_source_files": 28
+  },
+  {
+    "artifact": "jeanspy-0.1.0.tar.gz",
+    "bytes": 520707,
+    "sha256": "1f8cec0cf76d30827c80a37698a6fd281c2ec7fd7696fed580e51c5b8377114d",
+    "files": 187,
+    "verified_source_files": 120
+  }
+]
