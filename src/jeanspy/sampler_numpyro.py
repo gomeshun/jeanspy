@@ -312,8 +312,11 @@ class JeansLikelihoodModel:
     sigmalos2_kwargs : mapping or None, optional
         Static integration settings passed to the forward ``sigmalos2`` method.
     sigma2_bounds : pair of float, optional
-        Positive ordered rejection limits in (km/s)**2. Values outside these
-        limits are rejected with log probability minus infinity, not clipped.
+        Positive ordered variance bounds in (km/s)**2. The spherical adapter
+        rejects negative or nonfinite model variances, then clips nonnegative
+        finite values to this interval. The axisymmetric subclass instead
+        rejects variances outside the interval with log probability minus
+        infinity.
     velocity_mean : str or callable, optional
         Physical parameter name (default ``vmem_kms``) or a function of the
         parameter mapping returning the velocity mean in km/s.
