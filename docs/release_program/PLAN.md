@@ -21,12 +21,18 @@ bibliographic records. The two frozen JAM 9 isotropic comparisons retain both
 the passing fine grids and the failed coarse grid. The full repository suite
 passed 469 tests and 37 subtests in the locked CPU environment.
 
-The proposed Draco scientific recipe, production compute envelope and venue
-ranking are in `docs/release_program/AUTHOR_DECISIONS.md`; author choices remain
-pending. Full production inference, repeated-mock coverage and the three
+The author selected MNRAS provisionally with portable manuscript formatting,
+approved a cumulative 24-hour experiment budget and the Draco scientific recipe,
+and prioritized mock recovery/coverage, including AGAMA mock generation.
+The decisions are in `docs/release_program/AUTHOR_DECISIONS.md`.
+Full production inference, repeated-mock coverage and the three
 completed analysis tutorials have not yet been delivered. Experiment conditions
 must be frozen before results are inspected. Pilot runs cannot be relabeled as
 preregistered evidence.
+
+Merging and publication are held until the author has reviewed the complete
+planned publication and gives explicit permission. Local preparation and the
+approved calculations can proceed.
 
 CPU float64 is the reference. CPU float32 and actual GPU measurements are
 separate conditions. The local host has an AMD Threadripper 3990X and an

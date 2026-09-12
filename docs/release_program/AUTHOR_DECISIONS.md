@@ -1,12 +1,23 @@
-# Author decisions before production experiments
+# Author decisions for production experiments
 
-Prepared 2026-09-12, before new production inference or calibration runs.
-These are proposals, not recorded author approvals. Documentation, data-format
-inspection, source research and implementation smoke checks can proceed.
+Prepared 2026-09-12; author decisions recorded 2026-09-13 (JST), before new
+production inference or calibration runs. The author approved the 24-hour
+compute limit and the Draco recipe below, and selected MNRAS provisionally.
+Mock recovery/coverage has priority over Draco. Investigate AGAMA for mock
+generation and document whether each mock is a distribution-function sample
+or a conditional moment-based construction.
+
+The author must inspect the final planned publication before giving explicit
+merge permission. PR merging, GitHub Pages deployment and package publication
+remain on hold; local preparation and approved calculations can proceed.
 
 ## Publication venue
 
-Proposed order for the full methods paper: **A&A, MNRAS, CPC, ApJS, JOSS**.
+Author choice: **MNRAS, provisionally**. Keep manuscript text, figures,
+bibliography and scientific content independent of journal-specific layout.
+Use a small format wrapper so another venue can be selected later without
+rewriting the paper. The original fit assessment is retained below as context,
+not as an override of the author's choice.
 
 | Rank | Venue | Fit and concrete preparation requirement |
 | --- | --- | --- |
@@ -27,16 +38,20 @@ Primary sources checked:
   [GravSphere2](https://arxiv.org/abs/2509.24103), [CLUMPY v3](https://arxiv.org/abs/1806.08639),
   [galpy](https://arxiv.org/abs/1412.3451), [Gala](https://joss.theoj.org/papers/10.21105/joss.00388).
 
-The author must choose the venue. No submission, payment or acceptance of
-journal terms is part of this work.
+No submission, payment or acceptance of journal terms is part of this work.
 
 ## Compute envelope
 
-Proposed initial production envelope: **24 hours of elapsed scheduled compute,
+Approved production envelope: **24 hours of cumulative experiment execution,
 at most 8 CPU threads or one RTX 3090, and 16 GiB per experiment process**.
 No rented resources. Within it, record a separate bound and deterministic
 stop rule for every experiment before launch. A budget failure is a reportable
 result; do not silently extend runs, lower diagnostics or replace seeds.
+
+Maintain a ledger of experiment wall times and remaining budget. Check the
+remaining budget before every launch; the sum of per-experiment limits cannot
+silently authorize more than the remaining total. Preparation, documentation
+and source inspection do not consume this experiment-execution allowance.
 
 The protocol will include CPU float64 accuracy/gradients, CPU float32 and actual
 GPU measurements, matched spherical and axisymmetric likelihood comparisons,
@@ -47,7 +62,7 @@ experiment cannot meet its criteria within the envelope, report that limit.
 
 ## Draco scientific recipe
 
-Proposed default tutorial: spherical Plummer + NFW with constant spherical
+Approved default tutorial: spherical Plummer + NFW with constant spherical
 anisotropy, and an explicitly separate axisymmetric sensitivity analysis.
 The target is a transparent worked analysis, not a new definitive Draco limit.
 
@@ -82,9 +97,16 @@ The target is a transparent worked analysis, not a new definitive Draco limit.
   radius derived from the fixed-distance angular uncertainty. For J/D
   postprocessing adopt explicit 3/10 kpc finite halo-cutoff sensitivity cases;
   this cutoff is not Draco's empirical King stellar tidal radius.
-- Do not run or interpret the real-data posterior until these model/prior
-  choices and sensitivities have been accepted or replaced by the author.
+- These model/prior choices and sensitivities were accepted by the author.
+  Complete the higher-priority mock study first; preserve all failed diagnostics
+  and limitations rather than tuning the analysis after results are inspected.
 
 Sources: [Walker et al.](https://academic.oup.com/mnras/article/448/3/2717/1091040),
 [CDS catalogue](https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/448/2717),
 [McConnachie (2012)](https://arxiv.org/abs/1204.1562).
+
+## Author information
+
+Sole author: **Shunichi Horigome**. Affiliation: **Tohoku University**.
+Correspondence: **shunichi.horigome@astr.tohoku.ac.jp**.
+These details were supplied explicitly by the author on 2026-09-13 (JST).
