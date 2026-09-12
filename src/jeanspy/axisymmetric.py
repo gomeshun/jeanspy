@@ -126,9 +126,9 @@ class ZhaoHalo:
 
     def _gradients(self, R, z, n):
         R, z = _coordinates(R, z)
-        # A cusp has no unique force direction at its exact origin.
+        # Avoid evaluating the singular density at a cusp origin.
         if self.gamma > 0 and np.any((R == 0) & (z == 0)):
-            raise ValueError("cusped halo force is undefined at the exact origin")
+            raise ValueError("force evaluation at the exact cusp origin is not supported")
         t, w = _rule(n)
         D = np.sqrt(1 + (self.Q*self.Q - 1)*t*t)
         RR, zz = R[..., None], z[..., None]

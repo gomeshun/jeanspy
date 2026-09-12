@@ -21,6 +21,7 @@ def _load_version():
 __version__ = _load_version()
 
 __all__ = [
+    "axisymmetric",
     "dequad",
     "model",
     "sampler",
