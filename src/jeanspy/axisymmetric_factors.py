@@ -96,7 +96,7 @@ def jfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
     aperture gives zero.
 
     **Validity.** Require explicit finite ``r_t_pc``, observer distance >
-    ``r_t_pc``\*max(1,Q), 0<=``roi_deg``<90 and gamma<1.5 (finite central
+    ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<1.5 (finite central
     annihilation integral). ``n_phi`` uses a periodic rule; refine all orders.
 
     **Errors.** Invalid geometry/domain/order raises ValueError; wrong halo type
@@ -126,7 +126,7 @@ def dfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
     gives zero.
 
     **Validity.** Require explicit finite ``r_t_pc``, observer distance >
-    ``r_t_pc``\*max(1,Q), 0<=``roi_deg``<90 and gamma<2 under the ZhaoHalo
+    ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<2 under the ZhaoHalo
     constructor domain. ``n_phi`` uses a periodic rule; refine all orders.
 
     **Errors.** Invalid geometry/domain/order raises ValueError; wrong halo type

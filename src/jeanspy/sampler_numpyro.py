@@ -632,7 +632,7 @@ class NumPyroSampler:
     model, with explicit resume/save/write flags.
 
     **Returns and shape.** run returns SamplerRunResult. Samples use ArviZ
-    chain/draw dimensions; ``load_samples``(combine=True) returns a combined
+    chain/draw dimensions; ``load_samples(combine=True)`` returns a combined
     DataTree, False a list. ``save_samples_chunk`` returns
     (index,path,submitted). ``save_checkpoint``/``load_checkpoint`` return
     paths; flush/close return None after awaiting writes.
@@ -887,7 +887,7 @@ class NumPyroSampler:
         -----
         **Inputs and units.** No arguments.
 
-        **Returns and shape.** None; sets mcmc.``post_warmup_state``=None. It does
+        **Returns and shape.** None; sets ``mcmc.post_warmup_state = None``. It does
         not delete or reset persisted analysis files.
 
         **Validity.** Affects only the in-memory ``post_warmup_state`` pointer. A

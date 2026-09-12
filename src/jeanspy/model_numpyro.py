@@ -863,7 +863,7 @@ class DMModel(Model):
         dictionary. ``enclosed_mass``/``enclosure_mass`` select
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
-        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
         """
         if operator.index(n_steps) < 2:
@@ -932,7 +932,7 @@ class DMModel(Model):
         dictionary. ``enclosed_mass``/``enclosure_mass`` select
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
-        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
         """
         method_key = str(method).strip().lower()
@@ -975,7 +975,7 @@ class DMModel(Model):
         dictionary. ``enclosed_mass``/``enclosure_mass`` select
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
-        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
         """
         return self.enclosed_mass(r_pc, method=method, params=params, n_steps=n_steps)
@@ -993,7 +993,7 @@ class NFWModel(DMModel):
     mass quadrature order.
 
     **Returns and shape.** Density Msun/pc^3; mass Msun within
-    min(``r_pc``,``r_t_pc``), matching radius shape. ``enclosure_mass`` is an
+    ``min(r_pc, r_t_pc)``, matching radius shape. ``enclosure_mass`` is an
     alias; ``valid_mass_domain`` returns a Boolean mask. Classical/JAX density
     methods themselves evaluate the untruncated profile.
 
@@ -1065,7 +1065,7 @@ class NFWModel(DMModel):
         dictionary. ``enclosed_mass``/``enclosure_mass`` select
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
-        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
         """
         resolved = self.resolve_params(params)
@@ -1092,7 +1092,7 @@ class ZhaoModel(DMModel):
     mass quadrature order.
 
     **Returns and shape.** Density Msun/pc^3; mass Msun within
-    min(``r_pc``,``r_t_pc``), matching radius shape. ``enclosure_mass`` is an
+    ``min(r_pc, r_t_pc)``, matching radius shape. ``enclosure_mass`` is an
     alias; ``valid_mass_domain`` returns a Boolean mask. Classical/JAX density
     methods themselves evaluate the untruncated profile.
 
@@ -1145,7 +1145,7 @@ class ZhaoModel(DMModel):
         dictionary. ``enclosed_mass``/``enclosure_mass`` select
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
-        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
         """
         return _zhao_mass(r_pc, params, xp=jnp, n_steps=n_steps)
@@ -1218,7 +1218,7 @@ class ZhaoModel(DMModel):
         dictionary. ``enclosed_mass``/``enclosure_mass`` select
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
-        **Returns and shape.** Mass in Msun within min(``r_pc``,``r_t_pc``),
+        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
         """
         return self.enclosed_mass_betainc(r_pc, params=params)

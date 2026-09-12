@@ -86,8 +86,8 @@ def baes_eta2_kernel_jax(
 
     Notes
     -----
-    **Inputs and units.** u>=1 and ``R_pc``>0, ``beta_0``/``beta_inf``
-    dimensionless, ``r_a``>0 in pc, ``n_kernel`` static. See the exact signature
+    **Inputs and units.** u>=1 and ``R_pc > 0``, ``beta_0``/``beta_inf``
+    dimensionless, ``r_a > 0`` in pc, ``n_kernel`` static. See the exact signature
     for supported quadrature options.
 
     **Returns and shape.** Dimensionless kernel with broadcast array shape.
@@ -253,7 +253,7 @@ class BaesEta2AnisotropyModel(BaesAnisotropyModel):
 
     Notes
     -----
-    **Inputs and units.** Physical params ``beta_0``,``beta_inf`` and positive
+    **Inputs and units.** Physical params ``beta_0``, ``beta_inf`` and positive
     ``r_a`` (pc); eta is fixed at two. beta/f use radius in pc; kernel uses
     dimensionless u=r/R and projected radius in pc.
 

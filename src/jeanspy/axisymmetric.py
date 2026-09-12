@@ -92,7 +92,7 @@ class PlummerTracer:
     broadcast to one shape (pc).
 
     **Returns and shape.** density(R,z) is pc^-3; ``radial_derivative`` is
-    dnu/dR in pc^-4; ``surface_density``(x,y,inclination) is pc^-2;
+    dnu/dR in pc^-4; ``surface_density(x, y, inclination)`` is pc^-2;
     ``projected_axis_ratio`` returns sqrt(cos(i)^2+q^2 sin(i)^2). Array outputs
     follow the broadcast shape, including scalar output.
 
@@ -178,14 +178,14 @@ class ZhaoHalo:
     Notes
     -----
     **Inputs and units.** ``rho_s`` (Msun/pc^3), ``r_s`` (pc), Q>0, alpha>0,
-    beta>2, 0<=gamma<2; ``r_t_pc``>0 is an ellipsoidal cutoff and can be
+    beta>2, 0<=gamma<2; ``r_t_pc > 0`` is an ellipsoidal cutoff and can be
     infinite for the forward model. Intrinsic R>=0 and signed z, or signed sky
     x/y, are finite and broadcast to one shape (pc).
 
     **Returns and shape.** density is Msun/pc^3 and zero outside ``r_t_pc``.
     ``potential_gradient`` returns (dPhi/dR,dPhi/dz) in (km/s)^2/pc, opposite
-    gravitational acceleration. ``enclosed_mass``(``m_pc``) is Msun inside the
-    ellipsoid R^2+z^2/Q^2<=``m_pc``^2. J/D are scalar factors. Array outputs
+    gravitational acceleration. ``enclosed_mass(m_pc)`` is Msun inside the
+    ellipsoid ``R^2 + z^2/Q^2 <= m_pc^2``. J/D are scalar factors. Array outputs
     follow the broadcast shape, including scalar output.
 
     **Validity.** x is the line of nodes; i=0 is face-on. No streaming
@@ -491,7 +491,7 @@ class AxisymmetricDSphModel:
 
         Notes
         -----
-        **Inputs and units.** ``R_pc``>=0 and signed ``z_pc`` in pc, broadcastable;
+        **Inputs and units.** ``R_pc >= 0`` and signed ``z_pc`` in pc, broadcastable;
         params supplies the physical dictionary.
 
         **Returns and shape.** Tuple (vR2,vz2,vphi2), each in (km/s)^2 with the
@@ -505,7 +505,7 @@ class AxisymmetricDSphModel:
 
         Notes
         -----
-        **Inputs and units.** ``R_pc``>=0, signed ``z_pc`` in pc and explicit
+        **Inputs and units.** ``R_pc >= 0``, signed ``z_pc`` in pc and explicit
         params.
 
         **Returns and shape.** Tuple (dPhi/dR,dPhi/dz) in (km/s)^2/pc; gravitational
@@ -540,10 +540,10 @@ class AxisymmetricDSphModel:
 
         Notes
         -----
-        **Inputs and units.** ``m_pc``>=0 is the ellipsoidal radius in pc; params
+        **Inputs and units.** ``m_pc >= 0`` is the ellipsoidal radius in pc; params
         supplies halo scales, slopes, Q and cutoff.
 
-        **Returns and shape.** Msun inside R^2+z^2/Q^2<=min(``m_pc``,``r_t_pc``)^2,
+        **Returns and shape.** Msun inside R^2+z^2/Q^2<=``min(m_pc, r_t_pc)``^2,
         matching ``m_pc`` shape.
         """
         return self._model(params).halo.enclosed_mass(m_pc, n_steps=n_steps)
@@ -560,7 +560,7 @@ class AxisymmetricDSphModel:
         **Returns and shape.** Python float in GeV^2 cm^-5.
 
         **Validity.** Require explicit finite ``r_t_pc``, observer distance >
-        ``r_t_pc``\*max(1,Q), 0<=``roi_deg``<90 and gamma<1.5 (finite central
+        ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<1.5 (finite central
         annihilation integral). ``n_phi`` uses a periodic rule; refine all orders.
         """
         model = self._model(params)
@@ -578,7 +578,7 @@ class AxisymmetricDSphModel:
         **Returns and shape.** Python float in GeV cm^-2.
 
         **Validity.** Require explicit finite ``r_t_pc``, observer distance >
-        ``r_t_pc``\*max(1,Q), 0<=``roi_deg``<90 and gamma<2 under the ZhaoHalo
+        ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<2 under the ZhaoHalo
         constructor domain. ``n_phi`` uses a periodic rule; refine all orders.
         """
         model = self._model(params)

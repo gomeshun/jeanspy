@@ -150,7 +150,7 @@ class AxisymmetricDSphModel:
 
         Notes
         -----
-        **Inputs and units.** ``R_pc``>=0 and signed ``z_pc`` in pc, broadcastable;
+        **Inputs and units.** ``R_pc >= 0`` and signed ``z_pc`` in pc, broadcastable;
         params supplies the physical dictionary.
 
         **Returns and shape.** Tuple (vR2,vz2,vphi2), each in (km/s)^2 with the
@@ -170,7 +170,7 @@ class AxisymmetricDSphModel:
 
         Notes
         -----
-        **Inputs and units.** ``R_pc``>=0, signed ``z_pc`` in pc and explicit
+        **Inputs and units.** ``R_pc >= 0``, signed ``z_pc`` in pc and explicit
         params.
 
         **Returns and shape.** Tuple (dPhi/dR,dPhi/dz) in (km/s)^2/pc; gravitational
@@ -226,10 +226,10 @@ class AxisymmetricDSphModel:
 
         Notes
         -----
-        **Inputs and units.** ``m_pc``>=0 is the ellipsoidal radius in pc; params
+        **Inputs and units.** ``m_pc >= 0`` is the ellipsoidal radius in pc; params
         supplies halo scales, slopes, Q and cutoff.
 
-        **Returns and shape.** Msun inside R^2+z^2/Q^2<=min(``m_pc``,``r_t_pc``)^2,
+        **Returns and shape.** Msun inside R^2+z^2/Q^2<=``min(m_pc, r_t_pc)``^2,
         matching ``m_pc`` shape.
         """
         p, valid = resolve_params(params, jnp)
