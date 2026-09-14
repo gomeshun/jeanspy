@@ -41,7 +41,7 @@ class DSphModel(Model):
     one-component tangential variances in (km/s)^2. sigmalos2 and
     ``sigmalos2_dequad`` return LOS variance arrays with input shape, or a
     scalar for scalar input. ``sigmalos_dequad`` returns km/s.
-    ``integrand_sigmalos2``(u,``R_pc``) has shape (``N_R``,``N_u``).
+    ``integrand_sigmalos2(u, R_pc)`` has shape ``(N_R, N_u)``.
 
     **Validity.** Finite positive projected radii; no central-limit LOS solver.
     Tracer has vanishing outer pressure. Numerical orders and adaptive
