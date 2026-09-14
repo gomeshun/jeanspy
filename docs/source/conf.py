@@ -38,7 +38,11 @@ extensions = [
     "sphinx.ext.viewcode",
 ]
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+# Research records remain in the repository, outside the published site.
+exclude_patterns = [
+    "_build", "Thumbs.db", ".DS_Store", "validation/**", "comparison/**",
+    "_static/validation/**", "changelog.md", "development.md", "tutorials/draco.md",
+]
 templates_path = ["_templates"]
 autosummary_generate = True
 autosummary_imported_members = True
@@ -74,6 +78,7 @@ html_theme_options = {
     # default banner incorrectly labels the only preferred entry as stable.
     "show_version_warning_banner": False,
     "navigation_with_keys": False,
+    "header_links_before_dropdown": 6,
     "footer_start": ["copyright"],
 }
 html_context = {
@@ -146,3 +151,16 @@ def setup(app):
     app.connect("source-read", substitute_build_identity)
     app.connect("doctree-read", qualify_imported_types)
     app.connect("doctree-read", preserve_source_alias_anchors)
+    app.connect("build-finished", retire_research_pages)
+
+
+def retire_research_pages(app, exception):
+    """Keep old bookmarks usable without publishing research pages or data."""
+    if exception is not None or app.builder.name != "html":
+        return
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from check_public_docs import RETIRED_PAGES, redirect_page
+    for old, target in RETIRED_PAGES.items():
+        path = Path(app.outdir) / old
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(redirect_page(target))

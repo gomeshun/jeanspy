@@ -40,18 +40,6 @@ git checkout @SOURCE_REF@
 python -m pip install -e '.[numpyro_cpu,plotting]'
 ```
 
-To build this site from the same source checkout:
-
-```bash
-uv sync --locked --extra docs --extra numpyro_cpu --extra plotting --extra dev
-uv run --no-sync python scripts/generate_api_docs.py
-uv run --no-sync python scripts/generate_comparison_docs.py
-uv run --no-sync python scripts/generate_bibliography.py
-uv run --no-sync sphinx-build -W --keep-going -b html docs/source docs/_build/html
-uv run --no-sync sphinx-build -W --keep-going -b doctest docs/source docs/_build/doctest
-uv run --no-sync python scripts/check_docs_links.py docs/_build/html
-```
-
 Inspect `jeanspy.__version__` and the source reference when comparing release
 and development behavior. For CUDA 12 support, use a separate environment:
 

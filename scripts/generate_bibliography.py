@@ -25,8 +25,7 @@ def main():
     page = ["# References", "", "This list covers scientific methods, comparison papers, data and inference",
             "software used in these documents. Cite only the methods and resources",
             "used in a particular analysis, together with their actual code versions.", "",
-            "Download the {download}`BibTeX file <references.bib>` or the",
-            "{download}`reviewed metadata <../../validation/release/references.json>`.", ""]
+            "Download the {download}`BibTeX file <references.bib>`.", ""]
     for entry in entries:
         authors = entry["authors"]
         fields = {"author": " and ".join(tex(a["family"] + ", " + a.get("given", "")) for a in authors),

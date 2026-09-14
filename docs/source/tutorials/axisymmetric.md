@@ -20,8 +20,7 @@ Outputs include `observations.csv`, `prior.csv`, `posterior.csv`,
 
 Default settings use eight stars and short chains. They exercise the complete
 storage path; the summary explicitly records that convergence and calibration
-are unestablished. The [release work plan](../validation/release-plan.md)
-distinguishes the tested software workflow from extended scientific analyses.
+are unestablished.
 
 ```{literalinclude} ../../../examples/axisymmetric_inference.py
 :language: python

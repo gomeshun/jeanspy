@@ -52,7 +52,6 @@ jobs:
       - name: Generate public API inventory
         run: |
           uv run --no-sync python scripts/generate_api_docs.py
-          uv run --no-sync python scripts/generate_comparison_docs.py
           uv run --no-sync python scripts/generate_bibliography.py
       - name: Execute short examples and verify version preservation
         run: uv run --no-sync python -m pytest -q tests/test_docs_examples.py tests/test_docs_versions.py
@@ -74,6 +73,8 @@ jobs:
         run: uv run --no-sync sphinx-build -W --keep-going -b doctest docs/source docs/_build/doctest
       - name: Check local HTML files and anchors
         run: uv run --no-sync python scripts/check_docs_links.py docs/_build/html
+      - name: Check public documentation boundaries
+        run: uv run --no-sync python scripts/check_public_docs.py docs/_build/html
       - name: Retain PR HTML and API inventory
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

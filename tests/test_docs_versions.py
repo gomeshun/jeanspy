@@ -22,6 +22,7 @@ def test_release_preservation_and_stable_selection(tmp_path):
     (build / "index.html").write_text("release")
     module.stage(build, site, "v0.1.0", "c" * 40)
     assert (site / "stable/index.html").read_text() == "release"
+
     (build / "index.html").write_text("next development")
     module.stage(build, site, "dev", "d" * 40)
     assert (site / "v0.1.0/index.html").read_text() == "release"
@@ -30,3 +31,19 @@ def test_release_preservation_and_stable_selection(tmp_path):
         module.stage(build, site, "v0.1.0", "d" * 40)
     module.stage(build, site, "v0.0.9", "e" * 40)
     assert (site / "stable/index.html").read_text() == "release"
+
+
+def test_dev_replacement_removes_retired_research_payloads(tmp_path):
+    build = tmp_path / "html"
+    build.mkdir()
+    (build / "index.html").write_text("public guide")
+    site = tmp_path / "site"
+    module.stage(build, site, "dev", "a" * 40)
+    for name in ("validation/index.html", "_static/validation/plot.svg",
+                 "_downloads/old/research.json", "_sources/comparison/index.md.txt"):
+        path = site / "dev" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("old internal material")
+    module.stage(build, site, "dev", "b" * 40)
+    assert {p.relative_to(site / "dev").as_posix() for p in (site / "dev").rglob("*")
+            if p.is_file()} == {"index.html", "build-info.json"}
