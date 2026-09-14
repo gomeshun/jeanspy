@@ -1,49 +1,47 @@
-# JeansPy documentation, comparative validation and technical paper
+# JeansPy release preparation
 
 <!-- site-start -->
 
 Baseline: `1a0ad4028d26af1df389ebdfdf992285ec50f8bb`. The public runtime API and
-scientific definitions are preserved. Work started 2026-09-12; the baseline
-main Test workflow passed (run 34696825360). Pages was not yet configured,
-the paper submodule contained only a README, and no PR was open at inspection.
+scientific definitions are preserved. On 2026-09-14 (JST), the author
+prioritized the software release and deferred the paper and further
+core/cusp-prior research. The release programme covers published English
+documentation, reproducible benchmarks and preparation for a PyPI release.
 
-| Milestone | State | Completion evidence required |
+| Deliverable | Current evidence | Remaining release work |
 | --- | --- | --- |
-| English documentation | In progress | Public URL; complete API contracts; executable examples; warning-free build; browser QA; three full analyses |
-| Competitors and venue | In progress | Primary-source matrix, bibliography, claims/tasks; author selects venue |
-| Reproducible benchmarks | Selected accuracy validation complete; broader protocol pending | Frozen plan, environments, seeds, raw successes/failures, regenerable tables/figures |
-| Submission package | Not started | Evidence-linked manuscript in `jeanspy_paper`, selected format, references, supplements, availability statements, author review |
+| English documentation | API docstrings, runnable examples, theory, numerical contracts and versioned-site workflow | Review development and release builds; deploy and verify the public site |
+| Reproducible benchmarks | Frozen JAM 9 comparisons, including the failed coarse grid; existing spherical/axisymmetric validation | Review the separately retained experiment results and their provenance before integrating release tables and figures |
+| PyPI release preparation | Test matrix, installed-artifact checks and source-content validation | Review the exact candidate, validate release artifacts and verify publisher setup; actual upload requires separate authorization |
 
-Completed foundation: 74 public API exports and method contracts, nine executable
-examples, a warning-free HTML/doctest build, a local HTML file/anchor audit,
-version-preservation checks, a 15-row source-backed software matrix and 34
-bibliographic records. The two frozen JAM 9 isotropic comparisons retain both
-the passing fine grids and the failed coarse grid. The full repository suite
-passed 469 tests and 37 subtests in the locked CPU environment.
+The existing fifteen-entry software comparison and bibliography are retained
+as background. Further software/venue research and a submission-ready paper
+are outside the active objective.
 
-The author selected MNRAS provisionally with portable manuscript formatting,
-approved a cumulative 24-hour experiment budget and the Draco scientific recipe,
-and prioritized mock recovery/coverage, including AGAMA mock generation.
-The decisions are in `docs/release_program/AUTHOR_DECISIONS.md`.
-Full production inference, repeated-mock coverage and the three
-completed analysis tutorials have not yet been delivered. Experiment conditions
-must be frozen before results are inspected. Pilot runs cannot be relabeled as
-preregistered evidence.
+API descriptions live beside the implementation. Short examples demonstrate
+construction, numerical evaluation, inference and persisted restart. Their
+small sample counts do not establish convergence or statistical calibration.
+The longer synthetic and real-data studies remain research work; a completed
+manuscript is not a software release requirement.
 
-Merging and publication are held until the author has reviewed the complete
-planned publication and gives explicit permission. Local preparation and the
-approved calculations can proceed.
+Numerical tests, sampler convergence and scientific calibration remain distinct
+claims. Benchmark tables must preserve input provenance, versions, precision,
+devices, seeds, numerical settings and predeclared stopping rules. Retain failed
+or incomplete runs and identify incomparable models or likelihoods. A numerical
+accuracy result from selected cases does not establish the entire prior domain,
+and sampling speed or ESS does not establish calibrated uncertainty.
 
-CPU float64 is the reference. CPU float32 and actual GPU measurements are
-separate conditions. The local host has an AMD Threadripper 3990X and an
-NVIDIA RTX 3090, confirmed by an unsandboxed read-only hardware inspection.
-The complete environment and actual device must still be recorded per run.
+The separate research campaign and manuscript are retained without restarting
+additional experiments. Review existing evidence for the release before
+bringing it into this branch. Do not silently substitute new seeds, relax
+diagnostics or relabel an author-directed amendment as a preregistered run.
 
-The central claim concerns the usefulness of physical-parameter gradients in
-direct spherical/axisymmetric inference at controlled accuracy. NumPy J/D
-postprocessing is outside that differentiability claim. Unfavorable results,
-nonconvergence, installation failures and incomparable tasks remain reportable
-outcomes. Sampling speed and ESS are not scientific-calibration tests.
+Main publishes development documentation. A published GitHub Release adds an
+immutable documentation version; the highest formal release supplies `stable`.
+The package tag and GitHub Release are separate required steps in the
+[release procedure](https://github.com/gomeshun/jeanspy/blob/main/RELEASE.md).
 
-The target is submission readiness. Creating a journal submission, handling
-referees and achieving acceptance are outside this program.
+The author must review the planned public result and explicitly approve
+merging. GitHub Pages deployment and package publication remain pending that
+review. Historical author choices are retained in
+`docs/release_program/AUTHOR_DECISIONS.md`.

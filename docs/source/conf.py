@@ -1,6 +1,7 @@
 """English documentation for the checked-out JeansPy source."""
 from pathlib import Path
 import os
+import re
 import sys
 import tomllib
 
@@ -16,6 +17,16 @@ author = "Shunichi Horigome"
 copyright = "2026, Shunichi Horigome"
 release = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]["version"]
 version = os.environ.get("JEANSPY_DOCS_VERSION", "dev")
+if version != "dev" and (
+    not re.fullmatch(r"v\d+\.\d+\.\d+(?:(?:a|b|rc)\d+)?", version)
+    or version != f"v{release}"
+):
+    raise ValueError("Release documentation tag must match the package version")
+source_ref = os.environ.get("JEANSPY_DOCS_REF", "main" if version == "dev" else version)
+jeanspy_docs_source_ref = source_ref
+if not re.fullmatch(r"[A-Za-z0-9_./-]+", source_ref):
+    raise ValueError("Documentation source reference contains unsupported characters")
+tags.add("development" if version == "dev" else "release")
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
@@ -68,12 +79,30 @@ html_theme_options = {
 html_context = {
     "default_mode": "auto",
     "github_user": "gomeshun", "github_repo": "jeanspy",
-    "github_version": os.environ.get("JEANSPY_DOCS_REF", "main"),
+    "github_version": source_ref,
     "doc_path": "docs/source",
 }
 html_baseurl = f"https://gomeshun.github.io/jeanspy/{version}/"
 html_last_updated_fmt = "%Y-%m-%d"
 doctest_global_setup = "import numpy as np"
+
+
+def substitute_build_identity(app, docname, source):
+    """Insert build identity in prose and copyable commands before parsing.
+
+    The small explicit token set also works inside Markdown code fences, where
+    MyST's ordinary substitutions are deliberately not evaluated. Keep the
+    surrounding instructions in the Markdown pages rather than in this hook.
+    """
+    if docname not in {"index", "installation"}:
+        return
+    for token, value in {
+        "@DOCS_VERSION@": version,
+        "@PACKAGE_VERSION@": release,
+        "@SOURCE_REF@": source_ref,
+        "@SOURCE_LABEL@": source_ref[:12] if re.fullmatch(r"[0-9a-f]{40}", source_ref) else source_ref,
+    }.items():
+        source[0] = source[0].replace(token, value)
 
 
 def qualify_imported_types(app, doctree):
@@ -111,5 +140,9 @@ def preserve_source_alias_anchors(app, doctree):
 
 
 def setup(app):
+    # The source reference appears inside parsed prose/code blocks, so changing
+    # it must invalidate cached doctrees, not only the HTML template context.
+    app.add_config_value("jeanspy_docs_source_ref", "main", "env")
+    app.connect("source-read", substitute_build_identity)
     app.connect("doctree-read", qualify_imported_types)
     app.connect("doctree-read", preserve_source_alias_anchors)

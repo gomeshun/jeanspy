@@ -11,9 +11,10 @@ python scripts/example_classical_inference.py --output-dir /tmp/spherical-exampl
 Use a new output directory. Inputs and outputs include `observations.csv`,
 `prior.csv`, the persisted sampler state and `result.json`. The seed is 55.
 The displayed run contains only 12 stored steps and does not establish
-convergence. The complete scientific tutorial, including posterior prediction,
-density/mass/factor summaries and calibrated diagnostics, is tracked by the
-[release work plan](../validation/release-plan.md).
+convergence. Extended posterior prediction, density/mass/factor summaries and
+calibration studies are separate research work; the current
+[release work plan](../validation/release-plan.md) distinguishes those studies
+from the tested workflow example.
 
 ```{literalinclude} ../../../scripts/example_classical_inference.py
 :language: python

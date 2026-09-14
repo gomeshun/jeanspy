@@ -1,5 +1,6 @@
 """Render BibTeX and a readable bibliography from reviewed citation metadata."""
 from pathlib import Path
+from html import unescape
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,7 +15,7 @@ def tex(text):
         "é": r"{\'e}", "è": r"{\`e}", "á": r"{\'a}",
         "í": r"{\'i}", "ó": r"{\'o}", "ñ": r"{\~n}",
     }
-    return "".join(replacements.get(char, char) for char in str(text))
+    return "".join(replacements.get(char, char) for char in unescape(str(text)))
 
 
 def main():

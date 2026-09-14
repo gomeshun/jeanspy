@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "checked_utc": "2026-09-14T01:12:39.274366+00:00",
+  "base_commit": "013ab8eef2cd5c412958bb5782c0bd75d4949cda",
+  "review": "/tmp/jeanspy-pr64-release-audit/REVIEW.md",
+  "source_sha256": {
+    ".github/workflows/docs.yml": "529618dd5c7f53ab600342a99035d6b2c29dd610642011588b3d6e61001317c2",
+    "RELEASE.md": "2250e5e256c0fbd2f1df3502d204f8dda86c47dc7a7c945c8a1ef8a0f6c171ff",
+    "docs/release_program/AUTHOR_DECISIONS.md": "81aefa4f29487ce49d7b3e6b28de33e21be6d69e267f56a2213ddf484bcf27e6",
+    "docs/release_program/PLAN.md": "611ca4a786259b72c76c2e53b3b46ef5ed9bdeca159f65985231e9b7ea699825",
+    "docs/source/conf.py": "3e071e6ac53acdcc3c7ac562e7c936c1ee3b79956668d85a71bd5736efb2b2f3",
+    "docs/source/development.md": "52d7add63e5af9998c73a6f6bdc5e48343c5b013a4becc998f3c9384c7eda71d",
+    "docs/source/index.md": "11260406c1b85f952dc84f70965048272b681c722d06eaaa9050f5ac45f59d92",
+    "docs/source/installation.md": "f36999f9b58b487379556409cebe14bc0888741b4be74c7a893f95441fbcea95",
+    "docs/source/references.bib": "4150a0b09f9f688c81db3a73c41880e5cee82294dbb3d4e65925defaba9ed210",
+    "docs/source/tutorials/axisymmetric.md": "2c610bb5f5262bc49463467a1f4f035190ad2da6dbcc743cd82bf649769fb44e",
+    "docs/source/tutorials/draco.md": "e424d54c312b4a04f9128924f298e517ea511aa2b5bceb7e4f412e40499e2360",
+    "docs/source/tutorials/spherical.md": "1873cca602644a270929ee82a0290ad58091e21359ef56fa63f8ee67c62f5111",
+    "docs/source/validation/release-plan.md": "c43ce2d5eaf0fb1fd4aa1e1f199bc96fa5cf53d807c966781a555b2ffbb1be9f",
+    "scripts/generate_bibliography.py": "ae6a6a5a709dcb85443930a6f1208d9e8d198d47b1950ccd51526022db37e7d1",
+    "scripts/check_docs_identity.py": "81c1bcd21f98ccac9cc9489e44ef2948b119debca550b81be558c1e20e30b77d"
+  },
+  "correction": {
+    "record": "validation/release/pr64_review_followup_v1.json",
+    "topic": "bibliography HTML entities",
+    "previous_disposition_was_incorrect": true,
+    "observed_before": "tex did not HTML-decode input; six generated journal fields contained the literal entity text.",
+    "current_change": "HTML-decode before TeX escaping; regenerate the six affected journal fields.",
+    "original_review_record_retained": true
+  },
+  "findings": [
+    {
+      "topic": "GitHub Pages tag environment rule",
+      "status": "pending_external_configuration",
+      "observed_policy": {
+        "custom_branch_policies": true,
+        "rules": [
+          {
+            "type": "branch",
+            "name": "main"
+          }
+        ]
+      },
+      "prepared_change": {
+        "type": "tag",
+        "name": "v*"
+      },
+      "configuration_changed": false
+    },
+    {
+      "topic": "GitHub Release required for versioned documentation",
+      "status": "fixed_in_release_instructions"
+    },
+    {
+      "topic": "rendered release version and source install commands",
+      "status": "fixed_and_verified",
+      "incremental_source_ref_change_verified": true,
+      "invalid_release_package_version_rejected": true,
+      "original_defective_html_rejected_by_checker": true
+    },
+    {
+      "topic": "bibliography HTML entities",
+      "status": "fixed_and_verified",
+      "corrected_journal_fields": 6
+    }
+  ],
+  "verification": {
+    "focused_tests": {
+      "passed": 14,
+      "warnings": 1,
+      "warning": "emcee autocorrelation is undefined for the deliberately short documentation example; no convergence claim is made.",
+      "log_sha256": "7e4c5d5ebb9484e434251bd7198cccf3c64cf5c8e3d74a7b0bee0d140bfa6000"
+    },
+    "sphinx_html": {
+      "development": "passed_warnings_as_errors",
+      "release": "passed_warnings_as_errors"
+    },
+    "links": {
+      "development": {
+        "html_pages": 128,
+        "local_links_checked": 13430,
+        "broken_links": []
+      },
+      "release": {
+        "html_pages": 128,
+        "local_links_checked": 13430,
+        "broken_links": []
+      }
+    },
+    "workflow_actionlint": "passed",
+    "python_compilation": "passed",
+    "git_diff_check": "passed",
+    "sphinx_doctests": {
+      "tests": 4,
+      "failures": 0,
+      "log_sha256": "6a544fbbb6b7ad6fa4eb8563b850189f37de2a0518cf2995ae32b4f2b8f63400"
+    }
+  },
+  "scope": "Documentation and release preparation only. Runtime sources, priors, samplers and numerical experiments are unchanged. No merge, tag, deployment or package upload occurred.",
+  "runtime_diff_from_base": "empty"
+}

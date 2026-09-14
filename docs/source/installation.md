@@ -3,19 +3,44 @@
 Use Python 3.12 or 3.13. The base package requires NumPy, SciPy, pandas, emcee
 and h5py. Plotting and the JAX/NumPyro stack are optional dependencies.
 
-For the exact code described by this development guide:
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+```
+
+On Windows, use `.venv\Scripts\Activate.ps1` in PowerShell instead.
+
+````{only} release
+Install the package version documented by this site:
+
+```bash
+python -m pip install 'jeanspy==@PACKAGE_VERSION@'
+```
+
+For the optional CPU inference and plotting examples:
+
+```bash
+python -m pip install 'jeanspy[numpyro_cpu,plotting]==@PACKAGE_VERSION@'
+```
+````
+
+```{only} development
+Use the source installation below for development documentation. Installing
+an unpinned PyPI release may provide a different API from this checkout.
+```
+
+To install from the source reference used by this documentation build:
 
 ```bash
 git clone https://github.com/gomeshun/jeanspy.git
 cd jeanspy
-git checkout 1a0ad4028d26af1df389ebdfdf992285ec50f8bb
-python -m venv .venv
-. .venv/bin/activate
+git checkout @SOURCE_REF@
 python -m pip install -e '.[numpyro_cpu,plotting]'
 ```
 
-After the documentation changes reach main, use the matching development
-checkout to build this site:
+To build this site from the same source checkout:
 
 ```bash
 uv sync --locked --extra docs --extra numpyro_cpu --extra plotting --extra dev
@@ -27,13 +52,25 @@ uv run --no-sync sphinx-build -W --keep-going -b doctest docs/source docs/_build
 uv run --no-sync python scripts/check_docs_links.py docs/_build/html
 ```
 
-PyPI publication is planned. Once a release is published, `pip install jeanspy`
-will install that release. This page's commands use the explicit development
-checkout. Inspect `jeanspy.__version__` and the source commit when comparing
-release and development behavior. To add CUDA 12 support, install the `numpyro_cuda12`
-extra in a separate environment and verify the effective device with
-`jax.devices()`. CUDA installation compatibility alone does not establish
-that a particular calculation used a GPU.
+Inspect `jeanspy.__version__` and the source reference when comparing release
+and development behavior. For CUDA 12 support, use a separate environment:
+
+````{only} release
+```bash
+python -m pip install 'jeanspy[numpyro_cuda12,plotting]==@PACKAGE_VERSION@'
+```
+````
+
+````{only} development
+From the same source checkout:
+
+```bash
+python -m pip install -e '.[numpyro_cuda12,plotting]'
+```
+````
+
+Verify the effective device with `jax.devices()`. CUDA installation
+compatibility alone does not establish that a calculation used a GPU.
 
 Set precision and device before importing JAX or the JAX-backed JeansPy modules:
 

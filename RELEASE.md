@@ -47,6 +47,29 @@ A pending publisher creates the PyPI project on the first successful upload. It 
 
 If the project already exists on PyPI, configure the same Trusted Publisher from that project's `Publishing` settings instead.
 
+### Configure versioned GitHub Pages documentation
+
+Select **GitHub Actions** as the Pages source in repository settings. In the
+`github-pages` environment, use selected deployment branches and tags with:
+
+- branch rule `main`, for development documentation;
+- tag rule `v*`, for documentation of published releases.
+
+Keep the rule types distinct: a branch named `main` does not permit a release
+tag that points to a commit on main. The documentation workflow verifies that
+the release tag matches the package version before building the site.
+
+Inspect the current rules before publishing:
+
+```bash
+gh api repos/gomeshun/jeanspy/environments/github-pages/deployment-branch-policies
+```
+
+The first formal documentation deployment requires both rules. A missing tag
+rule blocks the release deployment even if the PR documentation build passes.
+The [GitHub environment rules](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments)
+describe how the triggering branch or tag is matched.
+
 ### TestPyPI policy
 
 TestPyPI is an **optional manual preflight**, not part of the automated release gate. The workflow validates the exact wheel and sdist locally before publishing, while TestPyPI requires a second publisher configuration and can give misleading dependency-install results unless PyPI is also configured as an extra index.
@@ -85,6 +108,10 @@ Before tagging, all of the following should be true:
 4. `README.md` contains the Quick Start that should be executable by a base installation;
 5. the `pypi` GitHub environment and PyPI Trusted Publisher still match the repository/workflow configuration;
 6. any intentional packaging changes, optional-dependency changes, or package-data changes have been reviewed.
+7. GitHub Pages uses the Actions source, and its `github-pages` environment
+   allows both `main` and the intended release tag;
+8. the version-specific documentation build passes and its installation
+   commands name the intended package version and source commit.
 
 For a local metadata sanity check, you can also run:
 
@@ -211,7 +238,32 @@ For releases that change NumPyro packaging, it is also useful to verify the CPU 
 uv run --with "jeanspy[numpyro_cpu]" --no-project -- python -c "import jax, jeanspy; print(jeanspy.__version__, jax.default_backend())"
 ```
 
-Optionally create a GitHub Release from the same tag if you want release notes to be visible on GitHub.
+### Publish and verify the matching documentation
+
+After the PyPI workflow succeeds, **publish a GitHub Release from the same
+existing tag** with the reviewed release notes. This is a required part of the
+release process: pushing a tag publishes the package, while publishing the
+GitHub Release triggers the versioned documentation workflow. A draft GitHub
+Release does not publish documentation. Mark an alpha, beta or release-candidate
+tag as a prerelease; it must not replace the stable documentation alias.
+
+Wait for the Documentation workflow's build and Pages deployment to succeed,
+then check the versioned home page, installation commands, API pages and
+version selector. For example, for `v0.1.1` verify:
+
+- `https://gomeshun.github.io/jeanspy/v0.1.1/` identifies version `0.1.1`;
+- its `build-info.json` records the exact released commit;
+- `https://gomeshun.github.io/jeanspy/versions.json` includes that version;
+- `stable/` and the root redirect select the highest formal non-prerelease
+  version, and earlier published version directories remain unchanged.
+
+For a prerelease, verify its versioned directory and confirm that `stable/`
+still identifies the latest formal release, or remains absent if none exists.
+
+The documentation workflow copies each release once and refuses to replace it
+with different content. Review the version-specific preview before publishing.
+If documentation deployment fails after a successful package upload, repair
+that deployment without recreating or re-uploading the PyPI release.
 
 ## 6. If A Release Fails
 

@@ -5,11 +5,20 @@ galaxies. Build a tracer, halo and anisotropy model; predict velocity second
 moments; fit explicit priors and likelihoods with emcee or NumPyro; and retain
 the inputs and diagnostics needed to reproduce the analysis.
 
-This is the **development documentation**, based on the public API in commit
-[`1a0ad40`](https://github.com/gomeshun/jeanspy/tree/1a0ad4028d26af1df389ebdfdf992285ec50f8bb).
-No stable documentation version has been designated. Package version `0.1.0`
-is alpha software; the development branch includes additions that may not be
-present in an installed PyPI distribution.
+```{only} development
+This is the **development documentation**. It may describe changes beyond the
+latest published package; use the source checkout in the installation guide.
+```
+
+```{only} release
+This is the documentation for **JeansPy @PACKAGE_VERSION@**. Use the matching
+package version in the installation guide when reproducing these examples.
+```
+
+Documentation version: `@DOCS_VERSION@`. Source reference:
+[`@SOURCE_LABEL@`](https://github.com/gomeshun/jeanspy/tree/@SOURCE_REF@).
+The [release history](https://github.com/gomeshun/jeanspy/releases) identifies
+published versions; validation results apply to their stated models and domains.
 
 Start with the [installation guide](installation.md) and
 [executable quickstart](quickstart.md). The [model contract](guides/contracts.md)

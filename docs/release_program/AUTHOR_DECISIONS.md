@@ -1,4 +1,21 @@
-# Author decisions for production experiments
+# Author decisions for the release programme
+
+## Current direction (2026-09-14 JST)
+
+The author has prioritized the JeansPy release and deferred the paper and
+further core/cusp-prior research. The current deliverables are English Sphinx
+documentation on GitHub Pages, reproducible benchmarks with their predeclared
+conditions and limitations, and completed preparation for a PyPI release.
+Further software/venue research and a submission-ready manuscript are outside
+the active objective. Existing comparison materials are retained as background.
+Preparing the PyPI release does not authorize an actual package upload.
+
+Prepare and review the release changes before merging or publishing. The
+author's earlier requirement to inspect the planned publication and explicitly
+approve merging remains in effect. The experiment decisions below are retained
+as historical records; they do not authorize restarting a paused campaign.
+
+## Earlier experiment and paper decisions
 
 Prepared 2026-09-12; author decisions recorded 2026-09-13 (JST), before new
 production inference or calibration runs. The author approved the 24-hour

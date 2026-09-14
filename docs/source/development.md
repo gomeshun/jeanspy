@@ -28,7 +28,16 @@ build. Internal links, search, equations, figures and the version selector
 must also be checked in a browser before publication. PR builds retain HTML
 as Actions artifacts. Main publishes `dev`; published GitHub releases add
 immutable version directories, and the first formal release establishes
-`stable`. No package release is created by building the documentation.
+`stable`. Publishing that GitHub Release after a successful package upload is
+a required step in [the release procedure](https://github.com/gomeshun/jeanspy/blob/main/RELEASE.md).
+The Pages environment must permit the release tag as well as `main`.
+No package release is created by building the documentation.
+
+The workflow sets `JEANSPY_DOCS_REF` to the checked-out commit for every build.
+`JEANSPY_DOCS_VERSION=dev` selects development instructions; a release tag
+selects version-pinned installation commands and must match `pyproject.toml`.
+The source-read hook in `conf.py` substitutes a small set of build-identity
+tokens in the home and installation pages, including their copyable commands.
 
 The site uses [Sphinx autosummary](https://www.sphinx-doc.org/en/master/usage/extensions/autosummary.html),
 [MyST math syntax](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html),
