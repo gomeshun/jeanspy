@@ -1,0 +1,39 @@
+{
+  "started_utc": "2026-09-12T19:11:35.487966+00:00",
+  "command": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/home/gomesu/workspace/dev_jeanspy/jeanspy/.venv/bin/python",
+    "scripts/benchmark_release_spherical_performance.py",
+    "--output",
+    "/tmp/jeanspy-science/validation/release/campaign/spherical-performance-gpu-float64-v2.json"
+  ],
+  "cwd": "/tmp/jeanspy-science",
+  "bounds": {
+    "seconds": 1800.0,
+    "host_rss_gib": 16.0,
+    "gpu_gib": 16.0
+  },
+  "status": "completed",
+  "peak_host_rss_bytes": 973291520,
+  "peak_gpu_bytes": 283115520,
+  "supervisor_sha256": "9d43e5c90863be5bf300ace58614ba086584b103a60161de2832256e1aeab468",
+  "environment": {
+    "JEANSPY_JAX_PLATFORM": "gpu",
+    "JEANSPY_JAX_ENABLE_X64": "true",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "process_identity": {
+    "pid": 2837773,
+    "birth_ticks": 115976637,
+    "pgrp": 2837773,
+    "argv": "taskset -c 0-7 /home/gomesu/workspace/dev_jeanspy/jeanspy/.venv/bin/python scripts/benchmark_release_spherical_performance.py --output /tmp/jeanspy-science/validation/release/campaign/spherical-performance-gpu-float64-v2.json ",
+    "cwd": "/tmp/jeanspy-science"
+  },
+  "elapsed_seconds": 17.388203311013058,
+  "exit_code": 0,
+  "finished_utc": "2026-09-12T19:11:52.876283+00:00",
+  "stdout_sha256": "25233260ac90b97ffd4ebcbdcb4955a5e7a1c9cabd813c186b06ed1564a0787e"
+}

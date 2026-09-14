@@ -40,11 +40,17 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/gomeshun/jeanspy"
+Documentation = "https://gomeshun.github.io/jeanspy/"
 Repository = "https://github.com/gomeshun/jeanspy"
 Issues = "https://github.com/gomeshun/jeanspy/issues"
 Changelog = "https://github.com/gomeshun/jeanspy/releases"
 
 [project.optional-dependencies]
+docs = [
+    "sphinx>=8.2,<10",
+    "myst-parser>=4,<6",
+    "pydata-sphinx-theme>=0.16,<0.22",
+]
 plotting = [
     "matplotlib>=3.8.0",
 ]
@@ -79,7 +85,7 @@ benchmark = [
     "adamet>=2.0.10",
     "corner>=2.2.3",
     "dynesty>=3.0.0",
-    "jampy>=8.1.4",
+    "jampy>=8.1.4,<9",
     "mgefit>=6.2.6",
 ]
 

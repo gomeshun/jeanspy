@@ -1,7 +1,11 @@
 """Exercise the public classical inference composition with explicit priors."""
+from functools import partial
+import multiprocessing
+
 import numpy as np
 import pandas as pd
 import pytest
+from scipy.stats import norm
 
 from jeanspy.model import (
     ConstantAnisotropyModel, DSphModel, FlatPriorModel, NFWModel,
@@ -40,6 +44,67 @@ def _initial_state(nwalkers):
     if nwalkers is None:
         return center
     return center + np.random.default_rng(42).normal(0., .01, (nwalkers, 6))
+
+
+def test_classical_los_method_preserves_legacy_values_and_shapes(tmp_path):
+    model = _make_model(tmp_path, "dataframe")
+    model.update(model.convert_params(_initial_state(None)))
+    dsph = model["DSphModel"]
+    for radii in (50., np.array([50., 100., 300.])):
+        reference = dsph.sigmalos2_dequad(radii, 64, 32, True)
+        for options in ({}, {"method": "dequad"}):
+            variance = dsph.sigmalos2(radii, 64, 32, True, **options)
+            dispersion = dsph.sigmalos(radii, 64, 32, True, **options)
+            assert np.shape(variance) == np.shape(dispersion) == np.shape(radii)
+            np.testing.assert_array_equal(variance, reference)
+            np.testing.assert_array_equal(dispersion, np.sqrt(reference))
+        np.testing.assert_array_equal(
+            dsph.sigmalos_dequad(radii, 64, 32, True), np.sqrt(reference)
+        )
+    for evaluate in (dsph.sigmalos2, dsph.sigmalos):
+        with pytest.raises(ValueError, match="Unsupported LOS integration method"):
+            evaluate([50., 100.], method="quad")
+
+
+def test_classical_inference_uses_public_los_prediction(tmp_path, monkeypatch):
+    model = _make_model(tmp_path, "dataframe")
+    # A customized public prediction must govern both the likelihood and mocks.
+    def prediction(radii):
+        return np.full(np.shape(radii), 9.)
+    monkeypatch.setattr(model["DSphModel"], "sigmalos2", prediction)
+    expected_scale = np.sqrt(np.full(model.n_data, 9.) + model.data.e_vlos_kms**2)
+    expected_lnl = norm.logpdf(model.data.vlos_kms, loc=0., scale=expected_scale).sum()
+    assert model.lnposterior(_initial_state(None))[1] == pytest.approx(expected_lnl)
+    state = np.random.get_state()
+    try:
+        np.random.seed(71)
+        expected_draw = norm.rvs(loc=0., scale=expected_scale)
+        np.random.seed(71)
+        np.testing.assert_array_equal(model.sample_data(), expected_draw)
+    finally:
+        np.random.set_state(state)
+
+
+def test_classical_los_options_and_sampler_work_in_spawn_pool(tmp_path):
+    model = _make_model(tmp_path, "dataframe")
+    model.update(model.convert_params(_initial_state(None)))
+    # A bound method with ordinary keyword options can cross a process boundary.
+    prediction = partial(model["DSphModel"].sigmalos2, method="dequad", n=64, n_kernel=32)
+    radii = [50., 100.]
+    expected = [prediction(radius) for radius in radii]
+    with multiprocessing.get_context("spawn").Pool(2) as pool:
+        np.testing.assert_array_equal(pool.map(prediction, radii), expected)
+        sampler = Sampler(model, _initial_state, nwalkers=16, prefix=f"{tmp_path}/", pool=pool)
+        sampler.run_mcmc(4, 1, enable_convergence_check=False)
+        chain = sampler.get_chain().copy()
+        assert chain.shape == (4, 16, 6)
+        assert np.isfinite(sampler.get_log_prob()).all()
+        reloaded = _make_model(tmp_path, "dataframe")
+        resumed = Sampler(reloaded, _initial_state, nwalkers=16, prefix=f"{tmp_path}/", pool=pool)
+        resumed.run_mcmc(2, 1, enable_convergence_check=False)
+        assert resumed.get_chain().shape == (6, 16, 6)
+        np.testing.assert_array_equal(resumed.get_chain()[:4], chain)
+        assert np.isfinite(resumed.get_log_prob()).all()
 
 
 @pytest.mark.parametrize("config_kind", ["dataframe", "path"])

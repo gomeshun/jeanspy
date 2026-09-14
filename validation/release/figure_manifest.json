@@ -1,0 +1,19 @@
+{
+  "input": "validation/release/jam9_plummer_v1.json",
+  "input_sha256": "bfc31cc46d7bef6fb37e459bc5e1ecb7aa5b5bb6f5a094c6a0adf1ffed3953e5",
+  "generator_sha256": "49f6ba45f1ffcce25bac6a8fcc8fbc5a758e18a516526a7407f7e6ccbc1460e9",
+  "figure_files": [
+    {
+      "path": "docs/source/_static/validation/jam9_validation.pdf",
+      "sha256": "2043e3d2b10602e3cf008a4335b8b1a47c092f4219ff8f5e8cd601ce517d1923"
+    },
+    {
+      "path": "docs/source/_static/validation/jam9_validation.svg",
+      "sha256": "ef2a75b346038be5299d578c8195cb47e804a883bdfcf1507f509f28e7758834"
+    },
+    {
+      "path": "docs/source/_static/validation/jam9_validation.png",
+      "sha256": "1b3c6c0e78ad4f098a38887cfe037c70020453abf37f6675a127e092f9b34c5e"
+    }
+  ]
+}

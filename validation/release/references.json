@@ -1,0 +1,1042 @@
+{
+  "schema_version": 1,
+  "description": "Verified citation metadata; the cited papers support only their associated methods, not unmeasured JeansPy performance.",
+  "references": [
+    {
+      "key": "cappellari2008",
+      "entry_type": "article",
+      "title": "Measuring the inclination and mass-to-light ratio of axisymmetric galaxies via anisotropic Jeans models of stellar kinematics",
+      "authors": [
+        {
+          "family": "Cappellari",
+          "given": "Michele"
+        }
+      ],
+      "year": 2008,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "390",
+      "pages": "71-86",
+      "doi": "10.1111/j.1365-2966.2008.13754.x",
+      "url": "https://doi.org/10.1111/j.1365-2966.2008.13754.x",
+      "metadata_source": "https://api.crossref.org/works/10.1111%2Fj.1365-2966.2008.13754.x",
+      "metadata_sha256": "83b1c307fe3de5fc9e8cf8730eaa45b4a13dd7ac3a1af31f2e843d0c4572ea2f",
+      "retrieved_utc": "2026-09-12T15:41:08.331618+00:00"
+    },
+    {
+      "key": "cappellari2020",
+      "entry_type": "article",
+      "title": "Efficient solution of the anisotropic spherically aligned axisymmetric Jeans equations of stellar hydrodynamics for galactic dynamics",
+      "authors": [
+        {
+          "family": "Cappellari",
+          "given": "Michele"
+        }
+      ],
+      "year": 2020,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "494",
+      "pages": "4819-4837",
+      "doi": "10.1093/mnras/staa959",
+      "url": "https://doi.org/10.1093/mnras/staa959",
+      "metadata_source": "https://api.crossref.org/works/10.1093%2Fmnras%2Fstaa959",
+      "metadata_sha256": "60bac739d02df0504c134c656f6bad3e50144de652f8a35c985d9bbc090d63f9",
+      "retrieved_utc": "2026-09-12T15:41:08.366035+00:00"
+    },
+    {
+      "key": "cappellari2026",
+      "entry_type": "article",
+      "title": "A general spectral solver for the axisymmetric Jeans equations: fast dynamical modelling of galaxies with arbitrary anisotropy",
+      "authors": [
+        {
+          "family": "Cappellari",
+          "given": "Michele"
+        }
+      ],
+      "year": 2026,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "549",
+      "pages": "stag420",
+      "doi": "10.1093/mnras/stag420",
+      "url": "https://doi.org/10.1093/mnras/stag420",
+      "metadata_source": "https://api.crossref.org/works/10.1093%2Fmnras%2Fstag420",
+      "metadata_sha256": "5f3025a02f776fb8ad198425f86d8c70db255f0270f91d0e73fcfa0c3b5b0043",
+      "retrieved_utc": "2026-09-12T15:41:08.371408+00:00"
+    },
+    {
+      "key": "wang2025glad",
+      "entry_type": "article",
+      "title": "GPU-Accelerated Gravitational Lensing and Dynamical (GLaD) modeling for cosmology and galaxies",
+      "authors": [
+        {
+          "family": "Wang",
+          "given": "Han"
+        },
+        {
+          "family": "Suyu",
+          "given": "Sherry H."
+        },
+        {
+          "family": "Galan",
+          "given": "Aymeric"
+        },
+        {
+          "family": "Halkola",
+          "given": "Aleksi"
+        },
+        {
+          "family": "Cappellari",
+          "given": "Michele"
+        },
+        {
+          "family": "Shajib",
+          "given": "Anowar J."
+        },
+        {
+          "family": "Cernetic",
+          "given": "Miha"
+        }
+      ],
+      "year": 2025,
+      "journal": "Astronomy &amp; Astrophysics",
+      "volume": "701",
+      "pages": "A280",
+      "doi": "10.1051/0004-6361/202554861",
+      "url": "https://doi.org/10.1051/0004-6361/202554861",
+      "metadata_source": "https://api.crossref.org/works/10.1051%2F0004-6361%2F202554861",
+      "metadata_sha256": "3fbcf07ad0b5a72551bb273ca11489ae4292b00e1840486e4e3b5d2ed4273efd",
+      "retrieved_utc": "2026-09-12T15:41:08.340287+00:00"
+    },
+    {
+      "key": "skinn2023",
+      "entry_type": "article",
+      "title": "Accelerating galaxy dynamical modeling using a neural network for joint lensing and kinematic analyses",
+      "authors": [
+        {
+          "family": "Gomer",
+          "given": "Matthew R."
+        },
+        {
+          "family": "Ertl",
+          "given": "Sebastian"
+        },
+        {
+          "family": "Biggio",
+          "given": "Luca"
+        },
+        {
+          "family": "Wang",
+          "given": "Han"
+        },
+        {
+          "family": "Galan",
+          "given": "Aymeric"
+        },
+        {
+          "family": "Van de Vyvere",
+          "given": "Lyne"
+        },
+        {
+          "family": "Sluse",
+          "given": "Dominique"
+        },
+        {
+          "family": "Vernardos",
+          "given": "Georgios"
+        },
+        {
+          "family": "Suyu",
+          "given": "Sherry H."
+        }
+      ],
+      "year": 2023,
+      "journal": "Astronomy &amp; Astrophysics",
+      "volume": "679",
+      "pages": "A59",
+      "doi": "10.1051/0004-6361/202347507",
+      "url": "https://doi.org/10.1051/0004-6361/202347507",
+      "metadata_source": "https://api.crossref.org/works/10.1051%2F0004-6361%2F202347507",
+      "metadata_sha256": "721aea97efc464362506c08d0217e61eb85417cf00b03a35a39deb6274f8787e",
+      "retrieved_utc": "2026-09-12T15:41:08.885699+00:00"
+    },
+    {
+      "key": "bovy2015",
+      "entry_type": "article",
+      "title": "galpy: A python LIBRARY FOR GALACTIC DYNAMICS",
+      "authors": [
+        {
+          "family": "Bovy",
+          "given": "Jo"
+        }
+      ],
+      "year": 2015,
+      "journal": "The Astrophysical Journal Supplement Series",
+      "volume": "216",
+      "pages": "29",
+      "doi": "10.1088/0067-0049/216/2/29",
+      "url": "https://doi.org/10.1088/0067-0049/216/2/29",
+      "metadata_source": "https://api.crossref.org/works/10.1088%2F0067-0049%2F216%2F2%2F29",
+      "metadata_sha256": "6b9518ad60dea9a30857a5cc1bb01a658d85855ff61c26ed32d47097e781da5c",
+      "retrieved_utc": "2026-09-12T15:41:08.871823+00:00"
+    },
+    {
+      "key": "gravsphere2026",
+      "entry_type": "article",
+      "title": "GravSphere2: A higher order Jeans method for mass modeling spherical stellar systems",
+      "authors": [
+        {
+          "family": "Bañares-Hernández",
+          "given": "Andrés"
+        },
+        {
+          "family": "Read",
+          "given": "Justin I."
+        },
+        {
+          "family": "Júlio",
+          "given": "Mariana P."
+        }
+      ],
+      "year": 2026,
+      "journal": "Astronomy &amp; Astrophysics",
+      "volume": "705",
+      "pages": "A212",
+      "doi": "10.1051/0004-6361/202557195",
+      "url": "https://doi.org/10.1051/0004-6361/202557195",
+      "metadata_source": "https://api.crossref.org/works/10.1051%2F0004-6361%2F202557195",
+      "metadata_sha256": "ff53c362015baecb7048dd83d1b37bb0abd69867696b1c0c89504879472fa349",
+      "retrieved_utc": "2026-09-12T15:41:08.933198+00:00"
+    },
+    {
+      "key": "genina2020",
+      "entry_type": "article",
+      "title": "To β or not to β: can higher order Jeans analysis break the mass–anisotropy degeneracy in simulated dwarfs?",
+      "authors": [
+        {
+          "family": "Genina",
+          "given": "A"
+        },
+        {
+          "family": "Read",
+          "given": "J I"
+        },
+        {
+          "family": "Frenk",
+          "given": "C S"
+        },
+        {
+          "family": "Cole",
+          "given": "S"
+        },
+        {
+          "family": "Benítez-Llambay",
+          "given": "A"
+        },
+        {
+          "family": "Ludlow",
+          "given": "A D"
+        },
+        {
+          "family": "Navarro",
+          "given": "J F"
+        },
+        {
+          "family": "Oman",
+          "given": "K A"
+        },
+        {
+          "family": "Robertson",
+          "given": "A"
+        }
+      ],
+      "year": 2020,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "498",
+      "pages": "144-163",
+      "doi": "10.1093/mnras/staa2352",
+      "url": "https://doi.org/10.1093/mnras/staa2352",
+      "metadata_source": "https://api.crossref.org/works/10.1093%2Fmnras%2Fstaa2352",
+      "metadata_sha256": "42f06ed158aa05ac2045bcbf541b9e55a4ff9092cd8722bf30da211f579a8aec",
+      "retrieved_utc": "2026-09-12T15:41:08.938024+00:00"
+    },
+    {
+      "key": "mamon2013",
+      "entry_type": "article",
+      "title": "MAMPOSSt: Modelling Anisotropy and Mass Profiles of Observed Spherical Systems – I. Gaussian 3D velocities",
+      "authors": [
+        {
+          "family": "Mamon",
+          "given": "Gary A."
+        },
+        {
+          "family": "Biviano",
+          "given": "Andrea"
+        },
+        {
+          "family": "Boué",
+          "given": "Gwenaël"
+        }
+      ],
+      "year": 2013,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "429",
+      "pages": "3079-3098",
+      "doi": "10.1093/mnras/sts565",
+      "url": "https://doi.org/10.1093/mnras/sts565",
+      "metadata_source": "https://api.crossref.org/works/10.1093%2Fmnras%2Fsts565",
+      "metadata_sha256": "a3cedaa7b982d0cc96a97adfe5bb40c6fb22286f6b5a82c666a0fa006e129eed",
+      "retrieved_utc": "2026-09-12T15:41:09.452731+00:00"
+    },
+    {
+      "key": "hutten2019",
+      "entry_type": "article",
+      "title": "CLUMPY v3: γ-ray and ν signals from dark matter at all scales",
+      "authors": [
+        {
+          "family": "Hütten",
+          "given": "Moritz"
+        },
+        {
+          "family": "Combet",
+          "given": "Céline"
+        },
+        {
+          "family": "Maurin",
+          "given": "David"
+        }
+      ],
+      "year": 2019,
+      "journal": "Computer Physics Communications",
+      "volume": "235",
+      "pages": "336-345",
+      "doi": "10.1016/j.cpc.2018.10.001",
+      "url": "https://doi.org/10.1016/j.cpc.2018.10.001",
+      "metadata_source": "https://api.crossref.org/works/10.1016%2Fj.cpc.2018.10.001",
+      "metadata_sha256": "7de661ec304a27806b3e7fef9500baa5adeb6bf67f708c23c59df893c0d154fe",
+      "retrieved_utc": "2026-09-12T15:41:09.440705+00:00"
+    },
+    {
+      "key": "pricewhelan2017",
+      "entry_type": "article",
+      "title": "Gala: A Python package for galactic dynamics",
+      "authors": [
+        {
+          "family": "M. Price-Whelan",
+          "given": "Adrian"
+        }
+      ],
+      "year": 2017,
+      "journal": "The Journal of Open Source Software",
+      "volume": "2",
+      "pages": "388",
+      "doi": "10.21105/joss.00388",
+      "url": "https://doi.org/10.21105/joss.00388",
+      "metadata_source": "https://api.crossref.org/works/10.21105%2Fjoss.00388",
+      "metadata_sha256": "000a80008bffe46c292ab88000e41bb0dc04ad9c6731153754d8facb0050e872",
+      "retrieved_utc": "2026-09-12T15:41:09.482259+00:00"
+    },
+    {
+      "key": "walker2015",
+      "entry_type": "article",
+      "title": "Bayesian analysis of resolved stellar spectra: application to MMT/Hectochelle observations of the Draco dwarf spheroidal",
+      "authors": [
+        {
+          "family": "Walker",
+          "given": "Matthew G."
+        },
+        {
+          "family": "Olszewski",
+          "given": "Edward W."
+        },
+        {
+          "family": "Mateo",
+          "given": "Mario"
+        }
+      ],
+      "year": 2015,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "448",
+      "pages": "2717-2732",
+      "doi": "10.1093/mnras/stv099",
+      "url": "https://doi.org/10.1093/mnras/stv099",
+      "metadata_source": "https://api.crossref.org/works/10.1093/mnras/stv099",
+      "metadata_sha256": "6e6559302724502a9bf0353abd3e8152c739634a05d5edd8207f0a13b940a38f",
+      "retrieved_utc": "2026-09-12T15:45:02.036407+00:00"
+    },
+    {
+      "key": "mcconnachie2012",
+      "entry_type": "article",
+      "title": "THE OBSERVED PROPERTIES OF DWARF GALAXIES IN AND AROUND THE LOCAL GROUP",
+      "authors": [
+        {
+          "family": "McConnachie",
+          "given": "Alan W."
+        }
+      ],
+      "year": 2012,
+      "journal": "The Astronomical Journal",
+      "volume": "144",
+      "pages": "4",
+      "doi": "10.1088/0004-6256/144/1/4",
+      "url": "https://doi.org/10.1088/0004-6256/144/1/4",
+      "metadata_source": "https://api.crossref.org/works/10.1088%2F0004-6256%2F144%2F1%2F4",
+      "metadata_sha256": "0a3dc7d8ce001f3b954e0f63c6ee77478490d89ed0e9ae66bdf89d9c993d2112",
+      "retrieved_utc": "2026-09-12T15:41:09.994200+00:00"
+    },
+    {
+      "key": "hayashi2015",
+      "entry_type": "article",
+      "title": "STRUCTURAL PROPERTIES OF NON-SPHERICAL DARK HALOS IN MILKY WAY AND ANDROMEDA DWARF SPHEROIDAL GALAXIES",
+      "authors": [
+        {
+          "family": "Hayashi",
+          "given": "Kohei"
+        },
+        {
+          "family": "Chiba",
+          "given": "Masashi"
+        }
+      ],
+      "year": 2015,
+      "journal": "The Astrophysical Journal",
+      "volume": "810",
+      "pages": "22",
+      "doi": "10.1088/0004-637x/810/1/22",
+      "url": "https://doi.org/10.1088/0004-637x/810/1/22",
+      "metadata_source": "https://api.crossref.org/works/10.1088/0004-637X/810/1/22",
+      "metadata_sha256": "296da3502eba42640413e75e3d9d0b350576117e9ca1f388e1e89a795d830ed3",
+      "retrieved_utc": "2026-09-12T15:45:04.594637+00:00"
+    },
+    {
+      "key": "ullio2016",
+      "entry_type": "article",
+      "title": "A critical reassessment of particle Dark Matter limits from dwarf satellites",
+      "authors": [
+        {
+          "family": "Ullio",
+          "given": "Piero"
+        },
+        {
+          "family": "Valli",
+          "given": "Mauro"
+        }
+      ],
+      "year": 2016,
+      "journal": "Journal of Cosmology and Astroparticle Physics",
+      "volume": "2016",
+      "pages": "025-025",
+      "doi": "10.1088/1475-7516/2016/07/025",
+      "url": "https://doi.org/10.1088/1475-7516/2016/07/025",
+      "metadata_source": "https://api.crossref.org/works/10.1088%2F1475-7516%2F2016%2F07%2F025",
+      "metadata_sha256": "bbdfb33e7a4db12401d8f1aa02e5b1780d5bb0da10a459ff657c8cb42b2be067",
+      "retrieved_utc": "2026-09-12T15:41:10.010759+00:00"
+    },
+    {
+      "key": "foremanmackey2013",
+      "entry_type": "article",
+      "title": "emcee : The MCMC Hammer",
+      "authors": [
+        {
+          "family": "Foreman-Mackey",
+          "given": "Daniel"
+        },
+        {
+          "family": "Hogg",
+          "given": "David W."
+        },
+        {
+          "family": "Lang",
+          "given": "Dustin"
+        },
+        {
+          "family": "Goodman",
+          "given": "Jonathan"
+        }
+      ],
+      "year": 2013,
+      "journal": "Publications of the Astronomical Society of the Pacific",
+      "volume": "125",
+      "pages": "306-312",
+      "doi": "10.1086/670067",
+      "url": "https://doi.org/10.1086/670067",
+      "metadata_source": "https://api.crossref.org/works/10.1086/670067",
+      "metadata_sha256": "b9faddf50b2123cce64fea34f65bb3dc249b6ec86251cf97b6144a87083ac6e6",
+      "retrieved_utc": "2026-09-12T15:45:07.168423+00:00"
+    },
+    {
+      "key": "kumar2019",
+      "entry_type": "article",
+      "title": "ArviZ a unified library for exploratory analysis of Bayesian models in Python",
+      "authors": [
+        {
+          "family": "Kumar",
+          "given": "Ravin"
+        },
+        {
+          "family": "Carroll",
+          "given": "Colin"
+        },
+        {
+          "family": "Hartikainen",
+          "given": "Ari"
+        },
+        {
+          "family": "Martin",
+          "given": "Osvaldo"
+        }
+      ],
+      "year": 2019,
+      "journal": "Journal of Open Source Software",
+      "volume": "4",
+      "pages": "1143",
+      "doi": "10.21105/joss.01143",
+      "url": "https://doi.org/10.21105/joss.01143",
+      "metadata_source": "https://api.crossref.org/works/10.21105%2Fjoss.01143",
+      "metadata_sha256": "d4b5f85640b6c0e8dfbe0ecdcc8fec05121803fb863dc0b6d2a21c5f9f27a99e",
+      "retrieved_utc": "2026-09-12T15:41:10.564088+00:00"
+    },
+    {
+      "key": "vehtari2021",
+      "entry_type": "article",
+      "title": "Rank-normalization, folding, and localization: An improved R-hat for assessing convergence of MCMC (with Discussion)",
+      "authors": [
+        {
+          "family": "Vehtari",
+          "given": "Aki"
+        },
+        {
+          "family": "Gelman",
+          "given": "Andrew"
+        },
+        {
+          "family": "Simpson",
+          "given": "Daniel"
+        },
+        {
+          "family": "Carpenter",
+          "given": "Bob"
+        },
+        {
+          "family": "Bürkner",
+          "given": "Paul-Christian"
+        }
+      ],
+      "year": 2021,
+      "journal": "Bayesian Analysis",
+      "volume": "16",
+      "pages": null,
+      "doi": "10.1214/20-ba1221",
+      "url": "https://doi.org/10.1214/20-ba1221",
+      "metadata_source": "https://api.crossref.org/works/10.1214/20-BA1221",
+      "metadata_sha256": "ad4fa0459d568b9727c93932c9f962843d9edb06f7d8ac20f1b88ff1a1df92cb",
+      "retrieved_utc": "2026-09-12T15:45:09.737501+00:00"
+    },
+    {
+      "key": "plummer1911",
+      "entry_type": "article",
+      "title": "On the Problem of Distribution in Globular Star Clusters: (Plate 8.)",
+      "authors": [
+        {
+          "family": "Plummer",
+          "given": "H. C."
+        }
+      ],
+      "year": 1911,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "71",
+      "pages": "460-470",
+      "doi": "10.1093/mnras/71.5.460",
+      "url": "https://doi.org/10.1093/mnras/71.5.460",
+      "metadata_source": "https://api.crossref.org/works/10.1093%2Fmnras%2F71.5.460",
+      "metadata_sha256": "7968ae501f9f8e843e3650bbeacde1265afd2ce41b857b3a579fefbb8e0ee64e",
+      "retrieved_utc": "2026-09-12T15:41:10.550445+00:00"
+    },
+    {
+      "key": "zhao1996",
+      "entry_type": "article",
+      "title": "Analytical models for galactic nuclei",
+      "authors": [
+        {
+          "family": "Zhao",
+          "given": "H."
+        }
+      ],
+      "year": 1996,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "278",
+      "pages": "488-496",
+      "doi": "10.1093/mnras/278.2.488",
+      "url": "https://doi.org/10.1093/mnras/278.2.488",
+      "metadata_source": "https://api.crossref.org/works/10.1093/mnras/278.2.488",
+      "metadata_sha256": "523528fcb7e57ce052b83c0a4c332df7a840a7de857001eda553d91a34876cfd",
+      "retrieved_utc": "2026-09-12T15:45:12.291042+00:00"
+    },
+    {
+      "key": "navarro1997",
+      "entry_type": "article",
+      "title": "A Universal Density Profile from Hierarchical Clustering",
+      "authors": [
+        {
+          "family": "Navarro",
+          "given": "Julio F."
+        },
+        {
+          "family": "Frenk",
+          "given": "Carlos S."
+        },
+        {
+          "family": "White",
+          "given": "Simon D. M."
+        }
+      ],
+      "year": 1997,
+      "journal": "The Astrophysical Journal",
+      "volume": "490",
+      "pages": "493-508",
+      "doi": "10.1086/304888",
+      "url": "https://doi.org/10.1086/304888",
+      "metadata_source": "https://api.crossref.org/works/10.1086/304888",
+      "metadata_sha256": "cc6625b857e518f2a73cbd056deb89aad934a57e85a82ba6540ca92d28d85929",
+      "retrieved_utc": "2026-09-12T15:45:14.829501+00:00"
+    },
+    {
+      "key": "evans2016",
+      "entry_type": "article",
+      "title": "Simple J-factors and D-factors for indirect dark matter detection",
+      "authors": [
+        {
+          "family": "Evans",
+          "given": "N. W."
+        },
+        {
+          "family": "Sanders",
+          "given": "J. L."
+        },
+        {
+          "family": "Geringer-Sameth",
+          "given": "Alex"
+        }
+      ],
+      "year": 2016,
+      "journal": "Physical Review D",
+      "volume": "93",
+      "pages": "103512",
+      "doi": "10.1103/physrevd.93.103512",
+      "url": "https://doi.org/10.1103/physrevd.93.103512",
+      "metadata_source": "https://api.crossref.org/works/10.1103%2FPhysRevD.93.103512",
+      "metadata_sha256": "112fd6f97b35ebc4dabb7a4c7fce2231adb5643a864a6c64c07c1a40d352d4f5",
+      "retrieved_utc": "2026-09-12T15:41:11.107833+00:00"
+    },
+    {
+      "key": "vasiliev2019",
+      "entry_type": "article",
+      "title": "AGAMA: action-based galaxy modelling architecture",
+      "authors": [
+        {
+          "family": "Vasiliev",
+          "given": "Eugene"
+        }
+      ],
+      "year": 2019,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "482",
+      "pages": "1525-1544",
+      "doi": "10.1093/mnras/sty2672",
+      "url": "https://doi.org/10.1093/mnras/sty2672",
+      "metadata_source": "https://api.crossref.org/works?query.title=AGAMA+Action+based+galaxy+modelling+architecture&rows=1",
+      "metadata_sha256": "faf5f993a2ae06643a619cd5747e7a806f42539c2f3015ce37d200dfce266ddb",
+      "retrieved_utc": "2026-09-12T15:41:12.766570+00:00"
+    },
+    {
+      "key": "readsteger2017",
+      "entry_type": "article",
+      "title": "How to break the density-anisotropy degeneracy in spherical stellar systems",
+      "authors": [
+        {
+          "family": "Read",
+          "given": "J. I."
+        },
+        {
+          "family": "Steger",
+          "given": "P."
+        }
+      ],
+      "year": 2017,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "471",
+      "pages": "4541-4558",
+      "doi": "10.1093/mnras/stx1798",
+      "url": "https://doi.org/10.1093/mnras/stx1798",
+      "metadata_source": "https://api.crossref.org/works/10.1093/mnras/stx1798",
+      "metadata_sha256": "6324e83d544f524fb1058f2b23672aea90c0a3ab0facb08d316d37cfab1dc37f",
+      "retrieved_utc": "2026-09-12T15:45:17.382755+00:00"
+    },
+    {
+      "key": "bonnivard2016",
+      "entry_type": "article",
+      "title": "CLUMPY : Jeans analysis,γ-ray andνfluxes from dark matter (sub-)structures",
+      "authors": [
+        {
+          "family": "Bonnivard",
+          "given": "Vincent"
+        },
+        {
+          "family": "Hütten",
+          "given": "Moritz"
+        },
+        {
+          "family": "Nezri",
+          "given": "Emmanuel"
+        },
+        {
+          "family": "Charbonnier",
+          "given": "Aldée"
+        },
+        {
+          "family": "Combet",
+          "given": "Céline"
+        },
+        {
+          "family": "Maurin",
+          "given": "David"
+        }
+      ],
+      "year": 2016,
+      "journal": "Computer Physics Communications",
+      "volume": "200",
+      "pages": "336-349",
+      "doi": "10.1016/j.cpc.2015.11.012",
+      "url": "https://doi.org/10.1016/j.cpc.2015.11.012",
+      "metadata_source": "https://api.crossref.org/works/10.1016/j.cpc.2015.11.012",
+      "metadata_sha256": "55ed8ae0c99159256c4508a279d0143ec70aa69ab360eca72215e377c99270ef",
+      "retrieved_utc": "2026-09-12T15:45:19.954933+00:00"
+    },
+    {
+      "key": "hayashi2016",
+      "entry_type": "article",
+      "title": "Dark matter annihilation and decay from non-spherical dark halos in galactic dwarf satellites",
+      "authors": [
+        {
+          "family": "Hayashi",
+          "given": "Kohei"
+        },
+        {
+          "family": "Ichikawa",
+          "given": "Koji"
+        },
+        {
+          "family": "Matsumoto",
+          "given": "Shigeki"
+        },
+        {
+          "family": "Ibe",
+          "given": "Masahiro"
+        },
+        {
+          "family": "Ishigaki",
+          "given": "Miho N."
+        },
+        {
+          "family": "Sugai",
+          "given": "Hajime"
+        }
+      ],
+      "year": 2016,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "461",
+      "pages": "2914-2928",
+      "doi": "10.1093/mnras/stw1457",
+      "url": "https://doi.org/10.1093/mnras/stw1457",
+      "metadata_source": "https://api.crossref.org/works/10.1093/mnras/stw1457",
+      "metadata_sha256": "75054bb8918d08acab0c377a8835884ed520ed5b7ae6c266befff9580cb9e730",
+      "retrieved_utc": "2026-09-12T15:45:22.490941+00:00"
+    },
+    {
+      "key": "wang2022auriga",
+      "entry_type": "article",
+      "title": "Is the Core-cusp Problem a Matter of Perspective? Jeans Anisotropic Modeling against Numerical Simulations",
+      "authors": [
+        {
+          "family": "Wang",
+          "given": "Wenting"
+        },
+        {
+          "family": "Zhu",
+          "given": "Ling"
+        },
+        {
+          "family": "Li",
+          "given": "Zhaozhou"
+        },
+        {
+          "family": "Chen",
+          "given": "Yang"
+        },
+        {
+          "family": "Han",
+          "given": "Jiaxin"
+        },
+        {
+          "family": "He",
+          "given": "Feihong"
+        },
+        {
+          "family": "Yang",
+          "given": "Xiaohu"
+        },
+        {
+          "family": "Jing",
+          "given": "Yipeng"
+        },
+        {
+          "family": "Frenk",
+          "given": "Carlos"
+        },
+        {
+          "family": "Nie",
+          "given": "Jialu"
+        },
+        {
+          "family": "Tian",
+          "given": "Hao"
+        },
+        {
+          "family": "Liu",
+          "given": "Chao"
+        },
+        {
+          "family": "Cao",
+          "given": "Yanan"
+        },
+        {
+          "family": "Qiu",
+          "given": "Xiaoqing"
+        },
+        {
+          "family": "Helly",
+          "given": "John"
+        },
+        {
+          "family": "Grand",
+          "given": "Robert J. J."
+        },
+        {
+          "family": "Gomez",
+          "given": "Facundo A."
+        }
+      ],
+      "year": 2022,
+      "journal": "The Astrophysical Journal",
+      "volume": "941",
+      "pages": "108",
+      "doi": "10.3847/1538-4357/ac9b19",
+      "url": "https://doi.org/10.3847/1538-4357/ac9b19",
+      "metadata_source": "https://api.crossref.org/works?query.title=Is+the+Core+cusp+Problem+a+Matter+of+Perspective+Jeans+Anisotropic+Modeling+against+Numerical+Simulations&rows=1",
+      "metadata_sha256": "abf1ddcf2e11d7d16f0daf6d5f031fbf44078b9b4a2f7a29f319dcf4b9f1c228",
+      "retrieved_utc": "2026-09-12T15:41:12.961964+00:00"
+    },
+    {
+      "key": "baesvanhese2007",
+      "entry_type": "article",
+      "title": "Dynamical models with a general anisotropy profile",
+      "authors": [
+        {
+          "family": "Baes",
+          "given": "M."
+        },
+        {
+          "family": "Van Hese",
+          "given": "E."
+        }
+      ],
+      "year": 2007,
+      "journal": "Astronomy &amp; Astrophysics",
+      "volume": "471",
+      "pages": "419-432",
+      "doi": "10.1051/0004-6361:20077672",
+      "url": "https://doi.org/10.1051/0004-6361:20077672",
+      "metadata_source": "https://api.crossref.org/works/10.1051/0004-6361%3A20077672",
+      "metadata_sha256": "73110ec8f4ee26f0695ab24f876b0b2ba1507bda0156a34add70a795c144f5ea",
+      "retrieved_utc": "2026-09-12T15:45:25.048603+00:00"
+    },
+    {
+      "key": "vitral2020",
+      "entry_type": "article",
+      "title": "A precise analytical approximation for the deprojection of the Sérsic profile",
+      "authors": [
+        {
+          "family": "Vitral",
+          "given": "Eduardo"
+        },
+        {
+          "family": "Mamon",
+          "given": "Gary A."
+        }
+      ],
+      "year": 2020,
+      "journal": "Astronomy &amp; Astrophysics",
+      "volume": "635",
+      "pages": "A20",
+      "doi": "10.1051/0004-6361/201937202",
+      "url": "https://doi.org/10.1051/0004-6361/201937202",
+      "metadata_source": "https://api.crossref.org/works?query.title=A+precise+analytical+approximation+for+the+deprojection+of+the+Sersic+profile&rows=1",
+      "metadata_sha256": "c0109b4a7472ae7c2142722659b1e261da9db69d82edcea18ec829d4f8a868b1",
+      "retrieved_utc": "2026-09-12T15:41:13.271251+00:00"
+    },
+    {
+      "key": "vitral2021",
+      "entry_type": "article",
+      "title": "Does NGC 6397 contain an intermediate-mass black hole or a more diffuse inner subcluster?",
+      "authors": [
+        {
+          "family": "Vitral",
+          "given": "Eduardo"
+        },
+        {
+          "family": "Mamon",
+          "given": "Gary A."
+        }
+      ],
+      "year": 2021,
+      "journal": "Astronomy &amp; Astrophysics",
+      "volume": "646",
+      "pages": "A63",
+      "doi": "10.1051/0004-6361/202039650",
+      "url": "https://doi.org/10.1051/0004-6361/202039650",
+      "metadata_source": "https://api.crossref.org/works/10.1051%2F0004-6361%2F202039650",
+      "metadata_sha256": "6488ade695a3474e14284e0875738328d949b60a2296578e30dc03578bc82ba2",
+      "retrieved_utc": "2026-09-12T15:57:46.875002+00:00"
+    },
+    {
+      "key": "watkins2013",
+      "entry_type": "article",
+      "title": "Discrete dynamical models of ω Centauri",
+      "authors": [
+        {
+          "family": "Watkins",
+          "given": "L. L."
+        },
+        {
+          "family": "van de Ven",
+          "given": "G."
+        },
+        {
+          "family": "den Brok",
+          "given": "M."
+        },
+        {
+          "family": "van den Bosch",
+          "given": "R. C. E."
+        }
+      ],
+      "year": 2013,
+      "journal": "Monthly Notices of the Royal Astronomical Society",
+      "volume": "436",
+      "pages": "2598-2615",
+      "doi": "10.1093/mnras/stt1756",
+      "url": "https://doi.org/10.1093/mnras/stt1756",
+      "metadata_source": "https://api.crossref.org/works/10.1093%2Fmnras%2Fstt1756",
+      "metadata_sha256": "f7c9a2a27d2dcbcbb8be29fd03264f6ca3d40bb2fae742bb0a604e6cabeaf273",
+      "retrieved_utc": "2026-09-12T15:57:47.415409+00:00"
+    },
+    {
+      "key": "numpyro2019",
+      "entry_type": "misc",
+      "title": "Composable Effects for Flexible and Accelerated Probabilistic Programming in NumPyro",
+      "authors": [
+        {
+          "family": "Phan",
+          "given": "Du"
+        },
+        {
+          "family": "Pradhan",
+          "given": "Neeraj"
+        },
+        {
+          "family": "Jankowiak",
+          "given": "Martin"
+        }
+      ],
+      "year": 2019,
+      "eprint": "1912.11554",
+      "archivePrefix": "arXiv",
+      "url": "https://arxiv.org/abs/1912.11554",
+      "metadata_source": "https://num.pyro.ai/en/stable/getting_started.html"
+    },
+    {
+      "key": "hoffman2014",
+      "entry_type": "article",
+      "title": "The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo",
+      "authors": [
+        {
+          "family": "Hoffman",
+          "given": "Matthew D."
+        },
+        {
+          "family": "Gelman",
+          "given": "Andrew"
+        }
+      ],
+      "year": 2014,
+      "journal": "Journal of Machine Learning Research",
+      "volume": "15",
+      "pages": "1593-1623",
+      "url": "https://jmlr.org/papers/v15/hoffman14a.html",
+      "metadata_source": "https://jmlr.org/papers/v15/hoffman14a.html"
+    },
+    {
+      "key": "jax2018",
+      "entry_type": "misc",
+      "title": "JAX: composable transformations of Python+NumPy programs",
+      "authors": [
+        {
+          "family": "Bradbury",
+          "given": "James"
+        },
+        {
+          "family": "Frostig",
+          "given": "Roy"
+        },
+        {
+          "family": "Hawkins",
+          "given": "Peter"
+        },
+        {
+          "family": "Johnson",
+          "given": "Matthew James"
+        },
+        {
+          "family": "Leary",
+          "given": "Chris"
+        },
+        {
+          "family": "Maclaurin",
+          "given": "Dougal"
+        },
+        {
+          "family": "Necula",
+          "given": "George"
+        },
+        {
+          "family": "Paszke",
+          "given": "Adam"
+        },
+        {
+          "family": "VanderPlas",
+          "given": "Jake"
+        },
+        {
+          "family": "Wanderman-Milne",
+          "given": "Skye"
+        },
+        {
+          "family": "Zhang",
+          "given": "Qiao"
+        }
+      ],
+      "year": 2018,
+      "url": "https://github.com/jax-ml/jax",
+      "note": "Version 0.9.1 used in the locked CPU validation environment",
+      "metadata_source": "https://github.com/jax-ml/jax/blob/jax-v0.9.1/README.md"
+    }
+  ]
+}

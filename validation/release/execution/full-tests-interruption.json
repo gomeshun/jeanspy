@@ -1,0 +1,17 @@
+{
+  "time_utc": "2026-09-12T15:59:21.378151+00:00",
+  "pid": 2744400,
+  "birth_ticks": "114769452",
+  "argv": [
+    "/tmp/jeanspy-release-env/bin/python",
+    "-m",
+    "pytest",
+    "--run-mcmc",
+    "-q"
+  ],
+  "cwd": "/tmp/jeanspy-release-docs",
+  "stat": "2744400 (python) S 2744396 2744395 2744395 0 -1 4194304 1118731 82 0 0 12315 955 0 0 20 0 529 0 114769452 41039769600 332234 18446744073709551615 4333568 29544804 140729978549376 0 0 0 0 16781312 134218986 0 0 0 17 84 0 0 0 0 0 23068672 29544804 882884608 140729978556706 140729978556766 140729978556766 140729978560468 0\n",
+  "progress_passed": 110,
+  "inferred_current_test": "test_real_axisymmetric_nuts_checkpoint_and_identity[zarr]",
+  "reason": "No output progress for over 8 minutes; all 529 threads in futex/epoll wait at inspection. Location inferred from deterministic collection order; no stack evidence yet. Terminate this identified run and diagnose targeted test with faulthandler and bounded CPU affinity."
+}

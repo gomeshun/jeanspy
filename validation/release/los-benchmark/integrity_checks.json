@@ -1,0 +1,31 @@
+{
+  "scope": "Check the declared case grid, complete repetitions and source identity against committed frozen inputs; this is not a repeated timing experiment.",
+  "checks": [
+    {
+      "role": "numpy",
+      "complete_unique_rows": 27,
+      "passed_rows": 27,
+      "same_frozen_runner_protocol_and_runtime": true
+    },
+    {
+      "role": "jax-cpu",
+      "complete_unique_rows": 27,
+      "passed_rows": 27,
+      "same_frozen_runner_protocol_and_runtime": true
+    },
+    {
+      "role": "jax-gpu",
+      "complete_unique_rows": 27,
+      "passed_rows": 27,
+      "same_frozen_runner_protocol_and_runtime": true
+    },
+    {
+      "role": "jam",
+      "complete_unique_rows": 18,
+      "passed_rows": 17,
+      "same_frozen_runner_protocol_and_runtime": true
+    }
+  ],
+  "independent_reference_status": "completed",
+  "new_supervisor_budget_tests": "13 passed; tests cover cumulative limits, bounded processes and missing archive source payloads."
+}

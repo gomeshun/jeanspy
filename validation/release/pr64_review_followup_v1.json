@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "checked_utc": "2026-09-12T21:54:00.836223+00:00",
+  "reviewed_pr": 64,
+  "reviewed_source_commit": "130440eb31fe02732e6e9fd777c2892a818e5ed9",
+  "copilot_review_commit": "12615b6e593efb1f094f2c7b1d0738f011e99e84",
+  "copilot_submitted_utc": "2026-09-12T16:46:00Z",
+  "findings": [
+    {
+      "topic": "immutable release source links",
+      "disposition": "fixed",
+      "evidence": "docs.yml exports the checked-out commit as JEANSPY_DOCS_REF for release events. The identity shell step was checked for pull_request, push and release environments."
+    },
+    {
+      "topic": "sdist documentation coverage",
+      "disposition": "fixed",
+      "evidence": "The archive checker requires intended documentation source suffixes and RELEASE.md, excluding docs/_build and regenerated docs/source/api. Missing config, bibliography, template and figure cases are regression-tested."
+    },
+    {
+      "topic": "JAM warning diagnostic bounds",
+      "disposition": "fixed",
+      "evidence": "A parent process applies a 120-second deadline; the worker sets the 16-GiB address-space limit before numerical imports. Required single-thread settings fail fast."
+    },
+    {
+      "topic": "JAM partial diagnostic preservation",
+      "disposition": "fixed",
+      "evidence": "Configuration records are saved before and after each call. Exceptions, warnings and source-hash read failures are retained. Parent timeout/early-exit finalization preserves completed moments."
+    },
+    {
+      "topic": "classical factor input shapes",
+      "disposition": "fixed_in_docstrings",
+      "evidence": "Base DMModel quadratures require scalar geometry. NFW analytic simple/Evans methods support broadcasting. Executable AST is unchanged after removing docstrings; existing factor tests pass."
+    },
+    {
+      "topic": "spherical variance bounds",
+      "disposition": "already_fixed_before_this_followup",
+      "evidence": "Current JeansLikelihoodModel docstring distinguishes nonfinite/negative rejection from clipping nonnegative finite values."
+    },
+    {
+      "topic": "bibliography HTML entities",
+      "disposition": "already_fixed_before_this_followup",
+      "evidence": "generate_bibliography.tex HTML-decodes the string before character-by-character TeX escaping."
+    },
+    {
+      "topic": "version manifest URL depth",
+      "disposition": "not_reproduced_no_change",
+      "evidence": "PyData Sphinx Theme 0.21.0 fetchVersionSwitcherJSON resolves relative URLs from the document root derived by getCurrentUrlPath. Nested API/tutorial pages displayed the dev switcher and preserved page paths in local browser checks."
+    }
+  ],
+  "validation": {
+    "focused_regressions": {
+      "passed": 11,
+      "log_sha256": "c1b9970d9ba1306b6beaf0105d2da0b7d1bf8b0d24750646d0a8fcfe102621cf"
+    },
+    "existing_jfactor_tests": {
+      "passed": 8,
+      "log_sha256": "92fff42173aae7b21c3151a33bc89d6c31dc53941e446a708af4b71653c8f5f4"
+    },
+    "sphinx": {
+      "status": "passed_warnings_as_errors",
+      "log_sha256": "3b5c06ad216ddccda280ea973a379974d923bdcebc96dab5229eb7b63b99274a"
+    },
+    "archive_check": [
+      {
+        "artifact": "jeanspy-0.1.0-py3-none-any.whl",
+        "bytes": 133147,
+        "sha256": "d6e572043f3cb534c5a766d942f25fa041365db17c3bf11078972c0ad62ea732",
+        "files": 33,
+        "verified_source_files": 28
+      },
+      {
+        "artifact": "jeanspy-0.1.0.tar.gz",
+        "bytes": 533718,
+        "sha256": "a3e4212a3ba11f8e82d0f2609a93fcbb9142a7043e3de44d6dbc0a54bae9947f",
+        "files": 187,
+        "verified_source_files": 175
+      }
+    ],
+    "internal_links": {
+      "html_pages": 129,
+      "local_links_checked": 13458,
+      "broken_links": []
+    }
+  },
+  "scientific_boundaries": [
+    "No JAM numerical experiment was rerun for these execution-wrapper checks. The original JAM report and warning diagnostic are unchanged.",
+    "The ongoing joint-inference campaign uses a separate unchanged runtime tree.",
+    "No merge, Pages publication, PyPI upload or submission was performed."
+  ],
+  "preserved_report_sha256": {
+    "validation/release/jam9_plummer_v1.json": "bfc31cc46d7bef6fb37e459bc5e1ecb7aa5b5bb6f5a094c6a0adf1ffed3953e5",
+    "validation/release/jam9_warning_diagnostic.json": "fcc83f65254f82f9d9e48db407bf527e8c488956bac4442538d19be4663d6dd6"
+  }
+}

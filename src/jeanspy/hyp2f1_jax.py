@@ -14,6 +14,28 @@ from jax.scipy.special import gammaln, gammasgn, logsumexp
 
 @dataclass(frozen=True)
 class GaussLegendre01:
+    r"""Store a fixed quadrature rule on the unit interval.
+
+    Notes
+    -----
+    **Inputs and units.** x and w are matching JAX arrays of nodes and weights,
+    normally shape (n,).
+
+    **Returns and shape.** Frozen dataclass with x/w fields; no automatic node
+    generation occurs in this constructor.
+
+    **Validity.** Nodes should lie in [0,1] and weights correspond to the chosen
+    integration rule.
+
+    **Errors.** The container itself does not validate the mathematical rule.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Nodes are treated as constants by normal solver use.
+
+    **Examples.** ``examples/docs_numerics.py``
+    """
     x: jnp.ndarray
     w: jnp.ndarray
 
@@ -39,6 +61,28 @@ _GAUSS_128 = _gauss_legendre_01(128)
 
 @dataclass(frozen=True)
 class TanhSinh01:
+    r"""Store a fixed quadrature rule on the unit interval.
+
+    Notes
+    -----
+    **Inputs and units.** x and w are matching JAX arrays of nodes and weights,
+    normally shape (n,).
+
+    **Returns and shape.** Frozen dataclass with x/w fields; no automatic node
+    generation occurs in this constructor.
+
+    **Validity.** Nodes should lie in [0,1] and weights correspond to the chosen
+    integration rule.
+
+    **Errors.** The container itself does not validate the mathematical rule.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Nodes are treated as constants by normal solver use.
+
+    **Examples.** ``examples/docs_numerics.py``
+    """
     x: jnp.ndarray
     w: jnp.ndarray
 
@@ -119,7 +163,7 @@ _GK15_WG0 = jnp.asarray(0.4179591836734694)
 
 
 def hyp2f1_1b_d_series(b: jax.Array | jnp.ndarray | float, d: jax.Array | jnp.ndarray | float, w: jax.Array | jnp.ndarray | float, *, n_terms: int) -> jnp.ndarray:
-    """Fixed-term series for 2F1(1, b; d; w) with w in [0,1).
+    r"""Fixed-term series for 2F1(1, b; d; w) with w in [0,1).
 
     Implemented via a stable recurrence:
         term_0 = 1
@@ -127,6 +171,29 @@ def hyp2f1_1b_d_series(b: jax.Array | jnp.ndarray | float, d: jax.Array | jnp.nd
         sum = Σ_{n=0}^{N-1} term_n
 
     This is reverse-mode differentiable (static loop bounds).
+
+    Notes
+    -----
+    **Inputs and units.** Dimensionless ``b``, ``d`` and ``w``; ``w`` is in
+    [0,1). The shapes of ``b`` and ``d`` must broadcast to the shape of ``w``.
+    ``n_terms`` is the static term count.
+
+    **Returns and shape.** Approximation to 2F1(1,b;d;w), with the shape of ``w``.
+
+    **Validity.** The denominator ``d`` must avoid nonpositive integer poles.
+    The fixed series converges slowly near w=1; check the chosen term count.
+
+    **Errors.** This helper does not validate the input domain; singular
+    parameters or invalid inputs can produce NaN/inf.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Fixed-loop continuous expressions support autodiff in
+    their valid regions; piecewise thresholds and parameter singularities need
+    checks.
+
+    **Examples.** ``examples/docs_numerics.py``
     """
     w = jnp.asarray(w)
     b = jnp.asarray(b)
@@ -153,7 +220,32 @@ def hyp2f1_1b_d_series(b: jax.Array | jnp.ndarray | float, d: jax.Array | jnp.nd
 
 
 def hyp2f1_1b_3half_series(b: jax.Array | jnp.ndarray | float, w: jax.Array | jnp.ndarray | float, *, n_terms: int = 96) -> jnp.ndarray:
-    """Series approximation for 2F1(1, b; 3/2; w), w in [0,1)."""
+    r"""Series approximation for 2F1(1, b; 3/2; w), w in [0,1).
+
+    Notes
+    -----
+    **Inputs and units.** Dimensionless ``b`` and ``w``; ``w`` is in [0,1).
+    The shape of ``b`` must broadcast to the shape of ``w``. ``n_terms`` is the
+    static term count; the denominator is fixed at 3/2.
+
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the shape of
+    ``w``.
+
+    **Validity.** The fixed series converges slowly near w=1; check the chosen
+    term count or use the combined dispatcher.
+
+    **Errors.** This helper does not validate the input domain; invalid inputs
+    can produce nonfinite or inaccurate values.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Fixed-loop continuous expressions support autodiff in
+    their valid regions; piecewise thresholds and parameter singularities need
+    checks.
+
+    **Examples.** ``examples/docs_numerics.py``
+    """
     return hyp2f1_1b_d_series(b, 1.5, w, n_terms=n_terms)
 
 
@@ -164,7 +256,7 @@ def hyp2f1_1b_3half_quad(
     n_points: int = 128,
     quad_rule: str = "tanh_sinh",
 ) -> jnp.ndarray:
-    """Numerically stable evaluation of 2F1(1, b; 3/2; w) for w in [0, 1).
+    r"""Numerically stable evaluation of 2F1(1, b; 3/2; w) for w in [0, 1).
 
     Uses the Euler integral representation (valid for 0 < b < 3/2):
 
@@ -176,6 +268,32 @@ def hyp2f1_1b_3half_quad(
 
     This avoids the catastrophic cancellation that appears in analytic-continuation
     formulas near b≈1/2 and w≈1, and works well in float32.
+
+    Notes
+    -----
+    **Inputs and units.** Dimensionless scalar or broadcastable array ``b``
+    and ``w``, with 0<b<3/2 and 0<=w<1. ``quad_rule`` is a static rule choice;
+    ``n_points`` sets the panel count for ``gauss_kronrod`` and is ignored by
+    the precomputed ``tanh_sinh`` rule.
+
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the broadcast
+    shape of ``b`` and ``w``.
+
+    **Validity.** The Euler integral requires 0<b<3/2. Fixed quadrature can
+    lose accuracy near the domain boundaries; check convergence.
+
+    **Errors.** Unsupported ``quad_rule`` values raise ValueError. Numerical
+    inputs outside the integral domain are not rejected explicitly and can
+    produce nonfinite or inaccurate values.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Fixed-loop continuous expressions support autodiff in
+    their valid regions; piecewise thresholds and parameter singularities need
+    checks.
+
+    **Examples.** ``examples/docs_numerics.py``
     """
     b = jnp.asarray(b)
     w = jnp.asarray(w)
@@ -281,7 +399,7 @@ def hyp2f1_1b_3half_asymptotic(
     n_terms_regular: int = 3,
     b_half_tol: float = 1e-6,
 ) -> jnp.ndarray:
-    """Asymptotic evaluation of 2F1(1,b;3/2;w) for w close to 1.
+    r"""Asymptotic evaluation of 2F1(1,b;3/2;w) for w close to 1.
 
     Uses the analytic continuation around ``w=1``:
 
@@ -298,6 +416,32 @@ def hyp2f1_1b_3half_asymptotic(
     valid for negative non-integer ``b`` as well; exact non-positive integers and
     negative half-integers are handled by the ``auto`` selector and should stay on
     the power-series path.
+
+    Notes
+    -----
+    **Inputs and units.** Dimensionless ``b`` and ``w``; the shape of ``b``
+    must broadcast to the shape of ``w``. ``n_terms_regular`` is the static
+    regular-series term count; ``b_half_tol`` selects the b=1/2 limit.
+
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the shape of
+    ``w``.
+
+    **Validity.** Use sufficiently close to w=1 within 0<w<1, away from poles
+    of the continuation coefficients except for the implemented b=1/2 limit.
+    The helper clips ``w`` inside the floating-point interval (0,1); clipping
+    does not extend the asymptotic approximation's valid region.
+
+    **Errors.** Domain and convergence are not validated; invalid inputs can
+    produce nonfinite or inaccurate values.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Fixed-loop continuous expressions support autodiff in
+    their valid regions; piecewise thresholds and parameter singularities need
+    checks.
+
+    **Examples.** ``examples/docs_numerics.py``
     """
     b_arr = jnp.asarray(b)
     w_arr = jnp.asarray(w)
@@ -362,7 +506,7 @@ def hyp2f1_1b_3half(
     quad_rule: str = "tanh_sinh",
     asym_n_terms: int = 20,
 ) -> jnp.ndarray:
-    """2F1(1,b;3/2;w) specialized helper.
+    r"""2F1(1,b;3/2;w) specialized helper.
 
     Parameters
     ----------
@@ -405,6 +549,31 @@ def hyp2f1_1b_3half(
     - Intended domain for this project is w in [0,1).
     - The "auto" choice is designed specifically to handle the numerically difficult
       region around b≈1/2 and w≈1.
+
+    **Inputs and units.** Dimensionless ``b`` and ``w``, with 0<=w<1. For
+    the series, asymptotic and auto paths, the shape of ``b`` must broadcast to
+    the shape of ``w``; the quad path also supports full array broadcasting.
+    ``method``, ``n_terms``, ``n_quad``, ``quad_rule``, ``asym_n_terms`` and the
+    selection thresholds above are static controls. The denominator is 3/2.
+
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the shape of
+    ``w`` except for the quad path's broadcast output.
+
+    **Validity.** The Euler integral branch requires 0<b<3/2. The auto selector
+    routes around continuation poles and uses the power series where needed;
+    accuracy still depends on the selected terms, rule and thresholds.
+
+    **Errors.** Unsupported methods or quadrature rules raise ValueError when
+    selected. Out-of-domain values can produce nonfinite or inaccurate results.
+
+    **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
+    import.
+
+    **Differentiation.** Fixed-loop continuous expressions support autodiff in
+    their valid regions; piecewise thresholds and parameter singularities need
+    checks.
+
+    **Examples.** ``examples/docs_numerics.py``
     """
     b_arr = jnp.asarray(b)
     w_arr = jnp.asarray(w)

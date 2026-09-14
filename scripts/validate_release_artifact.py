@@ -59,7 +59,7 @@ def validate_base(readme: Path) -> None:
     exec(compile(quick_start, str(readme), "exec"), namespace, namespace)
 
     data_dir = files("jeanspy").joinpath("data")
-    for filename in ("coeff_dens.csv", "sersic_log10n_log10bn.csv"):
+    for filename in ("coeff_dens.csv", "coeff_dens_vm20bis.csv", "sersic_log10n_log10bn.csv"):
         resource = data_dir.joinpath(filename)
         if not resource.is_file():
             raise AssertionError(f"packaged data file is missing: {filename}")
@@ -72,6 +72,9 @@ def validate_base(readme: Path) -> None:
     coeff_np = np.asarray(sersic.coeff, dtype=float)
     if not np.isfinite(coeff_np).all():
         raise AssertionError("SersicModel coeff array contained non-finite values")
+    density = sersic.density_3d(np.array([20., 200.]), method="vm20bis")
+    if not np.all(np.isfinite(density) & (density > 0)):
+        raise AssertionError("Packaged VM20bis Sersic deprojection was nonphysical")
 
     from jeanspy.model import AxisymmetricDSphModel, AxisymmetricDSphEstimationModel
     import pandas as pd

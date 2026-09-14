@@ -1,0 +1,124 @@
+Traceback (most recent call last):
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 103, in main
+    try:evaluate(kind,count,protocol,row,persist)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 43, in evaluate
+    first,np_value=elapsed(numpy_fn);row['numpy_first_prediction_seconds']=first
+                   ^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 20, in elapsed
+    start=time.perf_counter();value=jax.block_until_ready(fn());return time.perf_counter()-start,value
+                                                          ^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 38, in <lambda>
+    numpy_fn=lambda:numpy_model.sigmalos2(host[0],n=case['classical_de_orders'][0],n_kernel=case['classical_n_kernel'],ignore_RuntimeWarning=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 258, in sigmalos2
+    return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 197, in sigmalos2_dequad
+    value = dequad(
+            ^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/dequad.py", line 193, in dequad
+    fs = func(xs)
+         ^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 192, in func
+    return self.integrand_sigmalos2(u, R_array, n_kernel)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 143, in integrand_sigmalos2
+    raise ValueError("Dark-matter enclosed mass must be finite and nonnegative")
+ValueError: Dark-matter enclosed mass must be finite and nonnegative
+
+{"kind": "spherical", "n": 8, "status": "execution_failed", "elapsed": 0.0020070718601346016}
+Traceback (most recent call last):
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 103, in main
+    try:evaluate(kind,count,protocol,row,persist)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 43, in evaluate
+    first,np_value=elapsed(numpy_fn);row['numpy_first_prediction_seconds']=first
+                   ^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 20, in elapsed
+    start=time.perf_counter();value=jax.block_until_ready(fn());return time.perf_counter()-start,value
+                                                          ^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 38, in <lambda>
+    numpy_fn=lambda:numpy_model.sigmalos2(host[0],n=case['classical_de_orders'][0],n_kernel=case['classical_n_kernel'],ignore_RuntimeWarning=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 258, in sigmalos2
+    return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 197, in sigmalos2_dequad
+    value = dequad(
+            ^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/dequad.py", line 193, in dequad
+    fs = func(xs)
+         ^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 192, in func
+    return self.integrand_sigmalos2(u, R_array, n_kernel)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 143, in integrand_sigmalos2
+    raise ValueError("Dark-matter enclosed mass must be finite and nonnegative")
+ValueError: Dark-matter enclosed mass must be finite and nonnegative
+
+{"kind": "spherical", "n": 64, "status": "execution_failed", "elapsed": 0.0030626070220023394}
+Traceback (most recent call last):
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 103, in main
+    try:evaluate(kind,count,protocol,row,persist)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 43, in evaluate
+    first,np_value=elapsed(numpy_fn);row['numpy_first_prediction_seconds']=first
+                   ^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 20, in elapsed
+    start=time.perf_counter();value=jax.block_until_ready(fn());return time.perf_counter()-start,value
+                                                          ^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 38, in <lambda>
+    numpy_fn=lambda:numpy_model.sigmalos2(host[0],n=case['classical_de_orders'][0],n_kernel=case['classical_n_kernel'],ignore_RuntimeWarning=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 258, in sigmalos2
+    return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 197, in sigmalos2_dequad
+    value = dequad(
+            ^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/dequad.py", line 193, in dequad
+    fs = func(xs)
+         ^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 192, in func
+    return self.integrand_sigmalos2(u, R_array, n_kernel)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 143, in integrand_sigmalos2
+    raise ValueError("Dark-matter enclosed mass must be finite and nonnegative")
+ValueError: Dark-matter enclosed mass must be finite and nonnegative
+
+{"kind": "spherical", "n": 256, "status": "execution_failed", "elapsed": 0.010563249001279473}
+Traceback (most recent call last):
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 103, in main
+    try:evaluate(kind,count,protocol,row,persist)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 43, in evaluate
+    first,np_value=elapsed(numpy_fn);row['numpy_first_prediction_seconds']=first
+                   ^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 20, in elapsed
+    start=time.perf_counter();value=jax.block_until_ready(fn());return time.perf_counter()-start,value
+                                                          ^^^^
+  File "/tmp/jeanspy-science/scripts/benchmark_release_performance.py", line 38, in <lambda>
+    numpy_fn=lambda:numpy_model.sigmalos2(host[0],n=case['classical_de_orders'][0],n_kernel=case['classical_n_kernel'],ignore_RuntimeWarning=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 258, in sigmalos2
+    return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 197, in sigmalos2_dequad
+    value = dequad(
+            ^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/dequad.py", line 193, in dequad
+    fs = func(xs)
+         ^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 192, in func
+    return self.integrand_sigmalos2(u, R_array, n_kernel)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/jeanspy-science/src/jeanspy/_classical/solver.py", line 143, in integrand_sigmalos2
+    raise ValueError("Dark-matter enclosed mass must be finite and nonnegative")
+ValueError: Dark-matter enclosed mass must be finite and nonnegative
+
+{"kind": "spherical", "n": 1024, "status": "execution_failed", "elapsed": 0.02425136207602918}
+{"kind": "axisymmetric", "n": 8, "status": "completed_all_accuracy_gates_passed", "elapsed": 17.4960479689762}
+{"kind": "axisymmetric", "n": 64, "status": "completed_all_accuracy_gates_passed", "elapsed": 19.892011858988553}
+{"kind": "axisymmetric", "n": 256, "status": "completed_all_accuracy_gates_passed", "elapsed": 28.927905842196196}
+{"kind": "axisymmetric", "n": 1024, "status": "completed_all_accuracy_gates_passed", "elapsed": 65.5294972229749}

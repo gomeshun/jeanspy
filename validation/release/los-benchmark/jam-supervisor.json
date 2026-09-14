@@ -1,0 +1,41 @@
+{
+  "started_utc": "2026-09-14T01:43:22.872939+00:00",
+  "command": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/tmp/jeanspy-jam9-env/bin/python",
+    "/tmp/jeanspy-docstring-docs/scripts/benchmark_release_los.py",
+    "--role",
+    "jam",
+    "--reference",
+    "/tmp/jeanspy-docstring-docs/validation/release/los-benchmark/reference.json",
+    "--output",
+    "/tmp/jeanspy-docstring-docs/validation/release/los-benchmark/jam.json"
+  ],
+  "cwd": "/tmp/jeanspy-science",
+  "bounds": {
+    "seconds": 1800.0,
+    "host_rss_gib": 16.0,
+    "gpu_gib": null
+  },
+  "status": "completed",
+  "peak_host_rss_bytes": 246108160,
+  "peak_gpu_bytes": 0,
+  "supervisor_sha256": "9d43e5c90863be5bf300ace58614ba086584b103a60161de2832256e1aeab468",
+  "environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "process_identity": {
+    "pid": 7,
+    "birth_ticks": 126967376,
+    "pgrp": 7,
+    "argv": "taskset -c 0-7 /tmp/jeanspy-jam9-env/bin/python /tmp/jeanspy-docstring-docs/scripts/benchmark_release_los.py --role jam --reference /tmp/jeanspy-docstring-docs/validation/release/los-benchmark/reference.json --output /tmp/jeanspy-docstring-docs/validation/release/los-benchmark/jam.json ",
+    "cwd": "/tmp/jeanspy-science"
+  },
+  "elapsed_seconds": 23.526931216940284,
+  "exit_code": 0,
+  "finished_utc": "2026-09-14T01:43:46.399988+00:00",
+  "stdout_sha256": "25a985a5c58ed5b48c4d8e33408771cbb9e927f7118a8a753be7b03d944f050c"
+}

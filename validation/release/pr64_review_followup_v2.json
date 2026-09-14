@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "checked_utc": "2026-09-12T22:11:22.901770+00:00",
+  "reviewed_source_commit": "7785166244bb434643ed4099ad7cb20f5618231c",
+  "previous_review_record": "validation/release/pr64_review_followup_v1.json",
+  "previous_ci": {
+    "head": "c11e571887caa56c455b992403e4f1198d91e426",
+    "success": 42,
+    "skipped": 2,
+    "source": "GitHub PR #64 statusCheckRollup at 2026-09-12T22:07Z"
+  },
+  "changes": [
+    "The internal JAM diagnostic worker requires a running report from its actual parent supervisor and the same script hash; invoking it against an old report is rejected without changing that report.",
+    "Axisymmetric sampling_identity describes its returned metadata dictionary; hashing is performed by the persistence layer.",
+    "The Parameters example is a complete doctest with its import and scalar output."
+  ],
+  "docstring_only_validation": [
+    {
+      "path": "src/jeanspy/_classical/core.py",
+      "before_sha256": "ac1f9b8f3c0ce7f62df9dcbcaa95c7915da9458d92ed7315678ec91272139e2e",
+      "after_sha256": "00ada258d108fd03fd790f174fba75c8168d4c3db77a6e1ee9bf29d4442996fd",
+      "executable_ast_sha256": "50458bba367c0e9f844ef466223cf3cac0f254db4ea82f9b31fded410aabdaef",
+      "executable_ast_unchanged": true
+    },
+    {
+      "path": "src/jeanspy/axisymmetric_inference.py",
+      "before_sha256": "7001ec35a00aac8b3649837bc4fbb78450767ef01d15d8efb2645be4d9f8ae9b",
+      "after_sha256": "6368fd708a5899ebda7aeb9b3a58293f4f606b67fd6c94246b9f1ef5a74a11e8",
+      "executable_ast_sha256": "9921bd3181390cc67511a87f29e8b5423b3efbc8d39d21f362ae13655da86534",
+      "executable_ast_unchanged": true
+    }
+  ],
+  "validation": {
+    "focused_regressions": {
+      "passed": 12,
+      "log_sha256": "31fb7a40ed4a752b17e74ef35880abf760460da79dc3c4dfdb7422f000b9097b"
+    },
+    "sphinx_doctests": {
+      "tests": 4,
+      "failures": 0,
+      "log_sha256": "420435c5e58d14efe1e31821423dc9f562ee72b9ffe0f37f3e661c5ab3ee9235"
+    },
+    "sphinx_html": {
+      "status": "passed_warnings_as_errors",
+      "log_sha256": "84d7c4b530563232e4e08548bfdfafc54af8f04f77067850f2354bc9c7a37d51"
+    },
+    "links": {
+      "html_pages": 130,
+      "local_links_checked": 13487,
+      "broken_links": []
+    },
+    "distribution_contents": [
+      {
+        "artifact": "jeanspy-0.1.0-py3-none-any.whl",
+        "bytes": 133266,
+        "sha256": "3ded379c2faff5cfbe0682e9cb60f16ff7db875bda6717d1ddf69f36bd8b1b0b",
+        "files": 33,
+        "verified_source_files": 28
+      },
+      {
+        "artifact": "jeanspy-0.1.0.tar.gz",
+        "bytes": 533969,
+        "sha256": "39fd23aa9ca39ab0fb144a722dcdb4464651effafd308e462150d92d44c62672",
+        "files": 187,
+        "verified_source_files": 175
+      }
+    ]
+  },
+  "scope": "Execution safety and docstrings only. No scientific experiment was rerun, and no numerical target was changed. The active campaign retains its original source in its separate checkout. Publication and merge remain under the author hold."
+}

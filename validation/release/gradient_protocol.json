@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "protocol_id": "selected-physical-gradients-v1",
+  "status": "frozen_before_first_execution",
+  "baseline_commit": "1a0ad4028d26af1df389ebdfdf992285ec50f8bb",
+  "scope": "Selected numerical validation points, not a full prior-domain guarantee, an inference benchmark or calibration. Timing fields diagnose execution and are not performance rankings.",
+  "conditions": [
+    "cpu-float64",
+    "cpu-float32",
+    "gpu-float64",
+    "gpu-float32"
+  ],
+  "max_seconds_per_condition": 900,
+  "cpu_affinity": "0-7",
+  "max_host_rss_gib": 16,
+  "max_gpu_memory_gib": 16,
+  "stop_rule": "A time or memory limit terminates the condition. Retain completed cases, the last running case and the failure; do not change seeds, configurations or thresholds after seeing results.",
+  "coordinates": {
+    "R_pc": [
+      3.0,
+      30.0,
+      100.0,
+      300.0,
+      1000.0,
+      3000.0
+    ],
+    "x_pc": [
+      3.0,
+      30.0,
+      100.0,
+      300.0,
+      1000.0,
+      -300.0
+    ],
+    "y_pc": [
+      10.0,
+      -20.0,
+      50.0,
+      -100.0,
+      300.0,
+      700.0
+    ]
+  },
+  "spherical": {
+    "orders": [
+      64,
+      128,
+      256
+    ],
+    "n_kernel_equals_n_u": true,
+    "u_max": 100000.0,
+    "kernel_outer_transform": "sqrtlog",
+    "constant_kernel_backend": "jax",
+    "zhao_mass_method": "numeric",
+    "dm_mass_n_steps": 256,
+    "classical_de_orders": [
+      2048,
+      4096
+    ],
+    "classical_n_kernel": 256,
+    "cases": [
+      {
+        "id": "nfw-constant",
+        "halo": "nfw",
+        "anisotropy": "constant",
+        "params": {
+          "re_pc": 300.0,
+          "rs_pc": 500.0,
+          "rhos_Msunpc3": 0.1,
+          "r_t_pc": 5000.0,
+          "beta_ani": -0.3
+        }
+      },
+      {
+        "id": "nfw-om",
+        "halo": "nfw",
+        "anisotropy": "om",
+        "params": {
+          "re_pc": 300.0,
+          "rs_pc": 800.0,
+          "rhos_Msunpc3": 0.03,
+          "r_t_pc": 5000.0,
+          "r_a": 700.0
+        }
+      },
+      {
+        "id": "nfw-baes",
+        "halo": "nfw",
+        "anisotropy": "baes",
+        "params": {
+          "re_pc": 200.0,
+          "rs_pc": 1000.0,
+          "rhos_Msunpc3": 0.03,
+          "r_t_pc": 7000.0,
+          "beta_0": -0.2,
+          "beta_inf": 0.4,
+          "r_a": 600.0,
+          "eta": 2.0
+        }
+      },
+      {
+        "id": "zhao-constant",
+        "halo": "zhao",
+        "anisotropy": "constant",
+        "params": {
+          "re_pc": 300.0,
+          "rs_pc": 500.0,
+          "rhos_Msunpc3": 0.1,
+          "r_t_pc": 1200.0,
+          "beta_ani": -0.3,
+          "a": 2.0,
+          "b": 4.0,
+          "g": 0.8
+        }
+      }
+    ]
+  },
+  "axisymmetric": {
+    "orders": [
+      24,
+      48,
+      72
+    ],
+    "n_force_equals_n_vertical_equals_n_los": true,
+    "numpy_reference_orders": [
+      72,
+      96
+    ],
+    "cases": [
+      {
+        "id": "oblate-cusp",
+        "params": {
+          "re_pc": 300.0,
+          "rs_pc": 500.0,
+          "rhos_Msunpc3": 0.1,
+          "q": 0.65,
+          "Q": 0.7,
+          "alpha": 2.0,
+          "beta": 3.0,
+          "gamma": 0.8,
+          "beta_z": -0.3,
+          "inclination": 1.1
+        }
+      },
+      {
+        "id": "prolate-halo-core",
+        "params": {
+          "re_pc": 250.0,
+          "rs_pc": 700.0,
+          "rhos_Msunpc3": 0.04,
+          "q": 0.8,
+          "Q": 1.4,
+          "alpha": 2.0,
+          "beta": 4.0,
+          "gamma": 0.1,
+          "beta_z": -0.5,
+          "inclination": 0.8
+        }
+      },
+      {
+        "id": "finite-halo",
+        "params": {
+          "re_pc": 300.0,
+          "rs_pc": 500.0,
+          "rhos_Msunpc3": 0.1,
+          "q": 0.7,
+          "Q": 0.8,
+          "alpha": 2.0,
+          "beta": 4.0,
+          "gamma": 0.6,
+          "beta_z": -0.3,
+          "inclination": 1.1,
+          "r_t_pc": 1200.0
+        }
+      }
+    ]
+  },
+  "finite_difference": {
+    "formula": "[f(theta-2h)-8f(theta-h)+8f(theta+h)-f(theta+2h)]/(12h)",
+    "relative_steps": [
+      0.001,
+      0.0003
+    ],
+    "parameter_scale": "max(abs(theta_j),0.1), in the declared physical parameter units",
+    "normalized_error": "abs(J_AD[i,j]-J_FD[i,j])*parameter_scale[j]/max(abs(prediction[i]),1e-12)",
+    "derivative_relative_error": "Also report abs(J_AD-J_FD)/max(abs(J_AD),abs(J_FD),1e-12); do not hide nearly-zero derivatives behind this metric."
+  },
+  "gates": {
+    "all_reported_values_and_derivatives_finite": true,
+    "max_normalized_ad_fd_error_float64": 5e-05,
+    "max_normalized_ad_fd_error_float32": 0.005,
+    "max_normalized_fd_step_disagreement_float64": 5e-05,
+    "max_normalized_fd_step_disagreement_float32": 0.01,
+    "max_finest_value_reference_relative": 0.005,
+    "max_intermediate_finest_value_relative": 0.005,
+    "max_intermediate_finest_gradient_normalized": 0.005
+  },
+  "reporting": "Save every prediction, Jacobian, both finite-difference step results, warnings, runtime source hashes, environment, actual device, first and warm call latency, host peak RSS and available GPU allocator statistics. NumPy/JAX agreement is a consistency check. The separate analytic Plummer/JAM protocol provides independent equation-level evidence. A successful point does not imply positivity of a global distribution function.",
+  "implementation_commit": "ffc73b023f73a66c1a47113037897568c120c331"
+}

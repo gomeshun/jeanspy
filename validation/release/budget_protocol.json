@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "campaign": "jeanspy-release-mocks-20260913",
+  "author_approval": "2026-09-13 JST: cumulative 24 hours, no automatic extension; AGAMA mock analysis before Draco",
+  "total_seconds": 86400,
+  "max_cpu_threads": 8,
+  "cpu_affinity": "0-7",
+  "max_host_rss_gib": 16,
+  "max_gpu_memory_gib": 16,
+  "max_gpu_devices": 1,
+  "reserved_teardown_seconds": 15,
+  "accounting": "One serialized ledger records actual supervisor wall time, including failed runs, startup, monitoring and shutdown. Preparation and documentation are excluded. Completed time is charged before another launch. Keep one canonical ledger for the whole campaign.",
+  "interruption": "An open accounting entry blocks further experiments until its time and process state are reconciled. Never replace the ledger to reset the budget.",
+  "stop_rule": "Every job has a predeclared bound that, together with its teardown reserve, fits the remaining cumulative budget. Preserve partial output and failures. No seed, gate, or iteration extension after looking at scientific results.",
+  "canonical_ledger_relative_path": "validation/release/campaign/budget_ledger.json"
+}

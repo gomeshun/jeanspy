@@ -126,7 +126,36 @@ logger.setLevel(logging.INFO)
 
 
 class Sampler:
-    """ wrapper class for emcee.EnsembleSampler
+    r"""wrapper class for emcee.EnsembleSampler
+
+    Notes
+    -----
+    **Inputs and units.** model supplies posterior/blobs and parameter names;
+    ``p0_generator`` provides starting positions; nwalkers is an ensemble size;
+    prefix sets output filename; reset=True deliberately resets the requested
+    store; pool controls parallel evaluation. ``run_mcmc`` receives the run
+    length/options in its real signature.
+
+    **Returns and shape.** HDF5 chain and diagnostic blobs; ``get_chain``
+    returns (draw,walker,parameter), or flattened draws.
+    ``get_log_prob``/``get_blobs`` use corresponding draw/walker axes.
+    ``get_dataframe`` returns a pandas table.
+
+    **Validity.** Workers share a stateful model only through the supported
+    process/storage setup. Use independent ensembles for R-hat; interacting
+    walkers are not independent chains.
+
+    **Errors.** Incompatible persisted analysis identity raises before
+    continuing. Missing/malformed state, invalid parameter conversion or storage
+    failures raise.
+
+    **Backend.** Python/emcee host sampler around classical CPU likelihoods.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_inference.py``; complete tutorials for
+    production diagnostics.
     """
     def __init__(self, model, p0_generator, nwalkers=None, prefix="", reset=False, pool=None, wbic=False, **kwargs):
         """ initialize the sampler.
@@ -239,6 +268,12 @@ class Sampler:
         # and the model will be pickled only once. 
         # Note that the global variable/function will be copied to each worker process,
         # so it will not be shared among the workers, so it is safe to use.
+        """Install the current log-probability callable in this worker process.
+
+        Returns None. The module-level wrapper lets multiprocessing workers
+        evaluate their initialized model without repeatedly serializing it.
+        This is host-side worker initialization, not a numerical solver.
+        """
         global log_prob_fn_wrapper
         def log_prob_fn_wrapper(p):
             """ wrapper function for log_prob to accelarate the sampling.
@@ -264,6 +299,7 @@ class Sampler:
 
     @property
     def filename(self):
+        """Return the HDF5 backend's filename."""
         return self.backend.filename
     
 

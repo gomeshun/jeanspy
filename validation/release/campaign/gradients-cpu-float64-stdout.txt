@@ -1,0 +1,7 @@
+{"condition": "cpu-float64", "case": "nfw-constant", "status": "completed", "reference_error": 7.123409884154911e-06}
+{"condition": "cpu-float64", "case": "nfw-om", "status": "completed", "reference_error": 1.5730115017511174e-05}
+{"condition": "cpu-float64", "case": "nfw-baes", "status": "completed", "reference_error": 7.225287955669428e-06}
+{"condition": "cpu-float64", "case": "zhao-constant", "status": "completed", "reference_error": 4.528793823055393e-06}
+{"condition": "cpu-float64", "case": "oblate-cusp", "status": "completed", "reference_error": 1.7775822797881067e-09}
+{"condition": "cpu-float64", "case": "prolate-halo-core", "status": "completed", "reference_error": 8.343771802293667e-12}
+{"condition": "cpu-float64", "case": "finite-halo", "status": "completed", "reference_error": 0.00033005076190876375}

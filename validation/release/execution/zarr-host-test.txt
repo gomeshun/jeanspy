@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /tmp/jeanspy-release-env/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/jeanspy-release-docs
+configfile: pyproject.toml
+plugins: zarr-3.1.5
+collecting ... collected 1 item
+
+tests/test_axisymmetric_numpyro_inference.py::test_real_axisymmetric_nuts_checkpoint_and_identity[zarr] PASSED [100%]
+
+============================== 1 passed in 13.11s ==============================

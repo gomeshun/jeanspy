@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "reviewed_source_commit": "d448616f28dd391fafcb19065d87d6cb9f1c1985",
+  "review_source": "https://github.com/gomeshun/jeanspy/pull/64",
+  "review_threads": [
+    {
+      "comment_id": 3996889044,
+      "topic": "version-switcher manifest URL",
+      "disposition": "not_reproduced_with_locked_theme",
+      "evidence": {
+        "theme_version": "0.21.0",
+        "theme_script_sha256": "e26f4aac83bfe073168b00b2a6d62ec0d854a6197dba58842dd03765647edb02",
+        "actual_theme_functions_executed": true,
+        "network_fetch_stubbed": true,
+        "browser_playback_tested": false,
+        "cases": [
+          {
+            "page_url": "https://gomeshun.github.io/jeanspy/dev/index.html",
+            "manifest_url": "https://gomeshun.github.io/jeanspy/versions.json"
+          },
+          {
+            "page_url": "https://gomeshun.github.io/jeanspy/dev/api/generated/jeanspy.model.DSphModel.html",
+            "manifest_url": "https://gomeshun.github.io/jeanspy/versions.json"
+          },
+          {
+            "page_url": "https://gomeshun.github.io/jeanspy/dev/tutorials/axisymmetric.html",
+            "manifest_url": "https://gomeshun.github.io/jeanspy/versions.json"
+          },
+          {
+            "page_url": "https://gomeshun.github.io/jeanspy/v0.1.0/index.html",
+            "manifest_url": "https://gomeshun.github.io/jeanspy/versions.json"
+          },
+          {
+            "page_url": "https://gomeshun.github.io/jeanspy/v0.1.0/api/generated/jeanspy.model.DSphModel.html",
+            "manifest_url": "https://gomeshun.github.io/jeanspy/versions.json"
+          },
+          {
+            "page_url": "https://gomeshun.github.io/jeanspy/v0.1.0/tutorials/axisymmetric.html",
+            "manifest_url": "https://gomeshun.github.io/jeanspy/versions.json"
+          }
+        ],
+        "absolute_override_passed": true
+      }
+    },
+    {
+      "comment_id": 3996889056,
+      "topic": "bibliography HTML entities",
+      "disposition": "already_fixed_in_15e606d_and_rechecked",
+      "checks": [
+        "named and numeric entities decode before TeX escaping",
+        "34-reference regeneration leaves both generated files byte-identical",
+        "no literal TeX-escaped amp entity remains"
+      ]
+    },
+    {
+      "comment_id": 4001499739,
+      "topic": "sdist validation payload",
+      "disposition": "fixed",
+      "changes": [
+        "Require comparison and references metadata and all three explicitly included JAM warning diagnostic files",
+        "Check the recursive environment subtree for txt, json and toml files when present"
+      ],
+      "regression_evidence": {
+        "before_fix": "8 failed, 7 passed",
+        "after_fix": "15 passed",
+        "note": "Each case first accepts a complete archive, then requires rejection after removing the selected file. The current checkout has no environments subtree; nested fixtures verify that manifest rule."
+      }
+    }
+  ],
+  "additional_review_body_findings": [
+    {
+      "topic": "release source reference and version-dependent landing/install prose",
+      "disposition": "already_fixed",
+      "evidence": "docs workflow exports the checked-out commit; conf.py and check_docs_identity.py retain version-specific instructions"
+    },
+    {
+      "topic": "classical J-factor scalar geometry",
+      "disposition": "already_fixed",
+      "evidence": "The obsolete contract injection file was removed; _classical/profiles.py documents scalar geometry."
+    },
+    {
+      "topic": "JAM diagnostic partial failures and resource bounds",
+      "disposition": "already_fixed_and_tests_passed",
+      "evidence": "Incremental atomic reports, retained warning source exceptions, supervisor timeout, early thread checks and worker address-space bounds."
+    },
+    {
+      "topic": "spherical likelihood variance clipping",
+      "disposition": "already_fixed",
+      "evidence": "sampler_numpyro.py distinguishes spherical clipping from axisymmetric bounds rejection."
+    },
+    {
+      "topic": "classical LOS variance versus dispersion",
+      "disposition": "docstrings_corrected_for_all_three_methods"
+    },
+    {
+      "topic": "axisymmetric sample_data return",
+      "disposition": "class_docstring_corrected_to_conditional_velocity_array"
+    },
+    {
+      "topic": "specialized hypergeometric signatures and return family",
+      "disposition": "all_four_specialized_docstrings_corrected_and_shared_general_series_copy_corrected",
+      "evidence": "Document each callable controls and supported shapes; preserve the existing numerical implementation."
+    },
+    {
+      "topic": "Plummer log_prob_R negative radii",
+      "disposition": "class_and_method_docs_corrected",
+      "evidence": "The existing formula returns NaN at negative radii and minus infinity at zero for positive re_pc; no new masking behavior is introduced."
+    },
+    {
+      "topic": "ambiguous older packaging artifacts",
+      "disposition": "both_records_marked_historical",
+      "evidence": "Original hashes and outcomes retained. Recording commit is identified separately from the unrecorded original build source; RELEASE.md defines checks on the intended release commit."
+    }
+  ],
+  "runtime_docstring_only_changes": [
+    {
+      "path": "src/jeanspy/_classical/solver.py",
+      "executable_ast_unchanged": true,
+      "before_sha256": "90ae1616a9d4478c7e6482f5a8cd23f9f06c751d638a9cf635b28df7927fe401",
+      "after_sha256": "a3933936625c9b534ca5b65b5f3013527a5149be73b2d0c22be03f11de2ddac6"
+    },
+    {
+      "path": "src/jeanspy/axisymmetric_inference.py",
+      "executable_ast_unchanged": true,
+      "before_sha256": "6368fd708a5899ebda7aeb9b3a58293f4f606b67fd6c94246b9f1ef5a74a11e8",
+      "after_sha256": "e9b5a5abfbc8df4f9d5f58645689bb0672bdc95f0c998323a5c913cbb5314e66"
+    },
+    {
+      "path": "src/jeanspy/hyp2f1_jax.py",
+      "executable_ast_unchanged": true,
+      "before_sha256": "93d1f2678ff6950ebf8aa8685bcf71430dab780aa17ca6842cc9d77898987abd",
+      "after_sha256": "04adbf7c63ddefc5a072252fd66ca4b89b4cbec7359675acbfe3c8c7f007b226"
+    },
+    {
+      "path": "src/jeanspy/model_numpyro.py",
+      "executable_ast_unchanged": true,
+      "before_sha256": "dfc9ea53202d342314fe1dab6aed75cd3b800cf9d4b0e13e26598a5dbe122d37",
+      "after_sha256": "ca8361868e60d0df9095b7f73978fbbc0ff6f5a6282c5854ad226550ce8e19bb"
+    }
+  ],
+  "focused_tests": {
+    "passed": 23,
+    "selection": [
+      "tests/test_distribution_documentation.py",
+      "tests/test_jam9_diagnostic_failures.py",
+      "tests/test_docs_versions.py"
+    ]
+  },
+  "scope": "Review fixes and documentation only. No numerical formulas, priors, benchmark protocols or stored numerical results changed; no new scientific campaign, merge or publication."
+}

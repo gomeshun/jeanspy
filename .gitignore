@@ -140,3 +140,9 @@ tests/artifacts/
 
 # benchmark outputs
 benchmarks/jeans_comparison/artifacts/
+# Generated documentation; rebuild from public exports and source guides.
+docs/_build/
+docs/source/api/
+docs/api_inventory.json
+docs/source/guides/axisymmetric.md
+docs/source/guides/ullio-geometry.md

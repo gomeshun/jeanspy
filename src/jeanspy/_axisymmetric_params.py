@@ -8,7 +8,27 @@ SUPPORTED = REQUIRED | DEFAULTS.keys() | {"q", "q_projected", "vmem_kms"}
 
 
 class InvalidAxisymmetricModelError(ValueError):
-    """A physical proposal or its numerical Jeans moments are inadmissible."""
+    r"""A physical proposal or its numerical Jeans moments are inadmissible.
+
+    Notes
+    -----
+    **Inputs and units.** A normal Python exception message.
+
+    **Returns and shape.** ValueError subclass.
+
+    **Validity.** Raised for nonfinite or negative intrinsic moments; inference
+    rejects such proposals.
+
+    **Errors.** This object is the exception type.
+
+    **Backend.** Python host.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** Catch ValueError around an exploratory classical forward call;
+    preserve failures in a benchmark.
+    """
 
 
 def validate_param_names(names):

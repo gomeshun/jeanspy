@@ -15,12 +15,44 @@ from ._sersic_deprojection import sp04_density
 
 
 class SersicModel(StellarModel):
-    """Projected Sérsic stellar model with selectable 3-D deprojection.
+    r"""Projected Sérsic stellar model with selectable 3-D deprojection.
 
     The numerical Abel inversion is the reference implementation. Fast
     approximations remain explicitly selectable, while ``"auto"`` uses the
     Vitral & Mamon (2021) hybrid where supported and falls back to the numerical
     reference outside the approximation domain.
+
+    Notes
+    -----
+    **Inputs and units.** ``re_pc`` is projected half-light radius (pc); n is
+    dimensionless Sersic index; ``deprojection_method`` is
+    auto/approx/vm20/vm20bis/numerical. Other constructor arguments follow
+    Model.
+
+    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and
+    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial
+    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface
+    density within R. ``logdensity_2d`` is the natural log of the surface
+    density, not the radial PDF. ``density_2d_normalized_re``, where available,
+    is the dimensionless ratio Sigma(R)/Sigma(re).
+
+    **Validity.** Supply positive finite scales and real nonnegative radii. Use
+    NumPy arrays for array inputs. A central cusp may diverge at zero. The older
+    elementary density formulas do not uniformly validate domains. The bundled
+    ``b_n`` interpolator covers n from about 0.02 to 15.17; numerical
+    deprojection does not remove that table limit. VM20 and VM20bis have the
+    stricter n/r domains specified by their methods.
+
+    **Errors.** Unknown parameter names raise ValueError in Model.update.
+    Invalid values in elementary profile formulas can produce NaN/inf;
+    successful construction alone does not validate a physical profile.
+
+    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
+
+    **Differentiation.** No physical-parameter automatic differentiation on this
+    API.
+
+    **Examples.** ``examples/docs_profiles.py``
     """
 
     name = "SersicModel"
@@ -68,6 +100,11 @@ class SersicModel(StellarModel):
 
     @property
     def b_approx(self):
+        """Return the historical approximation b_n = 2*n - 0.324.
+
+        This helper does not impose a validity interval and is not the tabulated
+        b_n used by the normalized surface-density formula.
+        """
         return 2.0 * self.params.n - 0.324
 
     @property
@@ -85,10 +122,15 @@ class SersicModel(StellarModel):
 
     @property
     def b(self):
+        """Return the dimensionless Sersic b_n from the bundled interpolation table.
+
+        The supported n domain is the table range stated in the class contract.
+        """
         return 10 ** self._b_interp(np.log10(self.params.n))
 
     @property
     def norm(self):
+        """Return the projected Sersic normalization in pc^2 for stored n and re_pc."""
         n = self.params.n
         return (
             np.pi
@@ -98,12 +140,26 @@ class SersicModel(StellarModel):
         )
 
     def density_2d(self, R_pc):
+        r"""Evaluate normalized projected tracer density.
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii
+        in pc.
+
+        **Returns and shape.** pc^-2 with input radius shape.
+        """
         n = self.params.n
         return np.exp(
             -self.b * np.power(np.asarray(R_pc) / self.params.re_pc, 1.0 / n)
         ) / self.norm
 
     def density_2d_normalized_re(self, R_pc):
+        """Return the dimensionless projected density ratio Sigma(R)/Sigma(re).
+
+        R_pc is a scalar or NumPy array in pc; output follows its shape.
+        The stored re_pc and n must lie in the supported positive domain.
+        """
         n = self.params.n
         return np.exp(
             -self.b
@@ -114,7 +170,16 @@ class SersicModel(StellarModel):
         )
 
     def cdf_R(self, R_pc):
-        r"""Return :math:`\int_0^R 2\pi R'\Sigma(R')\,dR'`."""
+        r"""Return :math:`\int_0^R 2\pi R'\Sigma(R')\,dR'`.
+
+        Notes
+        -----
+        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii
+        in pc.
+
+        **Returns and shape.** Dimensionless cumulative probability with input
+        radius shape.
+        """
         n = self.params.n
         return gammainc(
             2.0 * n,
@@ -122,15 +187,33 @@ class SersicModel(StellarModel):
         )
 
     def mean_density_2d(self, R_pc):
+        r"""Average surface density inside a circular aperture.
+
+        Notes
+        -----
+        **Inputs and units.** Positive projected radius ``R_pc`` in pc, scalar or
+        NumPy array.
+
+        **Returns and shape.** ``cdf_R(R)/(pi*R**2)``, in pc^-2 with radius shape.
+
+        **Validity.** Use R>0; the elementary ratio is not a numerically regularized
+        central limit.
+        """
         return self.cdf_R(R_pc) / (np.pi * np.asarray(R_pc) ** 2)
 
     @property
     def p_LGM(self):
+        """Return the dimensionless LGM approximate deprojection exponent for stored n."""
         n = self.params.n
         return 1.0 - 0.6097 / n + 0.05463 / n**2
 
     @property
     def norm_3d(self):
+        """Return the LGM approximate deprojection normalization in pc^3.
+
+        Uses the stored n, re_pc, b_CB and p_LGM. This is the LGM approximation
+        normalization, not the numerical Abel-deprojection normalization.
+        """
         re = self.params.re_pc
         n = self.params.n
         b = self.b_CB
@@ -139,7 +222,19 @@ class SersicModel(StellarModel):
         return 4.0 * np.pi * re**3 * n * gamma(index) / b**index
 
     def density_3d_LGM(self, r_pc):
-        """Legacy Lima Neto--Gerbal--Márquez Sérsic deprojection."""
+        r"""Legacy Lima Neto--Gerbal--Márquez Sérsic deprojection.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar or an array in pc; n and ``re_pc``
+        come from stored parameters.
+
+        **Returns and shape.** Unit-integral tracer density in pc^-3 with input
+        shape.
+
+        **Validity.** Approximate deprojection; it is not a general reference or
+        central-limit formula.
+        """
         n = float(self.params.n)
         if not (0.5 <= n <= 10.0):
             raise ValueError(
@@ -151,6 +246,15 @@ class SersicModel(StellarModel):
         return x ** (-p) * np.exp(-b * x ** (1.0 / n)) / self.norm_3d
 
     def half_light_radius(self):
+        r"""Return the projected half-light radius.
+
+        Notes
+        -----
+        **Inputs and units.** No arguments; reads the stored tracer scales.
+
+        **Returns and shape.** Scalar radius in pc. Exp3dModel returns
+        1.67834699001666\*``re_pc``.
+        """
         return self.params.re_pc
 
     @staticmethod
@@ -164,7 +268,18 @@ class SersicModel(StellarModel):
         return p
 
     def density_3d_VM20(self, r_pc):
-        """Vitral & Mamon (2020) 3-D Sérsic density approximation."""
+        r"""Vitral & Mamon (2020) 3-D Sérsic density approximation.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar or an array in pc; n and ``re_pc``
+        come from stored parameters.
+
+        **Returns and shape.** Unit-integral tracer density in pc^-3 with input
+        shape.
+
+        **Validity.** 0.5<=n<=10; 1e-3<=r/re<=1e3; positive finite r.
+        """
         n = float(self.params.n)
         re = float(self.params.re_pc)
         if not (0.5 <= n <= 10.0):
@@ -200,7 +315,18 @@ class SersicModel(StellarModel):
         return result
 
     def density_3d_VM20bis(self, r_pc):
-        """Official Vitral & Mamon (2021) VM20bis density approximation."""
+        r"""Official Vitral & Mamon (2021) VM20bis density approximation.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar or an array in pc; n and ``re_pc``
+        come from stored parameters.
+
+        **Returns and shape.** Unit-integral tracer density in pc^-3 with input
+        shape.
+
+        **Validity.** 0.5<=n<=3.4; 1e-4<=r/re<=1e3; positive finite r.
+        """
         n = float(self.params.n)
         re = float(self.params.re_pc)
         if not (0.5 <= n <= 3.4):
@@ -249,7 +375,23 @@ class SersicModel(StellarModel):
         epsabs: float = 0.0,
         limit: int = 200,
     ):
-        """Deproject the Sérsic surface density by numerical Abel inversion."""
+        r"""Deproject the Sérsic surface density by numerical Abel inversion.
+
+        Notes
+        -----
+        **Inputs and units.** Nonnegative ``r_pc`` in pc; epsrel/epsabs are
+        adaptive-integral tolerances; limit is the subdivision limit.
+
+        **Returns and shape.** pc^-3 with radius shape; infinity at r=0 for n>=1, a
+        finite analytic center for n<1, zero at +infinity.
+
+        **Validity.** Positive finite ``re_pc`` and supported interpolation-table n.
+        At r>0 integrate over theta in [0,pi/2].
+
+        **Errors.** Negative/NaN radii raise ValueError; SciPy convergence warnings
+        can propagate. The returned value is not accompanied by a certified
+        deprojection error.
+        """
         n = float(self.params.n)
         re = float(self.params.re_pc)
         b = float(self.b)
@@ -306,7 +448,19 @@ class SersicModel(StellarModel):
         return result.reshape(r_arr.shape)
 
     def density_3d_auto(self, r_pc):
-        """Safely choose a fast literature approximation or numerical Abel."""
+        r"""Safely choose a fast literature approximation or numerical Abel.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is scalar or an array in pc; n and ``re_pc``
+        come from stored parameters.
+
+        **Returns and shape.** Unit-integral tracer density in pc^-3 with input
+        shape.
+
+        **Validity.** Uses VM20bis, SP04 or numerical Abel inversion according to
+        the documented n/r domain.
+        """
         n = float(self.params.n)
         re = float(self.params.re_pc)
         scalar_input = np.ndim(r_pc) == 0
@@ -351,7 +505,15 @@ class SersicModel(StellarModel):
         return result.reshape(r_arr.shape)
 
     def density_3d(self, r_pc, method: Optional[str] = None):
-        """Return the 3-D density using the requested deprojection method."""
+        r"""Return the 3-D density using the requested deprojection method.
+
+        Notes
+        -----
+        **Inputs and units.** ``r_pc`` is a scalar or NumPy array of intrinsic radii
+        in pc. SersicModel also accepts method.
+
+        **Returns and shape.** pc^-3 with input radius shape.
+        """
         resolved = method if method is not None else self.deprojection_method
         if resolved not in self._VALID_DEPROJECTION_METHODS:
             raise ValueError(

@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "protocol_id": "direct-spherical-performance-explicit-cutoff-v2",
+  "status": "frozen_before_repaired_spherical_timing_runs",
+  "conditions": [
+    "cpu-float64",
+    "gpu-float64",
+    "cpu-float32",
+    "gpu-float32"
+  ],
+  "data_counts": [
+    8,
+    64,
+    256,
+    1024
+  ],
+  "coordinates": "R=geomspace(10,1500,N) pc; phi=2*pi*(arange(N)*0.6180339887498949 modulo 1); x=R*cos(phi), y=0.8*R*sin(phi). These fixed synthetic evaluation locations do not represent a random scientific sample.",
+  "velocity_workload": "Fixed v=4*sin(arange(N)*0.71) km/s and e_v=2 km/s, vmem=0. The scalar differentiable workload is the normalized independent Gaussian log likelihood at these positions. No posterior or scientific calibration is inferred from these deterministic velocities.",
+  "spherical": {
+    "halo": "nfw",
+    "anisotropy": "constant",
+    "params": {
+      "rhos_Msunpc3": 0.05,
+      "rs_pc": 600.0,
+      "re_pc": 300.0,
+      "beta_ani": -0.3
+    },
+    "order": 128,
+    "u_max": 100000.0,
+    "kernel_outer_transform": "sqrtlog",
+    "constant_kernel_backend": "jax",
+    "dm_mass_n_steps": 128,
+    "classical_de_orders": [
+      1024
+    ],
+    "classical_n_kernel": 128,
+    "active_parameter_counts": [
+      1,
+      2,
+      4
+    ],
+    "fixed_params": {
+      "r_t_pc": "infinity"
+    }
+  },
+  "axisymmetric": {
+    "params": {
+      "rhos_Msunpc3": 0.1,
+      "rs_pc": 500.0,
+      "beta_z": -0.3,
+      "inclination": 1.1,
+      "re_pc": 300.0,
+      "q": 0.7,
+      "Q": 0.8,
+      "alpha": 2.0,
+      "beta": 4.0,
+      "gamma": 0.5
+    },
+    "order": 32,
+    "numpy_reference_orders": [
+      32
+    ],
+    "active_parameter_counts": [
+      1,
+      2,
+      4,
+      10
+    ]
+  },
+  "active_parameters": "The first P entries in the ordered params mapping are variables; the remaining physical parameters are fixed constants. P changes the differentiation workload while holding the physical evaluation point and data fixed.",
+  "accuracy": {
+    "max_numpy_jax_prediction_relative_difference": 0.005,
+    "axisymmetric_refinement_order": 64,
+    "refinement_position_count": 16,
+    "max_axisymmetric_refinement_relative_difference": 0.005
+  },
+  "timing": {
+    "warm_prediction_repeats": 20,
+    "warm_gradient_repeats": 20,
+    "numpy_prediction_repeats": 5,
+    "report": "Record every duration, median and 10th/90th percentiles. Repeated evaluations of the same input measure steady reuse throughput, not independently recompiled workloads or cold-process latency.",
+    "stages": [
+      "host coordinate preparation",
+      "NumPy model construction",
+      "NumPy predictions including per-call native quadrature work",
+      "JAX model construction",
+      "host-to-device input transfer synchronized",
+      "first prediction call including tracing/compilation/execution",
+      "warm predictions",
+      "first value-and-gradient call including tracing/compilation/execution",
+      "warm value-and-gradient",
+      "device-to-host result transfer"
+    ],
+    "cache_policy": "Clear JAX compilation caches between geometry/data-count cases, then keep caches for declared warm repetitions and parameter-count series. All operations use block_until_ready; result host transfer is separately timed."
+  },
+  "memory": "Record process peak host RSS and externally observed peak device memory. Peaks are high-water marks for a condition, not isolated incremental per-kernel allocations; report their scope.",
+  "comparisons": "NumPy and JAX axisymmetric predictions use identical quadrature, physical values and points. The spherical NumPy double-exponential and JAX transformed fixed quadratures solve the same physical problem with different numerical rules; require the declared accuracy gate before interpreting timing ratios. No directly differentiable NumPy gradient is claimed. Matched sampler time-to-precision is measured in the separate inference protocol, not extrapolated from this microbenchmark.",
+  "max_seconds_per_condition": 1800,
+  "stop_rule": "Fixed repetitions and orders. Preserve failed accuracy gates, nonfinite values, resource stops and compilation failures. Do not omit a slow case or substitute a tuned numerical rule after seeing timing results.",
+  "geometries": [
+    "spherical"
+  ],
+  "correction": {
+    "primary_protocol_sha256": "e498b053a751636e0399cf2cc92773740b5f5148f860fe27aad8435e601f4b7f",
+    "primary_runner_sha256": "75b5386406abf5ccda7a5c8260d0f1ee5f35a6410f1d1299020db4225eb92bda",
+    "reason": "The v1 harness omitted the classical NFW required parameter r_t_pc. Model.__init__ initializes missing required parameters to NaN, whereas the JAX model defaults r_t_pc to infinity. The classical evaluation raised before any spherical prediction or JAX timing. This is a harness configuration failure, not evidence of library numerical inaccuracy.",
+    "repair": "Explicitly set r_t_pc=infinity as a fixed value in both models, retaining the original four differentiated parameters, synthetic coordinates, precision/device conditions, quadrature, repetitions, accuracy thresholds and bounds. Run only the previously unevaluated spherical workload. Retain all v1 execution failures and axisymmetric results. No successful timing or physical output is replaced.",
+    "source_evidence": [
+      "src/jeanspy/_classical/core.py: Model.__init__ initializes required parameters to NaN",
+      "src/jeanspy/_classical/profiles.py: NFWModel.required_param_names includes r_t_pc and enclosure_mass reads it",
+      "src/jeanspy/model_numpyro.py: NFW enclosed mass uses params.get(r_t_pc, infinity)"
+    ]
+  }
+}

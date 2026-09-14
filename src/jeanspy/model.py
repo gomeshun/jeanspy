@@ -33,6 +33,13 @@ from ._classical import (
 )
 from .sersic import SersicModel
 
+#: Convert a numerical J factor from Msun^2/pc^5 to GeV^2/cm^5.
+#: Apply this factor only to an integral that has not already been converted.
+C_J: float
+
+#: Solar gravitational parameter G*Msun, in m^3/s^2.
+GMsun_m3s2: float
+
 
 __all__ = [
     "AnisotropyModel",

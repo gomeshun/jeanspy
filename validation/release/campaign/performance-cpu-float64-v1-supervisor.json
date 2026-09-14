@@ -1,0 +1,39 @@
+{
+  "started_utc": "2026-09-12T18:41:49.978691+00:00",
+  "command": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/tmp/jeanspy-release-env/bin/python",
+    "scripts/benchmark_release_performance.py",
+    "--output",
+    "/tmp/jeanspy-science/validation/release/campaign/performance-cpu-float64.json"
+  ],
+  "cwd": "/tmp/jeanspy-science",
+  "bounds": {
+    "seconds": 1800.0,
+    "host_rss_gib": 16.0,
+    "gpu_gib": null
+  },
+  "status": "failed",
+  "peak_host_rss_bytes": 675643392,
+  "peak_gpu_bytes": 0,
+  "supervisor_sha256": "9d43e5c90863be5bf300ace58614ba086584b103a60161de2832256e1aeab468",
+  "environment": {
+    "JEANSPY_JAX_PLATFORM": "cpu",
+    "JEANSPY_JAX_ENABLE_X64": "true",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "process_identity": {
+    "pid": 2826306,
+    "birth_ticks": 115798086,
+    "pgrp": 2826306,
+    "argv": "taskset -c 0-7 /tmp/jeanspy-release-env/bin/python scripts/benchmark_release_performance.py --output /tmp/jeanspy-science/validation/release/campaign/performance-cpu-float64.json ",
+    "cwd": "/tmp/jeanspy-science"
+  },
+  "elapsed_seconds": 613.4373837620951,
+  "exit_code": 1,
+  "finished_utc": "2026-09-12T18:52:03.416182+00:00",
+  "stdout_sha256": "248f45cb4edd872f00e384ded04115d6334a05fe04b1610c06d99cf4251839c2"
+}
