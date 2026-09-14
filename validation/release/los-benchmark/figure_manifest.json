@@ -1,0 +1,99 @@
+{
+  "renderer_sha256": "53d3e1c3f61c070acda79fc8da829fcb99664d42c4f8fe427541c79f890e6117",
+  "inputs": [
+    {
+      "path": "validation/release/los_benchmark_protocol.json",
+      "sha256": "a4064abc0891e67159a14eaa452ebf20da2f92ea303a47f2b3d634e0e41b31e9"
+    },
+    {
+      "path": "scripts/benchmark_release_los.py",
+      "sha256": "a19fad1c3ad089f6c367764a082ca07fd9704a3f0f6028e68901c20c3b8c91f4"
+    },
+    {
+      "path": "validation/release/los-benchmark/hardware.json",
+      "sha256": "53f66e7dd19caed126eeeb42e4399d1ad507c1377b36a662ec1fd4b76e2b9b42"
+    },
+    {
+      "path": "validation/release/los-benchmark/budget_accounting.json",
+      "sha256": "6e2acf489b5bdf4a94408c868aebb7e1f700c5a121a031df01de4ff1087b09d5"
+    },
+    {
+      "path": "validation/release/los-benchmark/reference.json",
+      "sha256": "3e7f92390a9df6b92cdd2719d30a46e96cebc80908b707ee1759c24b2e61a171"
+    },
+    {
+      "path": "validation/release/los-benchmark/numpy.json",
+      "sha256": "be2a4fca1c698a1cb00c2da6918516e9ba2acf41ac3d730eba28b25d7e119be5"
+    },
+    {
+      "path": "validation/release/los-benchmark/numpy-supervisor.json",
+      "sha256": "f34edc7c990190bd9fde90f08a08337e2c6610eecf072f888f9661e7f6e2b58b"
+    },
+    {
+      "path": "validation/release/los-benchmark/numpy-stdout.txt",
+      "sha256": "bbef875d411acf76b5c3d732348cdc1c0abdeb20cfa94c3f282b136a61e7df8b"
+    },
+    {
+      "path": "validation/release/los-benchmark/jax-cpu.json",
+      "sha256": "8f9755ae642c82139ede1490a0d67714f4233e38f085ff68884ff0292a65a115"
+    },
+    {
+      "path": "validation/release/los-benchmark/jax-cpu-supervisor.json",
+      "sha256": "0364ff7eac67d5fda258ee5bfa9e00b16d5b627c07ae7065bf0be8c91f2c7e11"
+    },
+    {
+      "path": "validation/release/los-benchmark/jax-cpu-stdout.txt",
+      "sha256": "5386b2ce1ca7886745b3c36b433a992e1709705c058c2e69b9f0c3f6cf720088"
+    },
+    {
+      "path": "validation/release/los-benchmark/jax-gpu.json",
+      "sha256": "8f632209be505206a60ddc5d85d384fb4432a2f12e33a6a640cc9c04acbc41b0"
+    },
+    {
+      "path": "validation/release/los-benchmark/jax-gpu-supervisor.json",
+      "sha256": "b1f14c7a9049a72abfc91d47c1fa9e3efbc75e8049333fe47d2809024d0060e9"
+    },
+    {
+      "path": "validation/release/los-benchmark/jax-gpu-stdout.txt",
+      "sha256": "00d8d2b8d4bdffcff676fe091fe447e4311bc6a6f223dd25e40ab261da2e216f"
+    },
+    {
+      "path": "validation/release/los-benchmark/jam.json",
+      "sha256": "effab751172491df76ccd0c606bcd1beb26042e1dce2dc3a23a085af8443e816"
+    },
+    {
+      "path": "validation/release/los-benchmark/jam-supervisor.json",
+      "sha256": "5d63f4ccc923b7735cf0824ebb6b9312260fc9575415b15928d577014f688958"
+    },
+    {
+      "path": "validation/release/los-benchmark/jam-stdout.txt",
+      "sha256": "25a985a5c58ed5b48c4d8e33408771cbb9e927f7118a8a753be7b03d944f050c"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "validation/release/los-benchmark/summary.csv",
+      "sha256": "adb1677cbcb5fb768f886ab80174a3a135717a0c4805633403e16ff258540e48"
+    },
+    {
+      "path": "validation/release/los-benchmark/summary.json",
+      "sha256": "731723fc5c5a1d3b6d7b6bb88c5b407b70bb3bff9a1192c4be0168e48fde8d98"
+    },
+    {
+      "path": "docs/source/_static/validation/los_accuracy_time.svg",
+      "sha256": "8f33035bf397296fa416f8ebcf4454f8df59ee775bec658fad820c3a51586057"
+    },
+    {
+      "path": "docs/source/_static/validation/los_accuracy_time.png",
+      "sha256": "561fe10371ef72f398b48182ca8e0265c6795fdc79bab5454ed1a65165633974"
+    },
+    {
+      "path": "docs/source/_static/validation/los_accuracy_time.pdf",
+      "sha256": "993f41a84fcb0a78164b1c8e9b2145e86ed87720ea6250eaed1d5e41e47f915b"
+    },
+    {
+      "path": "docs/source/validation/los-benchmark.md",
+      "sha256": "1b1270555425ead00782bdc15728caf3f54946ab16ea14349ccd5254e28826a9"
+    }
+  ]
+}

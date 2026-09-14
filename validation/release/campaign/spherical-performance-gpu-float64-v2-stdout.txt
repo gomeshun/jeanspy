@@ -1,0 +1,4 @@
+{"kind": "spherical", "n": 8, "status": "completed_all_accuracy_gates_passed", "elapsed": 3.6883851690217853}
+{"kind": "spherical", "n": 64, "status": "completed_all_accuracy_gates_passed", "elapsed": 3.333200132008642}
+{"kind": "spherical", "n": 256, "status": "completed_all_accuracy_gates_passed", "elapsed": 3.6484518160577863}
+{"kind": "spherical", "n": 1024, "status": "completed_all_accuracy_gates_passed", "elapsed": 4.458962630014867}

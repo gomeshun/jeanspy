@@ -11,7 +11,7 @@ documentation, reproducible benchmarks and preparation for a PyPI release.
 | Deliverable | Current evidence | Remaining release work |
 | --- | --- | --- |
 | English documentation | API docstrings, runnable examples, theory, numerical contracts and versioned-site workflow | Review development and release builds; deploy and verify the public site |
-| Reproducible benchmarks | Frozen JAM 9 comparisons, including the failed coarse grid; existing spherical/axisymmetric validation | Review the separately retained experiment results and their provenance before integrating release tables and figures |
+| Reproducible benchmarks | New frozen LOS accuracy/time experiment: 99 settings, 98 passing the 0.5% criterion; 32 retained forward timing cases and the original 16 setup failures; physical-gradient failures preserved | Review the English figures/tables and exact source archives; no further MCMC comparison |
 | PyPI release preparation | Test matrix, installed-artifact checks and source-content validation | Review the exact candidate, validate release artifacts and verify publisher setup; actual upload requires separate authorization |
 
 The existing fifteen-entry software comparison and bibliography are retained

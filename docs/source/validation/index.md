@@ -23,5 +23,9 @@ posterior agreement or coverage.
 :maxdepth: 1
 
 release-plan
+los-benchmark
+performance
+gradients
 jam9
+retained-sources
 ```

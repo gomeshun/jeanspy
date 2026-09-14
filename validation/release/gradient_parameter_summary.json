@@ -1,0 +1,1854 @@
+{
+  "rows": [
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-constant",
+      "finest_ad_fd": 1.2019878332306663e-09,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.005644514314406391,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-om",
+      "finest_ad_fd": 2.5321523218367453e-08,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.012080338329452192,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "finest_ad_fd": 1.6524081440485782e-12,
+      "fd_parameter": "rs_pc",
+      "gradient_refinement": 0.0030974756246480903,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": true
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "finest_ad_fd": 0.0008482543317033469,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.013594933171281064,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "finest_ad_fd": 2.651812511486782e-12,
+      "fd_parameter": "beta",
+      "gradient_refinement": 2.2176664940195718e-08,
+      "refinement_parameter": "gamma",
+      "all_gates": true
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "finest_ad_fd": 1.7648415827626475e-12,
+      "fd_parameter": "alpha",
+      "gradient_refinement": 2.395074738655615e-10,
+      "refinement_parameter": "rhos_Msunpc3",
+      "all_gates": true
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "finest_ad_fd": 0.3077235569759361,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.0219626743388232,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-constant",
+      "finest_ad_fd": 1.201987833232265e-09,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.00564451431440639,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-om",
+      "finest_ad_fd": 2.5321653877744908e-08,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.012080338329452104,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "finest_ad_fd": 1.0590880651381282e-12,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": 0.0030974756246480973,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": true
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "finest_ad_fd": 0.0008482543317218125,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.013594933171281128,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "finest_ad_fd": 2.6679212012661947e-12,
+      "fd_parameter": "beta",
+      "gradient_refinement": 2.217666497663647e-08,
+      "refinement_parameter": "gamma",
+      "all_gates": true
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "finest_ad_fd": 1.6054831098597838e-12,
+      "fd_parameter": "alpha",
+      "gradient_refinement": 2.3950608236724134e-10,
+      "refinement_parameter": "rhos_Msunpc3",
+      "all_gates": true
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "finest_ad_fd": 0.3077235569759361,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.021962674338823415,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-constant",
+      "finest_ad_fd": 0.0011156254324602801,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": 0.00564451824276541,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-om",
+      "finest_ad_fd": 0.0012439678708476638,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": 0.012080248993633294,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "finest_ad_fd": 0.0006693653067032549,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": 0.003097479259243194,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": true
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "finest_ad_fd": 0.0011912775758096978,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": 0.013594968792826978,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "finest_ad_fd": null,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": null,
+      "refinement_parameter": "re_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "finest_ad_fd": null,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": null,
+      "refinement_parameter": "re_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "finest_ad_fd": null,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": null,
+      "refinement_parameter": "re_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-constant",
+      "finest_ad_fd": 0.0020408724997512738,
+      "fd_parameter": "rs_pc",
+      "gradient_refinement": 0.005644522065571155,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-om",
+      "finest_ad_fd": 0.0006748928825799891,
+      "fd_parameter": "rs_pc",
+      "gradient_refinement": 0.012080361102660388,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "finest_ad_fd": 0.004973135176677938,
+      "fd_parameter": "rs_pc",
+      "gradient_refinement": 0.0030974746452158614,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": true
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "finest_ad_fd": 0.0009393336494083385,
+      "fd_parameter": "r_t_pc",
+      "gradient_refinement": 0.01359496231346778,
+      "refinement_parameter": "r_t_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "finest_ad_fd": null,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": null,
+      "refinement_parameter": "re_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "finest_ad_fd": null,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": null,
+      "refinement_parameter": "re_pc",
+      "all_gates": false
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "finest_ad_fd": null,
+      "fd_parameter": "re_pc",
+      "gradient_refinement": null,
+      "refinement_parameter": "re_pc",
+      "all_gates": false
+    }
+  ],
+  "physical_parameters": [
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 9.048299600055521e-13,
+      "gradient_refinement": 4.938991335223947e-07
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 1.0350231948966355e-12,
+      "gradient_refinement": 5.9232278498585994e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 3.0531505897255354e-13,
+      "gradient_refinement": 2.0986202841190942e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 1.2019878332306663e-09,
+      "gradient_refinement": 0.005644514314406391
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 8.073585464071579e-13,
+      "gradient_refinement": 6.578336393522705e-07
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-om",
+      "parameter": "re_pc",
+      "finest_ad_fd": 7.853930376804072e-13,
+      "gradient_refinement": 1.6879155446911607e-06
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-om",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 9.927115745589088e-13,
+      "gradient_refinement": 0.00014158564045661288
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-om",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 6.919583461115337e-13,
+      "gradient_refinement": 0.0001729274726188591
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-om",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 2.5321523218367453e-08,
+      "gradient_refinement": 0.012080338329452192
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-om",
+      "parameter": "r_a",
+      "finest_ad_fd": 1.5781981800183855e-12,
+      "gradient_refinement": 9.156425449879653e-06
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "re_pc",
+      "finest_ad_fd": 1.3608535451122314e-12,
+      "gradient_refinement": 4.1131688728238553e-07
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 1.6524081440485782e-12,
+      "gradient_refinement": 8.431136622461358e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 6.413138130047463e-13,
+      "gradient_refinement": 0.000102307803439697
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 5.697654128317815e-13,
+      "gradient_refinement": 0.0030974756246480903
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "beta_0",
+      "finest_ad_fd": 7.07730979919831e-13,
+      "gradient_refinement": 4.3814605537200586e-08
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "beta_inf",
+      "finest_ad_fd": 1.0109577933245336e-12,
+      "gradient_refinement": 2.133238359115224e-06
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "r_a",
+      "finest_ad_fd": 6.195826931512916e-13,
+      "gradient_refinement": 2.48026947146191e-07
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "nfw-baes",
+      "parameter": "eta",
+      "finest_ad_fd": 6.176562923876468e-13,
+      "gradient_refinement": 2.8032118923517365e-07
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 6.64611456547223e-13,
+      "gradient_refinement": 3.2298012901276335e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 1.2304493298687335e-12,
+      "gradient_refinement": 3.4437439146205845e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 1.0330957418700712e-12,
+      "gradient_refinement": 9.756437842410587e-06
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.0008482543317033469,
+      "gradient_refinement": 0.013594933171281064
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 6.441103506746418e-13,
+      "gradient_refinement": 3.596135165879566e-06
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "a",
+      "finest_ad_fd": 1.0746306805375685e-12,
+      "gradient_refinement": 6.518221838336561e-06
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "b",
+      "finest_ad_fd": 3.276392208691947e-12,
+      "gradient_refinement": 3.739961281925479e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "zhao-constant",
+      "parameter": "g",
+      "finest_ad_fd": 6.430318674721938e-13,
+      "gradient_refinement": 6.202296762142787e-07
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "re_pc",
+      "finest_ad_fd": 1.330728565101589e-12,
+      "gradient_refinement": 3.0480112676001383e-09
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 7.676889484161826e-13,
+      "gradient_refinement": 9.667208630835747e-09
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 1.0277994741338702e-12,
+      "gradient_refinement": 1.2083716191139143e-08
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "q",
+      "finest_ad_fd": 1.2219944675396648e-12,
+      "gradient_refinement": 4.991741018112227e-09
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "Q",
+      "finest_ad_fd": 9.969191494484891e-13,
+      "gradient_refinement": 1.2083716737750376e-08
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "alpha",
+      "finest_ad_fd": 1.2417424930941877e-12,
+      "gradient_refinement": 2.558140573864346e-13
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "beta",
+      "finest_ad_fd": 2.651812511486782e-12,
+      "gradient_refinement": 1.6316345326891181e-13
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "gamma",
+      "finest_ad_fd": 7.71488784377849e-13,
+      "gradient_refinement": 2.2176664940195718e-08
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "beta_z",
+      "finest_ad_fd": 4.966065159557299e-13,
+      "gradient_refinement": 9.139138532047658e-10
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "inclination",
+      "finest_ad_fd": 2.1706016488788562e-12,
+      "gradient_refinement": 8.927852397800363e-09
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "re_pc",
+      "finest_ad_fd": 6.92842225875631e-13,
+      "gradient_refinement": 5.5536436998862654e-11
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 8.332683300124371e-13,
+      "gradient_refinement": 9.64298823687338e-12
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 8.538585668332217e-13,
+      "gradient_refinement": 2.395074738655615e-10
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "q",
+      "finest_ad_fd": 1.4769375515474554e-12,
+      "gradient_refinement": 8.039605980666172e-11
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "Q",
+      "finest_ad_fd": 1.0312345981377762e-12,
+      "gradient_refinement": 9.580086751128633e-11
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "alpha",
+      "finest_ad_fd": 1.7648415827626475e-12,
+      "gradient_refinement": 2.2593864532824922e-13
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "beta",
+      "finest_ad_fd": 1.2358244456074866e-12,
+      "gradient_refinement": 3.548320716452178e-14
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "gamma",
+      "finest_ad_fd": 4.850415269558111e-13,
+      "gradient_refinement": 1.5308038260696273e-10
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "beta_z",
+      "finest_ad_fd": 9.324492574143903e-13,
+      "gradient_refinement": 7.368953614467515e-12
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "inclination",
+      "finest_ad_fd": 1.2416281388727114e-12,
+      "gradient_refinement": 5.949337152934951e-11
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.012897615152898969,
+      "gradient_refinement": 0.0002691258574104358
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 1.0765542534618146e-12,
+      "gradient_refinement": 0.0011197758487372699
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 5.279356137522202e-13,
+      "gradient_refinement": 0.00031995378811311724
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "q",
+      "finest_ad_fd": 0.01642008228836617,
+      "gradient_refinement": 0.0016503735240999073
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "Q",
+      "finest_ad_fd": 0.0637898961170463,
+      "gradient_refinement": 0.0004428590852683086
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "alpha",
+      "finest_ad_fd": 1.2456253674471653e-12,
+      "gradient_refinement": 0.00022721359407821263
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "beta",
+      "finest_ad_fd": 3.1508355005755995e-12,
+      "gradient_refinement": 0.0012263152257514923
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "gamma",
+      "finest_ad_fd": 9.919052303990202e-13,
+      "gradient_refinement": 1.5248142365856604e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "beta_z",
+      "finest_ad_fd": 4.375061586128668e-13,
+      "gradient_refinement": 5.984593604777904e-05
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "inclination",
+      "finest_ad_fd": 0.02868406060592453,
+      "gradient_refinement": 0.0019791524883982173
+    },
+    {
+      "condition": "cpu-float64",
+      "case": "finite-halo",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.3077235569759361,
+      "gradient_refinement": 0.0219626743388232
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 9.084443752331843e-13,
+      "gradient_refinement": 4.93899134216727e-07
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 7.175763767721923e-13,
+      "gradient_refinement": 5.923227849858597e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 7.983590320173998e-13,
+      "gradient_refinement": 2.0986202841190935e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 1.201987833232265e-09,
+      "gradient_refinement": 0.00564451431440639
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 6.039739781342552e-13,
+      "gradient_refinement": 6.57833639374489e-07
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-om",
+      "parameter": "re_pc",
+      "finest_ad_fd": 9.549610946092462e-13,
+      "gradient_refinement": 1.6879155463346708e-06
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-om",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 1.0202145640412125e-12,
+      "gradient_refinement": 0.00014158564045705093
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-om",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 4.155399164849091e-13,
+      "gradient_refinement": 0.00017292747261975623
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-om",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 2.5321653877744908e-08,
+      "gradient_refinement": 0.012080338329452104
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-om",
+      "parameter": "r_a",
+      "finest_ad_fd": 1.6887944337200807e-12,
+      "gradient_refinement": 9.156425449927565e-06
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "re_pc",
+      "finest_ad_fd": 1.0590880651381282e-12,
+      "gradient_refinement": 4.113168864256725e-07
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 8.913037230342662e-13,
+      "gradient_refinement": 8.431136622541675e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 4.9549105784548e-13,
+      "gradient_refinement": 0.00010230780344057425
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 3.579106173669687e-13,
+      "gradient_refinement": 0.0030974756246480973
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "beta_0",
+      "finest_ad_fd": 4.5124032290722294e-13,
+      "gradient_refinement": 4.381460550978577e-08
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "beta_inf",
+      "finest_ad_fd": 4.1492534684075795e-13,
+      "gradient_refinement": 2.1332383590603944e-06
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "r_a",
+      "finest_ad_fd": 4.876582829442361e-13,
+      "gradient_refinement": 2.480269471863494e-07
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "nfw-baes",
+      "parameter": "eta",
+      "finest_ad_fd": 4.262937823062669e-13,
+      "gradient_refinement": 2.803211895093218e-07
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 1.0746802425358303e-12,
+      "gradient_refinement": 3.229801290056552e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 1.230227006686724e-12,
+      "gradient_refinement": 3.4437439146798186e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 5.559610005184876e-13,
+      "gradient_refinement": 9.756437842289273e-06
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.0008482543317218125,
+      "gradient_refinement": 0.013594933171281128
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 5.170111747300367e-13,
+      "gradient_refinement": 3.5961351659250575e-06
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "a",
+      "finest_ad_fd": 9.749359238510511e-13,
+      "gradient_refinement": 6.51822183833656e-06
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "b",
+      "finest_ad_fd": 3.053724777033271e-12,
+      "gradient_refinement": 3.73996128192927e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "zhao-constant",
+      "parameter": "g",
+      "finest_ad_fd": 5.214003638512876e-13,
+      "gradient_refinement": 6.202296759716539e-07
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "re_pc",
+      "finest_ad_fd": 1.09784795836218e-12,
+      "gradient_refinement": 3.0480135207961246e-09
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 6.11378971061886e-13,
+      "gradient_refinement": 9.667206495635614e-09
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 5.284410542538414e-13,
+      "gradient_refinement": 1.208371662842813e-08
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "q",
+      "finest_ad_fd": 1.509588275734765e-12,
+      "gradient_refinement": 4.991739133395525e-09
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "Q",
+      "finest_ad_fd": 5.696955989869524e-13,
+      "gradient_refinement": 1.2083713804270087e-08
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "alpha",
+      "finest_ad_fd": 1.241516289889325e-12,
+      "gradient_refinement": 2.575449929599183e-13
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "beta",
+      "finest_ad_fd": 2.6679212012661947e-12,
+      "gradient_refinement": 1.6234353641831425e-13
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "gamma",
+      "finest_ad_fd": 4.867892968646857e-13,
+      "gradient_refinement": 2.217666497663647e-08
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "beta_z",
+      "finest_ad_fd": 5.011741749277504e-13,
+      "gradient_refinement": 9.13913853204766e-10
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "oblate-cusp",
+      "parameter": "inclination",
+      "finest_ad_fd": 2.314056243318594e-12,
+      "gradient_refinement": 8.927852698436541e-09
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "re_pc",
+      "finest_ad_fd": 9.613823264613493e-13,
+      "gradient_refinement": 5.553903278462337e-11
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 7.365678964920464e-13,
+      "gradient_refinement": 9.642037017318572e-12
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 5.083893535857573e-13,
+      "gradient_refinement": 2.3950608236724134e-10
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "q",
+      "finest_ad_fd": 9.879638073259006e-13,
+      "gradient_refinement": 8.039559234739553e-11
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "Q",
+      "finest_ad_fd": 1.2177299043658848e-12,
+      "gradient_refinement": 9.580232858452252e-11
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "alpha",
+      "finest_ad_fd": 1.6054831098597838e-12,
+      "gradient_refinement": 2.278863922707342e-13
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "beta",
+      "finest_ad_fd": 1.3521884926323155e-12,
+      "gradient_refinement": 3.6005019034588285e-14
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "gamma",
+      "finest_ad_fd": 4.3124620197818253e-13,
+      "gradient_refinement": 1.5308043478814974e-10
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "beta_z",
+      "finest_ad_fd": 5.301223616713738e-13,
+      "gradient_refinement": 7.368965787885908e-12
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "prolate-halo-core",
+      "parameter": "inclination",
+      "finest_ad_fd": 1.595909423411374e-12,
+      "gradient_refinement": 5.949351067918153e-11
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.012897615152899366,
+      "gradient_refinement": 0.00026912585741113303
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 7.560730588116793e-13,
+      "gradient_refinement": 0.001119775848740582
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 2.018984405138431e-13,
+      "gradient_refinement": 0.00031995378811262376
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "q",
+      "finest_ad_fd": 0.016420082288378688,
+      "gradient_refinement": 0.0016503735241007703
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "Q",
+      "finest_ad_fd": 0.06378989611631042,
+      "gradient_refinement": 0.00044285908526738
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "alpha",
+      "finest_ad_fd": 9.559877635901885e-13,
+      "gradient_refinement": 0.00022721359407435807
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "beta",
+      "finest_ad_fd": 3.0490762800637623e-12,
+      "gradient_refinement": 0.0012263152257484086
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "gamma",
+      "finest_ad_fd": 1.3174400852693366e-12,
+      "gradient_refinement": 1.5248142364792757e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "beta_z",
+      "finest_ad_fd": 3.4542643190390014e-13,
+      "gradient_refinement": 5.9845936047825284e-05
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "inclination",
+      "finest_ad_fd": 0.028684060606381876,
+      "gradient_refinement": 0.0019791524883980473
+    },
+    {
+      "condition": "gpu-float64",
+      "case": "finite-halo",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.3077235569759361,
+      "gradient_refinement": 0.021962674338823415
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.0011156254324602801,
+      "gradient_refinement": 1.6230639083794419e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.00027178626274211706,
+      "gradient_refinement": 5.840014575085907e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00037567676660948664,
+      "gradient_refinement": 2.0739755590568916e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.00024236369120769473,
+      "gradient_refinement": 0.00564451824276541
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 0.0004209816316567804,
+      "gradient_refinement": 5.367843183908749e-07
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-om",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.0012439678708476638,
+      "gradient_refinement": 1.7638886996954936e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-om",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0006156970404904693,
+      "gradient_refinement": 0.0001418166514555177
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-om",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00038334182553303585,
+      "gradient_refinement": 0.0001733973147348658
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-om",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.00038767212653086677,
+      "gradient_refinement": 0.012080248993633294
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-om",
+      "parameter": "r_a",
+      "finest_ad_fd": 0.00043098675231753326,
+      "gradient_refinement": 9.183245542789663e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.0006693653067032549,
+      "gradient_refinement": 1.5377901156387411e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0002973085266188885,
+      "gradient_refinement": 8.451475843396117e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.0003851445740901253,
+      "gradient_refinement": 0.00010243878638591473
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.00011707003547532345,
+      "gradient_refinement": 0.003097479259243194
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "beta_0",
+      "finest_ad_fd": 0.00046324662828410633,
+      "gradient_refinement": 2.502096793908837e-07
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "beta_inf",
+      "finest_ad_fd": 0.00026033603035739776,
+      "gradient_refinement": 2.119423166605132e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "r_a",
+      "finest_ad_fd": 0.0004932428649373019,
+      "gradient_refinement": 2.721935778644795e-07
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "nfw-baes",
+      "parameter": "eta",
+      "finest_ad_fd": 0.0004267399125525934,
+      "gradient_refinement": 1.0302751504330504e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.0011912775758096978,
+      "gradient_refinement": 3.205571270656701e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0004750849551014767,
+      "gradient_refinement": 3.378888368127723e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00046391186034743296,
+      "gradient_refinement": 9.508843794608324e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.0008497970587503895,
+      "gradient_refinement": 0.013594968792826978
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 0.0004645724832094095,
+      "gradient_refinement": 3.443699422191199e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "a",
+      "finest_ad_fd": 0.0001762444510535733,
+      "gradient_refinement": 6.512906708635837e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "b",
+      "finest_ad_fd": 0.00040344602423677997,
+      "gradient_refinement": 3.740850790772709e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "zhao-constant",
+      "parameter": "g",
+      "finest_ad_fd": 0.000968099495145056,
+      "gradient_refinement": 7.164197379499422e-07
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "re_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0002579972381337843,
+      "gradient_refinement": 2.9278057091843775e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.0002170082247580029,
+      "gradient_refinement": 1.165842490914778e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "Q",
+      "finest_ad_fd": 0.00020158712206122274,
+      "gradient_refinement": 6.5037528693560566e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "alpha",
+      "finest_ad_fd": 0.0005549543763291823,
+      "gradient_refinement": 1.2227488411275583e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "beta",
+      "finest_ad_fd": 0.0001109277748670921,
+      "gradient_refinement": 3.081327079641447e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "gamma",
+      "finest_ad_fd": 0.0004465611306259374,
+      "gradient_refinement": 4.857677045478241e-07
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "beta_z",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "inclination",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "re_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0005830468351580197,
+      "gradient_refinement": 2.0260828498200604e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.0004233517100804568,
+      "gradient_refinement": 1.1767660711996164e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "Q",
+      "finest_ad_fd": 0.0003827079138394267,
+      "gradient_refinement": 6.642737127677329e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "alpha",
+      "finest_ad_fd": 0.0004162895562758501,
+      "gradient_refinement": 2.614221616559358e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "beta",
+      "finest_ad_fd": 0.0004902860271595569,
+      "gradient_refinement": 2.0913772932474866e-06
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "gamma",
+      "finest_ad_fd": 0.0002823824512014719,
+      "gradient_refinement": 3.1834156776855296e-07
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "beta_z",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "inclination",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "re_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.00031243544947768534,
+      "gradient_refinement": 0.0011266789271752197
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00046867682024313905,
+      "gradient_refinement": 0.0003214984542993341
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "Q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "alpha",
+      "finest_ad_fd": 0.00026709233678320963,
+      "gradient_refinement": 0.00023218413087271682
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "beta",
+      "finest_ad_fd": 0.0008018183331382491,
+      "gradient_refinement": 0.001235004361005681
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "gamma",
+      "finest_ad_fd": 0.0005506497688635128,
+      "gradient_refinement": 1.5992147623746484e-05
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "beta_z",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "inclination",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "cpu-float32",
+      "case": "finite-halo",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.000552422634525517,
+      "gradient_refinement": 4.318494173556757e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0020408724997512738,
+      "gradient_refinement": 5.933203937880003e-05
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00032122066726173593,
+      "gradient_refinement": 2.093060391472274e-05
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.00017824237981337192,
+      "gradient_refinement": 0.005644522065571155
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 0.00027472074397622584,
+      "gradient_refinement": 6.441409259470144e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-om",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.0005293310231415041,
+      "gradient_refinement": 1.7647056608996818e-06
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-om",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0006748928825799891,
+      "gradient_refinement": 0.00014134624922276025
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-om",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00034788108924210364,
+      "gradient_refinement": 0.0001729156164867695
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-om",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.00019850123195625744,
+      "gradient_refinement": 0.012080361102660388
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-om",
+      "parameter": "r_a",
+      "finest_ad_fd": 0.00044314394967805544,
+      "gradient_refinement": 9.157520098354787e-06
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.0010172431717180316,
+      "gradient_refinement": 9.198883240856347e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.004973135176677938,
+      "gradient_refinement": 8.43710072247293e-05
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.0005264954644672774,
+      "gradient_refinement": 0.00010290974659210814
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.0003268679977110697,
+      "gradient_refinement": 0.0030974746452158614
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "beta_0",
+      "finest_ad_fd": 0.00011742562433801996,
+      "gradient_refinement": 1.559652415862601e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "beta_inf",
+      "finest_ad_fd": 0.0001623547185967167,
+      "gradient_refinement": 2.1194226986933023e-06
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "r_a",
+      "finest_ad_fd": 0.00019329473255691036,
+      "gradient_refinement": 2.856684443937811e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "nfw-baes",
+      "parameter": "eta",
+      "finest_ad_fd": 0.0002845731168478002,
+      "gradient_refinement": 2.943642637074031e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "re_pc",
+      "finest_ad_fd": 0.00043448908046866226,
+      "gradient_refinement": 3.224652052029658e-05
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0004144718770410141,
+      "gradient_refinement": 3.402739344843919e-05
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.0002666911546352539,
+      "gradient_refinement": 9.704230995867398e-06
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": 0.0009393336494083385,
+      "gradient_refinement": 0.01359496231346778
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "beta_ani",
+      "finest_ad_fd": 0.0003060143546279075,
+      "gradient_refinement": 3.5902398231355055e-06
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "a",
+      "finest_ad_fd": 0.00021979250041988165,
+      "gradient_refinement": 6.512906708635837e-06
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "b",
+      "finest_ad_fd": 0.0002557055243887488,
+      "gradient_refinement": 3.73881550742626e-05
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "zhao-constant",
+      "parameter": "g",
+      "finest_ad_fd": 0.0009115371049897078,
+      "gradient_refinement": 5.861616037772254e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "re_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0004985875926963879,
+      "gradient_refinement": 4.5043159562733405e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00022244161964502857,
+      "gradient_refinement": 1.0626081411324255e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "Q",
+      "finest_ad_fd": 0.00024005965281386664,
+      "gradient_refinement": 2.0542176512075372e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "alpha",
+      "finest_ad_fd": 0.0003618315005756291,
+      "gradient_refinement": 5.361819896040746e-08
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "beta",
+      "finest_ad_fd": 0.0003221262241988021,
+      "gradient_refinement": 1.4672983222910983e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "gamma",
+      "finest_ad_fd": 0.00028169741821430495,
+      "gradient_refinement": 1.9430708181912964e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "beta_z",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "oblate-cusp",
+      "parameter": "inclination",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "re_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0005925478845570302,
+      "gradient_refinement": 3.584292841290089e-08
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.0002129668740829722,
+      "gradient_refinement": 2.9882206210755094e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "Q",
+      "finest_ad_fd": 0.00029191564950087763,
+      "gradient_refinement": 2.61469304344107e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "alpha",
+      "finest_ad_fd": 0.0005293741233279077,
+      "gradient_refinement": 1.8676378881721934e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "beta",
+      "finest_ad_fd": 0.0002992528844307908,
+      "gradient_refinement": 1.8676378881721934e-07
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "gamma",
+      "finest_ad_fd": 0.00021229456542969427,
+      "gradient_refinement": 2.0913543307399494e-08
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "beta_z",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "prolate-halo-core",
+      "parameter": "inclination",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "re_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "rs_pc",
+      "finest_ad_fd": 0.0006987918310335999,
+      "gradient_refinement": 0.0011198884121780993
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "rhos_Msunpc3",
+      "finest_ad_fd": 0.00023536310624379278,
+      "gradient_refinement": 0.0003198428465748465
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "Q",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "alpha",
+      "finest_ad_fd": 0.00024278588534774916,
+      "gradient_refinement": 0.00022705200004006313
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "beta",
+      "finest_ad_fd": 0.0005062706847413091,
+      "gradient_refinement": 0.0012263953454588316
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "gamma",
+      "finest_ad_fd": 0.00024480190364103,
+      "gradient_refinement": 1.522233423527802e-05
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "beta_z",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "inclination",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    },
+    {
+      "condition": "gpu-float32",
+      "case": "finite-halo",
+      "parameter": "r_t_pc",
+      "finest_ad_fd": null,
+      "gradient_refinement": null
+    }
+  ]
+}

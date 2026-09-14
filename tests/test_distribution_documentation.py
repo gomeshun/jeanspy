@@ -15,7 +15,10 @@ spec.loader.exec_module(module)
 
 @pytest.mark.parametrize("missing", ["docs/source/conf.py", "docs/source/references.bib",
                                      "docs/source/_templates/autosummary/class.rst",
-                                     "docs/source/_static/validation/figure.svg"])
+                                     "docs/source/_static/validation/figure.svg",
+                                     "validation/release/los_benchmark_protocol.json",
+                                     "validation/release/los-benchmark/summary.csv",
+                                     "validation/release/retained-gradients-source.tar.gz"])
 def test_missing_documentation_rejected(tmp_path, monkeypatch, missing):
     source = tmp_path / "source"
     names = ["src/jeanspy/__init__.py", "README.md", "RELEASE.md", "LICENSE",

@@ -1,0 +1,39 @@
+{
+  "started_utc": "2026-09-12T17:41:34.208171+00:00",
+  "command": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/tmp/jeanspy-release-env/bin/python",
+    "scripts/validate_physical_gradients.py",
+    "--output",
+    "validation/release/campaign/gradients-cpu-float32.json"
+  ],
+  "cwd": "/tmp/jeanspy-science",
+  "bounds": {
+    "seconds": 900.0,
+    "host_rss_gib": 16.0,
+    "gpu_gib": null
+  },
+  "status": "completed",
+  "peak_host_rss_bytes": 964083712,
+  "peak_gpu_bytes": 0,
+  "supervisor_sha256": "9d43e5c90863be5bf300ace58614ba086584b103a60161de2832256e1aeab468",
+  "environment": {
+    "JEANSPY_JAX_PLATFORM": "cpu",
+    "JEANSPY_JAX_ENABLE_X64": "false",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "process_identity": {
+    "pid": 2804380,
+    "birth_ticks": 115436509,
+    "pgrp": 2804380,
+    "argv": "taskset -c 0-7 /tmp/jeanspy-release-env/bin/python scripts/validate_physical_gradients.py --output validation/release/campaign/gradients-cpu-float32.json ",
+    "cwd": "/tmp/jeanspy-science"
+  },
+  "elapsed_seconds": 55.600941240089014,
+  "exit_code": 0,
+  "finished_utc": "2026-09-12T17:42:29.809218+00:00",
+  "stdout_sha256": "490aef0a0167ef149f2f41cdc2cb03c70372a401c8f07c88e098fce7896a7fa6"
+}

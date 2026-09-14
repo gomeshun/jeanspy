@@ -1,0 +1,40 @@
+{
+  "started_utc": "2026-09-12T17:50:01.527013+00:00",
+  "command": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/home/gomesu/workspace/dev_jeanspy/jeanspy/.venv/bin/python",
+    "scripts/validate_physical_gradients.py",
+    "--output",
+    "validation/release/campaign/gradients-gpu-float32.json"
+  ],
+  "cwd": "/tmp/jeanspy-science",
+  "bounds": {
+    "seconds": 900.0,
+    "host_rss_gib": 16.0,
+    "gpu_gib": 16.0
+  },
+  "status": "completed",
+  "peak_host_rss_bytes": 1209921536,
+  "peak_gpu_bytes": 283115520,
+  "supervisor_sha256": "9d43e5c90863be5bf300ace58614ba086584b103a60161de2832256e1aeab468",
+  "environment": {
+    "JEANSPY_JAX_PLATFORM": "gpu",
+    "JEANSPY_JAX_ENABLE_X64": "false",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
+  },
+  "process_identity": {
+    "pid": 2807067,
+    "birth_ticks": 115487241,
+    "pgrp": 2807067,
+    "argv": "",
+    "cwd": "/tmp/jeanspy-science"
+  },
+  "elapsed_seconds": 90.8201595719438,
+  "exit_code": 0,
+  "finished_utc": "2026-09-12T17:51:32.347301+00:00",
+  "stdout_sha256": "b1dedea09484947fc47bd4d0c318c6ea0ec495823a2ae4cc707ae2c8ef38c4b4"
+}

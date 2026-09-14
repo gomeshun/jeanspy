@@ -1,0 +1,39 @@
+{
+  "started_utc": "2026-09-12T19:02:02.202489+00:00",
+  "command": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/home/gomesu/workspace/dev_jeanspy/jeanspy/.venv/bin/python",
+    "scripts/benchmark_release_performance.py",
+    "--output",
+    "/tmp/jeanspy-science/validation/release/campaign/performance-gpu-float32.json"
+  ],
+  "cwd": "/tmp/jeanspy-science",
+  "bounds": {
+    "seconds": 1800.0,
+    "host_rss_gib": 16.0,
+    "gpu_gib": 16.0
+  },
+  "status": "failed",
+  "peak_host_rss_bytes": 1063567360,
+  "peak_gpu_bytes": 287309824,
+  "supervisor_sha256": "9d43e5c90863be5bf300ace58614ba086584b103a60161de2832256e1aeab468",
+  "environment": {
+    "JEANSPY_JAX_PLATFORM": "gpu",
+    "JEANSPY_JAX_ENABLE_X64": "false",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "process_identity": {
+    "pid": 2835239,
+    "birth_ticks": 115919309,
+    "pgrp": 2835239,
+    "argv": "",
+    "cwd": "/tmp/jeanspy-science"
+  },
+  "elapsed_seconds": 133.86259902082384,
+  "exit_code": 1,
+  "finished_utc": "2026-09-12T19:04:16.065207+00:00",
+  "stdout_sha256": "3970c1a676b0a3a0661252122c544769de4141a86a569dfef9a1dccab6d72f1e"
+}

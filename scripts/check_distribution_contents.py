@@ -42,6 +42,15 @@ def check(directory: Path) -> list[dict]:
                      "validation/axisymmetric_jam_reference.json",
                      "validation/release/jam9_protocol.json",
                      "validation/release/jam9_plummer_v1.json"]})
+    release = ROOT / "validation/release"
+    for pattern in ("*protocol.json", "retained_*.json", "retained-*-source.tar.gz",
+                    "*_summary.json", "*_figure_manifest.json"):
+        support.update({p.relative_to(ROOT).as_posix(): p for p in release.glob(pattern)})
+    for directory, suffixes in (("los-benchmark", {".json", ".txt", ".csv"}),
+                                ("campaign", {".json", ".txt"})):
+        support.update({p.relative_to(ROOT).as_posix(): p
+                        for p in (release / directory).rglob("*")
+                        if p.is_file() and p.suffix in suffixes})
     reports = []
     for artifact in wheels + sources:
         if artifact.suffix == ".whl":

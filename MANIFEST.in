@@ -12,6 +12,13 @@ include validation/release/jam9_plummer_v1.json
 include validation/release/jam9_warning_diagnostic.md
 include validation/release/jam9_warning_diagnostic.json
 include validation/release/jam9_warning_diagnostic_execution_failure.txt
+include validation/release/*protocol.json
+include validation/release/retained_*.json
+include validation/release/retained-*-source.tar.gz
+include validation/release/*_summary.json
+include validation/release/*_figure_manifest.json
+recursive-include validation/release/los-benchmark *.json *.txt *.csv
+recursive-include validation/release/campaign *.json *.txt
 recursive-include validation/release/environments *.txt *.json *.toml
 recursive-include docs *.md *.rst *.py *.css *.json *.bib *.svg *.png *.pdf
 prune docs/_build

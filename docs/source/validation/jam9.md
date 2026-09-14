@@ -68,6 +68,10 @@ nonzero anisotropy, PSF/pixel averaging, foreground contamination or
 posterior coverage. The recorded setup-inclusive times are diagnostics,
 not a performance comparison or evidence of a faster solver.
 
+The separate [LOS accuracy/time benchmark](los-benchmark.md) measures fresh
+repeated evaluations at three position counts and three numerical settings.
+It retains this original validation and its coarse-grid failure.
+
 ## Reproduction
 
 ```bash

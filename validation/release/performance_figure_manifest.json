@@ -1,0 +1,103 @@
+{
+  "inputs": [
+    {
+      "path": "validation/release/campaign/spherical-performance-cpu-float64-v2.json",
+      "sha256": "8ab7f4bc22d626c8514658f44a95208510d17e7d9cb1f272a624fbcecb0bbc88"
+    },
+    {
+      "path": "validation/release/campaign/spherical-performance-cpu-float64-v2-supervisor.json",
+      "sha256": "1138d612f3579af093cf6fe897964236d02369d9e37322cfb1ee453bf0c8d4f2"
+    },
+    {
+      "path": "validation/release/campaign/performance-cpu-float64.json",
+      "sha256": "972a0f1a0272edba42c6aad6582e276ab7471dcc1155ba16a176b892b1ef35ea"
+    },
+    {
+      "path": "validation/release/campaign/performance-cpu-float64-v1-supervisor.json",
+      "sha256": "ef0e6067f2571572bbe8a16a0a957af811f7d59fcfb2630ec86c3033dc1d0cfd"
+    },
+    {
+      "path": "validation/release/campaign/spherical-performance-gpu-float64-v2.json",
+      "sha256": "c22e5f9a822d5c3a96615130e7f19ae833a9488824dbcf3eea2cbac9b1671018"
+    },
+    {
+      "path": "validation/release/campaign/spherical-performance-gpu-float64-v2-supervisor.json",
+      "sha256": "12b90c76ac2e29a1727564d2fe34bf23560e049713977bfd9bec2b33e9e69543"
+    },
+    {
+      "path": "validation/release/campaign/performance-gpu-float64.json",
+      "sha256": "aace3cb84ba83a566ece46ad01eb279e03b189b5414dee879d1624ca9bb6b40b"
+    },
+    {
+      "path": "validation/release/campaign/performance-gpu-float64-v1-supervisor.json",
+      "sha256": "c6d557bf6e92fbea55cc509c1c258b9697eaf72e7f53ab07e20c29922893b534"
+    },
+    {
+      "path": "validation/release/campaign/spherical-performance-cpu-float32-v2.json",
+      "sha256": "bb1cb57fde704480c795859d3bae283d011d6aedd1997e7dc87b54e634c1c69d"
+    },
+    {
+      "path": "validation/release/campaign/spherical-performance-cpu-float32-v2-supervisor.json",
+      "sha256": "92e32284d8ca9d1ffd940466a64cc02f8af6fcf1bf921375f62bdbf86b8b7774"
+    },
+    {
+      "path": "validation/release/campaign/performance-cpu-float32.json",
+      "sha256": "c8e451d1fab4d3eb3e07bc9740738f5b2e796f16ea977220776e43f4bdcd5e58"
+    },
+    {
+      "path": "validation/release/campaign/performance-cpu-float32-v1-supervisor.json",
+      "sha256": "d73a6da124c2640b33570b2d00a05498a049b0a9d743ad52ac15fa7fd1678432"
+    },
+    {
+      "path": "validation/release/campaign/spherical-performance-gpu-float32-v2.json",
+      "sha256": "649272e845369f043b805ea9b1a31395158d2c73b4de9e4d7fed510413b532a3"
+    },
+    {
+      "path": "validation/release/campaign/spherical-performance-gpu-float32-v2-supervisor.json",
+      "sha256": "5f9d2fde9d4a936efa7f22982b11c6383761a5f98a78809b3f40c899ca27a0b6"
+    },
+    {
+      "path": "validation/release/campaign/performance-gpu-float32.json",
+      "sha256": "008fb9ff9dbc971b31e9dd564db48305f416fb3aa00e398bc8f1b9b484a01fbc"
+    },
+    {
+      "path": "validation/release/campaign/performance-gpu-float32-v1-supervisor.json",
+      "sha256": "0cde438c71445455ebbbb05012bdb0ae3b5c773f2cf485ed6f8249abf3a61d79"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "docs/source/_static/validation/forward_performance.pdf",
+      "sha256": "f60adbd8144c815e874dbaceeb93b6aca8ae77bb9e03cec66810fd68a69d87dd"
+    },
+    {
+      "path": "docs/source/_static/validation/forward_performance.png",
+      "sha256": "a0f754a26f4029759a02c19490e4d34f701e3d9070b27a90f40a74eb4690fd0e"
+    },
+    {
+      "path": "docs/source/_static/validation/forward_performance.svg",
+      "sha256": "91d2fcd4db897f1404b5a7a70507d0bfbbc7e37e695a468387a935091aa44da4"
+    },
+    {
+      "path": "docs/source/_static/validation/gradient_parameter_performance.pdf",
+      "sha256": "35c781bfeca36bf23242d4299a7ef5504d1e5ecf9861f4e1a3bca7a8f4393109"
+    },
+    {
+      "path": "docs/source/_static/validation/gradient_parameter_performance.png",
+      "sha256": "679e5e2bd6e34b6aa43b617d9ee5c97ce0cdb29085e0f0ab8a2b5c88a9a27d07"
+    },
+    {
+      "path": "docs/source/_static/validation/gradient_parameter_performance.svg",
+      "sha256": "a54b86be142753243f7c64ef5109f1adeb90c755f04c684b240e7077b703b867"
+    },
+    {
+      "path": "docs/source/validation/performance.md",
+      "sha256": "0cb828147c58dd30413905ad87d778972f5d7a49aa137f37c17da04101b6dc17"
+    },
+    {
+      "path": "validation/release/performance_summary.json",
+      "sha256": "5a38518cda6a4d7eec62754ff34ed1fc07177321ec347777d8a4042d6941dcf3"
+    }
+  ],
+  "script_sha256": "92fbe379c1257859c59571e60ac960d9d9515837b9aa61ecb6448c33a77a83e1"
+}

@@ -1,0 +1,7 @@
+{"condition": "gpu-float32", "case": "nfw-constant", "status": "completed", "reference_error": 6.849707002517107e-06}
+{"condition": "gpu-float32", "case": "nfw-om", "status": "completed", "reference_error": 1.5384708568526218e-05}
+{"condition": "gpu-float32", "case": "nfw-baes", "status": "completed", "reference_error": 7.5448363095497105e-06}
+{"condition": "gpu-float32", "case": "zhao-constant", "status": "completed", "reference_error": 4.380653271065994e-06}
+{"condition": "gpu-float32", "case": "oblate-cusp", "status": "completed", "reference_error": 7.43582254358183e-08}
+{"condition": "gpu-float32", "case": "prolate-halo-core", "status": "completed", "reference_error": 3.734453127933744e-07}
+{"condition": "gpu-float32", "case": "finite-halo", "status": "completed", "reference_error": 0.0003304792964296773}

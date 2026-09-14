@@ -1,0 +1,43 @@
+{
+  "inputs": [
+    {
+      "path": "validation/release/campaign/gradients-cpu-float64.json",
+      "sha256": "7c4b2f5874bbb79aa1f44374ebe8ea6805ccc322717e57cf44c9605193f15a1b"
+    },
+    {
+      "path": "validation/release/campaign/gradients-gpu-float64.json",
+      "sha256": "81afe6dbf975629231a59be5e698822af794c12529015bcfcc7d939b6a139c6d"
+    },
+    {
+      "path": "validation/release/campaign/gradients-cpu-float32.json",
+      "sha256": "13008cf8d0d87953900b93ba008241c48e008d308a277f4604700f4045a78635"
+    },
+    {
+      "path": "validation/release/campaign/gradients-gpu-float32.json",
+      "sha256": "62a2271bfe9b80d5e2e5056b492a9e7ce4fbef47462da7610136d77c46c199bf"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "docs/source/_static/validation/physical_gradients.pdf",
+      "sha256": "dedceaf2919279ddfdbead2114a29814468f1652da5155d99185d214dcabf29f"
+    },
+    {
+      "path": "docs/source/_static/validation/physical_gradients.png",
+      "sha256": "b75e45ad1ce5b2040089779cf7619a3f0d0afb70e16e49d539ef0cadcf7d43a4"
+    },
+    {
+      "path": "docs/source/_static/validation/physical_gradients.svg",
+      "sha256": "66a83b9ee54cbbf4838c8ba0ad126a771a591acac194a73159cf7729f0747958"
+    },
+    {
+      "path": "validation/release/gradient_parameter_summary.json",
+      "sha256": "e738789b0be48290606829ccf84149eeee4fa95023c4b3a65d918d5d7287fdac"
+    },
+    {
+      "path": "docs/source/validation/gradients.md",
+      "sha256": "f834d584589c07a5cf31e43d9defdc765bb24d8cf9c75c0cd3ff4145c977c2b4"
+    }
+  ],
+  "script_sha256": "b31580038bfc2ade494f1841645cc33c412f6e2436756bde4d8a5bd3fe4ff74b"
+}

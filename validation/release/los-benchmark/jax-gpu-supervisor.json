@@ -1,0 +1,43 @@
+{
+  "started_utc": "2026-09-14T01:42:10.793942+00:00",
+  "command": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/home/gomesu/workspace/dev_jeanspy/jeanspy/.venv/bin/python",
+    "/tmp/jeanspy-docstring-docs/scripts/benchmark_release_los.py",
+    "--role",
+    "jax-gpu",
+    "--reference",
+    "/tmp/jeanspy-docstring-docs/validation/release/los-benchmark/reference.json",
+    "--output",
+    "/tmp/jeanspy-docstring-docs/validation/release/los-benchmark/jax-gpu.json"
+  ],
+  "cwd": "/tmp/jeanspy-science",
+  "bounds": {
+    "seconds": 1200.0,
+    "host_rss_gib": 16.0,
+    "gpu_gib": 16.0
+  },
+  "status": "completed",
+  "peak_host_rss_bytes": 992067584,
+  "peak_gpu_bytes": 337641472,
+  "supervisor_sha256": "9d43e5c90863be5bf300ace58614ba086584b103a60161de2832256e1aeab468",
+  "environment": {
+    "JEANSPY_JAX_PLATFORM": "gpu",
+    "JEANSPY_JAX_ENABLE_X64": "true",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "process_identity": {
+    "pid": 3469891,
+    "birth_ticks": 126960168,
+    "pgrp": 3469891,
+    "argv": "taskset -c 0-7 /home/gomesu/workspace/dev_jeanspy/jeanspy/.venv/bin/python /tmp/jeanspy-docstring-docs/scripts/benchmark_release_los.py --role jax-gpu --reference /tmp/jeanspy-docstring-docs/validation/release/los-benchmark/reference.json --output /tmp/jeanspy-docstring-docs/validation/release/los-benchmark/jax-gpu.json ",
+    "cwd": "/tmp/jeanspy-science"
+  },
+  "elapsed_seconds": 53.04644917999394,
+  "exit_code": 0,
+  "finished_utc": "2026-09-14T01:43:03.840526+00:00",
+  "stdout_sha256": "00d8d2b8d4bdffcff676fe091fe447e4311bc6a6f223dd25e40ab261da2e216f"
+}

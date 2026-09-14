@@ -1,0 +1,7 @@
+{
+  "observation": "Read-only nvidia-smi after the completed benchmark, 2026-09-14 UTC; per-run device indices and process memory are retained separately.",
+  "command": "nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader",
+  "gpu_name": "NVIDIA GeForce RTX 3090",
+  "driver_version": "595.84",
+  "total_memory_mib": 24576
+}
