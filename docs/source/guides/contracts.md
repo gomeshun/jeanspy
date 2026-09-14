@@ -24,12 +24,13 @@ return that shape. Physical parameter dictionaries contain scalar values;
 use `jax.vmap` to batch dictionaries explicitly. Inference data contain matching
 nonempty finite 1-D arrays; measurement errors must be nonnegative.
 
-Classical models are stateful: construct components, then update their named
-parameters. JAX spherical models use explicit `params` dictionaries. The
-axisymmetric forward configurations are frozen dataclasses in both backends;
-use `dataclasses.replace` or construct another configuration to change node
-counts. The convenience exports in `jeanspy.model` preserve the defining
-axisymmetric classes.
+Classical spherical models store parameters and support `update`. Axisymmetric
+NumPy components also store parameters, but are immutable: use
+`dataclasses.replace` to change a component or the forward model's node counts.
+An axisymmetric per-call `params` mapping overrides stored physical values
+without modifying the components. Both JAX geometries receive physical
+parameters explicitly. The convenience exports in `jeanspy.model` preserve
+the defining axisymmetric classes.
 
 NumPy raises `ValueError` (including `InvalidAxisymmetricModelError`) for invalid
 axisymmetric models. JAX uses NaN forward values for invalid dynamic physical

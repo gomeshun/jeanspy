@@ -2004,3 +2004,14 @@ __all__ = [
     "configure_runtime",
     "get_runtime_config",
 ]
+
+from .axisymmetric_numpyro import (
+    AxisymmetricPlummerModel,
+    AxisymmetricZhaoModel,
+    AxisymmetricConstantAnisotropyModel,
+    AxisymmetricStellarModel,
+    AxisymmetricDMModel,
+    AxisymmetricAnisotropyModel,
+)
+
+__all__ += ['AxisymmetricPlummerModel', 'AxisymmetricZhaoModel', 'AxisymmetricConstantAnisotropyModel', 'AxisymmetricStellarModel', 'AxisymmetricDMModel', 'AxisymmetricAnisotropyModel']

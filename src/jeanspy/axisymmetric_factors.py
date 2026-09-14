@@ -10,7 +10,7 @@ import numpy as np
 from scipy.constants import parsec
 
 from ._classical.jfactor import C_J, kg_eV, solar_mass_kg
-from .axisymmetric import ZhaoHalo, _inclination, _positive, _rule
+from .axisymmetric import AxisymmetricZhaoModel, _inclination, _positive, _rule
 
 __all__ = ["jfactor", "dfactor", "C_J", "C_D"]
 
@@ -22,8 +22,8 @@ C_D = (solar_mass_kg * kg_eV / 1e9) / (parsec * 100)**2
 
 
 def _factor(halo, dist_pc, roi_deg, inclination, power, n_mu, n_phi, n_radial):
-    if not isinstance(halo, ZhaoHalo):
-        raise TypeError("halo must be a ZhaoHalo")
+    if not isinstance(halo, AxisymmetricZhaoModel):
+        raise TypeError("halo must be an AxisymmetricZhaoModel")
     _positive("dist_pc", dist_pc)
     _inclination(inclination)
     if not np.isscalar(roi_deg) or not np.isfinite(roi_deg) or not 0 <= roi_deg < 90:

@@ -21,19 +21,26 @@ gives
 \frac{\nu(r)\sigma_r^2(r)r\,dr}{\sqrt{r^2-R^2}}.
 ```
 
-The classical implementation uses SciPy integration for intrinsic moments
-and double-exponential quadrature for the kernel LOS solver. The JAX
-implementation exposes kernel and direct routes with fixed quadrature.
+See {ref}`References: Jeans equations <references-jeans-equations-and-axisymmetric-dynamics>`
+for the dynamical foundations. Both backends offer numerical controls for
+refining the line-of-sight integrals.
 The route, node counts and infinity transformation are part of the numerical
 model and must be recorded. Agreement of two backends is a consistency check;
 an analytic solution or independent integral supplies stronger validation.
 
 ## Axisymmetric Jeans equations
 
-JeansPy implements the stationary, cylindrically aligned model of
-[Hayashi & Chiba (2015)](https://arxiv.org/abs/1507.07620) and
-[Hayashi et al. (2016)](https://arxiv.org/abs/1603.08046). The stellar and halo
-axes coincide, cross moments vanish, and $\beta_z=1-\overline{v_z^2}/\overline{v_R^2}$
+The Jeans equations follow from velocity moments of the collisionless
+Boltzmann equation. JeansPy uses cylindrical alignment and constant meridional
+anisotropy as formulated by Cappellari (2008), with spheroidal tracer and halo
+profiles used in dwarf-galaxy applications by Hayashi & Chiba (2012, 2015)
+and Hayashi et al. (2016). The earlier two-integral models and spheroidal force
+integrals are described by van der Marel et al. (1994); Binney & Tremaine (2008)
+provide the general dynamical background. See
+{ref}`References: Jeans equations and axisymmetric dynamics <references-jeans-equations-and-axisymmetric-dynamics>`.
+
+The stellar and halo axes coincide, cross moments vanish, and
+$\beta_z=1-\overline{v_z^2}/\overline{v_R^2}$
 is constant. With $P=\nu\overline{v_z^2}$,
 
 ```{math}

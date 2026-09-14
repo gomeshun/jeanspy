@@ -12,7 +12,7 @@ model = DSphModel(
     },
 )
 R_pc = np.array([50., 100., 300.])
-variance = model.sigmalos2(R_pc, method="dequad")
+variance = model.sigmalos2(R_pc)
 sigma_kms = np.sqrt(variance)
 assert variance.shape == R_pc.shape
 assert np.all(np.isfinite(sigma_kms) & (sigma_kms > 0))

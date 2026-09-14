@@ -29,6 +29,7 @@ if not re.fullmatch(r"[A-Za-z0-9_./-]+", source_ref):
 tags.add("development" if version == "dev" else "release")
 extensions = [
     "myst_parser",
+    "sphinx_design",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
@@ -66,6 +67,9 @@ html_theme = "pydata_sphinx_theme"
 html_title = "JeansPy documentation"
 html_static_path = ["_static"]
 html_css_files = ["jeanspy.css"]
+html_sidebars = {name: [] for name in (
+    "index", "installation", "quickstart", "theory", "references", "citing",
+)}
 html_theme_options = {
     "github_url": "https://github.com/gomeshun/jeanspy",
     "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
@@ -134,11 +138,16 @@ def preserve_source_alias_anchors(app, doctree):
     Both names point to the same runtime class; add the corresponding anchors.
     """
     from sphinx import addnodes
-    canonical = "jeanspy.model.AxisymmetricDSphModel"
-    implementation = "jeanspy.axisymmetric.AxisymmetricDSphModel"
     for node in doctree.findall(addnodes.desc_signature):
         for target in list(node.get("ids", [])):
-            if target == canonical or target.startswith(canonical + "."):
+            for facade in ("jeanspy.model", "jeanspy.model_numpyro"):
+                prefix = facade + "."
+                if not target.startswith(prefix + "Axisymmetric"):
+                    continue
+                name = target[len(prefix):].split(".", 1)[0]
+                obj = getattr(sys.modules[facade], name)
+                canonical = prefix + name
+                implementation = obj.__module__ + "." + name
                 alias = implementation + target[len(canonical):]
                 if alias not in node["ids"]:
                     node["ids"].append(alias)

@@ -37,6 +37,8 @@ def check(directory: Path) -> list[dict]:
                     and not p.is_relative_to(ROOT / "docs/_build")
                     and not p.is_relative_to(ROOT / "docs/source/api")
                     and "__pycache__" not in p.parts})
+    support.update({p.relative_to(ROOT).as_posix(): p
+                    for p in (ROOT / "docs/source/_static/quickstart").glob("*.txt")})
     support.update({name: ROOT / name for name in
                     ["README.md", "RELEASE.md", "LICENSE", "pyproject.toml", "MANIFEST.in",
                      "validation/axisymmetric_jam_reference.json",

@@ -14,7 +14,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from jeanspy.axisymmetric import AxisymmetricDSphModel
+from jeanspy.model import (
+    AxisymmetricDSphModel, AxisymmetricPlummerModel,
+    AxisymmetricZhaoModel, AxisymmetricConstantAnisotropyModel,
+)
+from jeanspy.axisymmetric import intrinsic_axis_ratio
 from jeanspy.axisymmetric_inference import AxisymmetricDSphEstimationModel, AxisymmetricKinematicData
 
 
@@ -27,6 +31,19 @@ PRIOR = pd.DataFrame(dict(lower=[-1.3, 2.5, .07, .1, -20.],
                             "cos_inclination", "vmem_kms"])
 
 
+def classical_model(nodes):
+    return AxisymmetricDSphModel(
+        submodels={
+            "StellarModel": AxisymmetricPlummerModel(
+                re_pc=TRUTH["re_pc"],
+                q=intrinsic_axis_ratio(TRUTH["q_projected"], TRUTH["inclination"])),
+            "DMModel": AxisymmetricZhaoModel(**{name: TRUTH[name] for name in
+                ("rs_pc", "rhos_Msunpc3", "Q", "alpha", "beta", "gamma", "r_t_pc")}),
+            "AnisotropyModel": AxisymmetricConstantAnisotropyModel(TRUTH["beta_z"]),
+        }, inclination=TRUTH["inclination"], n_force=nodes, n_vertical=nodes, n_los=nodes,
+    )
+
+
 def mock_data(stars, seed):
     rng = np.random.default_rng(seed)
     # Positions selected inside a finite photometric window. The inference
@@ -36,7 +53,7 @@ def mock_data(stars, seed):
     azimuth = rng.uniform(0., 2*np.pi, stars)
     x, y = radius*np.cos(azimuth), radius*np.sin(azimuth)*TRUTH["q_projected"]
     error = np.full(stars, 2.)
-    variance = AxisymmetricDSphModel(96, 96, 96).sigmalos2(x, y, params=TRUTH)
+    variance = classical_model(96).sigmalos2(x, y)
     velocity = rng.normal(TRUTH["vmem_kms"], np.sqrt(variance+error**2))
     return AxisymmetricKinematicData(x, y, velocity, error)
 
@@ -63,7 +80,12 @@ def run_numpyro(args, data):
     import jax.numpy as jnp
     import numpyro.distributions as dist
     from numpyro.infer import MCMC, NUTS, init_to_value
-    from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel as JaxModel
+    from jeanspy.model_numpyro import (
+        AxisymmetricDSphModel as JaxModel,
+        AxisymmetricPlummerModel as JaxPlummerModel,
+        AxisymmetricZhaoModel as JaxZhaoModel,
+        AxisymmetricConstantAnisotropyModel as JaxAnisotropyModel,
+    )
     from jeanspy.sampler_numpyro import AxisymmetricJeansLikelihoodModel, ParameterSpec, NumPyroSampler
 
     specifications = []
@@ -78,8 +100,12 @@ def run_numpyro(args, data):
         else:
             spec = ParameterSpec(name, distribution)
         specifications.append(spec)
-    likelihood = AxisymmetricJeansLikelihoodModel(JaxModel(args.nodes, args.nodes, args.nodes),
-                                                  specifications, fixed_params=FIXED)
+    forward = JaxModel(
+        submodels={"StellarModel": JaxPlummerModel(), "DMModel": JaxZhaoModel(),
+                   "AnisotropyModel": JaxAnisotropyModel()},
+        n_force=args.nodes, n_vertical=args.nodes, n_los=args.nodes,
+    )
+    likelihood = AxisymmetricJeansLikelihoodModel(forward, specifications, fixed_params=FIXED)
     initial = dict(log10_rhos_Msunpc3=-1., log10_rs_pc=float(np.log10(500.)),
                    bfunc_beta_z=float(np.log10(1.3)), cos_inclination=.3, vmem_kms=0.)
     kernel = NUTS(likelihood, max_tree_depth=4, init_strategy=init_to_value(values=initial))
@@ -110,7 +136,7 @@ def main():
         parser.error("stars >= 2 and positive warmup/draws are required")
     data = mock_data(args.stars, args.seed)
     estimation = AxisymmetricDSphEstimationModel(data, PRIOR, fixed_params=FIXED,
-                    dsph_model=AxisymmetricDSphModel(args.nodes, args.nodes, args.nodes))
+                    dsph_model=classical_model(args.nodes))
     args.output_dir.mkdir(parents=True, exist_ok=True)
     frame, diagnostics = (run_classical(args, estimation) if args.backend == "classical"
                            else run_numpyro(args, data))

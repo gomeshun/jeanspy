@@ -12,15 +12,16 @@ from functools import cached_property
 from pathlib import Path
 import re
 import sys
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 SOURCE = ROOT / "docs" / "source"
 MODULES = {
-    "model": "Classical spherical models and convenience exports",
+    "model": "NumPy/SciPy",
     "axisymmetric": "Axisymmetric components and NumPy forward model",
     "axisymmetric_inference": "Axisymmetric observations and classical inference",
-    "model_numpyro": "Functional JAX spherical models and runtime configuration",
+    "model_numpyro": "JAX",
     "axisymmetric_numpyro": "JAX axisymmetric forward model",
     "axisymmetric_factors": "Finite-cone NumPy J and D factors",
     "sampler": "Classical emcee sampling and HDF5 storage",
@@ -82,16 +83,46 @@ def documentable_members(cls):
     return members
 
 
+
+def category_for(path):
+    """Classify exports by user task, including mixed convenience modules."""
+    module, name = path.rsplit(".", 1)
+    if "sampler" in module or "inference" in module or name in {
+        "FittableModel", "FlatPriorModel", "PhotometryPriorModel",
+        "SimpleDSphEstimationModel", "get_default_estimation_model",
+        "AxisymmetricDSphEstimationModel", "AxisymmetricKinematicData",
+    }:
+        return "inference"
+    if module in {"jeanspy.dequad", "jeanspy.hyp2f1_jax"} or name in {
+        "C_J", "C_D", "GMsun_m3s2", "Model", "Parameters", "DotDict",
+        "configure_runtime", "get_runtime_config",
+    }:
+        return "core"
+    if "axisymmetric" in module or name.startswith("Axisymmetric"):
+        return "axisymmetric-models"
+    return "spherical"
+
 def main():
     destination = SOURCE / "api"
-    destination.mkdir(exist_ok=True)
+    if destination.exists():
+        shutil.rmtree(destination)
+    destination.mkdir()
     (destination / "generated").mkdir(exist_ok=True)
+    groups = {"core": ("Core utilities", []),
+              "spherical": ("Spherical models", []),
+              "axisymmetric-models": ("Axisymmetric models", []),
+              "inference": ("Statistical inference", [])}
     index = ["# API reference", "",
-             "This inventory is generated from the checked-out public modules.",
-             "Each entry exposes its real signature and source documentation; aliases",
-             "link to the same underlying object. See the [units and shape contract](../guides/contracts.md)",
-             "and the [executable examples](../quickstart.md).", "",
-             "```{toctree}", ":maxdepth: 1", ""]
+             "Choose a category, then the NumPy/SciPy or JAX implementation.", "",
+             "| Category | Contents |", "| --- | --- |",
+             "| [Core utilities](core) | Units, parameter containers, runtime settings and numerical helpers |",
+             "| [Spherical models](spherical) | Stellar profiles, dark-matter halos, anisotropy and Jeans solvers |",
+             "| [Axisymmetric models](axisymmetric-models) | Flattened components, projection, Jeans solvers and J/D factors |",
+             "| [Statistical inference](inference) | Observations, priors, likelihoods, MCMC and storage |", "",
+             "See also the [units and shape contract](../guides/contracts.md) and",
+             "[Quickstart](../quickstart.md). [Browse by import module](modules).", "",
+             "```{toctree}", ":hidden:", ":maxdepth: 2", "",
+             *groups, "modules", "```", ""]
     inventory = []
     seen = {}
     for short, title in MODULES.items():
@@ -126,14 +157,27 @@ def main():
             else:
                 aliases.append((path, canonical))
         if unique:
-            page += [".. autosummary::", "   :toctree: generated", "", *[f"   {p.rsplit('.', 1)[1]}" for p in unique], ""]
+            page += [".. autosummary::", "", *[f"   {p.rsplit('.', 1)[1]}" for p in unique], ""]
         if aliases:
             page += ["Aliases", "-------", ""]
             for path, canonical in aliases:
                 page += [f"* ``{path}`` is :py:obj:`{canonical}`."]
         (destination / f"{short}.rst").write_text("\n".join(page) + "\n")
-        index.append(short)
-    index += ["```", ""]
+        for path in unique:
+            groups[category_for(path)][1].append(path)
+    for group, (title, paths) in groups.items():
+        body = [title, "=" * len(title), ""]
+        for short in MODULES:
+            members = [p for p in paths if p.rsplit(".", 1)[0] == "jeanspy." + short]
+            if not members:
+                continue
+            label = MODULES[short]
+            body += [label, "-" * len(label), "", ".. autosummary::",
+                     "   :toctree: generated", "", *[f"   {p}" for p in members], ""]
+        (destination / f"{group}.rst").write_text("\n".join(body))
+    (destination / "modules.rst").write_text(
+        "Import modules\n==============\n\n.. toctree::\n   :maxdepth: 1\n\n" +
+        "".join(f"   {short}\n" for short in MODULES))
     (destination / "index.md").write_text("\n".join(index))
     (ROOT / "docs" / "api_inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
 

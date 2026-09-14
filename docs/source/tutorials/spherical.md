@@ -17,7 +17,7 @@ python scripts/example_classical_inference.py --output-dir /tmp/spherical-exampl
 Use a new output directory. Inputs and outputs include `observations.csv`,
 `prior.csv`, the persisted sampler state and `result.json`. The seed is 55.
 The displayed run contains only 12 stored steps and does not establish
-convergence. Longer runs and posterior diagnostics are needed for inference.
+convergence. Use the [Quickstart](../quickstart.md) for a complete spherical model and MCMC example.
 
 ```{literalinclude} ../../../scripts/example_classical_inference.py
 :language: python

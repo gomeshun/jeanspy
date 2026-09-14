@@ -84,3 +84,14 @@ from .axisymmetric import AxisymmetricDSphModel
 from .axisymmetric_inference import AxisymmetricDSphEstimationModel, AxisymmetricKinematicData
 
 __all__ += ["AxisymmetricDSphModel", "AxisymmetricDSphEstimationModel", "AxisymmetricKinematicData"]
+
+from .axisymmetric import (
+    AxisymmetricPlummerModel,
+    AxisymmetricZhaoModel,
+    AxisymmetricConstantAnisotropyModel,
+    AxisymmetricStellarModel,
+    AxisymmetricDMModel,
+    AxisymmetricAnisotropyModel,
+)
+
+__all__ += ['AxisymmetricPlummerModel', 'AxisymmetricZhaoModel', 'AxisymmetricConstantAnisotropyModel', 'AxisymmetricStellarModel', 'AxisymmetricDMModel', 'AxisymmetricAnisotropyModel']

@@ -103,7 +103,9 @@ class AxisymmetricDSphEstimationModel:
     ``prior`` is a :class:`FlatPriorModel`, a DataFrame, or a CSV with finite
     ``lower``/``upper`` bounds. Its row order defines the sampler coordinates.
     ``fixed_params`` supplies remaining physical parameters; sampled and fixed
-    names must be disjoint. Supply exactly one of q and q_projected across them.
+    names must be disjoint. Stored components supply defaults for parameters
+    not sampled; explicit fixed_params override those defaults. Supply exactly
+    one of q and q_projected across the resulting physical schema.
 
     An optional :class:`PhotometryPriorModel` multiplies the flat prior on
     ``log10_re_pc``. A uniform ``cos_inclination`` coordinate gives an isotropic
@@ -149,7 +151,12 @@ class AxisymmetricDSphEstimationModel:
             raise TypeError("dsph_model must be a classical AxisymmetricDSphModel")
         self.prior = (FlatPriorModel(prior.data) if isinstance(prior, FlatPriorModel)
                       else FlatPriorModel(prior))
-        self.fixed_params = dict(fixed_params or {})
+        sampled = {_physical_name(name) for name in self.prior.data.index}
+        defaults = self.dsph_model.physical_params
+        if "q_projected" in sampled or "q_projected" in (fixed_params or {}):
+            defaults.pop("q", None)
+        self.fixed_params = {k: v for k, v in defaults.items() if k not in sampled}
+        self.fixed_params.update(fixed_params or {})
         self.photometry_prior = photometry_prior
         self._validate_schema()
         self.reset_data(data)

@@ -73,6 +73,7 @@ jobs:
           tests/test_import.py tests/test_jfactor_ullio2016.py
           tests/test_sampler_emcee_integration.py tests/test_classical_inference_workflow.py
           tests/test_axisymmetric.py tests/test_axisymmetric_inference.py
+          tests/test_axisymmetric_components.py
           tests/test_axisymmetric_truncation.py tests/test_axisymmetric_factors.py
           tests/test_platform_compatibility.py
 

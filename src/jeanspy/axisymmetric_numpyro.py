@@ -13,11 +13,15 @@ configure_jax_environment()
 import jax
 import jax.numpy as jnp
 
-from .axisymmetric import G, _rule
+from .axisymmetric import (G, _rule, AxisymmetricStellarModel, AxisymmetricDMModel,
+                           AxisymmetricAnisotropyModel)
+from ._axisymmetric_components import component_models, component_params
 from ._axisymmetric_params import force_limit, resolve_params
 from ._zhao import enclosed_mass as _zhao_mass
 
-__all__ = ["AxisymmetricDSphModel"]
+__all__ = ["AxisymmetricDSphModel", "AxisymmetricPlummerModel", "AxisymmetricZhaoModel",
+           "AxisymmetricConstantAnisotropyModel", "AxisymmetricStellarModel",
+           "AxisymmetricDMModel", "AxisymmetricAnisotropyModel"]
 
 
 def _coords(a, b):
@@ -34,8 +38,140 @@ def _sqrt_nonnegative(x):
 
 
 @dataclass(frozen=True)
+class AxisymmetricPlummerModel(AxisymmetricStellarModel):
+    """Functional JAX Plummer tracer with explicit re_pc and q/q_projected.
+
+    Distances are pc; density is normalized to unity. q_projected requires an
+    admissible oblate inclination in radians. Dynamic invalid values yield NaN;
+    schema errors raise ValueError. Supports JIT and physical-parameter gradients.
+    """
+
+    def _unnormalized_density(self, R, z, p):
+        return (1+(R/p["re_pc"])**2+(z/(p["q"]*p["re_pc"]))**2)**(-2.5)
+
+    def _radial_derivative(self, R, z, p):
+        return -5*R*self._unnormalized_density(R, z, p)/(p["re_pc"]**2+R*R+(z/p["q"])**2)
+
+    def density_3d(self, R_pc, z_pc, *, params):
+        """Return unit-normalized pc^-3 density at broadcast cylindrical coordinates."""
+        p, valid = component_params(params, "stellar", jnp)
+        R, z, coords = _coords(R_pc, z_pc)
+        value = self._unnormalized_density(R, z, p)*3/(4*jnp.pi*p["q"]*p["re_pc"]**3)
+        return jnp.where(valid & coords & (R >= 0), value, jnp.nan)
+
+    def radial_derivative(self, R_pc, z_pc, *, params):
+        """Return dnu/dR in pc^-4; invalid dynamic coordinates yield NaN."""
+        p, valid = component_params(params, "stellar", jnp)
+        R, z, coords = _coords(R_pc, z_pc)
+        value = self._radial_derivative(R, z, p)*3/(4*jnp.pi*p["q"]*p["re_pc"]**3)
+        return jnp.where(valid & coords & (R >= 0), value, jnp.nan)
+
+    def surface_density(self, x_pc, y_pc, *, params):
+        """Return projected normalized pc^-2 density; x is the line of nodes."""
+        p, valid = component_params(params, "stellar", jnp)
+        x, y, coords = _coords(x_pc, y_pc)
+        qp = jnp.sqrt(jnp.cos(p["inclination"])**2+p["q"]**2*jnp.sin(p["inclination"])**2)
+        value = (1+(x*x+(y/qp)**2)/p["re_pc"]**2)**(-2)/(jnp.pi*p["re_pc"]**2*qp)
+        return jnp.where(valid & coords, value, jnp.nan)
+
+
+@dataclass(frozen=True)
+class AxisymmetricZhaoModel(AxisymmetricDMModel):
+    """Functional JAX spheroidal Zhao halo.
+
+    params requires rs_pc and rhos_Msunpc3, with optional Q, alpha, beta, gamma
+    and r_t_pc. The physical domain and units match the NumPy component.
+    Dynamic invalid proposals yield NaN; malformed schemas raise ValueError.
+    Forces and mass share the same optional ellipsoidal cutoff. J/D factors
+    use the NumPy component as posterior postprocessing.
+    """
+
+    def _gradients(self, R, z, p, n):
+        t, w = (jnp.asarray(v) for v in _rule(n))
+        limit, derivative = force_limit(R, z, p["Q"], p["r_t_pc"], jnp)
+        t, w = limit[..., None]*t, limit[..., None]*w
+        D = jnp.sqrt(1+(p["Q"]**2-1)*t*t)
+        RR, zz = R[..., None], z[..., None]
+        m2 = t*t*(RR*RR+(zz/D)**2)
+        # Avoid log(0) at the core center. Force components vanish there.
+        m = jnp.sqrt(jnp.where(m2 > 0, m2, p["rs_pc"]**2))
+        logx = jnp.log(m/p["rs_pc"])
+        logtransition = jnp.logaddexp(0., p["alpha"]*logx)
+        rho = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*logx+
+                (p["gamma"]-p["beta"])/p["alpha"]*logtransition)
+        # At a cored origin the force vanishes, but its coordinate derivative
+        # is proportional to the central density, not the benign log placeholder.
+        rho = jnp.where(m2 > 0, rho, p["rhos_Msunpc3"])
+        slope = -p["gamma"]+(p["gamma"]-p["beta"])*jax.nn.sigmoid(p["alpha"]*logx)
+        common = 4*jnp.pi*G*p["Q"]*w*rho*t*t
+        gR = R*jnp.sum(common/D, axis=-1)
+        gz = z*jnp.sum(common/D**3, axis=-1)
+        ratio = RR*t*t/jnp.where(m2 > 0, m2, 1.)
+        dgz = z*jnp.sum(common/D**3*slope*ratio, axis=-1)
+        rt = jnp.where(jnp.isfinite(p["r_t_pc"]), p["r_t_pc"], p["rs_pc"])
+        edge_logx = jnp.log(rt/p["rs_pc"])
+        edge_density = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*edge_logx +
+            (p["gamma"]-p["beta"])/p["alpha"]*jnp.logaddexp(0., p["alpha"]*edge_logx))
+        edge_D = jnp.sqrt(1+(p["Q"]**2-1)*limit**2)
+        dgz += 4*jnp.pi*G*p["Q"]*z*edge_density*limit**2/edge_D**3*derivative
+        return gR, gz, dgz
+
+    def potential_gradient(self, R_pc, z_pc, *, params, n_force=96):
+        """Return (dPhi/dR,dPhi/dz) in (km/s)^2/pc; n_force is static under JIT."""
+        p, valid = component_params(params, "halo", jnp)
+        R, z, coords = _coords(R_pc, z_pc)
+        valid = valid & coords & (R >= 0) & ~((R == 0) & (z == 0) & (p["gamma"] > 0))
+        values = self._gradients(jnp.where(R >= 0, R, 0.), z, p, n_force)
+        return tuple(jnp.where(valid, v, jnp.nan) for v in values[:2])
+
+    def mass_density_3d(self, R_pc, z_pc, *, params):
+        """Return halo density in Msun/pc^3 with the broadcast coordinate shape."""
+        p, valid = component_params(params, "halo", jnp)
+        R, z, coords = _coords(R_pc, z_pc)
+        m = _sqrt_nonnegative(R*R+(z/p["Q"])**2)
+        logx = jnp.log(jnp.where(m > 0, m/p["rs_pc"], 1.))
+        rho = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*logx +
+                  (p["gamma"]-p["beta"])/p["alpha"]*jnp.logaddexp(0., p["alpha"]*logx))
+        rho = jnp.where(m == 0, jnp.where(p["gamma"] == 0, p["rhos_Msunpc3"], jnp.inf), rho)
+        rho = jnp.where(m <= p["r_t_pc"], rho, 0.)
+        return jnp.where(valid & coords & (R >= 0), rho, jnp.nan)
+
+    def enclosed_mass(self, m_pc, *, params, n_steps=128):
+        """Return mass in Msun inside spheroidal radius m_pc; n_steps is static."""
+        p, valid = component_params(params, "halo", jnp)
+        r = jnp.asarray(m_pc, dtype=float)
+        if not r.size:
+            raise ValueError("m_pc must be nonempty")
+        mass_params = dict(rs_pc=p["rs_pc"], rhos_Msunpc3=p["rhos_Msunpc3"],
+                           a=p["alpha"], b=p["beta"], g=p["gamma"], r_t_pc=p["r_t_pc"])
+        mass = p["Q"]*_zhao_mass(r, mass_params, xp=jnp, n_steps=n_steps)
+        return jnp.where(valid, mass, jnp.nan)
+
+
+@dataclass(frozen=True)
+class AxisymmetricConstantAnisotropyModel(AxisymmetricAnisotropyModel):
+    """Functional constant cylindrical beta_z (default 0), finite and <1.
+
+    beta_z is passed through params and is differentiable under JIT. Invalid
+    dynamic values yield NaN; the full Jeans model also checks moment positivity.
+    """
+
+    def beta(self, R_pc, z_pc, *, params):
+        """Return beta_z at broadcast cylindrical coordinates in pc."""
+        p, valid = component_params(params, "anisotropy", jnp)
+        R, z, coords = _coords(R_pc, z_pc)
+        return jnp.where(valid & coords & (R >= 0), p["beta_z"], jnp.nan)
+
+
+@dataclass(frozen=True)
 class AxisymmetricDSphModel:
-    r"""Same parameters and units as axisymmetric.AxisymmetricDSphModel.
+    r"""Compose functional JAX axisymmetric stellar, halo and anisotropy components.
+
+    submodels uses StellarModel=AxisymmetricPlummerModel(),
+    DMModel=AxisymmetricZhaoModel() and
+    AnisotropyModel=AxisymmetricConstantAnisotropyModel(). These are also the
+    defaults. Physical parameters remain explicit in params on every call.
+    Components are immutable and participate in JIT and sampling identity.
 
     Fixed quadrature settings are static under JIT. lax.map with rematerialized
     per-star evaluation bounds intermediate memory when differentiating catalogs.
@@ -79,8 +215,17 @@ class AxisymmetricDSphModel:
     n_force: int = 96
     n_vertical: int = 96
     n_los: int = 96
+    submodels: object = None
 
     def __post_init__(self):
+        selected = self.submodels if self.submodels is not None else {
+            "StellarModel": AxisymmetricPlummerModel(),
+            "DMModel": AxisymmetricZhaoModel(),
+            "AnisotropyModel": AxisymmetricConstantAnisotropyModel(),
+        }
+        object.__setattr__(self, "submodels", component_models(selected, (
+            AxisymmetricPlummerModel, AxisymmetricZhaoModel,
+            AxisymmetricConstantAnisotropyModel)))
         for n in (self.n_force, self.n_vertical, self.n_los):
             _rule(n)
 
@@ -90,41 +235,17 @@ class AxisymmetricDSphModel:
         The host dictionary contains n_force, n_vertical and n_los. This metadata
         helper has no physical-parameter derivative.
         """
-        return dict(n_force=self.n_force, n_vertical=self.n_vertical, n_los=self.n_los)
+        return dict(n_force=self.n_force, n_vertical=self.n_vertical, n_los=self.n_los,
+                    submodels=dict(self.submodels))
+
+    def __getitem__(self, name):
+        return self.submodels[name]
 
     def _force(self, R, z, p):
-        t, w = (jnp.asarray(v) for v in _rule(self.n_force))
-        limit, derivative = force_limit(R, z, p["Q"], p["r_t_pc"], jnp)
-        t, w = limit[..., None]*t, limit[..., None]*w
-        D = jnp.sqrt(1+(p["Q"]**2-1)*t*t)
-        RR, zz = R[..., None], z[..., None]
-        m2 = t*t*(RR*RR+(zz/D)**2)
-        # Avoid log(0) at the core center. Force components vanish there.
-        m = jnp.sqrt(jnp.where(m2 > 0, m2, p["rs_pc"]**2))
-        logx = jnp.log(m/p["rs_pc"])
-        logtransition = jnp.logaddexp(0., p["alpha"]*logx)
-        rho = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*logx+
-                (p["gamma"]-p["beta"])/p["alpha"]*logtransition)
-        # At a cored origin the force vanishes, but its coordinate derivative
-        # is proportional to the central density, not the benign log placeholder.
-        rho = jnp.where(m2 > 0, rho, p["rhos_Msunpc3"])
-        slope = -p["gamma"]+(p["gamma"]-p["beta"])*jax.nn.sigmoid(p["alpha"]*logx)
-        common = 4*jnp.pi*G*p["Q"]*w*rho*t*t
-        gR = R*jnp.sum(common/D, axis=-1)
-        gz = z*jnp.sum(common/D**3, axis=-1)
-        ratio = RR*t*t/jnp.where(m2 > 0, m2, 1.)
-        dgz = z*jnp.sum(common/D**3*slope*ratio, axis=-1)
-        rt = jnp.where(jnp.isfinite(p["r_t_pc"]), p["r_t_pc"], p["rs_pc"])
-        edge_logx = jnp.log(rt/p["rs_pc"])
-        edge_density = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*edge_logx +
-            (p["gamma"]-p["beta"])/p["alpha"]*jnp.logaddexp(0., p["alpha"]*edge_logx))
-        edge_D = jnp.sqrt(1+(p["Q"]**2-1)*limit**2)
-        dgz += 4*jnp.pi*G*p["Q"]*z*edge_density*limit**2/edge_D**3*derivative
-        return gR, gz, dgz
+        return self.submodels["DMModel"]._gradients(R, z, p, self.n_force)
 
     def _nu(self, R, z, p):
-        # Normalization cancels; omitting a^-3/q improves float32 dynamic range.
-        return (1+(R/p["re_pc"])**2+(z/(p["q"]*p["re_pc"]))**2)**(-2.5)
+        return self.submodels["StellarModel"]._unnormalized_density(R, z, p)
 
     def _intrinsic(self, R, z, p):
         t, w = (jnp.asarray(v) for v in _rule(self.n_vertical))
@@ -134,14 +255,15 @@ class AxisymmetricDSphModel:
         RR = R[..., None]
         nu = self._nu(RR, zz, p)
         _, gz, dgz = self._force(RR, zz, p)
-        dnu = -5*RR*nu/(p["re_pc"]**2+RR*RR+(zz/p["q"])**2)
+        dnu = self.submodels["StellarModel"]._radial_derivative(RR, zz, p)
         weight = scale[..., None]*w/(1-t)**2
         P = jnp.sum(weight*nu*gz, axis=-1)
         dP = jnp.sum(weight*(dnu*gz+nu*dgz), axis=-1)
         vz2 = P/self._nu(R, z, p)
-        vr2 = vz2/(1-p["beta_z"])
+        beta_z = self.submodels["AnisotropyModel"].beta(R, z, params=p)
+        vr2 = vz2/(1-beta_z)
         gr = self._force(R, jnp.where((R == 0)&(z == 0), p["re_pc"], z), p)[0]
-        vp2 = (P+R*dP)/((1-p["beta_z"])*self._nu(R,z,p))+R*gr
+        vp2 = (P+R*dP)/((1-beta_z)*self._nu(R,z,p))+R*gr
         return jnp.stack([vr2, vz2, vp2])
 
     @partial(jax.jit, static_argnums=0)
@@ -194,31 +316,19 @@ class AxisymmetricDSphModel:
         broadcast coordinate shape.
         """
         p, valid = resolve_params(params, jnp)
-        x,y,coords_valid = _coords(x_pc,y_pc)
-        qp = jnp.sqrt(jnp.cos(p["inclination"])**2+p["q"]**2*jnp.sin(p["inclination"])**2)
-        surface = (1+(x*x+(y/qp)**2)/p["re_pc"]**2)**(-2)/(jnp.pi*p["re_pc"]**2*qp)
-        return jnp.where(valid & coords_valid, surface, jnp.nan)
+        return jnp.where(valid, self.submodels["StellarModel"].surface_density(x_pc, y_pc, params=p), jnp.nan)
 
     @partial(jax.jit, static_argnums=0)
     def density_3d(self, R_pc, z_pc, *, params):
         """Unit-normalized stellar density in pc^-3."""
         p, valid = resolve_params(params, jnp)
-        R, z, coords_valid = _coords(R_pc, z_pc)
-        value = self._nu(R, z, p)*3/(4*jnp.pi*p["q"]*p["re_pc"]**3)
-        return jnp.where(valid & coords_valid & (R >= 0), value, jnp.nan)
+        return jnp.where(valid, self.submodels["StellarModel"].density_3d(R_pc, z_pc, params=p), jnp.nan)
 
     @partial(jax.jit, static_argnums=0)
     def mass_density_3d(self, R_pc, z_pc, *, params):
         """Halo density, including the optional ellipsoidal cutoff."""
         p, valid = resolve_params(params, jnp)
-        R, z, coords_valid = _coords(R_pc, z_pc)
-        m = _sqrt_nonnegative(R*R+(z/p["Q"])**2)
-        logx = jnp.log(jnp.where(m > 0, m/p["rs_pc"], 1.))
-        rho = p["rhos_Msunpc3"]*jnp.exp(-p["gamma"]*logx +
-                  (p["gamma"]-p["beta"])/p["alpha"]*jnp.logaddexp(0., p["alpha"]*logx))
-        rho = jnp.where(m == 0, jnp.where(p["gamma"] == 0, p["rhos_Msunpc3"], jnp.inf), rho)
-        rho = jnp.where(m <= p["r_t_pc"], rho, 0.)
-        return jnp.where(valid & coords_valid & (R >= 0), rho, jnp.nan)
+        return jnp.where(valid, self.submodels["DMModel"].mass_density_3d(R_pc, z_pc, params=p), jnp.nan)
 
     @partial(jax.jit, static_argnums=0, static_argnames=("n_steps",))
     def enclosed_mass(self, m_pc, *, params, n_steps=128):
@@ -233,13 +343,7 @@ class AxisymmetricDSphModel:
         matching ``m_pc`` shape.
         """
         p, valid = resolve_params(params, jnp)
-        r = jnp.asarray(m_pc, dtype=float)
-        if not r.size:
-            raise ValueError("m_pc must be nonempty")
-        mass_params = dict(rs_pc=p["rs_pc"], rhos_Msunpc3=p["rhos_Msunpc3"],
-                           a=p["alpha"], b=p["beta"], g=p["gamma"], r_t_pc=p["r_t_pc"])
-        mass = p["Q"]*_zhao_mass(r, mass_params, xp=jnp, n_steps=n_steps)
-        return jnp.where(valid, mass, jnp.nan)
+        return jnp.where(valid, self.submodels["DMModel"].enclosed_mass(m_pc, params=p, n_steps=n_steps), jnp.nan)
 
     @partial(jax.jit, static_argnums=0)
     def sigmalos2(self, x_pc, y_pc, *, params):
