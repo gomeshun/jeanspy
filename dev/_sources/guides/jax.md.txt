@@ -33,10 +33,9 @@ For an axisymmetric physical-parameter derivative:
 :language: python
 ```
 
-This example checks the density derivative against linear scaling. The
-benchmark gradient suite additionally compares finite differences at several
-step sizes and quadrature orders. Agreement at a single point is insufficient
-to establish a whole prior domain.
+This example checks the density derivative against linear scaling. Check
+finite differences at several step sizes and quadrature orders when applying
+the model to a new parameter domain.
 
 JAX dispatch is asynchronous. End timed predictions and gradients with
 `jax.block_until_ready(result)`. Record host preprocessing, transfers, first

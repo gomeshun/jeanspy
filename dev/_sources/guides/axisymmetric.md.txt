@@ -277,7 +277,7 @@ require angular refinement. These settings are independent of the three Jeans
 quadrature orders. J/D evaluation is a NumPy postprocessing operation for
 chains from either backend, as in the spherical workflow.
 
-## Numerical equations and validation
+## Numerical equations
 
 Writing `P = nu*vz2`, the aligned Jeans equations are
 
@@ -311,86 +311,3 @@ Cost grows approximately as `N_stars*n_force*n_vertical*n_los`. NumPy processes
 one sky position at a time; JAX uses `lax.map` and rematerialization to bound
 intermediate memory during parameter differentiation.
 
-The recorded [CPU runtime sample](https://github.com/gomeshun/jeanspy/blob/1a0ad4028d26af1df389ebdfdf992285ec50f8bb/validation/axisymmetric_runtime.json)
-uses eight stars and float64. At 96 nodes per integral, one NumPy prediction
-took 1.54 s, a warm JAX prediction 0.105 s, and a warm gradient of the summed
-predictions with respect to all physical parameters 0.476 s. First calls,
-including compilation, are recorded separately. These are single-run timings
-for the stated parameters and machine, not an inference-throughput or accuracy
-guarantee. Reproduce the measurement with:
-
-```bash
-JEANSPY_JAX_ENABLE_X64=true python scripts/benchmark_axisymmetric.py \
-    --output validation/axisymmetric_runtime.json
-```
-
-Automated checks cover:
-
-- Exact spherical Plummer intrinsic/LOS moments; existing spherical NFW Jeans
-  and force limits, including finite truncation.
-- Oblate/prolate Plummer projection and geometry; force parity, Poisson and
-  Jeans equations, the cutoff derivative, and quadrature refinement.
-- An independent flattened, face-on Plummer-tracer reference with analytic
-  Plummer force and adaptive LOS integration.
-- Matched NumPy/JAX values, all physical-parameter derivatives, finite-cutoff
-  derivatives, cored-origin force gradients, invalid proposals, and float32.
-- Explicit prior schemas, physical rejection, data replacement, emcee export,
-  real NUTS/emcee restart, and rejection before changing stored samples.
-- Exact finite-cone J/D geometry against independent observer-ray quadrature;
-  the spherical J limit against `jfactor_ullio2016`, convergence and divergent
-  central-cusp rejection.
-
-The independent [JAM benchmark](https://github.com/gomeshun/jeanspy/blob/1a0ad4028d26af1df389ebdfdf992285ec50f8bb/validation/axisymmetric_jam_reference.json)
-records two oblate/prolate Zhao cases, all MGE coefficients, package versions,
-a kernel SHA256, effective calculation paths and numerical refinements.
-Reproduce it with the stored MGE coefficients:
-
-```bash
-python scripts/validate_axisymmetric_jam.py \
-    --reuse-mge validation/axisymmetric_jam_reference.json \
-    --output /tmp/axisymmetric_jam_recheck.json
-```
-
-Omit `--reuse-mge` to refit the MGE approximations with requested Gaussian
-budgets of 32 and 48. Nonnegative fitting can retain fewer components; the
-report records both the requested and retained counts. It stores both sets
-of coefficients so an integration recheck can hold the approximation fixed.
-
-It uses Cappellari (2008) equation (28) as implemented by jampy, independently
-of JeansPy's three nested integrations. The JAM gravitational constant is
-explicitly converted to JeansPy's constant. In the recorded run the maximum
-JeansPy/reference differences are 1.13e-5 and 2.87e-5 in second moments; MGE
-order refinement changes the reference by at most 7.75e-4. The declared
-agreement gate is 3e-3, accounting for the MGE approximation.
-
-In jampy 8.1.4, `interp=False` at the public entry point overrides
-`analytic_los=True` and selects numerical LOS integration with internally
-interpolated intrinsic moments. The analytic benchmark therefore requests
-`interp=True` and checks that the returned `vel2` tensor is `None`, confirming
-the analytic path. With these ten positions, no PSF or pixel averaging and
-`nrad*nang > 10`, that path evaluates each requested position directly rather
-than interpolating an output grid.
-
-The public analytic path agrees with the independently integrated kernel to
-7.39e-9 and 1.75e-10 in relative second moments. Direct calls to JAM's standard
-`quad1d` and SciPy quadrature with explicit breakpoints in u confirm the
-log(u) integral. There is no evidence in these cases that JAM's standard
-one-dimensional kernel quadrature fails to resolve the MGE.
-
-The report also retains the `interp=False` numerical-LOS results. At the
-default 20-by-10 intrinsic grid, their maximum differences are 1.27% and
-2.46%. Increasing only that grid to 40-by-20 reduces them to 0.233% and
-0.441%; using an 80-by-40 grid, 3000 LOS points and `epsrel=1e-6` reduces
-them to 0.0596% and 0.115%. This establishes resolution dependence in the
-numerical path, not a discrepancy in the analytic JAM equation. Those
-finite-grid residuals are not global error bounds.
-
-The two cases and ten positions do not establish an accuracy guarantee over
-all parameters. MGE approximation and JeansPy quadrature still need their own
-refinement checks. These JAM cases have no halo cutoff; finite-cutoff checks
-are covered by separate tests. The benchmark does not reproduce the Hayashi
-galaxy fits or establish coverage/calibration of a real-data inference.
-
-The [workflow validation record](https://github.com/gomeshun/jeanspy/blob/1a0ad4028d26af1df389ebdfdf992285ec50f8bb/validation/axisymmetric_workflow.md)
-collects the integration-test results, persisted example runs and installed
-wheel/source-distribution checks.
