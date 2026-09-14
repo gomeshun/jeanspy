@@ -1,6 +1,6 @@
 # Tracers, halos and anisotropy
 
-Classical components store scalar physical parameters. Update them with
+Classical spherical components store scalar physical parameters. Update them with
 `update` before evaluating a new model. Densities use plain numbers in pc,
 solar masses and km/s. A normalized stellar density has unit total tracer
 number; it contributes no stellar mass to the gravitational potential.

@@ -239,7 +239,7 @@ matters most; shared calculations are covered by cross-backend numerical
 regression tests, but backend-specific solver and precision differences are
 intentional.
 
-### Shared model concepts
+### Shared spherical model concepts
 
 The physical parameter names are aligned where the models overlap:
 `re_pc`, `rs_pc`, `rhos_Msunpc3`, `r_t_pc`, `beta_ani`, `beta_0`,
