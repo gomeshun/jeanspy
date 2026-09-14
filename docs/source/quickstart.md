@@ -16,6 +16,14 @@ The model combines a normalized Plummer tracer, an NFW dark halo and constant
 spherical anisotropy. The returned variance has the same shape as `R_pc`.
 The stellar tracer supplies weights and contributes no gravitational mass.
 
+The classical `sigmalos2` method returns variance in `(km/s)^2`; `sigmalos`
+returns dispersion in `km/s`. Both accept `method="dequad"`, the default and
+currently the only integration method. You can omit the keyword for ordinary
+calls and set `n` and `n_kernel` when checking numerical convergence. The older
+`sigmalos2_dequad` and `sigmalos_dequad` names retain their existing arguments.
+Classical inference calls `sigmalos2` with its defaults, so constructing an
+emcee sampler does not require an additional solver wrapper.
+
 ## Axisymmetric prediction
 
 ```{literalinclude} ../../examples/docs_axisymmetric.py

@@ -25,14 +25,21 @@ The correction supplied the missing classical NFW cutoff as infinity. It did
 not change the physical model, runtime numerical code, repetition counts or
 accuracy thresholds. The original exceptions remain in the primary records.
 
-The retained worktree and the current release runtime have also been compared
-as Python syntax trees with only leading docstrings removed. All 25 files are
-equivalent under that comparison; three files differ in documentation text.
+The retained worktree at `24c5b1c` and the release runtime at `b3f1545` were
+compared as Python syntax trees with only leading docstrings removed. All 25
+files were equivalent under that comparison; three differed in documentation text.
 This establishes code equivalence for that comparison, not fresh timing or
 scientific calibration. The
 {download}`comparison record <../../../validation/release/retained_runtime_comparison.json>`
 identifies both commits and every file hash. The frozen archives remain the
 source of truth for exact historical source identity.
+
+The subsequent public API adds `sigmalos2(..., method="dequad")` and
+`sigmalos(...)`, and routes classical inference through `sigmalos2`. Its default
+double-exponential numerical implementation is unchanged, but these API changes
+are outside the historical syntax-tree comparison. The recorded timings refer
+to the frozen sources, including the source identity in each LOS benchmark
+record; they have not been remeasured after the API change.
 
 ## Rebuild the displayed results
 

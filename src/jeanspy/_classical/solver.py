@@ -32,15 +32,16 @@ class DSphModel(Model):
     Notes
     -----
     **Inputs and units.** submodels must contain StellarModel, DMModel and
-    AnisotropyModel; ``vmem_kms`` sets mean velocity. ``sigmalos2_dequad`` uses
-    n outer and ``n_kernel`` inner nodes; sigmalos2 dispatches to that same
-    route. ``R_pc`` is scalar or nonempty 1-D projected radius; ``r_pc`` is
-    intrinsic radius (pc).
+    AnisotropyModel; ``vmem_kms`` sets mean velocity. ``sigmalos2`` and
+    ``sigmalos`` use ``method="dequad"`` by default, with n outer and
+    ``n_kernel`` inner nodes. ``R_pc`` is scalar or nonempty 1-D projected
+    radius; ``r_pc`` is intrinsic radius (pc).
 
     **Returns and shape.** sigmar2 and sigmat2 return intrinsic radial and
-    one-component tangential variances in (km/s)^2. sigmalos2 and
-    ``sigmalos2_dequad`` return LOS variance arrays with input shape, or a
-    scalar for scalar input. ``sigmalos_dequad`` returns km/s.
+    one-component tangential variances in (km/s)^2. ``sigmalos2`` returns LOS
+    variance arrays with input shape, or a scalar for scalar input.
+    ``sigmalos`` returns the corresponding dispersion in km/s. The older
+    ``sigmalos2_dequad`` and ``sigmalos_dequad`` names remain supported.
     ``integrand_sigmalos2(u, R_pc)`` has shape ``(N_R, N_u)``.
 
     **Validity.** Finite positive projected radii; no central-limit LOS solver.
@@ -172,8 +173,10 @@ class DSphModel(Model):
         n_kernel=128,
         ignore_RuntimeWarning=True,
     ):
-        r"""Evaluate LOS variance for finite R_pc > 0 (scalar or 1-D array).
+        r"""Evaluate LOS variance with the double-exponential rule.
 
+        Retained for compatibility; new code can use
+        ``sigmalos2(R_pc, method="dequad")`` or simply ``sigmalos2(R_pc)``.
         R=0 requires a separate model-dependent central limit and is rejected.
 
         Notes
@@ -222,7 +225,10 @@ class DSphModel(Model):
         n_kernel=128,
         ignore_RuntimeWarning=True,
     ):
-        r"""Return the LOS velocity dispersion in km/s.
+        r"""Return the LOS dispersion with the double-exponential rule.
+
+        Retained for compatibility; new code can use
+        ``sigmalos(R_pc, method="dequad")`` or simply ``sigmalos(R_pc)``.
 
         Notes
         -----
@@ -244,19 +250,70 @@ class DSphModel(Model):
         n=1024,
         n_kernel=128,
         ignore_RuntimeWarning=True,
+        *,
+        method="dequad",
     ):
-        r"""Backend-neutral entry point for classical LOS dispersion squared.
+        r"""Return the LOS velocity variance using the selected integration method.
+
+        Parameters
+        ----------
+        R_pc : float or array_like
+            Positive finite projected radius in pc; scalar or nonempty 1-D array.
+            The model-dependent central limit at R=0 is not supported.
+        n : int, optional
+            Outer quadrature order, default 1024.
+        n_kernel : int, optional
+            Anisotropy-kernel quadrature order, default 128.
+        ignore_RuntimeWarning : bool, optional
+            Suppress NumPy runtime warnings during integration, default true.
+            Invalid integrands and nonfinite or negative variances still raise.
+        method : {"dequad"}, keyword-only, optional
+            Integration method. The fixed double-exponential rule is currently
+            the only supported choice and remains the default.
+
+        Returns
+        -------
+        scalar or ndarray
+            LOS velocity variance in (km/s)^2; scalar for scalar input,
+            otherwise shape (N,).
+
+        Raises
+        ------
+        ValueError
+            Unsupported method, invalid projected radii, or nonphysical
+            density, mass, integrand or variance.
 
         Notes
         -----
-        **Inputs and units.** ``R_pc`` is positive finite scalar or nonempty
-        one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
-        the anisotropy-kernel order.
-
-        **Returns and shape.** LOS velocity variance in (km/s)^2; scalar for
-        scalar input, otherwise (N,).
+        This NumPy/SciPy calculation reads the stored model parameters.
+        Refine ``n`` and ``n_kernel`` to check numerical convergence.
+        The classical inference model uses this entry point with its defaults;
+        no extra callable or closure is needed when passing it to emcee.
         """
+        if method != "dequad":
+            raise ValueError(f"Unsupported LOS integration method {method!r}; use 'dequad'.")
         return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
+
+    def sigmalos(
+        self,
+        R_pc,
+        n=1024,
+        n_kernel=128,
+        ignore_RuntimeWarning=True,
+        *,
+        method="dequad",
+    ):
+        r"""Return the LOS velocity dispersion in km/s.
+
+        Accepts the same radii, integration method and numerical controls as
+        :meth:`sigmalos2` and returns its square root. The result is scalar for
+        scalar input, otherwise shape (N,). ``method="dequad"`` is the default
+        and currently the only supported choice. The same validity checks and
+        errors apply. This is a NumPy/SciPy calculation without JAX tracing.
+        """
+        return np.sqrt(
+            self.sigmalos2(R_pc, n, n_kernel, ignore_RuntimeWarning, method=method)
+        )
 
 
 __all__ = ["DSphModel", "GMsun_m3s2"]

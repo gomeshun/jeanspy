@@ -2,6 +2,10 @@
 
 ## Development after the alpha package
 
+- Classical LOS predictions accept `sigmalos2(..., method="dequad")` for
+  variance and `sigmalos(...)` for dispersion. The default numerical rule and
+  the older method-specific names remain supported. Classical inference uses
+  the shared `sigmalos2` entry point.
 - `1a0ad40`: add the paper repository as the `jeanspy_paper` submodule.
 - `33e21a9`: merge the axisymmetric NumPy/JAX solvers, explicit inference,
   persisted restart checks and finite-cone J/D-factor workflows.

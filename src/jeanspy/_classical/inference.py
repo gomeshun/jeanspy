@@ -791,7 +791,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         self._release_shared_memory("_e_vlos_kms")
 
     def _lnlikelihoods(self):
-        s2 = self["DSphModel"].sigmalos2_dequad(self.data.R_pc)
+        s2 = self["DSphModel"].sigmalos2(self.data.R_pc)
         err2 = self.data.e_vlos_kms**2
         vmem_kms = self["DSphModel"].params.vmem_kms
         return norm.logpdf(
@@ -839,7 +839,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         that per-star shape. Uses SciPy's global random state. Positions and
         measurement errors remain fixed; this is not a phase-space DF sampler.
         """
-        s2 = self["DSphModel"].sigmalos2_dequad(self.data.R_pc)
+        s2 = self["DSphModel"].sigmalos2(self.data.R_pc)
         err2 = self.data.e_vlos_kms**2
         vmem_kms = self["DSphModel"].params.vmem_kms
         return norm.rvs(
