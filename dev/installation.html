@@ -175,6 +175,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API reference
+  </a>
+</li>
+
             <li class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button"
                 data-bs-toggle="dropdown" aria-expanded="false"
@@ -183,27 +190,6 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
-    API reference
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="validation/index.html">
-    Validation and reproducibility
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="comparison/index.html">
-    Related software and comparison questions
-  </a>
-</li>
-
-
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="citing.html">
     Citing JeansPy and its dependencies
@@ -214,20 +200,6 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="references.html">
     References
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
-    Change history
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="development.html">
-    Building and maintaining the documentation
   </a>
 </li>
 
@@ -392,20 +364,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="validation/index.html">
-    Validation and reproducibility
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="comparison/index.html">
-    Related software and comparison questions
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="citing.html">
     Citing JeansPy and its dependencies
   </a>
@@ -415,20 +373,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="references.html">
     References
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="changelog.html">
-    Change history
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="development.html">
-    Building and maintaining the documentation
   </a>
 </li>
 
@@ -580,18 +524,8 @@ an unpinned PyPI release may provide a different API from this checkout.</p>
 <p>To install from the source reference used by this documentation build:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/gomeshun/jeanspy.git
 <span class="nb">cd</span><span class="w"> </span>jeanspy
-git<span class="w"> </span>checkout<span class="w"> </span>75be8c5ebb070efb6059a544d0b3d47aaa84b93e
+git<span class="w"> </span>checkout<span class="w"> </span>f72b1d206914f7ab0694e2558b54068feeaceb65
 python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">'.[numpyro_cpu,plotting]'</span>
-</pre></div>
-</div>
-<p>To build this site from the same source checkout:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--locked<span class="w"> </span>--extra<span class="w"> </span>docs<span class="w"> </span>--extra<span class="w"> </span>numpyro_cpu<span class="w"> </span>--extra<span class="w"> </span>plotting<span class="w"> </span>--extra<span class="w"> </span>dev
-uv<span class="w"> </span>run<span class="w"> </span>--no-sync<span class="w"> </span>python<span class="w"> </span>scripts/generate_api_docs.py
-uv<span class="w"> </span>run<span class="w"> </span>--no-sync<span class="w"> </span>python<span class="w"> </span>scripts/generate_comparison_docs.py
-uv<span class="w"> </span>run<span class="w"> </span>--no-sync<span class="w"> </span>python<span class="w"> </span>scripts/generate_bibliography.py
-uv<span class="w"> </span>run<span class="w"> </span>--no-sync<span class="w"> </span>sphinx-build<span class="w"> </span>-W<span class="w"> </span>--keep-going<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>docs/source<span class="w"> </span>docs/_build/html
-uv<span class="w"> </span>run<span class="w"> </span>--no-sync<span class="w"> </span>sphinx-build<span class="w"> </span>-W<span class="w"> </span>--keep-going<span class="w"> </span>-b<span class="w"> </span>doctest<span class="w"> </span>docs/source<span class="w"> </span>docs/_build/doctest
-uv<span class="w"> </span>run<span class="w"> </span>--no-sync<span class="w"> </span>python<span class="w"> </span>scripts/check_docs_links.py<span class="w"> </span>docs/_build/html
 </pre></div>
 </div>
 <p>Inspect <code class="docutils literal notranslate"><span class="pre">jeanspy.__version__</span></code> and the source reference when comparing release

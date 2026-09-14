@@ -9,5 +9,4 @@ priors, source commit, random seeds, command, outputs and diagnostics together.
 
 spherical
 axisymmetric
-draco
 ```
