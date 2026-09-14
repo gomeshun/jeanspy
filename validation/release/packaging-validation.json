@@ -8,5 +8,8 @@
   "base_sdist": "passed outside checkout",
   "numpyro_cpu_wheel": "passed outside checkout",
   "sdist_tests": "16 passed in 2.92s",
-  "note": "v3 adds the HTML-link audit script and updated documentation to the sdist; runtime and wheel metadata payloads are unchanged from the tested v2 artifact."
+  "note": "v3 adds the HTML-link audit script and updated documentation to the sdist; runtime and wheel metadata payloads are unchanged from the tested v2 artifact.",
+  "record_status": "historical_pre_release_snapshot",
+  "recorded_in_commit": "12615b6e593efb1f094f2c7b1d0738f011e99e84",
+  "provenance_note": "Original artifact build source commit was not recorded. The final_wheel_sha256 field is retained verbatim as a historical label, not the canonical release wheel. Rebuild and validate the intended release commit using RELEASE.md."
 }

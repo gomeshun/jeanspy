@@ -40,14 +40,20 @@ def check(directory: Path) -> list[dict]:
     support.update({name: ROOT / name for name in
                     ["README.md", "RELEASE.md", "LICENSE", "pyproject.toml", "MANIFEST.in",
                      "validation/axisymmetric_jam_reference.json",
+                     "validation/release/comparison.json",
+                     "validation/release/references.json",
                      "validation/release/jam9_protocol.json",
-                     "validation/release/jam9_plummer_v1.json"]})
+                     "validation/release/jam9_plummer_v1.json",
+                     "validation/release/jam9_warning_diagnostic.md",
+                     "validation/release/jam9_warning_diagnostic.json",
+                     "validation/release/jam9_warning_diagnostic_execution_failure.txt"]})
     release = ROOT / "validation/release"
     for pattern in ("*protocol.json", "retained_*.json", "retained-*-source.tar.gz",
                     "*_summary.json", "*_figure_manifest.json"):
         support.update({p.relative_to(ROOT).as_posix(): p for p in release.glob(pattern)})
     for directory, suffixes in (("los-benchmark", {".json", ".txt", ".csv"}),
-                                ("campaign", {".json", ".txt"})):
+                                ("campaign", {".json", ".txt"}),
+                                ("environments", {".txt", ".json", ".toml"})):
         support.update({p.relative_to(ROOT).as_posix(): p
                         for p in (release / directory).rglob("*")
                         if p.is_file() and p.suffix in suffixes})

@@ -744,8 +744,9 @@ class PlummerModel(StellarModel):
     ``log_prob_R`` includes 2\*pi\*R and is the log radial PDF; ``sample_R``
     returns shape (n,) radii in pc.
 
-    **Validity.** Positive ``re_pc``, nonnegative radius; ``log_prob_R`` is
-    minus infinity outside its support.
+    **Validity.** Positive ``re_pc``, nonnegative radius. For positive ``re_pc``,
+    ``log_prob_R`` gives minus infinity at zero radius and NaN for negative
+    radii; it does not mask invalid inputs.
 
     **Errors.** Low-level density expressions can produce NaN/inf for invalid
     parameters.
@@ -795,7 +796,8 @@ class PlummerModel(StellarModel):
         **Inputs and units.** ``R_pc`` and positive ``re_pc`` in pc, broadcastable.
 
         **Returns and shape.** Natural log radial PDF including 2\*pi\*R, with
-        broadcast shape; minus infinity off support.
+        broadcast shape. For positive ``re_pc``, ``R_pc=0`` gives minus infinity
+        and negative radii give NaN. This helper does not mask invalid inputs.
         """
         re = jnp.asarray(re_pc)
         R = jnp.asarray(R_pc)

@@ -1,4 +1,4 @@
-"""An otherwise usable sdist must not silently omit documentation sources."""
+"""An sdist must preserve its documentation and downloadable release inputs."""
 import importlib.util
 import io
 from pathlib import Path
@@ -18,12 +18,25 @@ spec.loader.exec_module(module)
                                      "docs/source/_static/validation/figure.svg",
                                      "validation/release/los_benchmark_protocol.json",
                                      "validation/release/los-benchmark/summary.csv",
-                                     "validation/release/retained-gradients-source.tar.gz"])
+                                     "validation/release/retained-gradients-source.tar.gz",
+                                     "validation/release/comparison.json",
+                                     "validation/release/references.json",
+                                     "validation/release/jam9_warning_diagnostic.md",
+                                     "validation/release/jam9_warning_diagnostic.json",
+                                     "validation/release/jam9_warning_diagnostic_execution_failure.txt",
+                                     "validation/release/environments/requirements.txt",
+                                     "validation/release/environments/cpu/packages.json",
+                                     "validation/release/environments/cpu/pyproject.toml"])
 def test_missing_documentation_rejected(tmp_path, monkeypatch, missing):
     source = tmp_path / "source"
     names = ["src/jeanspy/__init__.py", "README.md", "RELEASE.md", "LICENSE",
              "pyproject.toml", "MANIFEST.in", "validation/axisymmetric_jam_reference.json",
-             "validation/release/jam9_protocol.json", "validation/release/jam9_plummer_v1.json", missing]
+             "validation/release/jam9_protocol.json", "validation/release/jam9_plummer_v1.json",
+             "validation/release/comparison.json", "validation/release/references.json",
+             "validation/release/jam9_warning_diagnostic.md",
+             "validation/release/jam9_warning_diagnostic.json",
+             "validation/release/jam9_warning_diagnostic_execution_failure.txt", missing]
+    names = list(dict.fromkeys(names))
     for name in names:
         path = source / name
         path.parent.mkdir(parents=True, exist_ok=True)

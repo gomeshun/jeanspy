@@ -182,8 +182,8 @@ class DSphModel(Model):
         one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
         the anisotropy-kernel order.
 
-        **Returns and shape.** Variance in (km/s)^2, or dispersion in km/s for
-        ``sigmalos_dequad``; scalar for scalar input, otherwise (N,).
+        **Returns and shape.** LOS velocity variance in (km/s)^2; scalar for
+        scalar input, otherwise (N,).
         """
         scalar_input = np.ndim(R_pc) == 0
         R_array = _projected_radii(R_pc)
@@ -230,8 +230,9 @@ class DSphModel(Model):
         one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
         the anisotropy-kernel order.
 
-        **Returns and shape.** Variance in (km/s)^2, or dispersion in km/s for
-        ``sigmalos_dequad``; scalar for scalar input, otherwise (N,).
+        **Returns and shape.** LOS velocity dispersion in km/s, computed as the
+        square root of ``sigmalos2_dequad``; scalar for scalar input, otherwise
+        (N,).
         """
         return np.sqrt(
             self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
@@ -252,8 +253,8 @@ class DSphModel(Model):
         one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
         the anisotropy-kernel order.
 
-        **Returns and shape.** Variance in (km/s)^2, or dispersion in km/s for
-        ``sigmalos_dequad``; scalar for scalar input, otherwise (N,).
+        **Returns and shape.** LOS velocity variance in (km/s)^2; scalar for
+        scalar input, otherwise (N,).
         """
         return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
 

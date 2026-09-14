@@ -120,8 +120,9 @@ class AxisymmetricDSphEstimationModel:
 
     **Returns and shape.** Per-star/summed log likelihoods and prior terms.
     lnposterior returns posterior plus diagnostic blobs; sample(size,rng=...)
-    generates admissible starting coordinates; ``sample_data(p,rng=...)`` gives
-    simulated data.
+    generates admissible starting coordinates; ``sample_data(p,rng=...)`` returns
+    a NumPy array of simulated LOS velocities in km/s, shape (N,), conditional
+    on the stored positions and measurement errors.
 
     **Validity.** Gaussian LOS velocity likelihood at fixed positions;
     ``beta_z`` is distinct from spherical anisotropy. Exactly one of

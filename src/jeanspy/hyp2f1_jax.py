@@ -174,21 +174,17 @@ def hyp2f1_1b_d_series(b: jax.Array | jnp.ndarray | float, d: jax.Array | jnp.nd
 
     Notes
     -----
-    **Inputs and units.** b,w are dimensionless scalars/broadcastable JAX
-    arrays; w is in [0,1). The general series also takes d.
-    ``n_terms``/``n_points``/``quad_rule`` and thresholds are static controls
-    shown in the signature.
+    **Inputs and units.** Dimensionless ``b``, ``d`` and ``w``; ``w`` is in
+    [0,1). The shapes of ``b`` and ``d`` must broadcast to the shape of ``w``.
+    ``n_terms`` is the static term count.
 
-    **Returns and shape.** Array approximation to 2F1(1,b;3/2;w), or
-    2F1(1,b;d;w) for the general series.
+    **Returns and shape.** Approximation to 2F1(1,b;d;w), with the shape of ``w``.
 
-    **Validity.** The Euler integral helper requires 0<b<3/2; d cannot cross
-    denominator poles. Fixed series loses efficiency near w=1; asymptotic
-    formulas have restricted regimes. Use the combined dispatcher or inspect
-    convergence, rather than extending a specialized formula.
+    **Validity.** The denominator ``d`` must avoid nonpositive integer poles.
+    The fixed series converges slowly near w=1; check the chosen term count.
 
-    **Errors.** Unsupported rule choices raise ValueError; out-of-domain
-    numerical values can become NaN/inf.
+    **Errors.** This helper does not validate the input domain; singular
+    parameters or invalid inputs can produce NaN/inf.
 
     **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
     import.
@@ -228,21 +224,18 @@ def hyp2f1_1b_3half_series(b: jax.Array | jnp.ndarray | float, w: jax.Array | jn
 
     Notes
     -----
-    **Inputs and units.** b,w are dimensionless scalars/broadcastable JAX
-    arrays; w is in [0,1). The general series also takes d.
-    ``n_terms``/``n_points``/``quad_rule`` and thresholds are static controls
-    shown in the signature.
+    **Inputs and units.** Dimensionless ``b`` and ``w``; ``w`` is in [0,1).
+    The shape of ``b`` must broadcast to the shape of ``w``. ``n_terms`` is the
+    static term count; the denominator is fixed at 3/2.
 
-    **Returns and shape.** Array approximation to 2F1(1,b;3/2;w), or
-    2F1(1,b;d;w) for the general series.
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the shape of
+    ``w``.
 
-    **Validity.** The Euler integral helper requires 0<b<3/2; d cannot cross
-    denominator poles. Fixed series loses efficiency near w=1; asymptotic
-    formulas have restricted regimes. Use the combined dispatcher or inspect
-    convergence, rather than extending a specialized formula.
+    **Validity.** The fixed series converges slowly near w=1; check the chosen
+    term count or use the combined dispatcher.
 
-    **Errors.** Unsupported rule choices raise ValueError; out-of-domain
-    numerical values can become NaN/inf.
+    **Errors.** This helper does not validate the input domain; invalid inputs
+    can produce nonfinite or inaccurate values.
 
     **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
     import.
@@ -278,21 +271,20 @@ def hyp2f1_1b_3half_quad(
 
     Notes
     -----
-    **Inputs and units.** b,w are dimensionless scalars/broadcastable JAX
-    arrays; w is in [0,1). The general series also takes d.
-    ``n_terms``/``n_points``/``quad_rule`` and thresholds are static controls
-    shown in the signature.
+    **Inputs and units.** Dimensionless scalar or broadcastable array ``b``
+    and ``w``, with 0<b<3/2 and 0<=w<1. ``quad_rule`` is a static rule choice;
+    ``n_points`` sets the panel count for ``gauss_kronrod`` and is ignored by
+    the precomputed ``tanh_sinh`` rule.
 
-    **Returns and shape.** Array approximation to 2F1(1,b;3/2;w), or
-    2F1(1,b;d;w) for the general series.
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the broadcast
+    shape of ``b`` and ``w``.
 
-    **Validity.** The Euler integral helper requires 0<b<3/2; d cannot cross
-    denominator poles. Fixed series loses efficiency near w=1; asymptotic
-    formulas have restricted regimes. Use the combined dispatcher or inspect
-    convergence, rather than extending a specialized formula.
+    **Validity.** The Euler integral requires 0<b<3/2. Fixed quadrature can
+    lose accuracy near the domain boundaries; check convergence.
 
-    **Errors.** Unsupported rule choices raise ValueError; out-of-domain
-    numerical values can become NaN/inf.
+    **Errors.** Unsupported ``quad_rule`` values raise ValueError. Numerical
+    inputs outside the integral domain are not rejected explicitly and can
+    produce nonfinite or inaccurate values.
 
     **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
     import.
@@ -427,21 +419,20 @@ def hyp2f1_1b_3half_asymptotic(
 
     Notes
     -----
-    **Inputs and units.** b,w are dimensionless scalars/broadcastable JAX
-    arrays; w is in [0,1). The general series also takes d.
-    ``n_terms``/``n_points``/``quad_rule`` and thresholds are static controls
-    shown in the signature.
+    **Inputs and units.** Dimensionless ``b`` and ``w``; the shape of ``b``
+    must broadcast to the shape of ``w``. ``n_terms_regular`` is the static
+    regular-series term count; ``b_half_tol`` selects the b=1/2 limit.
 
-    **Returns and shape.** Array approximation to 2F1(1,b;3/2;w), or
-    2F1(1,b;d;w) for the general series.
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the shape of
+    ``w``.
 
-    **Validity.** The Euler integral helper requires 0<b<3/2; d cannot cross
-    denominator poles. Fixed series loses efficiency near w=1; asymptotic
-    formulas have restricted regimes. Use the combined dispatcher or inspect
-    convergence, rather than extending a specialized formula.
+    **Validity.** Use sufficiently close to w=1 within 0<w<1, away from poles
+    of the continuation coefficients except for the implemented b=1/2 limit.
+    The helper clips ``w`` inside the floating-point interval (0,1); clipping
+    does not extend the asymptotic approximation's valid region.
 
-    **Errors.** Unsupported rule choices raise ValueError; out-of-domain
-    numerical values can become NaN/inf.
+    **Errors.** Domain and convergence are not validated; invalid inputs can
+    produce nonfinite or inaccurate values.
 
     **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
     import.
@@ -559,21 +550,21 @@ def hyp2f1_1b_3half(
     - The "auto" choice is designed specifically to handle the numerically difficult
       region around b≈1/2 and w≈1.
 
-    **Inputs and units.** b,w are dimensionless scalars/broadcastable JAX
-    arrays; w is in [0,1). The general series also takes d.
-    ``n_terms``/``n_points``/``quad_rule`` and thresholds are static controls
-    shown in the signature.
+    **Inputs and units.** Dimensionless ``b`` and ``w``, with 0<=w<1. For
+    the series, asymptotic and auto paths, the shape of ``b`` must broadcast to
+    the shape of ``w``; the quad path also supports full array broadcasting.
+    ``method``, ``n_terms``, ``n_quad``, ``quad_rule``, ``asym_n_terms`` and the
+    selection thresholds above are static controls. The denominator is 3/2.
 
-    **Returns and shape.** Array approximation to 2F1(1,b;3/2;w), or
-    2F1(1,b;d;w) for the general series.
+    **Returns and shape.** Approximation to 2F1(1,b;3/2;w), with the shape of
+    ``w`` except for the quad path's broadcast output.
 
-    **Validity.** The Euler integral helper requires 0<b<3/2; d cannot cross
-    denominator poles. Fixed series loses efficiency near w=1; asymptotic
-    formulas have restricted regimes. Use the combined dispatcher or inspect
-    convergence, rather than extending a specialized formula.
+    **Validity.** The Euler integral branch requires 0<b<3/2. The auto selector
+    routes around continuation poles and uses the power series where needed;
+    accuracy still depends on the selected terms, rule and thresholds.
 
-    **Errors.** Unsupported rule choices raise ValueError; out-of-domain
-    numerical values can become NaN/inf.
+    **Errors.** Unsupported methods or quadrature rules raise ValueError when
+    selected. Out-of-domain values can produce nonfinite or inaccurate results.
 
     **Backend.** JAX arrays on the configured CPU/GPU, with dtype set before
     import.
