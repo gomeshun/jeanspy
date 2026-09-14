@@ -5,6 +5,8 @@ No mean streaming is specified: second moments equal dispersions only for
 nonrotating systems. See docs/axisymmetric.md for assumptions and convergence.
 """
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from functools import lru_cache
 
 import numpy as np
@@ -13,10 +15,13 @@ from scipy.special import roots_legendre
 
 from ._axisymmetric_params import InvalidAxisymmetricModelError, force_limit
 from ._zhao import enclosed_mass as _zhao_mass
+from ._axisymmetric_components import component_models
 
 G = 1.32712440018e20 / parsec * 1e-6
 __all__ = ["AxisymmetricJeans", "PlummerTracer", "ZhaoHalo", "intrinsic_axis_ratio",
-           "InvalidAxisymmetricModelError"]
+           "InvalidAxisymmetricModelError", "AxisymmetricStellarModel",
+           "AxisymmetricPlummerModel", "AxisymmetricDMModel", "AxisymmetricZhaoModel",
+           "AxisymmetricAnisotropyModel", "AxisymmetricConstantAnisotropyModel"]
 
 
 def _positive(name, value):
@@ -81,13 +86,64 @@ def intrinsic_axis_ratio(q_projected, inclination):
     return np.sqrt(q2)
 
 
+class AxisymmetricStellarModel(ABC):
+    """Interface for a normalized axisymmetric stellar tracer.
+
+    Intrinsic cylindrical R>=0 and signed z, and projected x/y, are in pc.
+    Concrete backends define whether parameters are stored or passed explicitly.
+    """
+
+    @abstractmethod
+    def density_3d(self, R_pc, z_pc, **kwargs):
+        """Return the unit-normalized tracer density in pc^-3."""
+
+    @abstractmethod
+    def surface_density(self, x_pc, y_pc, **kwargs):
+        """Return the projected unit-normalized density in pc^-2."""
+
+    @abstractmethod
+    def radial_derivative(self, R_pc, z_pc, **kwargs):
+        """Return the radial derivative of tracer density in pc^-4."""
+
+
+class AxisymmetricDMModel(ABC):
+    """Interface for a spheroidal dark-matter density and gravitational field.
+
+    Densities are in Msun/pc^3, masses in Msun and coordinates in pc.
+    """
+
+    @abstractmethod
+    def mass_density_3d(self, R_pc, z_pc, **kwargs):
+        """Return the dark-matter density in Msun/pc^3."""
+
+    @abstractmethod
+    def enclosed_mass(self, m_pc, **kwargs):
+        """Return mass in Msun inside a similar ellipsoid of radius m_pc."""
+
+    @abstractmethod
+    def potential_gradient(self, R_pc, z_pc, **kwargs):
+        """Return (dPhi/dR,dPhi/dz) in (km/s)^2/pc."""
+
+
+class AxisymmetricAnisotropyModel(ABC):
+    """Interface for meridional anisotropy, beta_z = 1 - <vz²>/<vR²>.
+
+    This is a cylindrical anisotropy, distinct from spherical beta_ani.
+    The present Jeans solver supports the constant subclass only.
+    """
+
+    @abstractmethod
+    def beta(self, R_pc, z_pc, **kwargs):
+        """Return dimensionless cylindrical anisotropy at broadcast coordinates."""
+
+
 @dataclass(frozen=True)
-class PlummerTracer:
-    r"""Unit-integral spheroidal Plummer tracer (a_pc is equatorial scale).
+class AxisymmetricPlummerModel(AxisymmetricStellarModel):
+    r"""Unit-integral spheroidal Plummer tracer (re_pc is equatorial scale).
 
     Notes
     -----
-    **Inputs and units.** ``a_pc`` is equatorial scale in pc, q>0 is intrinsic
+    **Inputs and units.** ``re_pc`` is equatorial scale in pc, q>0 is intrinsic
     axis ratio. Intrinsic R>=0 and signed z, or signed sky x/y, are finite and
     broadcast to one shape (pc).
 
@@ -112,11 +168,11 @@ class PlummerTracer:
 
     **Examples.** ``examples/docs_axisymmetric.py``
     """
-    a_pc: float
+    re_pc: float
     q: float = 1.0
 
     def __post_init__(self):
-        _positive("a_pc", self.a_pc)
+        _positive("re_pc", self.re_pc)
         _positive("q", self.q)
 
     def density(self, R, z):
@@ -126,8 +182,8 @@ class PlummerTracer:
         Nonfinite, empty or negative-R inputs raise ValueError.
         """
         R, z = _coordinates(R, z)
-        return 3 / (4 * np.pi * self.q * self.a_pc**3) * (
-            1 + (R**2 + (z / self.q)**2) / self.a_pc**2
+        return 3 / (4 * np.pi * self.q * self.re_pc**3) * (
+            1 + (R**2 + (z / self.q)**2) / self.re_pc**2
         )**(-2.5)
 
     def radial_derivative(self, R, z):
@@ -137,7 +193,7 @@ class PlummerTracer:
         nonempty. Invalid coordinates raise ValueError through density.
         """
         return -5 * np.asarray(R) * self.density(R, z) / (
-            self.a_pc**2 + np.asarray(R)**2 + (np.asarray(z) / self.q)**2
+            self.re_pc**2 + np.asarray(R)**2 + (np.asarray(z) / self.q)**2
         )
 
     def projected_axis_ratio(self, inclination):
@@ -161,23 +217,33 @@ class PlummerTracer:
         if x.size == 0 or np.any(~np.isfinite(x)) or np.any(~np.isfinite(y)):
             raise ValueError("sky coordinates must be finite and nonempty")
         qp = self.projected_axis_ratio(inclination)
-        return (1 + (x*x + (y/qp)**2) / self.a_pc**2)**(-2) / (
-            np.pi * self.a_pc**2 * qp
+        return (1 + (x*x + (y/qp)**2) / self.re_pc**2)**(-2) / (
+            np.pi * self.re_pc**2 * qp
         )
 
 
-@dataclass(frozen=True)
-class ZhaoHalo:
-    r"""rho=rho_s (m/r_s)^(-gamma) [1+(m/r_s)^alpha]^((gamma-beta)/alpha).
+    @property
+    def a_pc(self):
+        """Equatorial scale in pc (compatibility spelling of re_pc)."""
+        return self.re_pc
 
-    m²=R²+z²/Q². Q may be oblate or prolate. rho_s is a density scale,
-    not the density at r_s. Finite central potential: 0 <= gamma < 2;
+    def density_3d(self, R_pc, z_pc):
+        """Return unit-normalized tracer density in pc^-3 at coordinates in pc."""
+        return self.density(R_pc, z_pc)
+
+
+@dataclass(frozen=True)
+class AxisymmetricZhaoModel(AxisymmetricDMModel):
+    r"""rho=rhos_Msunpc3 (m/rs_pc)^(-gamma) [1+(m/rs_pc)^alpha]^((gamma-beta)/alpha).
+
+    m²=R²+z²/Q². Q may be oblate or prolate. rhos_Msunpc3 is a density scale,
+    not the density at rs_pc. Finite central potential: 0 <= gamma < 2;
     finite outer potential: beta > 2. Total mass may diverge (e.g. NFW).
     Hayashi 2015 eq. 4 is alpha=2, beta=3, gamma=-alpha_paper.
 
     Notes
     -----
-    **Inputs and units.** ``rho_s`` (Msun/pc^3), ``r_s`` (pc), Q>0, alpha>0,
+    **Inputs and units.** ``rhos_Msunpc3`` (Msun/pc^3), ``rs_pc`` (pc), Q>0, alpha>0,
     beta>2, 0<=gamma<2; ``r_t_pc > 0`` is an ellipsoidal cutoff and can be
     infinite for the forward model. Intrinsic R>=0 and signed z, or signed sky
     x/y, are finite and broadcast to one shape (pc).
@@ -204,8 +270,8 @@ class ZhaoHalo:
 
     **Examples.** ``examples/docs_axisymmetric.py``
     """
-    rho_s: float
-    r_s: float
+    rs_pc: float
+    rhos_Msunpc3: float
     Q: float = 1.0
     alpha: float = 1.0
     beta: float = 3.0
@@ -213,7 +279,7 @@ class ZhaoHalo:
     r_t_pc: float = np.inf
 
     def __post_init__(self):
-        for name in ("rho_s", "r_s", "Q", "alpha"):
+        for name in ("rhos_Msunpc3", "rs_pc", "Q", "alpha"):
             _positive(name, getattr(self, name))
         if not np.isfinite(self.beta) or self.beta <= 2:
             raise ValueError("beta must be finite and > 2")
@@ -224,10 +290,10 @@ class ZhaoHalo:
 
     def _density_slope(self, m):
         with np.errstate(divide="ignore", invalid="ignore"):
-            logx = np.log(m / self.r_s)
+            logx = np.log(m / self.rs_pc)
             transition = np.logaddexp(0, self.alpha * logx)
             inner = np.zeros_like(logx) if self.gamma == 0 else -self.gamma * logx
-            rho = self.rho_s * np.exp(inner + (self.gamma-self.beta)/self.alpha * transition)
+            rho = self.rhos_Msunpc3 * np.exp(inner + (self.gamma-self.beta)/self.alpha * transition)
             fraction = np.exp(-np.logaddexp(0, -self.alpha * logx))
         return rho, -self.gamma + (self.gamma-self.beta) * fraction
 
@@ -248,7 +314,7 @@ class ZhaoHalo:
         if (radius.size == 0 or np.any(np.isnan(radius)) or np.any(radius < 0)
                 or np.any(~np.isfinite(np.minimum(radius, self.r_t_pc)))):
             raise ValueError("Require nonnegative m_pc with finite min(m_pc, r_t_pc)")
-        p = dict(rs_pc=self.r_s, rhos_Msunpc3=self.rho_s, a=self.alpha,
+        p = dict(rs_pc=self.rs_pc, rhos_Msunpc3=self.rhos_Msunpc3, a=self.alpha,
                  b=self.beta, g=self.gamma, r_t_pc=self.r_t_pc)
         return self.Q * _zhao_mass(radius, p, xp=np, n_steps=n_steps)
 
@@ -291,6 +357,65 @@ class ZhaoHalo:
         return dfactor(self, dist_pc, roi_deg, inclination=inclination, **quadrature)
 
 
+    @property
+    def rho_s(self):
+        """Density scale in Msun/pc^3 (compatibility spelling)."""
+        return self.rhos_Msunpc3
+
+    @property
+    def r_s(self):
+        """Scale radius in pc (compatibility spelling)."""
+        return self.rs_pc
+
+    def mass_density_3d(self, R_pc, z_pc):
+        """Return halo density in Msun/pc^3, zero outside the cutoff."""
+        return self.density(R_pc, z_pc)
+
+
+class PlummerTracer(AxisymmetricPlummerModel):
+    """Legacy constructor using a_pc in pc; prefer AxisymmetricPlummerModel.
+
+    re_pc is accepted for dataclasses.replace; explicit a_pc takes precedence.
+    """
+
+    def __init__(self, a_pc=None, q=1., *, re_pc=None):
+        super().__init__(re_pc=re_pc if a_pc is None else a_pc, q=q)
+
+
+class ZhaoHalo(AxisymmetricZhaoModel):
+    """Legacy constructor using rho_s and r_s; prefer AxisymmetricZhaoModel.
+
+    Canonical parameter names are accepted for dataclasses.replace; explicit
+    legacy arguments take precedence over the inherited field values.
+    """
+
+    def __init__(self, rho_s=None, r_s=None, Q=1., alpha=1., beta=3., gamma=1.,
+                 r_t_pc=np.inf, *, rs_pc=None, rhos_Msunpc3=None):
+        super().__init__(rs_pc=rs_pc if r_s is None else r_s,
+                         rhos_Msunpc3=rhos_Msunpc3 if rho_s is None else rho_s,
+                         Q=Q, alpha=alpha,
+                         beta=beta, gamma=gamma, r_t_pc=r_t_pc)
+
+
+@dataclass(frozen=True)
+class AxisymmetricConstantAnisotropyModel(AxisymmetricAnisotropyModel):
+    """Constant cylindrical anisotropy with finite beta_z < 1.
+
+    NumPy coordinates in pc broadcast; invalid coordinates raise ValueError.
+    Positive Jeans moments impose additional restrictions on the full model.
+    """
+    beta_z: float = 0.
+
+    def __post_init__(self):
+        if not np.isscalar(self.beta_z) or not np.isfinite(self.beta_z) or self.beta_z >= 1:
+            raise ValueError("beta_z must be finite and < 1")
+
+    def beta(self, R_pc, z_pc):
+        """Return constant beta_z with the broadcast coordinate shape."""
+        R, z = _coordinates(R_pc, z_pc)
+        return np.full(R.shape, self.beta_z, dtype=float)
+
+
 @dataclass(frozen=True)
 class AxisymmetricJeans:
     r"""Aligned constant-beta_z Jeans solver with integration to infinity.
@@ -327,19 +452,25 @@ class AxisymmetricJeans:
 
     **Examples.** ``examples/docs_axisymmetric.py``
     """
-    tracer: PlummerTracer
-    halo: ZhaoHalo
+    tracer: AxisymmetricPlummerModel
+    halo: AxisymmetricZhaoModel
     beta_z: float = 0.0
     inclination: float = np.pi / 2
     n_force: int = 96
     n_vertical: int = 96
     n_los: int = 96
+    anisotropy: AxisymmetricConstantAnisotropyModel | None = None
 
     def __post_init__(self):
-        if not isinstance(self.tracer, PlummerTracer) or not isinstance(self.halo, ZhaoHalo):
+        if not isinstance(self.tracer, AxisymmetricPlummerModel) or not isinstance(self.halo, AxisymmetricZhaoModel):
             raise TypeError("require PlummerTracer and ZhaoHalo components")
         if not np.isscalar(self.beta_z) or not np.isfinite(self.beta_z) or self.beta_z >= 1:
             raise ValueError("beta_z must be finite and < 1")
+        if self.anisotropy is not None:
+            if not isinstance(self.anisotropy, AxisymmetricConstantAnisotropyModel):
+                raise TypeError("Only AxisymmetricConstantAnisotropyModel is supported")
+            if self.beta_z != 0. and self.beta_z != self.anisotropy.beta_z:
+                raise ValueError("beta_z conflicts with the anisotropy component")
         _inclination(self.inclination)
         for n in (self.n_force, self.n_vertical, self.n_los):
             _rule(n)
@@ -367,8 +498,10 @@ class AxisymmetricJeans:
         safe_z = np.where((R == 0) & (z == 0), self.tracer.a_pc, z)
         gR = self.halo.potential_gradient(R, safe_z, self.n_force)[0]
         vz2 = P / nu
-        vR2 = vz2 / (1-self.beta_z)
-        vphi2 = (P + R*dP) / ((1-self.beta_z)*nu) + R*gR
+        beta_z = (self.beta_z if self.anisotropy is None
+                  else self.anisotropy.beta(R, z))
+        vR2 = vz2 / (1-beta_z)
+        vphi2 = (P + R*dP) / ((1-beta_z)*nu) + R*gR
         moments = np.stack([vR2, vz2, vphi2])
         if np.any(~np.isfinite(moments)) or np.any(moments < 0):
             raise InvalidAxisymmetricModelError(
@@ -407,7 +540,15 @@ class AxisymmetricJeans:
 
 @dataclass(frozen=True)
 class AxisymmetricDSphModel:
-    r"""Parameter-dictionary forward API shared with the JAX backend.
+    r"""Compose a NumPy tracer, halo and anisotropy into an axisymmetric model.
+
+    Supply submodels with StellarModel=AxisymmetricPlummerModel,
+    DMModel=AxisymmetricZhaoModel and
+    AnisotropyModel=AxisymmetricConstantAnisotropyModel. Stored parameters are
+    used when params is omitted. An explicit params mapping overrides those
+    values for one call without changing the components. Without submodels,
+    each call requires the full physical parameter dictionary as before.
+    inclination is in radians and applies to stored components.
 
     Required: re_pc, rs_pc, rhos_Msunpc3 and exactly one of q/q_projected.
     Optional: Q, alpha, beta, gamma, beta_z, inclination (radians).
@@ -447,33 +588,72 @@ class AxisymmetricDSphModel:
     n_force: int = 96
     n_vertical: int = 96
     n_los: int = 96
+    submodels: Mapping | None = None
+    inclination: float = np.pi / 2
 
     def __post_init__(self):
+        _inclination(self.inclination)
+        if self.submodels is not None:
+            object.__setattr__(self, "submodels", component_models(self.submodels, (
+                AxisymmetricPlummerModel, AxisymmetricZhaoModel,
+                AxisymmetricConstantAnisotropyModel)))
         for n in (self.n_force, self.n_vertical, self.n_los):
             _rule(n)
 
     def sampling_identity(self):
         """Return the three fixed quadrature orders used to identify a sampling target.
 
-        The host dictionary contains n_force, n_vertical and n_los. Physical
-        parameters and observations are identified separately by the likelihood.
+        The host dictionary contains quadrature orders, stored components and
+        inclination. The likelihood separately identifies observations and priors.
         """
-        return dict(n_force=self.n_force, n_vertical=self.n_vertical, n_los=self.n_los)
+        return dict(n_force=self.n_force, n_vertical=self.n_vertical, n_los=self.n_los,
+                    submodels=self.submodels, inclination=self.inclination)
+
+    def __getitem__(self, name):
+        if self.submodels is None:
+            raise KeyError("This model has no stored components; pass explicit submodels")
+        return self.submodels[name]
+
+    @property
+    def physical_params(self):
+        """Detached physical defaults from stored components, or an empty mapping."""
+        if self.submodels is None:
+            return {}
+        tracer, halo, anisotropy = (self.submodels[k] for k in (
+            "StellarModel", "DMModel", "AnisotropyModel"))
+        return dict(re_pc=tracer.re_pc, q=tracer.q, rs_pc=halo.rs_pc,
+                    rhos_Msunpc3=halo.rhos_Msunpc3, Q=halo.Q, alpha=halo.alpha,
+                    beta=halo.beta, gamma=halo.gamma, r_t_pc=halo.r_t_pc,
+                    beta_z=anisotropy.beta_z, inclination=self.inclination)
 
     def _model(self, params):
         from ._axisymmetric_params import resolve_params
-        p, valid = resolve_params(params, np)
+        base = self.physical_params
+        stellar_type, halo_type, anisotropy_type = (
+            AxisymmetricPlummerModel, AxisymmetricZhaoModel,
+            AxisymmetricConstantAnisotropyModel)
+        if self.submodels is not None:
+            stellar_type, halo_type, anisotropy_type = (
+                type(self.submodels[k]) for k in ("StellarModel", "DMModel", "AnisotropyModel"))
+        if params is not None:
+            if "q_projected" in params and "q" not in params:
+                base.pop("q", None)
+            base.update(params)
+        p, valid = resolve_params(base, np)
         if not valid:
             raise InvalidAxisymmetricModelError(
                 "Invalid axisymmetric physical parameters or inclination/flattening")
         p = {k: float(v) for k, v in p.items()}
         return AxisymmetricJeans(
-            PlummerTracer(p["re_pc"], p["q"]),
-            ZhaoHalo(p["rhos_Msunpc3"], p["rs_pc"], p["Q"], p["alpha"], p["beta"], p["gamma"], p["r_t_pc"]),
-            p["beta_z"], p["inclination"], self.n_force, self.n_vertical, self.n_los,
+            stellar_type(p["re_pc"], p["q"]),
+            halo_type(p["rs_pc"], p["rhos_Msunpc3"], p["Q"],
+                                  p["alpha"], p["beta"], p["gamma"], p["r_t_pc"]),
+            inclination=p["inclination"], n_force=self.n_force,
+            n_vertical=self.n_vertical, n_los=self.n_los,
+            anisotropy=anisotropy_type(p["beta_z"]),
         )
 
-    def sigmalos2(self, x_pc, y_pc, *, params):
+    def sigmalos2(self, x_pc, y_pc, *, params=None):
         r"""Project a cylindrically aligned second moment.
 
         Notes
@@ -486,7 +666,7 @@ class AxisymmetricDSphModel:
         """
         return self._model(params).los_second_moment(x_pc, y_pc)
 
-    def intrinsic_moments(self, R_pc, z_pc, *, params):
+    def intrinsic_moments(self, R_pc, z_pc, *, params=None):
         r"""Evaluate the intrinsic Jeans second moments.
 
         Notes
@@ -500,7 +680,7 @@ class AxisymmetricDSphModel:
         """
         return self._model(params).intrinsic_moments(R_pc, z_pc)
 
-    def potential_gradient(self, R_pc, z_pc, *, params):
+    def potential_gradient(self, R_pc, z_pc, *, params=None):
         r"""Evaluate derivatives of the gravitational potential.
 
         Notes
@@ -513,7 +693,7 @@ class AxisymmetricDSphModel:
         """
         return self._model(params).halo.potential_gradient(R_pc, z_pc, self.n_force)
 
-    def surface_density(self, x_pc, y_pc, *, params):
+    def surface_density(self, x_pc, y_pc, *, params=None):
         r"""Evaluate the projected spheroidal Plummer tracer.
 
         Notes
@@ -527,15 +707,15 @@ class AxisymmetricDSphModel:
         m = self._model(params)
         return m.tracer.surface_density(x_pc, y_pc, m.inclination)
 
-    def density_3d(self, R_pc, z_pc, *, params):
+    def density_3d(self, R_pc, z_pc, *, params=None):
         """Unit-normalized stellar density in pc^-3."""
         return self._model(params).tracer.density(R_pc, z_pc)
 
-    def mass_density_3d(self, R_pc, z_pc, *, params):
+    def mass_density_3d(self, R_pc, z_pc, *, params=None):
         """Halo density in Msun pc^-3, including the optional ellipsoidal cutoff."""
         return self._model(params).halo.density(R_pc, z_pc)
 
-    def enclosed_mass(self, m_pc, *, params, n_steps=128):
+    def enclosed_mass(self, m_pc, *, params=None, n_steps=128):
         r"""Integrate mass inside a similar halo ellipsoid.
 
         Notes
@@ -548,7 +728,7 @@ class AxisymmetricDSphModel:
         """
         return self._model(params).halo.enclosed_mass(m_pc, n_steps=n_steps)
 
-    def jfactor(self, dist_pc, roi_deg, *, params, **quadrature):
+    def jfactor(self, dist_pc, roi_deg, *, params=None, **quadrature):
         r"""Postprocess an axisymmetric finite-cone factor.
 
         Notes
@@ -566,7 +746,7 @@ class AxisymmetricDSphModel:
         model = self._model(params)
         return model.halo.jfactor(dist_pc, roi_deg, inclination=model.inclination, **quadrature)
 
-    def dfactor(self, dist_pc, roi_deg, *, params, **quadrature):
+    def dfactor(self, dist_pc, roi_deg, *, params=None, **quadrature):
         r"""Postprocess an axisymmetric finite-cone factor.
 
         Notes
