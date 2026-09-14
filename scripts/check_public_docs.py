@@ -34,7 +34,12 @@ def check(root):
                 name in relative for name in ("development", "changelog", "draco")):
             errors.append(relative)
         elif relative.startswith("_downloads/") and path.suffix != ".bib":
-            errors.append(relative)
+            # MyST creates a download copy for the public tutorial's execution
+            # metadata. No other JSON or research payload belongs here.
+            public_execution = root / "_static/quickstart/execution.json"
+            if not (path.name == "execution.json" and public_execution.is_file()
+                    and path.read_bytes() == public_execution.read_bytes()):
+                errors.append(relative)
     search = (root / "searchindex.js").read_text()
     for name in RETIRED_PAGES:
         if '"' + name.removesuffix(".html") + '"' in search:

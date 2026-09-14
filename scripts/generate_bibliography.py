@@ -19,18 +19,18 @@ def tex(text):
 
 
 def main():
-    data = json.loads((ROOT / "validation/release/references.json").read_text())
+    data = json.loads((ROOT / "docs/references.json").read_text())
     entries = data["references"]
-    bib = ["% Generated from validation/release/references.json. Do not edit by hand.", ""]
-    page = ["# References", "", "This list covers scientific methods, comparison papers, data and inference",
-            "software used in these documents. Cite only the methods and resources",
-            "used in a particular analysis, together with their actual code versions.", "",
+    bib = ["% Generated from docs/references.json. Do not edit by hand.", ""]
+    page = ["# References", "", "References are grouped by their role in an analysis. Cite the methods you use",
+            "together with the version of JeansPy and its dependencies.", "",
             "Download the {download}`BibTeX file <references.bib>`.", ""]
+    category = None
     for entry in entries:
         authors = entry["authors"]
         fields = {"author": " and ".join(tex(a["family"] + ", " + a.get("given", "")) for a in authors),
                   "title": "{" + tex(entry["title"]) + "}", "year": str(entry["year"])}
-        for key in ("journal", "volume", "pages", "doi", "url", "eprint", "archivePrefix", "note"):
+        for key in ("journal", "volume", "pages", "doi", "url", "eprint", "archivePrefix", "note", "publisher", "edition"):
             if entry.get(key):
                 fields[key] = str(entry[key]) if key in ("url", "doi") else tex(entry[key])
         if "pages" in fields:
@@ -38,12 +38,19 @@ def main():
         bib += ["@" + entry["entry_type"] + "{" + entry["key"] + ","]
         bib += [f"  {key} = {{{value}}}," for key, value in fields.items()]
         bib += ["}", ""]
-        names = ", ".join(a["family"] for a in authors[:4])
-        if len(authors) > 4:
+        if entry["category"] != category:
+            category = entry["category"]
+            anchor = category.lower().replace(" ", "-")
+            page += [f"(references-{anchor})=", f"## {category}", "",
+                     "| Reference | Work | Relevance |", "| --- | --- | --- |"]
+        names = " & ".join(a["family"] for a in authors)
+        if len(authors) > 2:
             names = authors[0]["family"] + " et al."
-        location = ", ".join(str(entry[k]) for k in ("journal", "volume", "pages") if entry.get(k))
-        page += [f"(reference-{entry['key']})=", f"## {names} ({entry['year']})", "",
-                 f"[{entry['title']}]({entry['url']})." + (f" {location}." if location else ""), ""]
+        title = unescape(entry["title"]).replace("|", r"\|")
+        page += [f'| <span id="reference-{entry["key"]}"></span>{names} ({entry["year"]}) '
+                 f'| [{title}]({entry["url"]}) | {entry["role"]} |']
+        if entry is entries[-1] or entries[entries.index(entry)+1]["category"] != category:
+            page.append("")
     (ROOT / "docs/source/references.bib").write_text("\n".join(bib))
     (ROOT / "docs/source/references.md").write_text("\n".join(page))
     print(f"Rendered {len(entries)} references")

@@ -55,6 +55,8 @@ jobs:
           uv run --no-sync python scripts/generate_bibliography.py
       - name: Execute short examples and verify version preservation
         run: uv run --no-sync python -m pytest -q tests/test_docs_examples.py tests/test_docs_versions.py
+      - name: Execute both Quickstart workflows and render their stored posteriors
+        run: uv run --no-sync python scripts/run_quickstart.py
       - name: Build HTML with warnings as errors
         run: uv run --no-sync sphinx-build -W --keep-going -b html docs/source docs/_build/html
       - name: Check rendered version and installation commands

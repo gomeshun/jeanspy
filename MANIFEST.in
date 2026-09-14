@@ -21,6 +21,7 @@ recursive-include validation/release/los-benchmark *.json *.txt *.csv
 recursive-include validation/release/campaign *.json *.txt
 recursive-include validation/release/environments *.txt *.json *.toml
 recursive-include docs *.md *.rst *.py *.css *.json *.bib *.svg *.png *.pdf
+recursive-include docs/source/_static/quickstart *.txt
 prune docs/_build
 prune docs/source/api
 global-exclude __pycache__ *.py[cod]

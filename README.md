@@ -132,9 +132,7 @@ print(sigma_los_kms)
 ```
 
 `sigmalos2(R_pc)` returns the corresponding velocity variance in `(km/s)^2`.
-Both methods accept `method="dequad"`, the default and currently the only
-classical integration method. The earlier `sigmalos2_dequad` and
-`sigmalos_dequad` names remain supported.
+See the API reference for integration options.
 
 JeansPy does not bundle an external dwarf-galaxy database. Observational data and object-specific priors should be supplied explicitly by downstream analyses.
 
@@ -232,7 +230,7 @@ deprecated or “legacy”.
 
 | Backend | Use it when | Capabilities and limitations |
 | --- | --- | --- |
-| `jeanspy.model` | You need the general-purpose or reference implementation from the base install. | Stateful NumPy/SciPy models, fixed-grid double-exponential (`dequad`) integration, the broader stellar-model collection, J-factor utilities, and the `emcee`-based `jeanspy.sampler` workflow. It is not a JAX/JIT or autodiff API. |
+| `jeanspy.model` | You need the general-purpose or reference implementation from the base install. | Stateful NumPy/SciPy models, the broader stellar-model collection, J-factor utilities, and the `emcee`-based `jeanspy.sampler` workflow. It is not a JAX/JIT or autodiff API. |
 | `jeanspy.model_numpyro` | You need JAX arrays, JIT/autodiff, or NumPyro inference. Install `jeanspy[numpyro_cpu]` or `jeanspy[numpyro_cuda12]`. | Functional models for the currently supported Plummer, NFW, Zhao, and anisotropy paths, with kernel and Abel `sigmalos2` solvers and `jeanspy.sampler_numpyro`. It is not a drop-in replacement for every model, J-factor, or fitting utility in `model`. |
 
 Use `model` when broad model coverage and the established stateful API matter
@@ -253,7 +251,7 @@ backend-specific by design:
 | Model parameters | Values are supplied at construction and stored in `model.params`; `update()` changes them. | Values are supplied as a `params` mapping to each numerical method so JAX transformations can trace them. |
 | Density | `density_2d(R_pc)` and `density_3d(r_pc)` read the stored parameters. | `density_2d(R_pc, re_pc=...)` and `density_3d(r_pc, re_pc=...)` receive parameters explicitly. |
 | Enclosed mass | `enclosed_mass(r_pc)` is the common spelling; the existing `enclosure_mass(r_pc)` spelling remains supported. | `enclosed_mass(r_pc, params=..., method=...)` is canonical; `enclosure_mass(...)` is provided as a compatibility spelling. |
-| Line-of-sight dispersion | `DSphModel.sigmalos2(..., method="dequad")` returns the classical LOS variance; `sigmalos(...)` returns its square root. The method defaults to the fixed double-exponential rule. | `DSphModel.sigmalos2(..., backend="kernel"|"abel", ...)` uses a JAX-friendly fixed-grid solver. |
+| Line-of-sight dispersion | `DSphModel.sigmalos2(...)` returns the classical LOS variance; `sigmalos(...)` returns its square root. | `DSphModel.sigmalos2(..., backend="kernel"|"abel", ...)` uses a JAX-friendly fixed-grid solver. |
 | Numerical controls | Quadrature/grid resolution controls such as `n` and `n_kernel` are method arguments. | JIT, solver selection, grid sizes, and kernel backend are method arguments. |
 
 For `model_numpyro`, `DMModel.enclosed_mass(..., method="auto")` is the
