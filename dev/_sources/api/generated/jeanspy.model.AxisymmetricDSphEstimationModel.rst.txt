@@ -1,0 +1,10 @@
+﻿jeanspy.model.AxisymmetricDSphEstimationModel
+=============================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: AxisymmetricDSphEstimationModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

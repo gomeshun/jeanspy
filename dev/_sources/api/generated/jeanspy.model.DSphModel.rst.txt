@@ -1,0 +1,10 @@
+﻿jeanspy.model.DSphModel
+=======================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: DSphModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

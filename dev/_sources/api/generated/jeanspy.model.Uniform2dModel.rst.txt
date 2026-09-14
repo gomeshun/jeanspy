@@ -1,0 +1,10 @@
+﻿jeanspy.model.Uniform2dModel
+============================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: Uniform2dModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

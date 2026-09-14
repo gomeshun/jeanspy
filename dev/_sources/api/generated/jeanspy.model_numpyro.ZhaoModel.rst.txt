@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.ZhaoModel
+================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: ZhaoModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,10 @@
+﻿jeanspy.axisymmetric.AxisymmetricJeans
+======================================
+
+.. currentmodule:: jeanspy.axisymmetric
+
+.. autoclass:: AxisymmetricJeans
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

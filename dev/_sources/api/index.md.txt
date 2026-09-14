@@ -1,0 +1,23 @@
+# API reference
+
+This inventory is generated from the checked-out public modules.
+Each entry exposes its real signature and source documentation; aliases
+link to the same underlying object. See the [units and shape contract](../guides/contracts.md)
+and the [executable examples](../quickstart.md).
+
+```{toctree}
+:maxdepth: 1
+
+model
+axisymmetric
+axisymmetric_inference
+model_numpyro
+axisymmetric_numpyro
+axisymmetric_factors
+sampler
+sampler_numpyro
+sersic
+baes_eta2
+hyp2f1_jax
+dequad
+```

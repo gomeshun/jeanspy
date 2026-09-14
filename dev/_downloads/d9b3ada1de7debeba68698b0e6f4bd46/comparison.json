@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "inspected_date": "2026-09-13",
+  "status": "source_review_in_progress_selected_accuracy_recorded",
+  "interpretation": "Not a ranking. Absent/unlocated means not established in the cited inspected sources. Survey pins and measurement pins are separate. Differentiation refers to physical model parameters unless stated otherwise.",
+  "records": [
+    {
+      "code": "JeansPy",
+      "target": "Resolved stellar kinematics of dSphs",
+      "geometry": "Spherical; cylindrically aligned axisymmetric",
+      "physics": "Equilibrium second-order Jeans; tracer and halo components; spherical anisotropy profiles or constant cylindrical beta_z; current axisymmetric tracer has no self-gravity.",
+      "observables": "Projected LOS second moments; Gaussian individual-velocity likelihood with measurement errors.",
+      "freedom": "Spherical Plummer and classical additional tracers, NFW/Zhao halo and several anisotropy laws; axisymmetric Plummer + Zhao with flattening and inclination.",
+      "solver": "Direct fixed quadrature (and classical adaptive reference routes); no trained surrogate.",
+      "differentiation": "Physical-parameter autodiff through supported JAX forward/likelihood paths. NumPy J/D factors are postprocessing; analytic Zhao incomplete-beta shape derivatives are unsupported.",
+      "hardware": "NumPy/SciPy CPU; JAX CPU/GPU, precision explicitly configured.",
+      "inference": "emcee and NumPyro wrappers; persisted analysis identity, samples and restart.",
+      "public_status": "Public BSD-3-Clause repository; alpha package and development source differ.",
+      "code_version": "Baseline 1a0ad4028d26af1df389ebdfdf992285ec50f8bb",
+      "paper_version": "This work; no accepted-paper claim",
+      "comparison_scope": "Matched spherical and axisymmetric forward/likelihood tests; native examples and conditional coverage separately.",
+      "sources": [
+        [
+          "baseline source",
+          "https://github.com/gomeshun/jeanspy/tree/1a0ad4028d26af1df389ebdfdf992285ec50f8bb"
+        ]
+      ]
+    },
+    {
+      "code": "JamPy 9.0.2 (current JAM)",
+      "target": "Integrated-light galaxy and stellar-system kinematics",
+      "geometry": "Axisymmetric public solver uses spherical alignment",
+      "physics": "Spectral solution of the two-dimensional Jeans boundary problem with general beta(r, theta). The public cylindrical-alignment solver was removed in v9.",
+      "observables": "Intrinsic/projected first and second moments, including PMs, PSF and aperture treatment.",
+      "freedom": "Projected tracer requires MGE; potential may be MGE or a callable. Intrinsic solver accepts general density/potential callables and anisotropy.",
+      "solver": "Direct spectral method in log radius, finite domain with outer Robin condition; line-of-sight integration remains for projection.",
+      "differentiation": "spectral_derivs computes spatial density/potential derivatives, not automatic derivatives with respect to physical model parameters. Inspected implementation uses NumPy/SciPy.",
+      "hardware": "CPU release; official changelog says a GPU-optimized implementation is in development, not available as this measured release.",
+      "inference": "Forward moments and fitting interface; probabilistic sampling is composed externally.",
+      "public_status": "PyPI source/wheel under proprietary noncommercial terms; redistribution is prohibited.",
+      "code_version": "9.0.2, uploaded 2026-07-01; wheel SHA256 1e35aef738979b1edd24aacc25d3208faa26ed96822361dd7f58ef4be663d919",
+      "paper_version": "Cappellari 2026, MNRAS 549, stag420; arXiv:2601.16179v2",
+      "comparison_scope": "The frozen Plummer tests use beta=beta_z=0, where the alignment distinction vanishes. Both fine-grid cases pass the declared accuracy gates; the coarse 45x9 intrinsic grid returns NaNs and is retained. Nonzero cylindrical anisotropy and JamPy's suggested approximation are different physical models. See the current JAM validation page for results and MGE limits.",
+      "sources": [
+        [
+          "JamPy 9.0.2 API and changelog",
+          "https://pypi.org/project/jampy/9.0.2/"
+        ],
+        [
+          "spectral Jeans paper",
+          "https://arxiv.org/abs/2601.16179v2"
+        ]
+      ]
+    },
+    {
+      "code": "JamPy 8.1.4 (legacy reference)",
+      "target": "Integrated-light galaxy and stellar-system kinematics",
+      "geometry": "Spherical and axisymmetric; cylindrical or spherical alignment",
+      "physics": "Second-order Jeans with multi-Gaussian expansions (MGE), anisotropy, inclination and optional rotation prescriptions.",
+      "observables": "Projected first/second velocity moments including proper motions; PSF and aperture treatment.",
+      "freedom": "Flexible luminous/mass MGE components, M/L, black-hole mass and anisotropy.",
+      "solver": "Direct integration of MGE Jeans expressions.",
+      "differentiation": "No general physical-parameter autodiff interface documented in the inspected Python package.",
+      "hardware": "Python/NumPy/SciPy CPU in the inspected implementation.",
+      "inference": "Built-in fitting options; external Bayesian inference can wrap the forward model.",
+      "public_status": "Source distributed through PyPI; package declares a proprietary license. Do not equate downloadability with an open-source license.",
+      "code_version": "jampy 8.1.4; historical quadrature reference retained with original MGE coefficients",
+      "paper_version": "Cappellari 2008, MNRAS 390, 71; Cappellari 2020, MNRAS 494, 4819",
+      "comparison_scope": "Cylindrical alignment with the same target profiles approximated by MGE; report MGE residuals and fitting cost. Spherical-aligned JAM is a different closure.",
+      "sources": [
+        [
+          "JAM 2008",
+          "https://arxiv.org/abs/0806.0042"
+        ],
+        [
+          "JAM 2020",
+          "https://arxiv.org/abs/1907.09894"
+        ],
+        [
+          "JamPy 8.1.4",
+          "https://pypi.org/project/jampy/8.1.4/"
+        ]
+      ]
+    },
+    {
+      "code": "CJAM",
+      "target": "Discrete stellar kinematics; original application to omega Centauri",
+      "geometry": "Axisymmetric, cylindrical JAM closure",
+      "physics": "MGE tracer and mass; component anisotropy and rotation; inclination.",
+      "observables": "Three first and six second velocity moments; the paper uses individual LOS/PM data with a contaminating population.",
+      "freedom": "Separate tracer/mass MGEs, component mass scalings, anisotropy, rotation and optional black hole.",
+      "solver": "Direct C/GSL integrations with an optional Python/Cython wrapper and interpolation grid.",
+      "differentiation": "No physical-parameter automatic differentiation interface in the documented C implementation.",
+      "hardware": "CPU C/GSL.",
+      "inference": "Discrete likelihood framework in Watkins et al.; the public repository supplies the moment engine.",
+      "public_status": "Public BSD-2-Clause source.",
+      "code_version": "9394ac44572d3dafc9973f90e59fb89d70f3694c (2022-08-03)",
+      "paper_version": "Watkins et al. 2013, MNRAS 436, 2598; arXiv:1308.4789",
+      "comparison_scope": "Discrete stellar velocities, anisotropy, inclination and contamination are established precedents. They cannot individually establish JeansPy novelty. No new CJAM runtime measurement is reported.",
+      "sources": [
+        [
+          "public code and documentation",
+          "https://github.com/lauralwatkins/cjam/tree/9394ac44572d3dafc9973f90e59fb89d70f3694c"
+        ],
+        [
+          "discrete dynamical models",
+          "https://arxiv.org/abs/1308.4789"
+        ]
+      ]
+    },
+    {
+      "code": "GLaD",
+      "target": "Joint strong-lens imaging and spatially resolved stellar dynamics",
+      "geometry": "Axisymmetric, spherically aligned JAM-based dynamics",
+      "physics": "Composite lens mass and light models, MGE and spherical alignment; lensing and dynamics share mass parameters.",
+      "observables": "Lensed image information and two-dimensional stellar second moments; paper combines several likelihood terms.",
+      "freedom": "Flexible composite lens models, stellar/DM components and inclination; not the same tracer/closure as JeansPy's cylindrical model.",
+      "solver": "Direct JAX rewrite of part of JAM with fixed integration grids; no learned surrogate for the dynamical solver described in the paper.",
+      "differentiation": "JAX implementation is explicit. End-to-end physical-parameter gradient accuracy across the complete lensing/inference pipeline is not established by the inspected paper.",
+      "hardware": "CPU/GPU hybrid; JAX matrix/integration work on GPU.",
+      "inference": "Joint Bayesian modeling using emcee in the paper.",
+      "public_status": "Paper publicly accessible; no public code repository was located in the inspected full text and cited software links. This is an access finding, not proof of non-public code.",
+      "code_version": "No independently accessible GLaD code pin located",
+      "paper_version": "Wang et al. 2025, A&A 701, A280; arXiv:2504.01302v2",
+      "comparison_scope": "Method/workflow comparison; not a numerically matched cylindrical Plummer+Zhao benchmark.",
+      "sources": [
+        [
+          "GLaD paper",
+          "https://arxiv.org/abs/2504.01302"
+        ],
+        [
+          "published GLaD",
+          "https://doi.org/10.1051/0004-6361/202554861"
+        ]
+      ]
+    },
+    {
+      "code": "SKiNN",
+      "target": "Stellar kinematic maps of strong-lens early-type galaxies",
+      "geometry": "Axisymmetric cylindrical JAM training targets",
+      "physics": "Neural approximation to JAM maps for elliptical power-law total mass and Sersic light within a specified training distribution.",
+      "observables": "Spatially resolved second-moment maps; intended for dynamical/lensing analyses.",
+      "freedom": "Eight inputs in the published model: lens/mass scale and slope/flattening, light scale/index/flattening, anisotropy and inclination.",
+      "solver": "Trained neural surrogate; training and weight provenance are part of the method.",
+      "differentiation": "Differentiable learned mapping; existing differentiability precludes a novelty claim based only on autodiff.",
+      "hardware": "GPU inference/training described; current README requires CUDA.",
+      "inference": "Provides surrogate predictions and parameter sensitivities; compare the complete chosen external inference workflow explicitly.",
+      "public_status": "Public code and separately downloadable weights; no license detected in GitHub metadata. Weight terms must be checked separately.",
+      "code_version": "d941b6a049a40a6e1e901c2f221f08ac0b72f4d5; README announces updated weights on 2026-01-15, DOI 10.58119/ULG/WZFXYD",
+      "paper_version": "A&A 2023 paper, DOI 10.1051/0004-6361/202347507; arXiv:2307.10381",
+      "comparison_scope": "Native in-domain model only. Plummer+Zhao dSphs do not match the published training family; no out-of-domain speed/accuracy claim.",
+      "sources": [
+        [
+          "SKiNN paper",
+          "https://arxiv.org/abs/2307.10381"
+        ],
+        [
+          "pinned code and weight instructions",
+          "https://github.com/mattgomer/SKiNN/tree/d941b6a049a40a6e1e901c2f221f08ac0b72f4d5"
+        ]
+      ]
+    },
+    {
+      "code": "AGAMA",
+      "target": "General galactic dynamics and galaxy modeling",
+      "geometry": "Spherical, axisymmetric and more general potentials/orbit models",
+      "physics": "Potentials, forces, actions, distribution functions, DF moments, self-consistent and Schwarzschild models. Axisymmetric Jeans models are explicitly recorded in the May 2018 changelog.",
+      "observables": "Positions/velocities, intrinsic/projected moments and model-dependent observables.",
+      "freedom": "Broad potential, density and DF libraries; beyond a single Jeans closure.",
+      "solver": "Direct C++ numerical dynamics with Python/Fortran interfaces.",
+      "differentiation": "Spatial force/derivative interfaces exist; these are distinct from an end-to-end physical-parameter autodiff likelihood.",
+      "hardware": "CPU C++ with parallel capabilities; no matching GPU Jeans path established here.",
+      "inference": "Fitting framework and examples; inference target depends on the selected DF/model.",
+      "public_status": "Public source; inspect the repository license terms rather than interpreting GitHub's NOASSERTION as a license.",
+      "code_version": "Survey f302756b8af2b763db58e278e30478517dc8eea3; existing local submodule 4e62db6 (full pin in baseline git tree)",
+      "paper_version": "Vasiliev 2019, MNRAS 482, 1525",
+      "comparison_scope": "Independent potential/DF-moment reference when assumptions agree. Rebuilding a DF each proposal measures that workflow, not a generic Jeans-solver limit.",
+      "sources": [
+        [
+          "AGAMA paper",
+          "https://academic.oup.com/mnras/article/482/2/1525/5114593"
+        ],
+        [
+          "surveyed source",
+          "https://github.com/GalacticDynamics-Oxford/Agama/tree/f302756b8af2b763db58e278e30478517dc8eea3"
+        ],
+        [
+          "AGAMA change history",
+          "https://github.com/GalacticDynamics-Oxford/Agama/blob/f302756b8af2b763db58e278e30478517dc8eea3/NEWS"
+        ]
+      ]
+    },
+    {
+      "code": "galpy",
+      "target": "General Galactic dynamics, potentials, orbits and DFs",
+      "geometry": "General dynamics library; its jeans.py helpers assume spherical symmetry",
+      "physics": "Spherical Jeans helper accepts tracer density and constant or radial anisotropy; sphericity of the supplied potential is not checked.",
+      "observables": "sigmar and sigmalos return velocity dispersions; broader library supplies other dynamical observables.",
+      "freedom": "Composable potentials, user-supplied density and anisotropy functions.",
+      "solver": "Direct NumPy/SciPy Jeans integration; broader package includes C acceleration. Current source adds interpolation/refinement for radial moments.",
+      "differentiation": "No JAX physical-parameter autodiff in the inspected Jeans helper.",
+      "hardware": "CPU Python/C, depending on component; inspected Jeans integrations use SciPy.",
+      "inference": "Forward helpers with external inference; general library also has fitting utilities.",
+      "public_status": "Public BSD-3-Clause source.",
+      "code_version": "Survey d243f989b61ec6398f46fafa49b886feac1134bf; pin the installed release separately for each measurement.",
+      "paper_version": "Bovy 2015, ApJS 216, 29; arXiv:1412.3451",
+      "comparison_scope": "Matched spherical density/potential/beta predictions after explicit unit conversion; fresh measurements needed for current optimized helper.",
+      "sources": [
+        [
+          "galpy paper",
+          "https://arxiv.org/abs/1412.3451"
+        ],
+        [
+          "inspected Jeans source",
+          "https://github.com/jobovy/galpy/blob/d243f989b61ec6398f46fafa49b886feac1134bf/galpy/df/jeans.py"
+        ]
+      ]
+    },
+    {
+      "code": "GravSphere1 / binulator",
+      "target": "Spherical stellar systems, especially dSphs",
+      "geometry": "Spherical equilibrium",
+      "physics": "Second-order Jeans with virial shape parameters (fourth-moment information), optional proper motions; current binulator release differs from the original free-form implementation.",
+      "observables": "Binned photometry/velocity moments, virial shape constraints and optional PMs.",
+      "freedom": "Flexible halo/anisotropy and tracer modeling; current public model choices must be specified.",
+      "solver": "Direct NumPy/SciPy integrations and preprocessing.",
+      "differentiation": "No physical-parameter autodiff interface documented in inspected code.",
+      "hardware": "CPU; parallel sampling available.",
+      "inference": "binulator preprocessing then emcee-based mass modeling.",
+      "public_status": "Public repository; no license detected in GitHub metadata.",
+      "code_version": "09fa555aa7842aed3ba139e978c1e20d6d00e2d8",
+      "paper_version": "Read & Steger 2017, MNRAS 471, 4541; additional current-code citations listed in README",
+      "comparison_scope": "Common second-moment forward subset versus native binned/VSP workflow separately; include preprocessing in native timing.",
+      "sources": [
+        [
+          "GravSphere paper",
+          "https://academic.oup.com/mnras/article/471/4/4541/3979468"
+        ],
+        [
+          "pinned binulator release",
+          "https://github.com/justinread/gravsphere/tree/09fa555aa7842aed3ba139e978c1e20d6d00e2d8"
+        ]
+      ]
+    },
+    {
+      "code": "GravSphere2",
+      "target": "Spherical stellar systems from clusters to galaxies",
+      "geometry": "Spherical equilibrium",
+      "physics": "Second- and fourth-order Jeans equations with flexible anisotropy at both orders and non-Gaussian velocity PDF modeling.",
+      "observables": "Individual LOS velocities and optional proper motions; photometric tracers may be unbinned.",
+      "freedom": "Flexible mass/anisotropy/tracer models and higher-moment parameters.",
+      "solver": "Direct higher-order numerical integration and velocity-PDF construction.",
+      "differentiation": "No physical-parameter autodiff interface documented in inspected implementation.",
+      "hardware": "CPU Python/NumPy/SciPy; multiprocessing examples.",
+      "inference": "dynesty nested sampling and checkpointing.",
+      "public_status": "Public MIT repository.",
+      "code_version": "Survey de56ee61b377608e63d4420f424def7ceaec942f; existing submodule 06d6a507 (full pin in baseline git tree)",
+      "paper_version": "Banares-Hernandez, Read & Julio 2026, A&A 705, A212; arXiv:2509.24103v3 corrects equations 17, 18, 20, 23",
+      "comparison_scope": "Second-moment subroutine only if inputs/definitions match; native non-Gaussian inference cannot be equated to JeansPy's Gaussian likelihood.",
+      "sources": [
+        [
+          "GravSphere2 v3 paper",
+          "https://arxiv.org/abs/2509.24103v3"
+        ],
+        [
+          "surveyed code",
+          "https://github.com/dadams42/GravSphere2/tree/de56ee61b377608e63d4420f424def7ceaec942f"
+        ]
+      ]
+    },
+    {
+      "code": "pyGravSphere",
+      "target": "dSph mass profiles",
+      "geometry": "Spherical equilibrium",
+      "physics": "Free-form density and anisotropy Jeans analysis with binned kinematics and virial shape information.",
+      "observables": "Photometric/kinematic star inputs are preprocessed into moment constraints.",
+      "freedom": "Nonparametric density description and flexible anisotropy/tracer parameters.",
+      "solver": "Direct compiled extension via SWIG and Python orchestration.",
+      "differentiation": "No physical-parameter autodiff interface documented.",
+      "hardware": "CPU compiled extension, optional multiprocessing/MPI.",
+      "inference": "emcee wrapper with preprocessing and stored chains.",
+      "public_status": "Public GPL-3.0 repository; README documents legacy dependency versions.",
+      "code_version": "fe811462da0201bb6778d8636a8e497413dc50c2",
+      "paper_version": "Original GravSphere family; Genina et al. 2020, MNRAS 498, 144, plus relevant code-use citations",
+      "comparison_scope": "Native free-form/VSP workflow is scientifically distinct. Previous installation failure is preliminary; any new failure requires its own log and environment.",
+      "sources": [
+        [
+          "pinned source and build instructions",
+          "https://github.com/AnnaGenina/pyGravSphere/tree/fe811462da0201bb6778d8636a8e497413dc50c2"
+        ],
+        [
+          "GravSphere foundation",
+          "https://academic.oup.com/mnras/article/471/4/4541/3979468"
+        ]
+      ]
+    },
+    {
+      "code": "MAMPOSSt",
+      "target": "Galaxy clusters/groups, also spherical galaxies/dSphs",
+      "geometry": "Spherical equilibrium",
+      "physics": "Parametric mass/anisotropy profiles and a chosen 3D velocity distribution (Gaussian in the founding paper). LOS projection generally gives a non-Gaussian velocity distribution.",
+      "observables": "Unbinned projected phase space (R, v_los), including its radial selection.",
+      "freedom": "Mass/tracer scale radii and anisotropy parameters; multiple tracer populations in public example.",
+      "solver": "Direct integration of a projected phase-space model.",
+      "differentiation": "No end-to-end physical-parameter autodiff documented in inspected repository.",
+      "hardware": "CPU native code; build instructions use INSTALL.csh.",
+      "inference": "Maximum-likelihood method in paper; repository includes MCMC output/test workflow.",
+      "public_status": "Public GPL-3.0-or-later GitLab repository; no tags listed.",
+      "code_version": "b5148fc6412d7691e642c8e815ec69b3f575edc5",
+      "paper_version": "Mamon, Biviano & Boue 2013, MNRAS 429, 3079; arXiv:1212.1455v2",
+      "comparison_scope": "Native phase-space likelihood comparison; not a matched Gaussian LOS likelihood without an explicit mathematical reduction.",
+      "sources": [
+        [
+          "MAMPOSSt paper",
+          "https://arxiv.org/abs/1212.1455v2"
+        ],
+        [
+          "public source",
+          "https://gitlab.com/gmamon/MAMPOSSt/-/tree/b5148fc6412d7691e642c8e815ec69b3f575edc5"
+        ]
+      ]
+    },
+    {
+      "code": "CLUMPY",
+      "target": "Dark-matter annihilation/decay signals; dSph Jeans analysis",
+      "geometry": "Spherical Jeans module; signal calculations also allow nonspherical halos/substructure",
+      "physics": "Parametric Jeans mass modeling plus J/D integrals and particle/signal calculations; signal geometry is broader than Jeans geometry.",
+      "observables": "Binned moments or individual velocities for Jeans fitting; J/D factors, fluxes and skymaps.",
+      "freedom": "Selectable density/light/anisotropy models and halo/subhalo prescriptions.",
+      "solver": "Direct C/C++ integration and statistical workflows.",
+      "differentiation": "No physical-parameter autodiff interface documented in the inspected Jeans module.",
+      "hardware": "CPU C/C++; dependencies vary by release and optional modules.",
+      "inference": "jeansChi2 minimization/bootstrap and jeansMCMC (GreAT).",
+      "public_status": "Public GitLab code; release-specific license/dependency terms apply.",
+      "code_version": "Documentation v3.1.1; surveyed master 101aff8ecd2da20a71f7eb83fb6be2f8d4e99679; README warns master installation differs from release.",
+      "paper_version": "Bonnivard et al. 2016 (Jeans module); Hutten, Combet & Maurin 2019, CPC 235, 336 (v3)",
+      "comparison_scope": "Matched spherical moments or J/D geometry after explicit cuts/units; native all-sky/substructure signal work is outside JeansPy's scope.",
+      "sources": [
+        [
+          "CLUMPY v3",
+          "https://arxiv.org/abs/1806.08639v2"
+        ],
+        [
+          "Jeans module paper",
+          "https://arxiv.org/abs/1506.07628"
+        ],
+        [
+          "v3.1.1 Jeans documentation",
+          "https://clumpy.gitlab.io/CLUMPY/v3.1.1/doc_modules_jeans.html"
+        ],
+        [
+          "surveyed code",
+          "https://gitlab.com/clumpy/CLUMPY/-/tree/101aff8ecd2da20a71f7eb83fb6be2f8d4e99679"
+        ]
+      ]
+    },
+    {
+      "code": "Gala",
+      "target": "General Galactic and gravitational dynamics",
+      "geometry": "Potential/orbit-dependent; not limited to spherical Jeans models",
+      "physics": "Potential/force models, Hamiltonian orbits, coordinates and dynamical analysis.",
+      "observables": "Trajectories and dynamical quantities; no complete matching dSph Jeans likelihood established in inspected API.",
+      "freedom": "Composable potentials and flexible phase-space initial conditions.",
+      "solver": "Direct Python/C numerical dynamics.",
+      "differentiation": "Spatial potential derivatives are supported; this does not establish JAX parameter gradients for a Jeans inference pipeline.",
+      "hardware": "CPU Python/C implementation described by official documentation.",
+      "inference": "Building blocks and examples for externally composed analyses.",
+      "public_status": "Public MIT source.",
+      "code_version": "Survey b87d6b553de628ff53ea25871f1b2352505a5cad",
+      "paper_version": "Price-Whelan 2017, JOSS 2(18), 388",
+      "comparison_scope": "Scope and interoperability comparison; no invented Jeans timing or inference score.",
+      "sources": [
+        [
+          "Gala paper",
+          "https://joss.theoj.org/papers/10.21105/joss.00388"
+        ],
+        [
+          "official documentation",
+          "https://gala.adrian.pw/en/latest/"
+        ],
+        [
+          "surveyed source",
+          "https://github.com/adrn/gala/tree/b87d6b553de628ff53ea25871f1b2352505a5cad"
+        ]
+      ]
+    },
+    {
+      "code": "galax",
+      "target": "General Galactic/gravitational dynamics in JAX",
+      "geometry": "Potential/orbit-dependent",
+      "physics": "Unit-aware gravitational potentials, phase-space coordinates and orbit integration.",
+      "observables": "Orbits and potential-derived quantities; a matching dSph Jeans likelihood was not located in the inspected surface.",
+      "freedom": "Composable potential and coordinate models.",
+      "solver": "Direct JAX dynamics; no learned surrogate implied by JAX.",
+      "differentiation": "Autodiff is an explicit project feature; comparison must distinguish its potential/orbit derivatives from the Jeans forward/likelihood tested here.",
+      "hardware": "JAX CPU/GPU capability; actual device and precision require measurement.",
+      "inference": "Composable differentiable primitives; no complete matching Jeans sampler established here.",
+      "public_status": "Public MIT source; README says documentation is forthcoming.",
+      "code_version": "192b2b4d1bf414fe2ed53866e5d248a0f048b916",
+      "paper_version": "Repository citation; no primary methods paper located in README",
+      "comparison_scope": "Scope and autodiff-context comparison; no fabricated Jeans benchmark.",
+      "sources": [
+        [
+          "surveyed source and documented features",
+          "https://github.com/GalacticDynamics/galax/tree/192b2b4d1bf414fe2ed53866e5d248a0f048b916"
+        ]
+      ]
+    }
+  ]
+}

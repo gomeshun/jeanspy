@@ -1,0 +1,6 @@
+﻿jeanspy.sampler\_numpyro.StorageBackend
+=======================================
+
+.. currentmodule:: jeanspy.sampler_numpyro
+
+.. autodata:: StorageBackend

@@ -1,0 +1,6 @@
+﻿jeanspy.axisymmetric\_factors.dfactor
+=====================================
+
+.. currentmodule:: jeanspy.axisymmetric_factors
+
+.. autofunction:: dfactor

@@ -1,0 +1,10 @@
+﻿jeanspy.model.Model
+===================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: Model
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

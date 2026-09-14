@@ -1,0 +1,2242 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jeanspy._classical.profiles &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=b635b406" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/jeanspy/_classical/profiles';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/_modules/jeanspy/_classical/profiles.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-14"/>
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">jeanspy._classical.profiles</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for jeanspy._classical.profiles</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Physical profile components for the classical NumPy/SciPy backend."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">hyp2f1</span><span class="p">,</span> <span class="n">k0</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..dequad</span><span class="w"> </span><span class="kn">import</span> <span class="n">dequad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._zhao</span><span class="w"> </span><span class="kn">import</span> <span class="n">enclosed_mass</span> <span class="k">as</span> <span class="n">_zhao_mass</span><span class="p">,</span> <span class="n">valid_domain</span> <span class="k">as</span> <span class="n">_zhao_valid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.jfactor</span><span class="w"> </span><span class="kn">import</span> <span class="n">C_J</span><span class="p">,</span> <span class="n">_ullio2016_inner_weight</span><span class="p">,</span> <span class="n">_ullio2016_weight</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_jfactor_quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Do not return an unconverged or nonphysical quadrature as a J-factor."""</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">value</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">result</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">detail</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">"nonfinite or negative integral"</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"J-factor quadrature failed: </span><span class="si">{</span><span class="n">detail</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">error</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StellarModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base class for projected/deprojected stellar-density models.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** Subclasses define ``density_2d``(``R_pc``),</span>
+<span class="sd">    ``density_3d``(``r_pc``) and required parameters.</span>
+<span class="sd">    density(``distance_from_center``, dimension) dispatches on '2d'/'3d'.</span>
+<span class="sd">    ``density_2d_truncated``(``R_pc``, ``R_trunc_pc``) requires a scalar</span>
+<span class="sd">    positive cutoff in pc.</span>
+
+<span class="sd">    **Returns and shape.** Density in pc^-2/pc^-3; truncated surface density</span>
+<span class="sd">    integrates to one within the cutoff and is zero outside. Shape follows</span>
+<span class="sd">    radius input.</span>
+
+<span class="sd">    **Validity.** A 3-D density is required by a Jeans solver. The truncated</span>
+<span class="sd">    surface-density helper also requires ``cdf_R`` in the concrete profile.</span>
+
+<span class="sd">    **Errors.** Abstract methods raise NotImplementedError; invalid dimension,</span>
+<span class="sd">    radii or truncation raise ValueError.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"stellar Model"</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="StellarModel.density">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance_from_center</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Dispatch to the projected or intrinsic normalized tracer density.</span>
+
+<span class="sd">        ``distance_from_center`` is a radius in pc. ``dimension`` must be</span>
+<span class="sd">        '2d' or '3d', returning pc^-2 or pc^-3 respectively with the concrete</span>
+<span class="sd">        profile's input shape. An unsupported dimension raises ValueError.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="s2">"2d"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">density_2d</span><span class="p">(</span><span class="n">distance_from_center</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="s2">"3d"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">density_3d</span><span class="p">(</span><span class="n">distance_from_center</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"dimension must be either '2d' or '3d'."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StellarModel.density_2d_truncated">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density_2d_truncated">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_2d_truncated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">R_trunc_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the normalized 2-D density truncated at ``R_trunc_pc``.</span>
+
+<span class="sd">        The normalization satisfies</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \int_0^{R_\mathrm{trunc}} 2\pi R\,\Sigma_\mathrm{trunc}(R)\,dR = 1.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a nonnegative finite scalar/array in pc;</span>
+<span class="sd">        ``R_trunc_pc`` is a positive finite scalar cutoff in pc.</span>
+
+<span class="sd">        **Returns and shape.** Normalized surface density in pc^-2 with radius</span>
+<span class="sd">        shape, zero for R&gt;``R_trunc_pc``.</span>
+
+<span class="sd">        **Validity.** Requires a concrete ``density_2d`` and ``cdf_R`` with positive</span>
+<span class="sd">        CDF at the cutoff.</span>
+<span class="sd">        """</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R_trunc_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cutoff</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">cutoff</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cutoff</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"R_trunc_pc must be a finite positive scalar"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">R</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">R</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"R_pc must be finite and nonnegative"</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdf_R</span><span class="p">(</span><span class="n">cutoff</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span> <span class="ow">or</span> <span class="n">norm</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Truncated stellar density must have positive finite normalization"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">R</span> <span class="o">&lt;=</span> <span class="n">cutoff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">density_2d</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StellarModel.density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density_2d">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate normalized surface density in pc^-2 at projected R_pc in pc.</span>
+
+<span class="sd">        Subclasses define scalar/array support. This base method raises</span>
+<span class="sd">        NotImplementedError.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="StellarModel.density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density_3d">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate normalized intrinsic density in pc^-3 at r_pc in pc.</span>
+
+<span class="sd">        Subclasses define scalar/array support. This base method raises</span>
+<span class="sd">        NotImplementedError.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PlummerModel</span><span class="p">(</span><span class="n">StellarModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Unit-integral Plummer tracer; re_pc is its projected half-light radius.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``re_pc`` (pc). Other constructor arguments follow</span>
+<span class="sd">    Model.</span>
+
+<span class="sd">    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and</span>
+<span class="sd">    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial</span>
+<span class="sd">    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface</span>
+<span class="sd">    density within R. ``logdensity_2d`` is the natural log of the surface</span>
+<span class="sd">    density, not the radial PDF. ``density_2d_normalized_re``, where available,</span>
+<span class="sd">    is the dimensionless ratio Sigma(R)/Sigma(re).</span>
+
+<span class="sd">    **Validity.** Supply positive finite scales and real nonnegative radii. Use</span>
+<span class="sd">    NumPy arrays for array inputs. A central cusp may diverge at zero. The older</span>
+<span class="sd">    elementary density formulas do not uniformly validate domains.</span>
+
+<span class="sd">    **Errors.** Unknown parameter names raise ValueError in Model.update.</span>
+<span class="sd">    Invalid values in elementary profile formulas can produce NaN/inf;</span>
+<span class="sd">    successful construction alone does not validate a physical profile.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Plummer Model"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="PlummerModel.density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.density_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** pc^-2 with input radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">R_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">re_pc</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="PlummerModel.logdensity_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.logdensity_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logdensity_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate natural log projected density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` in pc; scalar or NumPy array.</span>
+
+<span class="sd">        **Returns and shape.** Natural log of the numerical surface density in</span>
+<span class="sd">        pc^-2, with input shape. This excludes the radial Jacobian 2\*pi\*R.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="o">-</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">((</span><span class="n">R_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">re_pc</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlummerModel.density_2d_normalized_re">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.density_2d_normalized_re">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_2d_normalized_re</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the dimensionless ratio Sigma(R)/Sigma(re).</span>
+
+<span class="sd">        ``R_pc`` is a scalar or NumPy array of projected radii in pc. Output</span>
+<span class="sd">        shape follows the input; the stored re_pc must be positive.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="mf">4.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">R_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="PlummerModel.density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate the unit-normalized intrinsic tracer density.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        r_pc : float or numpy.ndarray</span>
+<span class="sd">            Nonnegative intrinsic radius in pc; NumPy array inputs keep their shape.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float or numpy.ndarray</span>
+<span class="sd">            Density in pc^-3 with the input radius shape.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The Plummer central density is finite. Stored tracer scales must be positive.</span>
+<span class="sd">        This elementary NumPy formula does not uniformly validate input domains;</span>
+<span class="sd">        no JAX physical-parameter differentiation is supported.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">3.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">re_pc</span><span class="o">**</span><span class="mi">3</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">r_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span> <span class="o">**</span> <span class="mi">5</span></div>
+
+
+<div class="viewcode-block" id="PlummerModel.cdf_R">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.cdf_R">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\int_0^R 2\pi R'\Sigma(R')\,dR'`.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless cumulative probability with input</span>
+<span class="sd">        radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">re_pc</span> <span class="o">/</span> <span class="n">R_pc</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlummerModel.mean_density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.mean_density_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean_density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Average surface density inside a circular aperture.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** Nonnegative projected radius ``R_pc`` in pc, scalar or</span>
+<span class="sd">        NumPy array.</span>
+
+<span class="sd">        **Returns and shape.** ``1/(pi*(R_pc**2 + re_pc**2))``, in pc^-2 with</span>
+<span class="sd">        radius shape. This expression has a finite value at R_pc=0.</span>
+
+<span class="sd">        **Validity.** Nonnegative radii and a positive stored re_pc.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">R_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">re_pc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">re_pc</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">re_pc</span>
+
+<div class="viewcode-block" id="PlummerModel.half_light_radius">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.half_light_radius">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the projected half-light radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** No arguments; reads the stored tracer scales.</span>
+
+<span class="sd">        **Returns and shape.** Scalar radius in pc. Exp3dModel returns</span>
+<span class="sd">        1.67834699001666\*``re_pc``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Exp2dModel</span><span class="p">(</span><span class="n">StellarModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Stellar model with an exponential projected surface density.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``re_pc`` is the projected half-light radius (pc);</span>
+<span class="sd">    ``R_exp_pc`` = ``re_pc``/1.67834699001666. Other constructor arguments</span>
+<span class="sd">    follow Model.</span>
+
+<span class="sd">    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and</span>
+<span class="sd">    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial</span>
+<span class="sd">    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface</span>
+<span class="sd">    density within R. ``logdensity_2d`` is the natural log of the surface</span>
+<span class="sd">    density, not the radial PDF. ``density_2d_normalized_re``, where available,</span>
+<span class="sd">    is the dimensionless ratio Sigma(R)/Sigma(re).</span>
+
+<span class="sd">    **Validity.** Supply positive finite scales and real nonnegative radii. Use</span>
+<span class="sd">    NumPy arrays for array inputs. A central cusp may diverge at zero. The older</span>
+<span class="sd">    elementary density formulas do not uniformly validate domains.</span>
+
+<span class="sd">    **Errors.** Unknown parameter names raise ValueError in Model.update.</span>
+<span class="sd">    Invalid values in elementary profile formulas can produce NaN/inf;</span>
+<span class="sd">    successful construction alone does not validate a physical profile.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Exp2dModel"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">R_exp_pc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the exponential scale length in pc, re_pc/1.67834699001666."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span> <span class="o">/</span> <span class="mf">1.67834699001666</span>
+
+<div class="viewcode-block" id="Exp2dModel.density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.density_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** pc^-2 with input radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_exp_pc</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">R_pc</span> <span class="o">/</span> <span class="n">scale</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">scale</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exp2dModel.logdensity_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.logdensity_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logdensity_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate natural log projected density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` in pc; scalar or NumPy array.</span>
+
+<span class="sd">        **Returns and shape.** Natural log of the numerical surface density in</span>
+<span class="sd">        pc^-2, with input shape. This excludes the radial Jacobian 2\*pi\*R.</span>
+<span class="sd">        """</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_exp_pc</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span> <span class="o">-</span> <span class="n">R_pc</span> <span class="o">/</span> <span class="n">scale</span></div>
+
+
+<div class="viewcode-block" id="Exp2dModel.density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate the unit-normalized intrinsic tracer density.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        r_pc : float or numpy.ndarray</span>
+<span class="sd">            Nonnegative intrinsic radius in pc; NumPy array inputs keep their shape.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float or numpy.ndarray</span>
+<span class="sd">            Density in pc^-3 with the input radius shape.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The deprojected exponential density diverges at r_pc=0.</span>
+<span class="sd">        Negative radii are outside the supported domain. Stored tracer scales must be positive.</span>
+<span class="sd">        This elementary NumPy formula does not uniformly validate input domains;</span>
+<span class="sd">        no JAX physical-parameter differentiation is supported.</span>
+<span class="sd">        """</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_exp_pc</span>
+        <span class="k">return</span> <span class="n">k0</span><span class="p">(</span><span class="n">r_pc</span> <span class="o">/</span> <span class="n">scale</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">scale</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exp2dModel.cdf_R">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.cdf_R">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate projected probability inside a circular radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless cumulative probability with input</span>
+<span class="sd">        radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_exp_pc</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">R_pc</span> <span class="o">/</span> <span class="n">scale</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">R_pc</span> <span class="o">/</span> <span class="n">scale</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exp2dModel.mean_density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.mean_density_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean_density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Average surface density inside a circular aperture.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** Positive projected radius ``R_pc`` in pc, scalar or</span>
+<span class="sd">        NumPy array.</span>
+
+<span class="sd">        **Returns and shape.** ``cdf_R(R)/(pi*R**2)``, in pc^-2 with radius shape.</span>
+
+<span class="sd">        **Validity.** Use R&gt;0; the elementary ratio is not a numerically regularized</span>
+<span class="sd">        central limit.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdf_R</span><span class="p">(</span><span class="n">R_pc</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_pc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">re_pc</span><span class="p">):</span>
+        <span class="k">del</span> <span class="n">re_pc</span>
+        <span class="k">return</span> <span class="mf">1.67834699001666</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_exp_pc</span>
+
+<div class="viewcode-block" id="Exp2dModel.half_light_radius">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.half_light_radius">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the projected half-light radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** No arguments; reads the stored tracer scales.</span>
+
+<span class="sd">        **Returns and shape.** Scalar radius in pc. Exp3dModel returns</span>
+<span class="sd">        1.67834699001666\*``re_pc``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Exp3dModel</span><span class="p">(</span><span class="n">StellarModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Historical exponential model retained by the classical backend.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``re_pc`` is the exponential scale length (pc),</span>
+<span class="sd">    despite its name; ``half_light_radius``() is 1.67834699001666\*``re_pc``. It</span>
+<span class="sd">    is not a pure 3-D exponential. Other constructor arguments follow Model.</span>
+
+<span class="sd">    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and</span>
+<span class="sd">    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial</span>
+<span class="sd">    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface</span>
+<span class="sd">    density within R. ``logdensity_2d`` is the natural log of the surface</span>
+<span class="sd">    density, not the radial PDF. ``density_2d_normalized_re``, where available,</span>
+<span class="sd">    is the dimensionless ratio Sigma(R)/Sigma(re).</span>
+
+<span class="sd">    **Validity.** Supply positive finite scales and real nonnegative radii. Use</span>
+<span class="sd">    NumPy arrays for array inputs. A central cusp may diverge at zero. The older</span>
+<span class="sd">    elementary density formulas do not uniformly validate domains.</span>
+
+<span class="sd">    **Errors.** Unknown parameter names raise ValueError in Model.update.</span>
+<span class="sd">    Invalid values in elementary profile formulas can produce NaN/inf;</span>
+<span class="sd">    successful construction alone does not validate a physical profile.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Exp3dModel"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Exp3dModel.density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.density_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** pc^-2 with input radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">R_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">re_pc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exp3dModel.density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate the unit-normalized intrinsic tracer density.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        r_pc : float or numpy.ndarray</span>
+<span class="sd">            Nonnegative intrinsic radius in pc; NumPy array inputs keep their shape.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float or numpy.ndarray</span>
+<span class="sd">            Density in pc^-3 with the input radius shape.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The deprojected exponential density diverges at r_pc=0.</span>
+<span class="sd">        Negative radii are outside the supported domain. Stored tracer scales must be positive.</span>
+<span class="sd">        This elementary NumPy formula does not uniformly validate input domains;</span>
+<span class="sd">        no JAX physical-parameter differentiation is supported.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="n">k0</span><span class="p">(</span><span class="n">r_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">re_pc</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exp3dModel.cdf_R">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.cdf_R">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate projected probability inside a circular radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless cumulative probability with input</span>
+<span class="sd">        radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">R_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">R_pc</span> <span class="o">/</span> <span class="n">re_pc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exp3dModel.mean_density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.mean_density_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean_density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Average surface density inside a circular aperture.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** Positive projected radius ``R_pc`` in pc, scalar or</span>
+<span class="sd">        NumPy array.</span>
+
+<span class="sd">        **Returns and shape.** ``cdf_R(R)/(pi*R**2)``, in pc^-2 with radius shape.</span>
+
+<span class="sd">        **Validity.** Use R&gt;0; the elementary ratio is not a numerically regularized</span>
+<span class="sd">        central limit.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdf_R</span><span class="p">(</span><span class="n">R_pc</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_pc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Exp3dModel.half_light_radius">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.half_light_radius">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the projected half-light radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** No arguments; reads the stored tracer scales.</span>
+
+<span class="sd">        **Returns and shape.** Scalar radius in pc. Exp3dModel returns</span>
+<span class="sd">        1.67834699001666\*``re_pc``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="mf">1.67834699001666</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Uniform2dModel</span><span class="p">(</span><span class="n">StellarModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Unit-integral uniform projected disk with no three-dimensional tracer.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``Rmax_pc`` is the disk radius (pc). Other constructor</span>
+<span class="sd">    arguments follow Model.</span>
+
+<span class="sd">    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and</span>
+<span class="sd">    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial</span>
+<span class="sd">    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface</span>
+<span class="sd">    density within R. ``logdensity_2d`` is the natural log of the surface</span>
+<span class="sd">    density, not the radial PDF. ``density_2d_normalized_re``, where available,</span>
+<span class="sd">    is the dimensionless ratio Sigma(R)/Sigma(re).</span>
+
+<span class="sd">    **Validity.** Supply positive finite scales and real nonnegative radii. Use</span>
+<span class="sd">    NumPy arrays for array inputs. A central cusp may diverge at zero. The older</span>
+<span class="sd">    elementary density formulas do not uniformly validate domains.</span>
+<span class="sd">    Uniform2dModel returns zero outside the disk; it cannot feed a 3-D Jeans</span>
+<span class="sd">    solver.</span>
+
+<span class="sd">    **Errors.** Unknown parameter names raise ValueError in Model.update.</span>
+<span class="sd">    Invalid values in elementary profile formulas can produce NaN/inf;</span>
+<span class="sd">    successful construction alone does not validate a physical profile.</span>
+<span class="sd">    ``density_3d`` raises NotImplementedError.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"uniform Model"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Rmax_pc"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Uniform2dModel.density_2d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Uniform2dModel.html#jeanspy.model.Uniform2dModel.density_2d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** pc^-2 with input radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">rmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_radii</span><span class="p">(</span><span class="n">R_pc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">R</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">R</span> <span class="o">&lt;=</span> <span class="n">rmax</span><span class="p">),</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rmax</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Uniform2dModel.density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Uniform2dModel.html#jeanspy.model.Uniform2dModel.density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""This projected uniform-disk model has no implemented 3-D density.</span>
+
+<span class="sd">        The radius argument r_pc is in pc but is not evaluated. Every call</span>
+<span class="sd">        raises NotImplementedError; there is no numerical return value.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Uniform2dModel has no 3-D density model."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Uniform2dModel.cdf_R">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Uniform2dModel.html#jeanspy.model.Uniform2dModel.cdf_R">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate projected probability inside a circular radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii</span>
+<span class="sd">        in pc.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless cumulative probability with input</span>
+<span class="sd">        radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">rmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_radii</span><span class="p">(</span><span class="n">R_pc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">rmax</span><span class="p">)</span> <span class="o">/</span> <span class="n">rmax</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validated_radii</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">rmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">Rmax_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rmax</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">rmax</span><span class="p">)</span> <span class="ow">or</span> <span class="n">rmax</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Rmax_pc must be a finite positive scalar"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">R</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"R_pc must not contain NaN"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">R</span><span class="p">,</span> <span class="n">rmax</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DMModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base class for classical dark-matter density profiles.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** Subclasses supply ``mass_density_3d`` and</span>
+<span class="sd">    ``enclosed_mass``/``enclosure_mass``. The base numerical J-factor methods</span>
+<span class="sd">    require scalar ``dist_pc``, ``roi_deg`` (cone half-angle in degrees) and</span>
+<span class="sd">    ``r_t_pc``. NFW overrides the simple approximation and also supplies an</span>
+<span class="sd">    Evans formula; these analytic methods support broadcastable geometry.</span>
+
+<span class="sd">    **Returns and shape.** Mass in Msun; density in Msun/pc^3; J factor in GeV^2</span>
+<span class="sd">    cm^-5.</span>
+
+<span class="sd">    **Validity.** J-factor geometry requires a finite positive ``r_t_pc`` and an</span>
+<span class="sd">    external observer for the full cone. The simple method omits shells outside</span>
+<span class="sd">    the spherical aperture; see the factors guide.</span>
+
+<span class="sd">    **Errors.** Invalid scales/apertures, divergent cusps or failed adaptive</span>
+<span class="sd">    quadrature raise ValueError.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_factors.py``</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"DM Model"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_deg_max_warning</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<div class="viewcode-block" id="DMModel.mass_density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.mass_density_3d">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate spherical halo density in Msun/pc^3 at radius r_pc in pc.</span>
+
+<span class="sd">        This subclassing interface raises NotImplementedError. Concrete profiles</span>
+<span class="sd">        specify array shapes, cutoff handling and behavior at a central cusp.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="DMModel.enclosed_mass">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.enclosed_mass">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return mass enclosed within ``r_pc``.</span>
+
+<span class="sd">        ``enclosure_mass`` is retained on concrete models for compatibility</span>
+<span class="sd">        with the original API.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; the Zhao</span>
+<span class="sd">        implementation accepts ``n_steps``.</span>
+
+<span class="sd">        **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input</span>
+<span class="sd">        shape. ``enclosure_mass`` is the historical spelling.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enclosure_mass</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_jfactor_inputs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dist_pc</span><span class="p">,</span>
+        <span class="n">roi_deg</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">small_angle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dist_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dist_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">roi_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">r_t_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"r_t_pc"</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">r_t_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span>
+                <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">r_t_pc</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"J-factor evaluation requires a finite truncation radius r_t_pc."</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">dist_pc</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">r_t_pc</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dist_pc</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">roi_deg</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">r_t_pc</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"dist_pc, roi_deg, and r_t_pc must be finite and positive."</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">small_angle</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">roi_deg</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_deg_max_warning</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"Small-angle J-factor approximations require roi_deg &lt;= "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_deg_max_warning</span><span class="si">}</span><span class="s2"> degrees."</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dist_pc</span> <span class="o">&lt;=</span> <span class="n">r_t_pc</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"The observer must be outside the truncated halo: dist_pc &gt; r_t_pc."</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">roi_deg</span> <span class="o">&gt;</span> <span class="mf">90.0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"The full Ullio geometry supports apertures no larger than 90 degrees."</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_jfactor_profile</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">r_t_pc</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_jfactor_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Subclasses must check any analytic convergence restrictions."""</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">required_param_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"J-factor profile parameter </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be finite"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_jfactor_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_density_3d</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span> <span class="ow">or</span> <span class="n">rho</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"J-factor density must be finite and nonnegative away from the origin"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rho</span>
+
+<div class="viewcode-block" id="DMModel.assert_roi_is_enough_small">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.assert_roi_is_enough_small">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assert_roi_is_enough_small</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Validate cone half-angles for the small-angle J-factor methods.</span>
+
+<span class="sd">        ``roi_deg`` is a scalar or broadcastable array in degrees. Returns None</span>
+<span class="sd">        when all values are finite, positive and no larger than</span>
+<span class="sd">        ``roi_deg_max_warning``. Otherwise raises ValueError; it does not emit</span>
+<span class="sd">        a warning despite the historical attribute name.</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">roi_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"roi_deg must be a finite positive number."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">roi_deg</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"roi_deg must be a finite positive number."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">roi_deg</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_deg_max_warning</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"Small-angle J-factor approximations require roi_deg &lt;= "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_deg_max_warning</span><span class="si">}</span><span class="s2"> degrees."</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DMModel.jfactor_ullio2016_simple">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.jfactor_ullio2016_simple">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_ullio2016_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Calculate the small-angle spherical-aperture approximation.</span>
+
+<span class="sd">        Let ``R_max = dist_pc * sin(roi_deg)``.  This method integrates the</span>
+<span class="sd">        spherical luminosity only out to ``min(R_max, r_t_pc)``.</span>
+
+<span class="sd">        If ``R_max &gt;= r_t_pc``, the aperture contains the entire truncated</span>
+<span class="sd">        halo and this reduces to Ullio &amp; Valli (2016), Eq. (B.10), with the</span>
+<span class="sd">        halo boundary ``mathcal R = r_t_pc``.  If ``R_max &lt; r_t_pc``, this is</span>
+<span class="sd">        instead a spherical-aperture approximation: projected contributions</span>
+<span class="sd">        from shells with ``R_max &lt; r &lt; r_t_pc`` are omitted.  Use</span>
+<span class="sd">        :meth:`jfactor_ullio2016` for the full finite-ROI geometry of</span>
+<span class="sd">        Eqs. (B.8)--(B.9).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``dist_pc`` is observer distance in pc; ``roi_deg`` is</span>
+<span class="sd">        cone half-angle in degrees. Distance, aperture and the stored ``r_t_pc``</span>
+<span class="sd">        must all be scalars; array geometry raises ValueError.</span>
+
+<span class="sd">        **Returns and shape.** A scalar J in GeV^2 cm^-5.</span>
+
+<span class="sd">        **Validity.** Small-aperture spherical approximation; outer shells projected</span>
+<span class="sd">        into the cone are omitted. Require a positive finite halo cutoff and a</span>
+<span class="sd">        convergent inner cusp. Small-angle variants enforce the configured</span>
+<span class="sd">        ``roi_deg_max_warning`` bound.</span>
+<span class="sd">        """</span>
+        <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">r_t_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_jfactor_inputs</span><span class="p">(</span>
+            <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">small_angle</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dist_pc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">roi_deg</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">r_t_pc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The J-factor methods require scalar model geometry."</span><span class="p">)</span>
+
+        <span class="n">dist_pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dist_pc</span><span class="p">)</span>
+        <span class="n">roi_deg</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">)</span>
+        <span class="n">r_t_pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r_t_pc</span><span class="p">)</span>
+        <span class="n">r_max_pc</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">dist_pc</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">)),</span> <span class="n">r_t_pc</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">r_pc</span><span class="p">):</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jfactor_density</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">r_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rho</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="n">integ</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_jfactor_quad</span><span class="p">(</span>
+            <span class="n">integrand</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">r_max_pc</span><span class="p">,</span>
+            <span class="n">epsabs</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">C_J</span> <span class="o">*</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">dist_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">integ</span></div>
+
+
+<div class="viewcode-block" id="DMModel.jfactor_ullio2016">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.jfactor_ullio2016">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_ullio2016</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Calculate the full finite-ROI Ullio &amp; Valli (2016) J-factor.</span>
+
+<span class="sd">        Unlike :meth:`jfactor_ullio2016_simple`, this includes the projected</span>
+<span class="sd">        contribution from shells with ``R_max &lt; r &lt; r_t_pc`` when the ROI is</span>
+<span class="sd">        smaller than the truncated halo, following Eqs. (B.8)--(B.9).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``dist_pc`` is observer distance in pc; ``roi_deg`` is</span>
+<span class="sd">        cone half-angle in degrees. Distance, aperture and the stored ``r_t_pc``</span>
+<span class="sd">        must all be scalars; array geometry raises ValueError.</span>
+
+<span class="sd">        **Returns and shape.** A scalar J in GeV^2 cm^-5.</span>
+
+<span class="sd">        **Validity.** Full finite-distance cone; 0&lt;``roi_deg``&lt;=90,</span>
+<span class="sd">        ``dist_pc``&gt;``r_t_pc``. Require a positive finite halo cutoff and a</span>
+<span class="sd">        convergent inner cusp. Small-angle variants enforce the configured</span>
+<span class="sd">        ``roi_deg_max_warning`` bound.</span>
+<span class="sd">        """</span>
+        <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">r_t_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_jfactor_inputs</span><span class="p">(</span>
+            <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dist_pc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">roi_deg</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">r_t_pc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The J-factor methods require scalar model geometry."</span><span class="p">)</span>
+
+        <span class="n">dist_pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dist_pc</span><span class="p">)</span>
+        <span class="n">roi_deg</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">)</span>
+        <span class="n">r_t_pc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r_t_pc</span><span class="p">)</span>
+        <span class="n">r_max_pc</span> <span class="o">=</span> <span class="n">dist_pc</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">))</span>
+        <span class="n">r_inner_pc</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">r_max_pc</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">inner_integrand</span><span class="p">(</span><span class="n">r_pc</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r_pc</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">0.0</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jfactor_density</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">rho</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">_ullio2016_inner_weight</span><span class="p">(</span><span class="n">r_pc</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">))</span>
+
+        <span class="n">integ</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_jfactor_quad</span><span class="p">(</span>
+            <span class="n">inner_integrand</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">r_inner_pc</span><span class="p">,</span>
+            <span class="n">epsabs</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r_max_pc</span> <span class="o">&lt;</span> <span class="n">r_t_pc</span><span class="p">:</span>
+            <span class="n">outer_width_pc</span> <span class="o">=</span> <span class="n">r_t_pc</span> <span class="o">-</span> <span class="n">r_max_pc</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">outer_integrand</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+                <span class="n">r_pc</span> <span class="o">=</span> <span class="n">r_max_pc</span> <span class="o">+</span> <span class="n">outer_width_pc</span> <span class="o">*</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jfactor_density</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">_ullio2016_weight</span><span class="p">(</span><span class="n">r_pc</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">r_max_pc</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">outer_width_pc</span> <span class="o">*</span> <span class="n">u</span> <span class="o">*</span> <span class="n">rho</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+
+            <span class="n">outer</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_jfactor_quad</span><span class="p">(</span>
+                <span class="n">outer_integrand</span><span class="p">,</span>
+                <span class="mf">0.0</span><span class="p">,</span>
+                <span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">epsabs</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">epsrel</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">integ</span> <span class="o">+=</span> <span class="n">outer</span>
+
+        <span class="k">return</span> <span class="n">C_J</span> <span class="o">*</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">integ</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ZhaoModel</span><span class="p">(</span><span class="n">DMModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""General Zhao profile.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \rho(r)=\rho_s (r/r_s)^{-g}</span>
+<span class="sd">        [1+(r/r_s)^a]^{-(b-g)/a}.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``rs_pc`` (pc), ``rhos_Msunpc3`` (Msun/pc^3), a/b/g</span>
+<span class="sd">    (dimensionless transition, outer and inner slopes), ``r_t_pc`` (pc).</span>
+<span class="sd">    ``r_pc`` is scalar or an array in pc; ``n_steps`` controls numerical Zhao</span>
+<span class="sd">    mass integration.</span>
+
+<span class="sd">    **Returns and shape.** ``mass_density_3d`` returns Msun/pc^3 with input</span>
+<span class="sd">    shape; ``enclosed_mass`` returns Msun inside min(``r_pc``, ``r_t_pc``).</span>
+<span class="sd">    ``enclosure_mass`` is a historical alias. The classical density method</span>
+<span class="sd">    itself evaluates the untruncated profile.</span>
+
+<span class="sd">    **Validity.** Positive scales and cutoff; Zhao a&gt;0 and g&lt;3 for finite</span>
+<span class="sd">    central mass; finite-radius mass does not require b&gt;3. Total untruncated</span>
+<span class="sd">    mass can diverge. J-factor requires g&lt;1.5.</span>
+
+<span class="sd">    **Errors.** Invalid Zhao mass domains raise ValueError. Elementary density</span>
+<span class="sd">    calculations may return NaN/inf. J-factor methods validate geometry and</span>
+<span class="sd">    quadrature separately.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``; ``examples/docs_factors.py``</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Zhao Model"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_jfactor_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate_jfactor_profile</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">_zhao_valid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">np</span><span class="p">))</span>
+                <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">g</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">1.5</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Finite Zhao J-factor requires positive scales, a &gt; 0, and g &lt; 1.5; "</span>
+                             <span class="s2">"steeper central cusps have divergent annihilation luminosity"</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ZhaoModel.mass_density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ZhaoModel.html#jeanspy.model.ZhaoModel.mass_density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical halo density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; reads the</span>
+<span class="sd">        model's stored physical parameters.</span>
+
+<span class="sd">        **Returns and shape.** Msun/pc^3 with input shape. The density formula</span>
+<span class="sd">        itself is untruncated; cusps can diverge at r=0.</span>
+<span class="sd">        """</span>
+        <span class="n">rs_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rs_pc</span>
+        <span class="n">rhos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rhos_Msunpc3</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">g</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span> <span class="o">/</span> <span class="n">rs_pc</span>
+        <span class="k">return</span> <span class="n">rhos</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">g</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span> <span class="o">-</span><span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">g</span><span class="p">)</span> <span class="o">/</span> <span class="n">a</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ZhaoModel.enclosed_mass">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ZhaoModel.html#jeanspy.model.ZhaoModel.enclosed_mass">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Finite-radius Zhao mass for a &gt; 0 and g &lt; 3, including b &lt;= 3.</span>
+
+<span class="sd">        n_steps controls Gauss-Legendre nodes per regularized segment.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; the Zhao</span>
+<span class="sd">        implementation accepts ``n_steps``.</span>
+
+<span class="sd">        **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input</span>
+<span class="sd">        shape. ``enclosure_mass`` is the historical spelling.</span>
+<span class="sd">        """</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">required_param_names</span><span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">_zhao_valid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_pc</span><span class="p">),</span> <span class="n">params</span><span class="p">,</span> <span class="n">np</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"Invalid Zhao mass domain: require positive scales, a &gt; 0, "</span>
+                <span class="s2">"g &lt; 3, finite slopes and nonnegative truncated radii"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_zhao_mass</span><span class="p">(</span><span class="n">r_pc</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="n">np</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ZhaoModel.enclosure_mass">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ZhaoModel.html#jeanspy.model.ZhaoModel.enclosure_mass">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enclosure_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate halo mass inside a finite spherical radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; the Zhao</span>
+<span class="sd">        implementation accepts ``n_steps``.</span>
+
+<span class="sd">        **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input</span>
+<span class="sd">        shape. ``enclosure_mass`` is the historical spelling.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enclosed_mass</span><span class="p">(</span><span class="n">r_pc</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NFWModel</span><span class="p">(</span><span class="n">DMModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Spherical dark-matter density and finite-radius mass.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``rs_pc`` (pc), ``rhos_Msunpc3`` (Msun/pc^3),</span>
+<span class="sd">    ``r_t_pc`` (pc). ``r_pc`` is scalar or an array in pc; ``n_steps`` controls</span>
+<span class="sd">    numerical Zhao mass integration.</span>
+
+<span class="sd">    **Returns and shape.** ``mass_density_3d`` returns Msun/pc^3 with input</span>
+<span class="sd">    shape; ``enclosed_mass`` returns Msun inside min(``r_pc``, ``r_t_pc``).</span>
+<span class="sd">    ``enclosure_mass`` is a historical alias. The classical density method</span>
+<span class="sd">    itself evaluates the untruncated profile.</span>
+
+<span class="sd">    **Validity.** Positive scales and cutoff; Zhao a&gt;0 and g&lt;3 for finite</span>
+<span class="sd">    central mass; finite-radius mass does not require b&gt;3. Total untruncated</span>
+<span class="sd">    mass can diverge. J-factor requires g&lt;1.5.</span>
+
+<span class="sd">    **Errors.** NFW's elementary mass formula does not uniformly validate</span>
+<span class="sd">    physical domains. Elementary density calculations may return NaN/inf.</span>
+<span class="sd">    J-factor methods validate geometry and quadrature separately.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``; ``examples/docs_factors.py``</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"NFW Model"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_jfactor_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate_jfactor_profile</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rs_pc</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rhos_Msunpc3</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"NFW J-factor requires positive rs_pc and rhos_Msunpc3"</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NFWModel.mass_density_3d">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.mass_density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical halo density.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; reads the</span>
+<span class="sd">        model's stored physical parameters.</span>
+
+<span class="sd">        **Returns and shape.** Msun/pc^3 with input shape. The density formula</span>
+<span class="sd">        itself is untruncated; cusps can diverge at r=0.</span>
+<span class="sd">        """</span>
+        <span class="n">rs_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rs_pc</span>
+        <span class="n">rhos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rhos_Msunpc3</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span> <span class="o">/</span> <span class="n">rs_pc</span>
+        <span class="k">return</span> <span class="n">rhos</span> <span class="o">/</span> <span class="n">x</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="NFWModel.enclosure_mass">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.enclosure_mass">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enclosure_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate halo mass inside a finite spherical radius.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; the Zhao</span>
+<span class="sd">        implementation accepts ``n_steps``.</span>
+
+<span class="sd">        **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input</span>
+<span class="sd">        shape. ``enclosure_mass`` is the historical spelling.</span>
+<span class="sd">        """</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="mf">1e-7</span>
+        <span class="n">rs_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rs_pc</span>
+        <span class="n">rhos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rhos_Msunpc3</span>
+        <span class="n">r_t_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">r_t_pc</span>
+        <span class="n">r_pc_trunc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_pc</span><span class="p">),</span> <span class="n">r_t_pc</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">r_pc_trunc</span> <span class="o">/</span> <span class="n">rs_pc</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rs_pc</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">rhos</span> <span class="o">*</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="NFWModel.jfactor_ullio2016_simple">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.jfactor_ullio2016_simple">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_ullio2016_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the NFW spherical-aperture approximation analytically.</span>
+
+<span class="sd">        The geometric interpretation is the same as</span>
+<span class="sd">        :meth:`DMModel.jfactor_ullio2016_simple`: for ``R_max &gt;= r_t_pc`` the</span>
+<span class="sd">        aperture encloses the full truncated halo and corresponds to the</span>
+<span class="sd">        Eq. (B.10) limit; for ``R_max &lt; r_t_pc`` it omits projected outer-shell</span>
+<span class="sd">        contributions.  Use :meth:`jfactor_ullio2016` for the full finite-ROI</span>
+<span class="sd">        geometry.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``dist_pc`` is observer distance in pc; ``roi_deg`` is</span>
+<span class="sd">        cone half-angle in degrees. This NFW analytic override supports mutually</span>
+<span class="sd">        broadcastable distances, apertures and model parameters. The inherited</span>
+<span class="sd">        full-cone ``jfactor_ullio2016`` method requires scalar geometry.</span>
+
+<span class="sd">        **Returns and shape.** J in GeV^2 cm^-5, with the broadcast input shape.</span>
+
+<span class="sd">        **Validity.** Small-aperture spherical approximation; outer shells projected</span>
+<span class="sd">        into the cone are omitted. Require a positive finite halo cutoff and a</span>
+<span class="sd">        convergent inner cusp. Small-angle variants enforce the configured</span>
+<span class="sd">        ``roi_deg_max_warning`` bound.</span>
+<span class="sd">        """</span>
+        <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">r_t_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_jfactor_inputs</span><span class="p">(</span>
+            <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">small_angle</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">roi_pc</span> <span class="o">=</span> <span class="n">dist_pc</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">))</span>
+        <span class="n">rs_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rs_pc</span>
+        <span class="n">rhos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rhos_Msunpc3</span>
+        <span class="n">r_max_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">roi_pc</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="p">)</span>
+        <span class="n">c_max</span> <span class="o">=</span> <span class="n">r_max_pc</span> <span class="o">/</span> <span class="n">rs_pc</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">C_J</span> <span class="o">*</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rs_pc</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">rhos</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">dist_pc</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">j</span> <span class="o">*=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">c_max</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span>
+            <span class="o">+</span> <span class="p">(</span><span class="n">rs_pc</span> <span class="o">/</span> <span class="n">dist_pc</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">*</span> <span class="n">c_max</span><span class="o">**</span><span class="mi">3</span>
+            <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">c_max</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span>
+            <span class="o">/</span> <span class="mf">9.0</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">j</span></div>
+
+
+<div class="viewcode-block" id="NFWModel.jfactor_evans2016">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.jfactor_evans2016">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_evans2016</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the small-angle, infinite-LOS Evans et al. (2016) formula.</span>
+
+<span class="sd">        This historical approximation caps the *projected aperture* at r_t_pc;</span>
+<span class="sd">        it does not truncate the density along the line of sight. For a halo</span>
+<span class="sd">        truncated in three dimensions use jfactor_ullio2016 instead.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``dist_pc`` in pc and ``roi_deg`` in degrees, positive</span>
+<span class="sd">        finite broadcastable values; stored NFW scales/cutoff.</span>
+
+<span class="sd">        **Returns and shape.** J in GeV^2 cm^-5, with the broadcast input shape;</span>
+<span class="sd">        scalar for scalar inputs.</span>
+
+<span class="sd">        **Validity.** Small-angle formula: the projected aperture is capped at</span>
+<span class="sd">        ``r_t_pc`` but the LOS density is untruncated. It is a different integral</span>
+<span class="sd">        from the three-dimensionally truncated finite-cone factor.</span>
+<span class="sd">        """</span>
+        <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">r_t_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_jfactor_inputs</span><span class="p">(</span>
+            <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">small_angle</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">r_max_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">dist_pc</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">),</span> <span class="n">r_t_pc</span><span class="p">)</span>
+        <span class="n">rs_pc</span><span class="p">,</span> <span class="n">rhos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rs_pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rhos_Msunpc3</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_max_pc</span> <span class="o">/</span> <span class="n">rs_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">near</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.2</span>
+        <span class="c1"># X(y) = sum(delta**n / (2*n+1)); cancel the constant and linear</span>
+        <span class="c1"># terms symbolically before dividing the Evans numerator by delta**2.</span>
+        <span class="c1"># Twenty terms give an absolute remainder &lt; 1e-16 on |delta| &lt;= 0.2.</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">38.0</span> <span class="o">/</span> <span class="mf">15.0</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">coeff</span><span class="p">[</span><span class="n">near</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">near</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="n">near</span><span class="p">],</span> <span class="n">series</span><span class="p">)</span>
+        <span class="n">far</span> <span class="o">=</span> <span class="o">~</span><span class="n">near</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">far</span><span class="p">],</span> <span class="n">delta</span><span class="p">[</span><span class="n">far</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">below</span> <span class="o">=</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">below</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="n">below</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">below</span><span class="p">])</span>
+        <span class="n">x</span><span class="p">[</span><span class="o">~</span><span class="n">below</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="o">~</span><span class="n">below</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">d</span><span class="p">[</span><span class="o">~</span><span class="n">below</span><span class="p">])</span>
+        <span class="n">coeff</span><span class="p">[</span><span class="n">far</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="o">*</span><span class="p">(</span><span class="mi">7</span><span class="o">*</span><span class="n">s</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">s</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                      <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">d</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">d</span> <span class="o">-</span> <span class="n">s</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">C_J</span> <span class="o">*</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">rhos</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">rs_pc</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="n">dist_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">coeff</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">result</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">result</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Evans J-factor evaluation is nonfinite or nonpositive"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">result</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AnisotropyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Subclassing interface for spherical anisotropy.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** Implement beta(``r_pc``), f(``r_pc``) and</span>
+<span class="sd">    kernel(u,``R_pc``,n) consistently; radii use pc and u=r/R.</span>
+
+<span class="sd">    **Returns and shape.** Dimensionless beta/kernel and an</span>
+<span class="sd">    arbitrary-normalization integrating factor f.</span>
+
+<span class="sd">    **Validity.** Steady spherical Jeans closure; beta is distinct from</span>
+<span class="sd">    axisymmetric ``beta_z``.</span>
+
+<span class="sd">    **Errors.** Abstract methods raise NotImplementedError.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"AnisotropyModel"</span>
+
+<div class="viewcode-block" id="AnisotropyModel.beta">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.AnisotropyModel.html#jeanspy.model.AnisotropyModel.beta">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate dimensionless spherical anisotropy at radius r in pc.</span>
+
+<span class="sd">        Subclasses must implement this interface; the base method raises</span>
+<span class="sd">        NotImplementedError. Concrete models define scalar/array broadcasting.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="AnisotropyModel.f">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.AnisotropyModel.html#jeanspy.model.AnisotropyModel.f">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate the Jeans integrating factor at radius r in pc.</span>
+
+<span class="sd">        Its overall normalization cancels in the Jeans solution. Subclasses must</span>
+<span class="sd">        implement this interface; the base method raises NotImplementedError.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="AnisotropyModel.kernel">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.AnisotropyModel.html#jeanspy.model.AnisotropyModel.kernel">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate the dimensionless LOS kernel for u=r/R and projected radius R.</span>
+
+<span class="sd">        Use u&gt;=1, R&gt;0 in pc and broadcastable arrays. Subclasses define numerical</span>
+<span class="sd">        kwargs; the base method raises NotImplementedError.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">AnisotropyModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Spherical velocity-anisotropy profile and projection kernel.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``beta_ani`` is dimensionless and constant.</span>
+<span class="sd">    beta(``r_pc``) and f(``r_pc``) take radii in pc. kernel(u, ``R_pc``, n) uses</span>
+<span class="sd">    u=r/R&gt;=1 and projected radius ``R_pc`` in pc; n is a fixed quadrature order.</span>
+
+<span class="sd">    **Returns and shape.** beta is dimensionless; f is an arbitrarily normalized</span>
+<span class="sd">    integrating factor satisfying d ln(f)/d ln(r)=2 beta. The dimensionless</span>
+<span class="sd">    kernel broadcasts u and R inputs.</span>
+
+<span class="sd">    **Validity.** Require beta&lt;1 for a positive tangential dispersion; this is</span>
+<span class="sd">    necessary, not sufficient for a nonnegative global distribution function.</span>
+<span class="sd">    Check numerical convergence near limits.</span>
+
+<span class="sd">    **Errors.** Elementary formulas do not uniformly validate all physical</span>
+<span class="sd">    domains; invalid values can produce nonfinite results later rejected by the</span>
+<span class="sd">    LOS solver.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"ConstantAnisotropyModel"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="ConstantAnisotropyModel.beta">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ConstantAnisotropyModel.html#jeanspy.model.ConstantAnisotropyModel.beta">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical velocity anisotropy.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** r is a radius or NumPy radius array in pc.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless beta; constant models may return a</span>
+<span class="sd">        scalar.</span>
+<span class="sd">        """</span>
+        <span class="k">del</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">beta_ani</span></div>
+
+
+<div class="viewcode-block" id="ConstantAnisotropyModel.f">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ConstantAnisotropyModel.html#jeanspy.model.ConstantAnisotropyModel.f">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the radial Jeans integrating factor.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** r is a radius or NumPy radius array in pc.</span>
+
+<span class="sd">        **Returns and shape.** An arbitrarily normalized integrating factor with</span>
+<span class="sd">        radius shape.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">r</span> <span class="o">**</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">beta_ani</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConstantAnisotropyModel.kernel">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ConstantAnisotropyModel.html#jeanspy.model.ConstantAnisotropyModel.kernel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the spherical LOS projection kernel.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** u=r/R&gt;=1 is dimensionless; R is projected radius in</span>
+<span class="sd">        pc; broadcastable arrays. The Baes numerical implementation takes fixed</span>
+<span class="sd">        quadrature n through kwargs.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless projection kernel with the broadcast</span>
+<span class="sd">        shape.</span>
+<span class="sd">        """</span>
+        <span class="k">del</span> <span class="n">R</span><span class="p">,</span> <span class="n">kwargs</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">beta_ani</span>
+        <span class="n">u2</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">u2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mf">1.5</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">u2</span> <span class="o">*</span> <span class="n">hyp2f1</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span> <span class="o">-</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">u2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OsipkovMerrittModel</span><span class="p">(</span><span class="n">AnisotropyModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Spherical velocity-anisotropy profile and projection kernel.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``r_a`` is a positive anisotropy radius in pc;</span>
+<span class="sd">    beta(r)=r^2/(r^2+``r_a``^2). beta(``r_pc``) and f(``r_pc``) take radii in</span>
+<span class="sd">    pc. kernel(u, ``R_pc``, n) uses u=r/R&gt;=1 and projected radius ``R_pc`` in</span>
+<span class="sd">    pc; n is a fixed quadrature order.</span>
+
+<span class="sd">    **Returns and shape.** beta is dimensionless; f is an arbitrarily normalized</span>
+<span class="sd">    integrating factor satisfying d ln(f)/d ln(r)=2 beta. The dimensionless</span>
+<span class="sd">    kernel broadcasts u and R inputs.</span>
+
+<span class="sd">    **Validity.** Require beta&lt;1 for a positive tangential dispersion; this is</span>
+<span class="sd">    necessary, not sufficient for a nonnegative global distribution function.</span>
+<span class="sd">    Check numerical convergence near limits.</span>
+
+<span class="sd">    **Errors.** Elementary formulas do not uniformly validate all physical</span>
+<span class="sd">    domains; invalid values can produce nonfinite results later rejected by the</span>
+<span class="sd">    LOS solver.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"OsipkovMerrittModel"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"r_a"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="OsipkovMerrittModel.beta">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel.beta">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical velocity anisotropy.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** r is a radius or NumPy radius array in pc.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless beta; constant models may return a</span>
+<span class="sd">        scalar.</span>
+<span class="sd">        """</span>
+        <span class="n">r_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">r_a</span>
+        <span class="k">return</span> <span class="n">r</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">r_a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OsipkovMerrittModel.f">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel.f">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the radial Jeans integrating factor.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** r is a radius or NumPy radius array in pc.</span>
+
+<span class="sd">        **Returns and shape.** An arbitrarily normalized integrating factor with</span>
+<span class="sd">        radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">r_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">r_a</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">r_a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">r_a</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="OsipkovMerrittModel.kernel">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel.kernel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the spherical LOS projection kernel.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** u=r/R&gt;=1 is dimensionless; R is projected radius in</span>
+<span class="sd">        pc; broadcastable arrays. The Baes numerical implementation takes fixed</span>
+<span class="sd">        quadrature n through kwargs.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless projection kernel with the broadcast</span>
+<span class="sd">        shape.</span>
+<span class="sd">        """</span>
+        <span class="k">del</span> <span class="n">kwargs</span>
+        <span class="n">u_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">r_a</span> <span class="o">/</span> <span class="n">R</span>
+        <span class="n">u2_a</span> <span class="o">=</span> <span class="n">u_a</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">u2</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">u2</span> <span class="o">+</span> <span class="n">u2_a</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">u2_a</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">u</span> <span class="o">*</span> <span class="p">(</span><span class="n">u2_a</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">**</span> <span class="mf">1.5</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">u2</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">u2_a</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)))</span>
+            <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">u2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">u2_a</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BaesAnisotropyModel</span><span class="p">(</span><span class="n">AnisotropyModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Spherical velocity-anisotropy profile and projection kernel.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``beta_0`` and ``beta_inf`` are inner/outer</span>
+<span class="sd">    anisotropies; ``r_a`` (pc) is positive; eta&gt;0 sets transition sharpness.</span>
+<span class="sd">    beta(``r_pc``) and f(``r_pc``) take radii in pc. kernel(u, ``R_pc``, n) uses</span>
+<span class="sd">    u=r/R&gt;=1 and projected radius ``R_pc`` in pc; n is a fixed quadrature order.</span>
+
+<span class="sd">    **Returns and shape.** beta is dimensionless; f is an arbitrarily normalized</span>
+<span class="sd">    integrating factor satisfying d ln(f)/d ln(r)=2 beta. The dimensionless</span>
+<span class="sd">    kernel broadcasts u and R inputs.</span>
+
+<span class="sd">    **Validity.** Require beta&lt;1 for a positive tangential dispersion; this is</span>
+<span class="sd">    necessary, not sufficient for a nonnegative global distribution function.</span>
+<span class="sd">    Check numerical convergence near limits.</span>
+
+<span class="sd">    **Errors.** Elementary formulas do not uniformly validate all physical</span>
+<span class="sd">    domains; invalid values can produce nonfinite results later rejected by the</span>
+<span class="sd">    LOS solver.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_profiles.py``</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"BaesAnisotropyModel"</span>
+    <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"beta_0"</span><span class="p">,</span> <span class="s2">"beta_inf"</span><span class="p">,</span> <span class="s2">"r_a"</span><span class="p">,</span> <span class="s2">"eta"</span><span class="p">]</span>
+    <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="BaesAnisotropyModel.beta">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.beta">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical velocity anisotropy.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** r is a radius or NumPy radius array in pc.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless beta; constant models may return a</span>
+<span class="sd">        scalar.</span>
+<span class="sd">        """</span>
+        <span class="n">b0</span><span class="p">,</span> <span class="n">binf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">beta_0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">beta_inf</span>
+        <span class="n">r_a</span><span class="p">,</span> <span class="n">eta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">r_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">eta</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">r_a</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">b0</span> <span class="o">+</span> <span class="n">binf</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaesAnisotropyModel.f">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.f">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the radial Jeans integrating factor.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** r is a radius or NumPy radius array in pc.</span>
+
+<span class="sd">        **Returns and shape.** An arbitrarily normalized integrating factor with</span>
+<span class="sd">        radius shape.</span>
+<span class="sd">        """</span>
+        <span class="n">b0</span><span class="p">,</span> <span class="n">binf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">beta_0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">beta_inf</span>
+        <span class="n">r_a</span><span class="p">,</span> <span class="n">eta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">r_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">eta</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">r_a</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">b0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">+</span> <span class="n">x</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">binf</span> <span class="o">-</span> <span class="n">b0</span><span class="p">)</span> <span class="o">/</span> <span class="n">eta</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaesAnisotropyModel.integrand_kernel">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.integrand_kernel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">integrand_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_integ</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate the inner Baes LOS-kernel integrand.</span>
+
+<span class="sd">        ``u_integ`` is the dimensionless integration radius r/R and must exceed</span>
+<span class="sd">        one; R is the positive projected radius in pc. Broadcasting follows</span>
+<span class="sd">        NumPy. The endpoint at one is singular and must be handled by quadrature.</span>
+<span class="sd">        """</span>
+        <span class="n">u2_integ</span> <span class="o">=</span> <span class="n">u_integ</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">r_integ</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">u_integ</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">u_integ</span>
+            <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u2_integ</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">r_integ</span><span class="p">)</span> <span class="o">/</span> <span class="n">u2_integ</span><span class="p">)</span>
+            <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">r_integ</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaesAnisotropyModel.kernel">
+<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.kernel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the spherical LOS projection kernel.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** u=r/R&gt;=1 is dimensionless; R is projected radius in</span>
+<span class="sd">        pc; broadcastable arrays. The Baes numerical implementation takes fixed</span>
+<span class="sd">        quadrature n through kwargs.</span>
+
+<span class="sd">        **Returns and shape.** Dimensionless projection kernel with the broadcast</span>
+<span class="sd">        shape.</span>
+<span class="sd">        """</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">u_expanded</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">R_expanded</span> <span class="o">=</span> <span class="n">R</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">_u</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">integrand_kernel</span><span class="p">(</span><span class="n">_u</span><span class="p">,</span> <span class="n">R_expanded</span><span class="p">)</span>
+
+        <span class="n">integration</span> <span class="o">=</span> <span class="n">dequad</span><span class="p">(</span>
+            <span class="n">integrand</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="n">u_expanded</span><span class="p">,</span>
+            <span class="n">n</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">replace_inf_to_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">replace_nan_to_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">integration</span>
+            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">R_expanded</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">u_expanded</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="o">/</span> <span class="n">u_expanded</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">,</span>
+    <span class="s2">"BaesAnisotropyModel"</span><span class="p">,</span>
+    <span class="s2">"ConstantAnisotropyModel"</span><span class="p">,</span>
+    <span class="s2">"DMModel"</span><span class="p">,</span>
+    <span class="s2">"Exp2dModel"</span><span class="p">,</span>
+    <span class="s2">"Exp3dModel"</span><span class="p">,</span>
+    <span class="s2">"NFWModel"</span><span class="p">,</span>
+    <span class="s2">"OsipkovMerrittModel"</span><span class="p">,</span>
+    <span class="s2">"PlummerModel"</span><span class="p">,</span>
+    <span class="s2">"StellarModel"</span><span class="p">,</span>
+    <span class="s2">"Uniform2dModel"</span><span class="p">,</span>
+    <span class="s2">"ZhaoModel"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

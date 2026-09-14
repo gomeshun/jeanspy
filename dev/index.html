@@ -1,0 +1,775 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reproducible dynamical inference with JeansPy &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/jeanspy.css?v=b635b406" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-14"/>
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="reproducible-dynamical-inference-with-jeanspy">
+<h1>Reproducible dynamical inference with JeansPy<a class="headerlink" href="#reproducible-dynamical-inference-with-jeanspy" title="Link to this heading">#</a></h1>
+<p>JeansPy solves spherical and axisymmetric Jeans equations for dwarf spheroidal
+galaxies. Build a tracer, halo and anisotropy model; predict velocity second
+moments; fit explicit priors and likelihoods with emcee or NumPyro; and retain
+the inputs and diagnostics needed to reproduce the analysis.</p>
+<p>This is the <strong>development documentation</strong>. It may describe changes beyond the
+latest published package; use the source checkout in the installation guide.</p>
+<p>Documentation version: <code class="docutils literal notranslate"><span class="pre">dev</span></code>. Source reference:
+<a class="reference external" href="https://github.com/gomeshun/jeanspy/tree/75be8c5ebb070efb6059a544d0b3d47aaa84b93e"><code class="docutils literal notranslate"><span class="pre">75be8c5ebb07</span></code></a>.
+The <a class="reference external" href="https://github.com/gomeshun/jeanspy/releases">release history</a> identifies
+published versions; validation results apply to their stated models and domains.</p>
+<p>Start with the <a class="reference internal" href="installation.html"><span class="std std-doc">installation guide</span></a> and
+<a class="reference internal" href="quickstart.html"><span class="std std-doc">executable quickstart</span></a>. The <a class="reference internal" href="guides/contracts.html"><span class="std std-doc">model contract</span></a>
+defines units, geometry, array shapes and the limits of differentiation.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Start here</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Predict spherical velocity dispersions</p></td>
+<td><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Model flattened systems</p></td>
+<td><p><a class="reference internal" href="guides/axisymmetric.html"><span class="std std-doc">Axisymmetric guide</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Use physical-parameter gradients</p></td>
+<td><p><a class="reference internal" href="guides/jax.html"><span class="std std-doc">JAX and precision</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Specify priors, fit and resume</p></td>
+<td><p><a class="reference internal" href="guides/inference.html"><span class="std std-doc">Inference and storage</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Calculate annihilation/decay factors</p></td>
+<td><p><a class="reference internal" href="guides/factors.html"><span class="std std-doc">J and D factors</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Assess the evidence for a result</p></td>
+<td><p><a class="reference internal" href="validation/index.html"><span class="std std-doc">Validation</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Learn and use</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#spherical-prediction">Spherical prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#axisymmetric-prediction">Axisymmetric prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#a-physical-parameter-gradient">A physical-parameter gradient</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory and numerical methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="theory.html#spherical-jeans-equations">Spherical Jeans equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory.html#axisymmetric-jeans-equations">Axisymmetric Jeans equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory.html#likelihood-and-interpretation">Likelihood and interpretation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/index.html">Feature guides</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/contracts.html">Units, shapes and model contracts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/profiles.html">Tracers, halos and anisotropy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/axisymmetric.html">Axisymmetric Jeans modeling and inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/jax.html">JAX, precision and gradients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/inference.html">Inference, diagnostics and restart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/factors.html">J and D factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/numerics.html">Numerical helpers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Analysis tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/spherical.html">Spherical synthetic analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/axisymmetric.html">Axisymmetric synthetic analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/draco.html">Draco: deferred public-data analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/model.html">Classical spherical models and convenience exports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/axisymmetric.html">Axisymmetric components and NumPy forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/axisymmetric_inference.html">Axisymmetric observations and classical inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/model_numpyro.html">Functional JAX spherical models and runtime configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/axisymmetric_numpyro.html">JAX axisymmetric forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/axisymmetric_factors.html">Finite-cone NumPy J and D factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/sampler.html">Classical emcee sampling and HDF5 storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/sampler_numpyro.html">NumPyro likelihoods, sampling and storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/sersic.html">Spherical Sersic tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/baes_eta2.html">Specialized Baes anisotropy kernels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/hyp2f1_jax.html">JAX hypergeometric numerical helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dequad.html">Double-exponential integration helpers</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evidence and project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="validation/index.html">Validation and reproducibility</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="validation/release-plan.html">Release work plan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation/los-benchmark.html">LOS dispersion: accuracy and time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation/performance.html">Synchronized forward-model performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation/gradients.html">Physical-parameter gradient checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation/jam9.html">Current JAM 9 accuracy comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation/retained-sources.html">Retained benchmark sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="comparison/index.html">Related software and comparison questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="comparison/index.html#physical-models-and-observations">Physical models and observations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison/index.html#numerics-and-inference">Numerics and inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison/index.html#versions-and-availability">Versions and availability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison/index.html#comparison-boundaries-and-sources">Comparison boundaries and sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison/index.html#claims-requiring-new-measurements">Claims requiring new measurements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing JeansPy and its dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="references.html#cappellari-2008">Cappellari (2008)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#cappellari-2020">Cappellari (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#cappellari-2026">Cappellari (2026)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#wang-et-al-2025">Wang et al. (2025)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#gomer-et-al-2023">Gomer et al. (2023)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#bovy-2015">Bovy (2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#banares-hernandez-read-julio-2026">Bañares-Hernández, Read, Júlio (2026)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#genina-et-al-2020">Genina et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#mamon-biviano-boue-2013">Mamon, Biviano, Boué (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#hutten-combet-maurin-2019">Hütten, Combet, Maurin (2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#m-price-whelan-2017">M. Price-Whelan (2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#walker-olszewski-mateo-2015">Walker, Olszewski, Mateo (2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#mcconnachie-2012">McConnachie (2012)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#hayashi-chiba-2015">Hayashi, Chiba (2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#ullio-valli-2016">Ullio, Valli (2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#foreman-mackey-hogg-lang-goodman-2013">Foreman-Mackey, Hogg, Lang, Goodman (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#kumar-carroll-hartikainen-martin-2019">Kumar, Carroll, Hartikainen, Martin (2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#vehtari-et-al-2021">Vehtari et al. (2021)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#plummer-1911">Plummer (1911)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#zhao-1996">Zhao (1996)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#navarro-frenk-white-1997">Navarro, Frenk, White (1997)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#evans-sanders-geringer-sameth-2016">Evans, Sanders, Geringer-Sameth (2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#vasiliev-2019">Vasiliev (2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#read-steger-2017">Read, Steger (2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#bonnivard-et-al-2016">Bonnivard et al. (2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#hayashi-et-al-2016">Hayashi et al. (2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#wang-et-al-2022">Wang et al. (2022)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#baes-van-hese-2007">Baes, Van Hese (2007)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#vitral-mamon-2020">Vitral, Mamon (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#vitral-mamon-2021">Vitral, Mamon (2021)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#watkins-van-de-ven-den-brok-van-den-bosch-2013">Watkins, van de Ven, den Brok, van den Bosch (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#phan-pradhan-jankowiak-2019">Phan, Pradhan, Jankowiak (2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#hoffman-gelman-2014">Hoffman, Gelman (2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html#bradbury-et-al-2018">Bradbury et al. (2018)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change history</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#development-after-the-alpha-package">Development after the alpha package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Building and maintaining the documentation</a></li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="installation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/index.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

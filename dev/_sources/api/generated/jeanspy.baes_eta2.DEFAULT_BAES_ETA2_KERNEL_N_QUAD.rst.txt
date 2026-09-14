@@ -1,0 +1,6 @@
+﻿jeanspy.baes\_eta2.DEFAULT\_BAES\_ETA2\_KERNEL\_N\_QUAD
+=======================================================
+
+.. currentmodule:: jeanspy.baes_eta2
+
+.. autodata:: DEFAULT_BAES_ETA2_KERNEL_N_QUAD

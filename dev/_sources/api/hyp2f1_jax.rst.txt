@@ -1,0 +1,21 @@
+JAX hypergeometric numerical helpers
+====================================
+
+.. py:module:: jeanspy.hyp2f1_jax
+
+.. currentmodule:: jeanspy.hyp2f1_jax
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   GaussLegendre01
+   TanhSinh01
+   hyp2f1_1b_d_series
+   hyp2f1_1b_3half_series
+   hyp2f1_1b_3half_quad
+   hyp2f1_1b_3half_asymptotic
+   hyp2f1_1b_3half
+

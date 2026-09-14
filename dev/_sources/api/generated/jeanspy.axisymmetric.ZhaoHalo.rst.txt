@@ -1,0 +1,10 @@
+﻿jeanspy.axisymmetric.ZhaoHalo
+=============================
+
+.. currentmodule:: jeanspy.axisymmetric
+
+.. autoclass:: ZhaoHalo
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

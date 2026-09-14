@@ -1,0 +1,10 @@
+﻿jeanspy.model.PlummerModel
+==========================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: PlummerModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,10 @@
+﻿jeanspy.model.SersicModel
+=========================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: SersicModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,10 @@
+﻿jeanspy.model.Exp2dModel
+========================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: Exp2dModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

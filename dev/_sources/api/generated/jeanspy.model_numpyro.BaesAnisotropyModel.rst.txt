@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.BaesAnisotropyModel
+==========================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: BaesAnisotropyModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

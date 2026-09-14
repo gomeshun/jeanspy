@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.PlummerModel
+===================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: PlummerModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

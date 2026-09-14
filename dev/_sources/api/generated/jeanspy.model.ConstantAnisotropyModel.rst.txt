@@ -1,0 +1,10 @@
+﻿jeanspy.model.ConstantAnisotropyModel
+=====================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: ConstantAnisotropyModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

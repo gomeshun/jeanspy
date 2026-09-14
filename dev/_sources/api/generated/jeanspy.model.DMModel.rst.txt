@@ -1,0 +1,10 @@
+﻿jeanspy.model.DMModel
+=====================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: DMModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

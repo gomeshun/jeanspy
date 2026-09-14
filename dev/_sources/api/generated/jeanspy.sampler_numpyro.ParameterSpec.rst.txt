@@ -1,0 +1,10 @@
+﻿jeanspy.sampler\_numpyro.ParameterSpec
+======================================
+
+.. currentmodule:: jeanspy.sampler_numpyro
+
+.. autoclass:: ParameterSpec
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

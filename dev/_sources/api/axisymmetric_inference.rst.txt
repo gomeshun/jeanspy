@@ -1,0 +1,15 @@
+Axisymmetric observations and classical inference
+=================================================
+
+.. py:module:: jeanspy.axisymmetric_inference
+
+.. currentmodule:: jeanspy.axisymmetric_inference
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+Aliases
+-------
+
+* ``jeanspy.axisymmetric_inference.AxisymmetricKinematicData`` is :py:obj:`jeanspy.model.AxisymmetricKinematicData`.
+* ``jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel`` is :py:obj:`jeanspy.model.AxisymmetricDSphEstimationModel`.

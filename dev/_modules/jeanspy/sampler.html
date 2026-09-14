@@ -1,0 +1,1140 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jeanspy.sampler &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/jeanspy/sampler';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/_modules/jeanspy/sampler.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-14"/>
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">jeanspy.sampler</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for jeanspy.sampler</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">emcee.backends</span>
+<span class="c1"># import torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">cpu_count</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>  <span class="c1"># kept for comments above; no longer used in code</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sampling_identity</span><span class="w"> </span><span class="kn">import</span> <span class="n">fingerprint</span><span class="p">,</span> <span class="n">software_identity</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Sampler"</span><span class="p">]</span>
+
+<span class="c1"># Module-level logger</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+    <span class="n">_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">_formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">_handler</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="c1">############################################</span>
+<span class="c1"># # How to use blobs in emcee</span>
+<span class="c1"># </span>
+<span class="c1"># import emcee</span>
+<span class="c1"># import numpy as np</span>
+
+<span class="c1"># def log_prior(params):</span>
+<span class="c1">#     return -0.5 * np.sum(params**2)</span>
+
+<span class="c1"># def log_like(params):</span>
+<span class="c1">#     return -0.5 * np.sum((params / 0.1)**2)</span>
+
+<span class="c1"># def log_prob(params):</span>
+<span class="c1">#     lp = log_prior(params)</span>
+<span class="c1">#     if not np.isfinite(lp):</span>
+<span class="c1">#         return -np.inf, -np.inf, -np.inf</span>
+<span class="c1">#     ll = log_like(params)</span>
+<span class="c1">#     if not np.isfinite(ll):</span>
+<span class="c1">#         return lp, -np.inf, -np.inf</span>
+<span class="c1">#     return lp + ll, lp, np.mean(params)</span>
+
+<span class="c1"># coords = np.random.randn(32, 3)</span>
+<span class="c1"># nwalkers, ndim = coords.shape</span>
+
+<span class="c1"># # Here are the important lines</span>
+<span class="c1"># dtype = [("log_prior", float), ("mean", float)]</span>
+<span class="c1"># sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob,</span>
+<span class="c1">#                                 blobs_dtype=dtype)</span>
+
+<span class="c1"># sampler.run_mcmc(coords, 100)</span>
+
+<span class="c1"># blobs = sampler.get_blobs()</span>
+<span class="c1"># log_prior_samps = blobs["log_prior"]</span>
+<span class="c1"># mean_samps = blobs["mean"]</span>
+<span class="c1"># print(log_prior_samps.shape)</span>
+<span class="c1"># print(mean_samps.shape)</span>
+
+<span class="c1"># flat_blobs = sampler.get_blobs(flat=True)</span>
+<span class="c1"># flat_log_prior_samps = flat_blobs["log_prior"]</span>
+<span class="c1"># flat_mean_samps = flat_blobs["mean"]</span>
+<span class="c1"># print(flat_log_prior_samps.shape)</span>
+<span class="c1"># print(flat_mean_samps.shape)</span>
+
+<span class="c1">############################################</span>
+<span class="c1"># # How to use backends in emcee</span>
+<span class="c1"># import emcee</span>
+<span class="c1"># import numpy as np</span>
+
+<span class="c1"># np.random.seed(42)</span>
+
+<span class="c1"># # The definition of the log probability function</span>
+<span class="c1"># # We'll also use the "blobs" feature to track the "log prior" for each step</span>
+<span class="c1"># def log_prob(theta):</span>
+<span class="c1">#     log_prior = -0.5 * np.sum((theta - 1.0) ** 2 / 100.0)</span>
+<span class="c1">#     log_prob = -0.5 * np.sum(theta**2) + log_prior</span>
+<span class="c1">#     return log_prob, log_prior</span>
+
+
+<span class="c1"># # Initialize the walkers</span>
+<span class="c1"># coords = np.random.randn(32, 5)</span>
+<span class="c1"># nwalkers, ndim = coords.shape</span>
+
+<span class="c1"># # Set up the backend</span>
+<span class="c1"># # Don't forget to clear it in case the file already exists</span>
+<span class="c1"># filename = "tutorial.h5"</span>
+<span class="c1"># backend = emcee.backends.HDFBackend(filename)</span>
+<span class="c1"># backend.reset(nwalkers, ndim)</span>
+
+<span class="c1"># # Initialize the sampler</span>
+<span class="c1"># sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob, backend=backend)</span>
+
+<span class="c1"># max_n = 100000</span>
+
+<span class="c1"># # We'll track how the average autocorrelation time estimate changes</span>
+<span class="c1"># index = 0</span>
+<span class="c1"># autocorr = np.empty(max_n)</span>
+
+<span class="c1"># # This will be useful to testing convergence</span>
+<span class="c1"># old_tau = np.inf</span>
+
+<span class="c1"># # Now we'll sample for up to max_n steps</span>
+<span class="c1"># for sample in sampler.sample(coords, iterations=max_n, progress=True):</span>
+<span class="c1">#     # Only check convergence every 100 steps</span>
+<span class="c1">#     if sampler.iteration % 100:</span>
+<span class="c1">#         continue</span>
+
+<span class="c1">#     # Compute the autocorrelation time so far</span>
+<span class="c1">#     # Using tol=0 means that we'll always get an estimate even</span>
+<span class="c1">#     # if it isn't trustworthy</span>
+<span class="c1">#     tau = sampler.get_autocorr_time(tol=0)</span>
+<span class="c1">#     autocorr[index] = np.mean(tau)</span>
+<span class="c1">#     index += 1</span>
+
+<span class="c1">#     # Check convergence</span>
+<span class="c1">#     converged = np.all(tau * 100 &lt; sampler.iteration)</span>
+<span class="c1">#     converged &amp;= np.all(np.abs(old_tau - tau) / tau &lt; 0.01)</span>
+<span class="c1">#     if converged:</span>
+<span class="c1">#         break</span>
+<span class="c1">#     old_tau = tau</span>
+<span class="c1">############################################</span>
+
+
+<div class="viewcode-block" id="Sampler">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sampler</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""wrapper class for emcee.EnsembleSampler</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** model supplies posterior/blobs and parameter names;</span>
+<span class="sd">    ``p0_generator`` provides starting positions; nwalkers is an ensemble size;</span>
+<span class="sd">    prefix sets output filename; reset=True deliberately resets the requested</span>
+<span class="sd">    store; pool controls parallel evaluation. ``run_mcmc`` receives the run</span>
+<span class="sd">    length/options in its real signature.</span>
+
+<span class="sd">    **Returns and shape.** HDF5 chain and diagnostic blobs; ``get_chain``</span>
+<span class="sd">    returns (draw,walker,parameter), or flattened draws.</span>
+<span class="sd">    ``get_log_prob``/``get_blobs`` use corresponding draw/walker axes.</span>
+<span class="sd">    ``get_dataframe`` returns a pandas table.</span>
+
+<span class="sd">    **Validity.** Workers share a stateful model only through the supported</span>
+<span class="sd">    process/storage setup. Use independent ensembles for R-hat; interacting</span>
+<span class="sd">    walkers are not independent chains.</span>
+
+<span class="sd">    **Errors.** Incompatible persisted analysis identity raises before</span>
+<span class="sd">    continuing. Missing/malformed state, invalid parameter conversion or storage</span>
+<span class="sd">    failures raise.</span>
+
+<span class="sd">    **Backend.** Python/emcee host sampler around classical CPU likelihoods.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_inference.py``; complete tutorials for</span>
+<span class="sd">    production diagnostics.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">p0_generator</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wbic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" initialize the sampler.</span>
+<span class="sd">        </span>
+<span class="sd">        model: a model class</span>
+<span class="sd">        p0_generator: a function to generate p0</span>
+<span class="sd">        nwalkers: number of walkers. default is 2*ndim</span>
+<span class="sd">        prefix: prefix of the filename</span>
+<span class="sd">        reset: reset the backend</span>
+<span class="sd">        **kwargs: keyword arguments for emcee.EnsembleSampler</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ndim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ndim</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">nwalkers</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nwalkers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p0_generator</span> <span class="o">=</span> <span class="n">p0_generator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">pool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wbic</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">wbic</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior_wbic</span> <span class="k">if</span> <span class="n">wbic</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">blobs_dtype</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"lnl"</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="o">*</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">prior_names</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"blobs_dtype: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">blobs_dtype</span><span class="p">)</span>
+
+        <span class="c1"># Keep a stable filename so another sampler can resume the stored chain.</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"+"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">)</span>
+        <span class="n">dsph_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"dsph_name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">model_name</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">dsph_name</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">dsph_name</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".h5"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"filename: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="s2">"mcmc_wbic"</span> <span class="k">if</span> <span class="n">wbic</span> <span class="k">else</span> <span class="s2">"mcmc"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">HDFBackend</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">)</span>
+        <span class="c1"># reset file if "reset" is True or if the file does not exist</span>
+        <span class="n">identity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_analysis_identity</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_analysis_identity</span><span class="p">(</span><span class="n">identity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_analysis_identity</span><span class="p">(</span><span class="n">identity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_analysis_identity</span> <span class="o">=</span> <span class="n">identity</span>
+
+        <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"backend file: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"backend file.keys: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"backend file[</span><span class="si">%s</span><span class="s2">].keys: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>  <span class="c1"># type: ignore</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"backend group </span><span class="si">%s</span><span class="s2"> not available yet: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior_wbic</span> <span class="k">if</span> <span class="n">wbic</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
+            <span class="n">log_prob_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span><span class="p">,</span>
+            <span class="n">blobs_dtype</span><span class="o">=</span><span class="n">blobs_dtype</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">pool</span><span class="o">=</span><span class="n">pool</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_current_analysis_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">fingerprint</span><span class="p">({</span>
+            <span class="s2">"software"</span><span class="p">:</span> <span class="n">software_identity</span><span class="p">(</span><span class="s2">"emcee"</span><span class="p">),</span> <span class="s2">"model"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="s2">"posterior"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span><span class="p">,</span> <span class="s2">"ndim"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">"nwalkers"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span><span class="p">,</span>
+            <span class="s2">"prior_names"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">prior_names</span><span class="p">,</span> <span class="s2">"wbic"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">wbic</span><span class="p">,</span>
+            <span class="s2">"sampler_options"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_analysis_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identity</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"a"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"jeanspy_analysis_identity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">identity</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_analysis_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identity</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="n">stored</span> <span class="o">=</span> <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"jeanspy_analysis_identity"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">stored</span> <span class="o">!=</span> <span class="n">identity</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Sampling analysis identity mismatch or missing legacy identity "</span>
+                             <span class="s2">"(model, prior, data, schema, or solver). Use a new prefix or "</span>
+                             <span class="s2">"explicitly reset to start a different analysis."</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Sampler.check_parameter_conversion">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.check_parameter_conversion">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_parameter_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p0_generator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" check the conversion of parameters.</span>
+<span class="sd">        This is useful to check if the parameters are properly converted from p0 to params.</span>
+<span class="sd">        It will print the p0 and params and their comparison.</span>
+<span class="sd">        """</span>
+        <span class="c1"># Show some message to check the definition of the 'convert_params' </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Please check the following lines to see your parameters are properly converted:"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p0_generator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself."</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># p0 = p0_generator(1)</span>
+            <span class="c1"># params = self.model.convert_params(p0[0])</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">p0_generator</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">convert_params</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"p0: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">p0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"params:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="c1"># A model may combine sampled coordinates with additional fixed</span>
+            <span class="c1"># physical parameters, so these two collections need not have the</span>
+            <span class="c1"># same length. Log named sampling coordinates without aligning</span>
+            <span class="c1"># unrelated rows of the physical parameter dictionary.</span>
+            <span class="n">coordinates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"p_names_lnprob"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"sampling coordinates:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Sampler.set_wrapper_function">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.set_wrapper_function">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_wrapper_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.</span>
+        <span class="c1"># Without the wrapper function, multiprocessing.pool will repeat the pickling/unpickling of the model</span>
+        <span class="c1"># and it will be very slow.</span>
+        <span class="c1"># Once we define the wrapper function, pool will only pickle/unpickle the wrapper function</span>
+        <span class="c1"># and the model will be pickled only once. </span>
+        <span class="c1"># Note that the global variable/function will be copied to each worker process,</span>
+        <span class="c1"># so it will not be shared among the workers, so it is safe to use.</span>
+<span class="w">        </span><span class="sd">"""Install the current log-probability callable in this worker process.</span>
+
+<span class="sd">        Returns None. The module-level wrapper lets multiprocessing workers</span>
+<span class="sd">        evaluate their initialized model without repeatedly serializing it.</span>
+<span class="sd">        This is host-side worker initialization, not a numerical solver.</span>
+<span class="sd">        """</span>
+        <span class="k">global</span> <span class="n">log_prob_fn_wrapper</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">log_prob_fn_wrapper</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">""" wrapper function for log_prob to accelarate the sampling.</span>
+<span class="sd">            """</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"log_prob_fn_wrapper defined."</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Sampler.reset_pool">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.reset_pool">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" reset the pool.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Sampler: pool is already set. Please reset the pool before setting a new one."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">pool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
+                                             <span class="n">log_prob_fn</span><span class="o">=</span><span class="n">log_prob_fn_wrapper</span><span class="p">,</span>
+                                             <span class="n">blobs_dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">blobs_dtype</span><span class="p">,</span>
+                                             <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+                                             <span class="n">pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span>
+                                             <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the HDF5 backend's filename."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">filename</span>
+    
+
+<div class="viewcode-block" id="Sampler.burn_in">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.burn_in">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">burn_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">p0_generator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Advance warmup and continue from its final ensemble.</span>
+
+<span class="sd">        Warmup draws remain in the backend for compatibility. Exclude them</span>
+<span class="sd">        explicitly with get_chain(discard=...) when analyzing production draws.</span>
+<span class="sd">        The chain already samples the posterior and must not be weighted by</span>
+<span class="sd">        the posterior density a second time.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_analysis_identity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_analysis_identity</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Burn-in the sampler for </span><span class="si">%d</span><span class="s2"> steps."</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">)</span>
+        <span class="n">initial_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">iteration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_parameter_conversion</span><span class="p">(</span><span class="n">p0_generator</span><span class="p">)</span>
+            <span class="c1"># generate initial state</span>
+            <span class="n">initial_state</span> <span class="o">=</span> <span class="n">p0_generator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="c1"># check if initial_state returns finite log_prob</span>
+            <span class="c1"># if not, raise an error</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">initial_state</span><span class="p">])):</span>
+                <span class="n">mes</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Sampler: initial_state has non-finite log_prob"</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">initial_state</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span><span class="p">(</span><span class="n">p</span><span class="p">))):</span>
+                        <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"p:</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                        <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lnposterior(p):</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span>
+                              <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Burn-in completed."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">get_last_sample</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="Sampler.run_mcmc">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.run_mcmc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_mcmc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">iterations</span><span class="p">,</span><span class="n">loops</span><span class="p">,</span>
+                 <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">p0_generator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">enable_convergence_check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" run the sampler.</span>
+<span class="sd">        p0 is generated by p0_generator.</span>
+<span class="sd">        save and monitor the chain and lnprob using backends.</span>
+<span class="sd">        blobs_dtype is obtained by model.</span>
+
+<span class="sd">        iterations: number of iterations for each loop</span>
+<span class="sd">        loops: number of loops</span>
+<span class="sd">        reset: discard the stored chain and initialize a new run</span>
+<span class="sd">        p0_generator: override the constructor's initial-state generator</span>
+<span class="sd">        """</span>
+        <span class="c1"># Set up the backend</span>
+        <span class="c1"># Don't forget to clear it in case the file already exists</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running MCMC for </span><span class="si">%d</span><span class="s2"> iterations in </span><span class="si">%d</span><span class="s2"> loops."</span><span class="p">,</span> <span class="n">iterations</span><span class="p">,</span> <span class="n">loops</span><span class="p">)</span>
+        <span class="n">identity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_analysis_identity</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_analysis_identity</span><span class="p">(</span><span class="n">identity</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">p0_generator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">p0_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p0_generator</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">reset</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">iteration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p0_generator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"An initial-state generator is required for a new run."</span><span class="p">)</span>
+        <span class="c1"># We'll track how the average autocorrelation time estimate changes</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">autocorr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">loops</span><span class="p">)</span>
+
+        <span class="c1"># This will be useful to testing convergence</span>
+        <span class="n">old_tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="n">initial_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">iteration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_parameter_conversion</span><span class="p">(</span><span class="n">p0_generator</span><span class="p">)</span>
+            <span class="c1"># generate initial state</span>
+            <span class="n">initial_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p0_generator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">initial_state</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nwalkers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Initial state must have shape (nwalkers, ndim)."</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">initial_state</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Initial state coordinates must be finite."</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"skip_initial_state_check"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">emcee</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">walkers_independent</span><span class="p">(</span><span class="n">initial_state</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Initial state walkers must be linearly independent."</span><span class="p">)</span>
+            <span class="c1"># check if initial_state returns finite log_prob</span>
+            <span class="c1"># if not, raise an error</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">initial_state</span><span class="p">])):</span>
+                <span class="n">mes</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Sampler: initial_state has non-finite log_prob"</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">initial_state</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span><span class="p">(</span><span class="n">p</span><span class="p">))):</span>
+                        <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"p:</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                        <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lnposterior(p):</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mes</span><span class="p">))</span>
+
+        <span class="c1"># Only discard persisted samples after the replacement has passed preflight.</span>
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_analysis_identity</span><span class="p">(</span><span class="n">identity</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_analysis_identity</span> <span class="o">=</span> <span class="n">identity</span>
+
+        <span class="c1"># Now we'll sample for up to  steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"iteration: </span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">iteration</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i_loop</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">loops</span><span class="p">):</span>
+            <span class="c1"># start mcmc sampling with self.sampler.run_mcmc and pool</span>
+            
+            <span class="c1"># initial_state = self.p0_generator(self.nwalkers) if self.backend.iteration == 0 else None</span>
+            <span class="c1"># # check if initial_state returns finite log_prob</span>
+            <span class="c1"># # if not, raise an error</span>
+            <span class="c1"># if (initial_state is not None) and (not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state]))):</span>
+            <span class="c1">#     mes = []</span>
+            <span class="c1">#     mes.append("Sampler: initial_state has non-finite log_prob")</span>
+            <span class="c1">#     for p in initial_state:</span>
+            <span class="c1">#         if not np.all(np.isfinite(self.model.lnposterior(p))):</span>
+            <span class="c1">#             mes.append(f"p:{p}")</span>
+            <span class="c1">#             mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")</span>
+            <span class="c1">#     # mes.append(f"initial_state:{initial_state}")</span>
+            <span class="c1">#     # mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")</span>
+            <span class="c1">#     raise RuntimeError("\n".join(mes))</span>
+            <span class="c1"># check if already converged</span>
+            <span class="c1"># if self.sampler.iteration &gt; 0:</span>
+            <span class="c1"># else:</span>
+            <span class="c1">#     tau = self.sampler.get_autocorr_time(tol=0)</span>
+            <span class="c1">#     converged = np.all(tau * 100 &lt; self.sampler.iteration)</span>
+            <span class="c1">#     converged &amp;= np.all(np.abs(old_tau - tau) / tau &lt; 0.01)</span>
+            <span class="c1">#     if converged:</span>
+            <span class="c1">#         print(f"Sampler: Already converged after {self.sampler.iteration} iterations.")</span>
+            <span class="c1">#         break</span>
+            <span class="c1">#     else:</span>
+            <span class="c1">#         print(f"Sampler: Not converged yet. tau:{tau}\titeration:{self.sampler.iteration}")</span>
+            <span class="c1">#         old_tau = tau</span>
+            <span class="c1"># run mcmc</span>
+            <span class="n">initial_state</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">iteration</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">initial_state</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span><span class="n">iterations</span><span class="p">,</span>
+                                    <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            
+            <span class="c1"># Compute the autocorrelation time so far</span>
+            <span class="c1"># Using tol=0 means that we'll always get an estimate even</span>
+            <span class="c1"># if it isn't trustworthy</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">get_autocorr_time</span><span class="p">(</span><span class="n">tol</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">autocorr</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Check convergence</span>
+            <span class="n">converged</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">iteration</span><span class="p">)</span>
+            <span class="n">converged</span> <span class="o">&amp;=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">old_tau</span> <span class="o">-</span> <span class="n">tau</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">converged</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Converged after </span><span class="si">%d</span><span class="s2"> iterations."</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">iteration</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">enable_convergence_check</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Converged but convergence_check is False, so continue sampling."</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Not converged yet."</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"tau: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"iteration: </span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">iteration</span><span class="p">)</span>
+            <span class="n">old_tau</span> <span class="o">=</span> <span class="n">tau</span></div>
+
+
+<div class="viewcode-block" id="Sampler.get_blobs">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_blobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" get blobs from the backend.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_blobs</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="n">flat</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="n">discard</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Sampler.get_chain">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_chain">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" get chain from the backend.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="n">flat</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="n">discard</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Sampler.get_log_prob">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_log_prob">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" get log_prob from the backend.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_log_prob</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="n">flat</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="n">discard</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Sampler.get_last_sample">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_last_sample">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_last_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" get the last sample from the backend.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_last_sample</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="Sampler.get_dataframe">
+<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">with_lnprob</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" get the dataframe from the backend.</span>
+<span class="sd">        """</span>
+        <span class="n">chain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="n">discard</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"p_names_lnprob"</span><span class="p">):</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">p_names_lnprob</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">submodels</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">with_lnprob</span><span class="p">:</span>
+            <span class="n">log_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_log_prob</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="n">discard</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">"lnprob"</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_prob</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

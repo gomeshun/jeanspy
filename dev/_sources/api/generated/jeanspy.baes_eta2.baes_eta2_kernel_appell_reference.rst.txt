@@ -1,0 +1,6 @@
+﻿jeanspy.baes\_eta2.baes\_eta2\_kernel\_appell\_reference
+========================================================
+
+.. currentmodule:: jeanspy.baes_eta2
+
+.. autofunction:: baes_eta2_kernel_appell_reference

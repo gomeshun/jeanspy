@@ -1,0 +1,10 @@
+﻿jeanspy.model.FlatPriorModel
+============================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: FlatPriorModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

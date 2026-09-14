@@ -1,0 +1,10 @@
+﻿jeanspy.sampler\_numpyro.NumPyroSampler
+=======================================
+
+.. currentmodule:: jeanspy.sampler_numpyro
+
+.. autoclass:: NumPyroSampler
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

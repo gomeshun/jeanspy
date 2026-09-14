@@ -1,0 +1,12 @@
+﻿jeanspy.sampler\_numpyro.AxisymmetricJeansLikelihoodModel
+=========================================================
+
+.. currentmodule:: jeanspy.sampler_numpyro
+
+.. autoclass:: AxisymmetricJeansLikelihoodModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:
+
+   :special-members: __call__

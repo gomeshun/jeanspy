@@ -1,0 +1,10 @@
+﻿jeanspy.model.OsipkovMerrittModel
+=================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: OsipkovMerrittModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

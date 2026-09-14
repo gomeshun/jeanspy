@@ -1,0 +1,1281 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jeanspy.axisymmetric &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/jeanspy/axisymmetric';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/_modules/jeanspy/axisymmetric.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-14"/>
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">jeanspy.axisymmetric</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for jeanspy.axisymmetric</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Axisymmetric second moments following Hayashi &amp; Chiba (2015), eqs. 1–5.</span>
+
+<span class="sd">Independent NumPy forward API. Units: pc, Msun, km/s; inclinations in radians.</span>
+<span class="sd">No mean streaming is specified: second moments equal dispersions only for</span>
+<span class="sd">nonrotating systems. See docs/axisymmetric.md for assumptions and convergence.</span>
+<span class="sd">"""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">parsec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">roots_legendre</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._axisymmetric_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidAxisymmetricModelError</span><span class="p">,</span> <span class="n">force_limit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._zhao</span><span class="w"> </span><span class="kn">import</span> <span class="n">enclosed_mass</span> <span class="k">as</span> <span class="n">_zhao_mass</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="mf">1.32712440018e20</span> <span class="o">/</span> <span class="n">parsec</span> <span class="o">*</span> <span class="mf">1e-6</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"AxisymmetricJeans"</span><span class="p">,</span> <span class="s2">"PlummerTracer"</span><span class="p">,</span> <span class="s2">"ZhaoHalo"</span><span class="p">,</span> <span class="s2">"intrinsic_axis_ratio"</span><span class="p">,</span>
+           <span class="s2">"InvalidAxisymmetricModelError"</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_positive</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a finite positive scalar"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_inclination</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"inclination must be in [0, pi/2] radians"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_coordinates</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="n">R</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">R</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">R</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">R</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">z</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"R must be nonnegative and coordinates finite and nonempty"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"quadrature orders must be integers &gt;= 16"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_cached_rule</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_cached_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">roots_legendre</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span>
+
+
+<div class="viewcode-block" id="intrinsic_axis_ratio">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.intrinsic_axis_ratio.html#jeanspy.axisymmetric.intrinsic_axis_ratio">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">intrinsic_axis_ratio</span><span class="p">(</span><span class="n">q_projected</span><span class="p">,</span> <span class="n">inclination</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Deproject an oblate tracer; face-on photometry is degenerate and rejected.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``q_projected`` in (0,1] and inclination in (0,pi/2]</span>
+<span class="sd">    radians, both scalars.</span>
+
+<span class="sd">    **Returns and shape.** Scalar ``q = sqrt((q_projected**2-cos(i)**2)/sin(i)**2)``.</span>
+
+<span class="sd">    **Validity.** Requires ``q_projected &gt; cos(i)``. Face-on photometry is</span>
+<span class="sd">    degenerate and rejected.</span>
+
+<span class="sd">    **Errors.** Incompatible flattening, face-on angle or invalid values raise</span>
+<span class="sd">    ValueError.</span>
+
+<span class="sd">    **Backend.** NumPy CPU.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``intrinsic_axis_ratio(0.8, np.pi/2)`` gives 0.8.</span>
+<span class="sd">    """</span>
+    <span class="n">_positive</span><span class="p">(</span><span class="s2">"q_projected"</span><span class="p">,</span> <span class="n">q_projected</span><span class="p">)</span>
+    <span class="n">_inclination</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">q_projected</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">inclination</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"require q_projected &lt;= 1 and nonzero inclination"</span><span class="p">)</span>
+    <span class="n">q2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">q_projected</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">q_projected</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="n">q2</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"projected flattening is incompatible with inclination"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">q2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="PlummerTracer">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.PlummerTracer.html#jeanspy.axisymmetric.PlummerTracer">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PlummerTracer</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Unit-integral spheroidal Plummer tracer (a_pc is equatorial scale).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``a_pc`` is equatorial scale in pc, q&gt;0 is intrinsic</span>
+<span class="sd">    axis ratio. Intrinsic R&gt;=0 and signed z, or signed sky x/y, are finite and</span>
+<span class="sd">    broadcast to one shape (pc).</span>
+
+<span class="sd">    **Returns and shape.** density(R,z) is pc^-3; ``radial_derivative`` is</span>
+<span class="sd">    dnu/dR in pc^-4; ``surface_density(x, y, inclination)`` is pc^-2;</span>
+<span class="sd">    ``projected_axis_ratio`` returns sqrt(cos(i)^2+q^2 sin(i)^2). Array outputs</span>
+<span class="sd">    follow the broadcast shape, including scalar output.</span>
+
+<span class="sd">    **Validity.** x is the line of nodes; i=0 is face-on. No streaming</span>
+<span class="sd">    prescription, stellar self-gravity, PSF or pixel average is supplied. All</span>
+<span class="sd">    fixed rules require refinement.</span>
+
+<span class="sd">    **Errors.** Invalid values/shapes/orders raise ValueError; wrong component</span>
+<span class="sd">    types raise TypeError. Negative/nonfinite intrinsic moments raise</span>
+<span class="sd">    InvalidAxisymmetricModelError. Force evaluation exactly at a cusped origin</span>
+<span class="sd">    is unsupported.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU, frozen dataclasses.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_axisymmetric.py``</span>
+<span class="sd">    """</span>
+    <span class="n">a_pc</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">_positive</span><span class="p">(</span><span class="s2">"a_pc"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_pc</span><span class="p">)</span>
+        <span class="n">_positive</span><span class="p">(</span><span class="s2">"q"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PlummerTracer.density">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.PlummerTracer.html#jeanspy.axisymmetric.PlummerTracer.density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the unit-normalized tracer density in pc^-3.</span>
+
+<span class="sd">        Cylindrical coordinates R&gt;=0 and signed z are in pc and broadcast.</span>
+<span class="sd">        Nonfinite, empty or negative-R inputs raise ValueError.</span>
+<span class="sd">        """</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_coordinates</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_pc</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_pc</span><span class="o">**</span><span class="mi">2</span>
+        <span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlummerTracer.radial_derivative">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.PlummerTracer.html#jeanspy.axisymmetric.PlummerTracer.radial_derivative">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">radial_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return d(nu)/dR in pc^-4 at cylindrical coordinates R,z in pc.</span>
+
+<span class="sd">        Coordinates broadcast; R must be nonnegative and both arrays finite and</span>
+<span class="sd">        nonempty. Invalid coordinates raise ValueError through density.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">a_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlummerTracer.projected_axis_ratio">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.PlummerTracer.html#jeanspy.axisymmetric.PlummerTracer.projected_axis_ratio">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">projected_axis_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inclination</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the dimensionless projected minor-to-major tracer axis ratio.</span>
+
+<span class="sd">        Inclination is a scalar in radians; zero is face-on. It must be finite</span>
+<span class="sd">        and in [0, pi/2], otherwise ValueError is raised.</span>
+<span class="sd">        """</span>
+        <span class="n">_inclination</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PlummerTracer.surface_density">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.PlummerTracer.html#jeanspy.axisymmetric.PlummerTracer.surface_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surface_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">inclination</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Project the unit-normalized tracer onto signed sky coordinates.</span>
+
+<span class="sd">        ``x`` and ``y`` are finite, nonempty, broadcastable coordinates in pc;</span>
+<span class="sd">        inclination is a scalar angle in radians within the class domain.</span>
+<span class="sd">        Returns pc^-2 with the broadcast shape. Invalid coordinates or</span>
+<span class="sd">        inclination raise ValueError.</span>
+<span class="sd">        """</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"sky coordinates must be finite and nonempty"</span><span class="p">)</span>
+        <span class="n">qp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projected_axis_ratio</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">qp</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_pc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">qp</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ZhaoHalo">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.ZhaoHalo.html#jeanspy.axisymmetric.ZhaoHalo">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ZhaoHalo</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""rho=rho_s (m/r_s)^(-gamma) [1+(m/r_s)^alpha]^((gamma-beta)/alpha).</span>
+
+<span class="sd">    m²=R²+z²/Q². Q may be oblate or prolate. rho_s is a density scale,</span>
+<span class="sd">    not the density at r_s. Finite central potential: 0 &lt;= gamma &lt; 2;</span>
+<span class="sd">    finite outer potential: beta &gt; 2. Total mass may diverge (e.g. NFW).</span>
+<span class="sd">    Hayashi 2015 eq. 4 is alpha=2, beta=3, gamma=-alpha_paper.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** ``rho_s`` (Msun/pc^3), ``r_s`` (pc), Q&gt;0, alpha&gt;0,</span>
+<span class="sd">    beta&gt;2, 0&lt;=gamma&lt;2; ``r_t_pc &gt; 0`` is an ellipsoidal cutoff and can be</span>
+<span class="sd">    infinite for the forward model. Intrinsic R&gt;=0 and signed z, or signed sky</span>
+<span class="sd">    x/y, are finite and broadcast to one shape (pc).</span>
+
+<span class="sd">    **Returns and shape.** density is Msun/pc^3 and zero outside ``r_t_pc``.</span>
+<span class="sd">    ``potential_gradient`` returns (dPhi/dR,dPhi/dz) in (km/s)^2/pc, opposite</span>
+<span class="sd">    gravitational acceleration. ``enclosed_mass(m_pc)`` is Msun inside the</span>
+<span class="sd">    ellipsoid ``R^2 + z^2/Q^2 &lt;= m_pc^2``. J/D are scalar factors. Array outputs</span>
+<span class="sd">    follow the broadcast shape, including scalar output.</span>
+
+<span class="sd">    **Validity.** x is the line of nodes; i=0 is face-on. No streaming</span>
+<span class="sd">    prescription, stellar self-gravity, PSF or pixel average is supplied. All</span>
+<span class="sd">    fixed rules require refinement.</span>
+
+<span class="sd">    **Errors.** Invalid values/shapes/orders raise ValueError; wrong component</span>
+<span class="sd">    types raise TypeError. Negative/nonfinite intrinsic moments raise</span>
+<span class="sd">    InvalidAxisymmetricModelError. Force evaluation exactly at a cusped origin</span>
+<span class="sd">    is unsupported.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU, frozen dataclasses.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_axisymmetric.py``</span>
+<span class="sd">    """</span>
+    <span class="n">rho_s</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">r_s</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">Q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span>
+    <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">r_t_pc</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"rho_s"</span><span class="p">,</span> <span class="s2">"r_s"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">):</span>
+            <span class="n">_positive</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"beta must be finite and &gt; 2"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"gamma must be in [0, 2)"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"r_t_pc must be positive (infinity is allowed)"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_density_slope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+            <span class="n">logx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">m</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_s</span><span class="p">)</span>
+            <span class="n">transition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logaddexp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">logx</span><span class="p">)</span>
+            <span class="n">inner</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">logx</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">logx</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">inner</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">transition</span><span class="p">)</span>
+            <span class="n">fraction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">logaddexp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">logx</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">rho</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">fraction</span>
+
+<div class="viewcode-block" id="ZhaoHalo.density">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.ZhaoHalo.html#jeanspy.axisymmetric.ZhaoHalo.density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Evaluate halo density in Msun/pc^3 at cylindrical coordinates R,z in pc.</span>
+
+<span class="sd">        Coordinates broadcast and must be finite/nonempty with R&gt;=0, otherwise</span>
+<span class="sd">        ValueError is raised. Density is zero beyond the ellipsoidal cutoff;</span>
+<span class="sd">        a positive central cusp diverges at the origin.</span>
+<span class="sd">        """</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_coordinates</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_slope</span><span class="p">(</span><span class="n">m</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ZhaoHalo.enclosed_mass">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.ZhaoHalo.html#jeanspy.axisymmetric.ZhaoHalo.enclosed_mass">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Mass inside the spheroid m &lt;= m_pc, truncated at r_t_pc, in Msun."""</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">m_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">radius</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">radius</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">radius</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)))):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Require nonnegative m_pc with finite min(m_pc, r_t_pc)"</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r_s</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rho_s</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+                 <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">*</span> <span class="n">_zhao_mass</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="n">np</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_coordinates</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="c1"># Avoid evaluating the singular density at a cusp origin.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">((</span><span class="n">R</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">z</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"force evaluation at the exact cusp origin is not supported"</span><span class="p">)</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">_rule</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">limit</span><span class="p">,</span> <span class="n">derivative</span> <span class="o">=</span> <span class="n">force_limit</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">,</span> <span class="n">np</span><span class="p">)</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">limit</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="n">limit</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="n">w</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">t</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">RR</span><span class="p">,</span> <span class="n">zz</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">RR</span><span class="o">*</span><span class="n">RR</span> <span class="o">+</span> <span class="p">(</span><span class="n">zz</span><span class="o">/</span><span class="n">D</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">rho</span><span class="p">,</span> <span class="n">slope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_slope</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">common</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">G</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">t</span><span class="o">*</span><span class="n">t</span>
+        <span class="n">gR</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">common</span> <span class="o">/</span> <span class="n">D</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">gz</span> <span class="o">=</span> <span class="n">z</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">common</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># d(gz)/dR analytically, avoiding differences of integrated pressures.</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">RR</span><span class="o">*</span><span class="n">t</span><span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">m</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">dgz</span> <span class="o">=</span> <span class="n">z</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">common</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">):</span>
+            <span class="n">rho_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_slope</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">D_edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">limit</span><span class="o">*</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">dgz</span> <span class="o">+=</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">G</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">*</span><span class="n">z</span><span class="o">*</span><span class="n">rho_edge</span><span class="o">*</span><span class="n">limit</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">D_edge</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">derivative</span>
+        <span class="k">return</span> <span class="n">gR</span><span class="p">,</span> <span class="n">gz</span><span class="p">,</span> <span class="n">dgz</span>
+
+<div class="viewcode-block" id="ZhaoHalo.potential_gradient">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.ZhaoHalo.html#jeanspy.axisymmetric.ZhaoHalo.potential_gradient">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">potential_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">96</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return (dPhi/dR, dPhi/dz), opposite to gravitational acceleration."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradients</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ZhaoHalo.jfactor">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.ZhaoHalo.html#jeanspy.axisymmetric.ZhaoHalo.jfactor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Finite-cone annihilation factor in GeV^2 cm^-5; finite r_t_pc required."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.axisymmetric_factors</span><span class="w"> </span><span class="kn">import</span> <span class="n">jfactor</span>
+        <span class="k">return</span> <span class="n">jfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">inclination</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ZhaoHalo.dfactor">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.ZhaoHalo.html#jeanspy.axisymmetric.ZhaoHalo.dfactor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Finite-cone decay factor in GeV cm^-2; finite r_t_pc required."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.axisymmetric_factors</span><span class="w"> </span><span class="kn">import</span> <span class="n">dfactor</span>
+        <span class="k">return</span> <span class="n">dfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">inclination</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AxisymmetricJeans">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.AxisymmetricJeans.html#jeanspy.axisymmetric.AxisymmetricJeans">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AxisymmetricJeans</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Aligned constant-beta_z Jeans solver with integration to infinity.</span>
+
+<span class="sd">    Fixed Gauss-Legendre orders must be checked for convergence for each</span>
+<span class="sd">    parameter regime. Large arrays are processed one sky position at a time.</span>
+<span class="sd">    Negative intrinsic second moments raise ValueError, never get clipped.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** tracer is PlummerTracer; halo is ZhaoHalo;</span>
+<span class="sd">    ``beta_z &lt; 1``; inclination in [0,pi/2] radians; ``n_force``, ``n_vertical``</span>
+<span class="sd">    and ``n_los`` are integer quadrature orders &gt;=16. Intrinsic R&gt;=0 and signed</span>
+<span class="sd">    z, or signed sky x/y, are finite and broadcast to one shape (pc).</span>
+
+<span class="sd">    **Returns and shape.** ``intrinsic_moments(R,z)`` returns (vR2,vz2,vphi2),</span>
+<span class="sd">    each in (km/s)^2. ``los_second_moment(x,y)`` returns the</span>
+<span class="sd">    surface-density-weighted second moment, not its square root. Array outputs</span>
+<span class="sd">    follow the broadcast shape, including scalar output.</span>
+
+<span class="sd">    **Validity.** x is the line of nodes; i=0 is face-on. No streaming</span>
+<span class="sd">    prescription, stellar self-gravity, PSF or pixel average is supplied. All</span>
+<span class="sd">    fixed rules require refinement.</span>
+
+<span class="sd">    **Errors.** Invalid values/shapes/orders raise ValueError; wrong component</span>
+<span class="sd">    types raise TypeError. Negative/nonfinite intrinsic moments raise</span>
+<span class="sd">    InvalidAxisymmetricModelError. Force evaluation exactly at a cusped origin</span>
+<span class="sd">    is unsupported.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU, frozen dataclasses.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_axisymmetric.py``</span>
+<span class="sd">    """</span>
+    <span class="n">tracer</span><span class="p">:</span> <span class="n">PlummerTracer</span>
+    <span class="n">halo</span><span class="p">:</span> <span class="n">ZhaoHalo</span>
+    <span class="n">beta_z</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">inclination</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">n_force</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span>
+    <span class="n">n_vertical</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span>
+    <span class="n">n_los</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="p">,</span> <span class="n">PlummerTracer</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">halo</span><span class="p">,</span> <span class="n">ZhaoHalo</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"require PlummerTracer and ZhaoHalo components"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_z</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_z</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_z</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"beta_z must be finite and &lt; 1"</span><span class="p">)</span>
+        <span class="n">_inclination</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclination</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_force</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_vertical</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_los</span><span class="p">):</span>
+            <span class="n">_rule</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_coordinates</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_vertical</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">a_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">R</span><span class="o">*</span><span class="n">R</span> <span class="o">+</span> <span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">q</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">q</span>
+        <span class="n">zz</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">scale</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">RR</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">zz</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">gz</span><span class="p">,</span> <span class="n">dgz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo</span><span class="o">.</span><span class="n">_gradients</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_force</span><span class="p">)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">scale</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weight</span> <span class="o">*</span> <span class="n">nu</span> <span class="o">*</span> <span class="n">gz</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weight</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">radial_derivative</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">zz</span><span class="p">)</span><span class="o">*</span><span class="n">gz</span> <span class="o">+</span> <span class="n">nu</span><span class="o">*</span><span class="n">dgz</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">dP</span>
+
+<div class="viewcode-block" id="AxisymmetricJeans.intrinsic_moments">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.AxisymmetricJeans.html#jeanspy.axisymmetric.AxisymmetricJeans.intrinsic_moments">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">intrinsic_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return (&lt;vR²&gt;, &lt;vz²&gt;, &lt;vphi²&gt;) in (km/s)²; arrays broadcast."""</span>
+        <span class="n">R</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_coordinates</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">P</span><span class="p">,</span> <span class="n">dP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pressure</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="c1"># R*dPhi/dR vanishes on the axis, even for a central cusp.</span>
+        <span class="n">safe_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">R</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">z</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">a_pc</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">gR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo</span><span class="o">.</span><span class="n">potential_gradient</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">safe_z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_force</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">vz2</span> <span class="o">=</span> <span class="n">P</span> <span class="o">/</span> <span class="n">nu</span>
+        <span class="n">vR2</span> <span class="o">=</span> <span class="n">vz2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_z</span><span class="p">)</span>
+        <span class="n">vphi2</span> <span class="o">=</span> <span class="p">(</span><span class="n">P</span> <span class="o">+</span> <span class="n">R</span><span class="o">*</span><span class="n">dP</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_z</span><span class="p">)</span><span class="o">*</span><span class="n">nu</span><span class="p">)</span> <span class="o">+</span> <span class="n">R</span><span class="o">*</span><span class="n">gR</span>
+        <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">vR2</span><span class="p">,</span> <span class="n">vz2</span><span class="p">,</span> <span class="n">vphi2</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">moments</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">moments</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidAxisymmetricModelError</span><span class="p">(</span>
+                <span class="s2">"nonfinite or negative intrinsic second moment; check model and convergence"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vR2</span><span class="p">,</span> <span class="n">vz2</span><span class="p">,</span> <span class="n">vphi2</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricJeans.los_second_moment">
+<a class="viewcode-back" href="../../api/generated/jeanspy.axisymmetric.AxisymmetricJeans.html#jeanspy.axisymmetric.AxisymmetricJeans.los_second_moment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">los_second_moment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Surface-density-weighted &lt;vlos²&gt; at sky coordinates (pc).</span>
+
+<span class="sd">        x is the line of nodes. y_intrinsic=y*cos(i)+l*sin(i),</span>
+<span class="sd">        z_intrinsic=-y*sin(i)+l*cos(i); l is the line-of-sight coordinate.</span>
+<span class="sd">        """</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+        <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">surface_density</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inclination</span><span class="p">)</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_los</span><span class="p">)</span>
+        <span class="n">si</span><span class="p">,</span> <span class="n">ci</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclination</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclination</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">si</span><span class="o">*</span><span class="n">si</span> <span class="o">+</span> <span class="p">(</span><span class="n">ci</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">q</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="c1"># Center the quadrature at the maximum LOS tracer density.</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="o">-</span><span class="n">yy</span><span class="o">*</span><span class="n">si</span><span class="o">*</span><span class="n">ci</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">q</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">A</span>
+            <span class="n">qp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">projected_axis_ratio</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclination</span><span class="p">)</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">a_pc</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">xx</span><span class="o">*</span><span class="n">xx</span> <span class="o">+</span> <span class="p">(</span><span class="n">yy</span><span class="o">/</span><span class="n">qp</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">scale</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">ell</span> <span class="o">=</span> <span class="n">center</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="o">-</span><span class="n">offset</span><span class="p">,</span> <span class="n">offset</span><span class="p">])</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">scale</span><span class="o">*</span><span class="n">w</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">yy</span><span class="o">*</span><span class="n">ci</span> <span class="o">+</span> <span class="n">ell</span><span class="o">*</span><span class="n">si</span><span class="p">,</span> <span class="o">-</span><span class="n">yy</span><span class="o">*</span><span class="n">si</span> <span class="o">+</span> <span class="n">ell</span><span class="o">*</span><span class="n">ci</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+            <span class="n">vr</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">vp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intrinsic_moments</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+            <span class="n">cos2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">xx</span><span class="o">*</span><span class="n">xx</span><span class="p">,</span> <span class="n">R</span><span class="o">*</span><span class="n">R</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">R</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">R</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">local</span> <span class="o">=</span> <span class="n">si</span><span class="o">*</span><span class="n">si</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">cos2</span><span class="p">)</span><span class="o">*</span><span class="n">vr</span> <span class="o">+</span> <span class="n">cos2</span><span class="o">*</span><span class="n">vp</span><span class="p">)</span> <span class="o">+</span> <span class="n">ci</span><span class="o">*</span><span class="n">ci</span><span class="o">*</span><span class="n">vz</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weight</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span><span class="o">*</span><span class="n">local</span><span class="p">)</span><span class="o">/</span><span class="n">surface</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[()]</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">result</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AxisymmetricDSphModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Parameter-dictionary forward API shared with the JAX backend.</span>
+
+<span class="sd">    Required: re_pc, rs_pc, rhos_Msunpc3 and exactly one of q/q_projected.</span>
+<span class="sd">    Optional: Q, alpha, beta, gamma, beta_z, inclination (radians).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Inputs and units.** params requires ``re_pc``, ``rs_pc`` (pc),</span>
+<span class="sd">    ``rhos_Msunpc3`` (Msun/pc^3), and exactly one of q or ``q_projected``.</span>
+<span class="sd">    Optional Q, alpha, beta, gamma, ``beta_z`` and inclination (radians) have</span>
+<span class="sd">    the defaults shown in the axisymmetric guide. ``r_t_pc`` is a positive</span>
+<span class="sd">    ellipsoidal cutoff (pc). Use alpha/beta/gamma; spherical a/b/g names are not</span>
+<span class="sd">    accepted. Physical parameter dictionaries hold scalar values; radius arrays</span>
+<span class="sd">    are broadcast independently. Use vmap to batch parameter dictionaries.</span>
+<span class="sd">    Constructor node counts ``n_force``/``n_vertical``/``n_los`` are static</span>
+<span class="sd">    integers &gt;=16.</span>
+
+<span class="sd">    **Returns and shape.** sigmalos2 and ``intrinsic_moments`` return (km/s)^2;</span>
+<span class="sd">    ``density_3d`` is normalized pc^-3, ``surface_density`` pc^-2,</span>
+<span class="sd">    ``mass_density_3d`` Msun/pc^3, ``enclosed_mass`` Msun inside an ellipsoid;</span>
+<span class="sd">    ``potential_gradient`` is (km/s)^2/pc. Coordinates broadcast; intrinsic</span>
+<span class="sd">    moments and forces are tuples of matching arrays.</span>
+
+<span class="sd">    **Validity.** Cylindrical alignment with constant ``beta_z``; same physical</span>
+<span class="sd">    restrictions as AxisymmetricJeans. Scalar sky inputs yield scalars; centers</span>
+<span class="sd">    are allowed for projected moments.</span>
+
+<span class="sd">    **Errors.** Invalid schema/values raise ValueError; nonphysical moments</span>
+<span class="sd">    raise InvalidAxisymmetricModelError.</span>
+
+<span class="sd">    **Backend.** NumPy/SciPy CPU.</span>
+
+<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    **Examples.** ``examples/docs_axisymmetric.py``; ``examples/docs_jax.py``</span>
+<span class="sd">    """</span>
+    <span class="n">n_force</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span>
+    <span class="n">n_vertical</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span>
+    <span class="n">n_los</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_force</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_vertical</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_los</span><span class="p">):</span>
+            <span class="n">_rule</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.sampling_identity">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.sampling_identity">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sampling_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the three fixed quadrature orders used to identify a sampling target.</span>
+
+<span class="sd">        The host dictionary contains n_force, n_vertical and n_los. Physical</span>
+<span class="sd">        parameters and observations are identified separately by the likelihood.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">n_force</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_force</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_vertical</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_los</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._axisymmetric_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_params</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">resolve_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">np</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidAxisymmetricModelError</span><span class="p">(</span>
+                <span class="s2">"Invalid axisymmetric physical parameters or inclination/flattening"</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">AxisymmetricJeans</span><span class="p">(</span>
+            <span class="n">PlummerTracer</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"q"</span><span class="p">]),</span>
+            <span class="n">ZhaoHalo</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">"rhos_Msunpc3"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"rs_pc"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"Q"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"alpha"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"beta"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"gamma"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"r_t_pc"</span><span class="p">]),</span>
+            <span class="n">p</span><span class="p">[</span><span class="s2">"beta_z"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"inclination"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_force</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_vertical</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_los</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.sigmalos2">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.sigmalos2">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Project a cylindrically aligned second moment.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** Signed ``x_pc``/``y_pc`` in pc, broadcastable</span>
+<span class="sd">        scalar/arrays; params is the explicit physical dictionary.</span>
+
+<span class="sd">        **Returns and shape.** LOS second moment in (km/s)^2 with the broadcast</span>
+<span class="sd">        coordinate shape, including scalar output.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">los_second_moment</span><span class="p">(</span><span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.intrinsic_moments">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.intrinsic_moments">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">intrinsic_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the intrinsic Jeans second moments.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc &gt;= 0`` and signed ``z_pc`` in pc, broadcastable;</span>
+<span class="sd">        params supplies the physical dictionary.</span>
+
+<span class="sd">        **Returns and shape.** Tuple (vR2,vz2,vphi2), each in (km/s)^2 with the</span>
+<span class="sd">        broadcast coordinate shape. vphi2 is the total azimuthal second moment; no</span>
+<span class="sd">        rotation/dispersion split is assigned.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">intrinsic_moments</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.potential_gradient">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.potential_gradient">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">potential_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate derivatives of the gravitational potential.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``R_pc &gt;= 0``, signed ``z_pc`` in pc and explicit</span>
+<span class="sd">        params.</span>
+
+<span class="sd">        **Returns and shape.** Tuple (dPhi/dR,dPhi/dz) in (km/s)^2/pc; gravitational</span>
+<span class="sd">        acceleration has the opposite sign.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">halo</span><span class="o">.</span><span class="n">potential_gradient</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_force</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.surface_density">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.surface_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surface_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the projected spheroidal Plummer tracer.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** Signed ``x_pc``/``y_pc`` in pc and explicit params;</span>
+<span class="sd">        coordinates broadcast.</span>
+
+<span class="sd">        **Returns and shape.** Normalized surface density in pc^-2 with the</span>
+<span class="sd">        broadcast coordinate shape.</span>
+<span class="sd">        """</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">surface_density</span><span class="p">(</span><span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">inclination</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.density_3d">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Unit-normalized stellar density in pc^-3."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.mass_density_3d">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.mass_density_3d">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Halo density in Msun pc^-3, including the optional ellipsoidal cutoff."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">halo</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.enclosed_mass">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.enclosed_mass">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Integrate mass inside a similar halo ellipsoid.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** ``m_pc &gt;= 0`` is the ellipsoidal radius in pc; params</span>
+<span class="sd">        supplies halo scales, slopes, Q and cutoff.</span>
+
+<span class="sd">        **Returns and shape.** Msun inside R^2+z^2/Q^2&lt;=``min(m_pc, r_t_pc)``^2,</span>
+<span class="sd">        matching ``m_pc`` shape.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">halo</span><span class="o">.</span><span class="n">enclosed_mass</span><span class="p">(</span><span class="n">m_pc</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.jfactor">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.jfactor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">jfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Postprocess an axisymmetric finite-cone factor.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** Scalar ``dist_pc`` and ``roi_deg``; params specifies</span>
+<span class="sd">        halo, inclination and finite ``r_t_pc``; ``n_mu``/``n_phi``/``n_radial`` set</span>
+<span class="sd">        independent factor quadratures, all &gt;=16.</span>
+
+<span class="sd">        **Returns and shape.** Python float in GeV^2 cm^-5.</span>
+
+<span class="sd">        **Validity.** Require explicit finite ``r_t_pc``, observer distance &gt;</span>
+<span class="sd">        ``r_t_pc``\*max(1,Q), ``0 &lt;= roi_deg &lt; 90`` and gamma&lt;1.5 (finite central</span>
+<span class="sd">        annihilation integral). ``n_phi`` uses a periodic rule; refine all orders.</span>
+<span class="sd">        """</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">halo</span><span class="o">.</span><span class="n">jfactor</span><span class="p">(</span><span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">inclination</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisymmetricDSphModel.dfactor">
+<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.axisymmetric.AxisymmetricDSphModel.dfactor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Postprocess an axisymmetric finite-cone factor.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Inputs and units.** Scalar ``dist_pc`` and ``roi_deg``; params specifies</span>
+<span class="sd">        halo, inclination and finite ``r_t_pc``; ``n_mu``/``n_phi``/``n_radial`` set</span>
+<span class="sd">        independent factor quadratures, all &gt;=16.</span>
+
+<span class="sd">        **Returns and shape.** Python float in GeV cm^-2.</span>
+
+<span class="sd">        **Validity.** Require explicit finite ``r_t_pc``, observer distance &gt;</span>
+<span class="sd">        ``r_t_pc``\*max(1,Q), ``0 &lt;= roi_deg &lt; 90`` and gamma&lt;2 under the ZhaoHalo</span>
+<span class="sd">        constructor domain. ``n_phi`` uses a periodic rule; refine all orders.</span>
+<span class="sd">        """</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">halo</span><span class="o">.</span><span class="n">dfactor</span><span class="p">(</span><span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">inclination</span><span class="p">,</span> <span class="o">**</span><span class="n">quadrature</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"AxisymmetricDSphModel"</span><span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

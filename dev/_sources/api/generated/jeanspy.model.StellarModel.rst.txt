@@ -1,0 +1,10 @@
+﻿jeanspy.model.StellarModel
+==========================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: StellarModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

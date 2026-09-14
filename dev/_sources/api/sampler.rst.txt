@@ -1,0 +1,15 @@
+Classical emcee sampling and HDF5 storage
+=========================================
+
+.. py:module:: jeanspy.sampler
+
+.. currentmodule:: jeanspy.sampler
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   Sampler
+

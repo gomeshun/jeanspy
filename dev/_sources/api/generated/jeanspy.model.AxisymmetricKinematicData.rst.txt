@@ -1,0 +1,10 @@
+﻿jeanspy.model.AxisymmetricKinematicData
+=======================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: AxisymmetricKinematicData
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

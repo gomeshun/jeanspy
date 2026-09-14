@@ -1,0 +1,10 @@
+﻿jeanspy.axisymmetric.PlummerTracer
+==================================
+
+.. currentmodule:: jeanspy.axisymmetric
+
+.. autoclass:: PlummerTracer
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

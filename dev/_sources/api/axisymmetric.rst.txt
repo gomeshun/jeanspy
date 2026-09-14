@@ -1,0 +1,23 @@
+Axisymmetric components and NumPy forward model
+===============================================
+
+.. py:module:: jeanspy.axisymmetric
+
+.. currentmodule:: jeanspy.axisymmetric
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   AxisymmetricJeans
+   PlummerTracer
+   ZhaoHalo
+   intrinsic_axis_ratio
+   InvalidAxisymmetricModelError
+
+Aliases
+-------
+
+* ``jeanspy.axisymmetric.AxisymmetricDSphModel`` is :py:obj:`jeanspy.model.AxisymmetricDSphModel`.

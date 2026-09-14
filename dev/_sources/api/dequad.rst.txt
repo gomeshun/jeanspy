@@ -1,0 +1,18 @@
+Double-exponential integration helpers
+======================================
+
+.. py:module:: jeanspy.dequad
+
+.. currentmodule:: jeanspy.dequad
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   hashable
+   memorize
+   generate_x_w
+   dequad
+

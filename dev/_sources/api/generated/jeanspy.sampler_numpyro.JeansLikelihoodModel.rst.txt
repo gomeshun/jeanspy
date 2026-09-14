@@ -1,0 +1,12 @@
+﻿jeanspy.sampler\_numpyro.JeansLikelihoodModel
+=============================================
+
+.. currentmodule:: jeanspy.sampler_numpyro
+
+.. autoclass:: JeansLikelihoodModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:
+
+   :special-members: __call__

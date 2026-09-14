@@ -1,0 +1,10 @@
+﻿jeanspy.baes\_eta2.BaesEta2AnisotropyModel
+==========================================
+
+.. currentmodule:: jeanspy.baes_eta2
+
+.. autoclass:: BaesEta2AnisotropyModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,10 @@
+﻿jeanspy.model.NFWModel
+======================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: NFWModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

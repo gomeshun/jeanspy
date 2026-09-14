@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.Model
+============================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: Model
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿jeanspy.model\_numpyro.get\_runtime\_config
+===========================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autofunction:: get_runtime_config

@@ -1,0 +1,10 @@
+﻿jeanspy.hyp2f1\_jax.TanhSinh01
+==============================
+
+.. currentmodule:: jeanspy.hyp2f1_jax
+
+.. autoclass:: TanhSinh01
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,10 @@
+﻿jeanspy.model.ZhaoModel
+=======================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: ZhaoModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

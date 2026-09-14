@@ -1,0 +1,18 @@
+Specialized Baes anisotropy kernels
+===================================
+
+.. py:module:: jeanspy.baes_eta2
+
+.. currentmodule:: jeanspy.baes_eta2
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   BaesEta2AnisotropyModel
+   DEFAULT_BAES_ETA2_KERNEL_N_QUAD
+   baes_eta2_kernel_appell_reference
+   baes_eta2_kernel_jax
+

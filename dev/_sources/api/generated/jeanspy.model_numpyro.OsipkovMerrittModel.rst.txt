@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.OsipkovMerrittModel
+==========================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: OsipkovMerrittModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

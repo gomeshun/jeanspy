@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.DSphModel
+================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: DSphModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,14 @@
+JAX axisymmetric forward model
+==============================
+
+.. py:module:: jeanspy.axisymmetric_numpyro
+
+.. currentmodule:: jeanspy.axisymmetric_numpyro
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+Aliases
+-------
+
+* ``jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel`` is :py:obj:`jeanspy.model_numpyro.AxisymmetricDSphModel`.

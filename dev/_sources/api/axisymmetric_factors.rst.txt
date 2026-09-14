@@ -1,0 +1,18 @@
+Finite-cone NumPy J and D factors
+=================================
+
+.. py:module:: jeanspy.axisymmetric_factors
+
+.. currentmodule:: jeanspy.axisymmetric_factors
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   jfactor
+   dfactor
+   C_J
+   C_D
+

@@ -1,0 +1,10 @@
+﻿jeanspy.model.FittableModel
+===========================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: FittableModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,41 @@
+Classical spherical models and convenience exports
+==================================================
+
+.. py:module:: jeanspy.model
+
+.. currentmodule:: jeanspy.model
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   AnisotropyModel
+   BaesAnisotropyModel
+   C_J
+   ConstantAnisotropyModel
+   DMModel
+   DSphModel
+   DotDict
+   Exp2dModel
+   Exp3dModel
+   FittableModel
+   FlatPriorModel
+   GMsun_m3s2
+   Model
+   NFWModel
+   OsipkovMerrittModel
+   Parameters
+   PhotometryPriorModel
+   PlummerModel
+   SersicModel
+   SimpleDSphEstimationModel
+   StellarModel
+   Uniform2dModel
+   ZhaoModel
+   get_default_estimation_model
+   AxisymmetricDSphModel
+   AxisymmetricDSphEstimationModel
+   AxisymmetricKinematicData
+

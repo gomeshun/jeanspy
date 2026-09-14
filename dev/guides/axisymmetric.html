@@ -1,0 +1,1110 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Axisymmetric Jeans modeling and inference &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=b635b406" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guides/axisymmetric';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/guides/axisymmetric.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="JAX, precision and gradients" href="jax.html" />
+    <link rel="prev" title="Tracers, halos and anisotropy" href="profiles.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-14"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contracts.html">Units, shapes and model contracts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="profiles.html">Tracers, halos and anisotropy</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Axisymmetric Jeans modeling and inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jax.html">JAX, precision and gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference, diagnostics and restart</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="factors.html">J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical helpers</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Feature guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Axisymmetric Jeans modeling and inference</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="axisymmetric-jeans-modeling-and-inference">
+<h1>Axisymmetric Jeans modeling and inference<a class="headerlink" href="#axisymmetric-jeans-modeling-and-inference" title="Link to this heading">#</a></h1>
+<p>JeansPy supports the stationary, cylindrically aligned, nonrotating model in
+<a class="reference external" href="https://arxiv.org/abs/1507.07620">Hayashi &amp; Chiba (2015)</a>, equations 1–5, and
+<a class="reference external" href="https://arxiv.org/abs/1603.08046">Hayashi et al. (2016)</a>, equations 3–16.
+Stellar and halo axes coincide, mixed velocity moments vanish, and
+<code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">&lt;vz²&gt;/&lt;vR²&gt;</span></code> is constant. These assumptions define this extension
+of <a class="reference external" href="https://github.com/gomeshun/jeanspy/issues/52">issue #52</a>.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Capability</p></th>
+<th class="head"><p>NumPy/SciPy</p></th>
+<th class="head"><p>JAX/NumPyro</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Flattened Plummer tracer and oblate/prolate Zhao halo</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Intrinsic moments, projected moments, densities, enclosed spheroidal mass</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes, JIT and parameter autodiff</p></td>
+</tr>
+<tr class="row-even"><td><p>Optional finite spheroidal halo cutoff</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Signed sky coordinates, inclination and photometric deprojection</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Explicit priors and unbinned velocity likelihood</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphEstimationModel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AxisymmetricJeansLikelihoodModel</span></code> and <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Posterior sampling and persisted restart checks</p></td>
+<td><p>Existing <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> / emcee</p></td>
+<td><p>Existing <code class="docutils literal notranslate"><span class="pre">NumPyroSampler</span></code> / NUTS</p></td>
+</tr>
+<tr class="row-even"><td><p>J/D factors from posterior draws</p></td>
+<td><p>Finite-cone quadrature</p></td>
+<td><p>Postprocess draws with the same NumPy factor API</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The existing spherical classes retain their names and parameter meanings.
+Cylindrical <code class="docutils literal notranslate"><span class="pre">beta_z</span></code> is <strong>not</strong> spherical <code class="docutils literal notranslate"><span class="pre">beta_ani</span></code>. In particular, the
+spherical/isotropic comparison needs <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">0</span></code> together.
+Spatially varying cylindrical anisotropy, arbitrary ellipsoid tilt, rotation
+or Satoh decomposition, triaxiality, stellar self-gravity and PSF/bin averaging
+are not implemented. The tracer family is Plummer; the halo family is Zhao.</p>
+<section id="units-geometry-and-physical-parameters">
+<h2>Units, geometry and physical parameters<a class="headerlink" href="#units-geometry-and-physical-parameters" title="Link to this heading">#</a></h2>
+<p>Distances are pc, masses Msun, velocities km/s. <code class="docutils literal notranslate"><span class="pre">inclination</span></code> is in <strong>radians</strong>:
+zero is face-on and pi/2 is edge-on. Sky <code class="docutils literal notranslate"><span class="pre">x_pc</span></code> is the line of nodes, the
+projected major axis for an oblate tracer, and <code class="docutils literal notranslate"><span class="pre">y_pc</span></code> is perpendicular to it.
+For a prolate tracer x need not be the projected major axis. Rotate an observed
+catalog by its position angle and convert angular separations to pc before
+passing it to this API. Signed coordinates and the projected center are valid.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Meaning/domain</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">re_pc</span></code></p></td>
+<td><p>Positive equatorial Plummer scale; projected major-axis half-light radius for an oblate tracer</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rs_pc</span></code>, <code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span></code></p></td>
+<td><p>Positive Zhao scale radius and density scale; rho_s is not rho(rs)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">q</span></code></p></td>
+<td><p>Positive intrinsic stellar vertical/equatorial ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">q_projected</span></code></p></td>
+<td><p>Alternative to q: oblate projected ratio in (0,1], deprojected using inclination</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Q</span></code></p></td>
+<td><p>Positive intrinsic halo vertical/equatorial ratio; default 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code></p></td>
+<td><p>Zhao exponents: alpha &gt; 0, beta &gt; 2, 0 &lt;= gamma &lt; 2; defaults 1,3,1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">beta_z</span></code></p></td>
+<td><p>Finite and &lt; 1; default 0; positive moments impose additional constraints</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inclination</span></code></p></td>
+<td><p>In [0,pi/2]; default pi/2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code></p></td>
+<td><p>Optional positive equatorial ellipsoidal cutoff; default infinity</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vmem_kms</span></code></p></td>
+<td><p>Systemic velocity, explicitly fixed or sampled for inference</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Supply exactly one of <code class="docutils literal notranslate"><span class="pre">q</span></code> and <code class="docutils literal notranslate"><span class="pre">q_projected</span></code>. Oblate photometry obeys
+<code class="docutils literal notranslate"><span class="pre">q_projected²</span> <span class="pre">=</span> <span class="pre">cos(i)²</span> <span class="pre">+</span> <span class="pre">q²</span> <span class="pre">sin(i)²</span></code>; deprojection requires nonzero inclination
+and positive intrinsic q². <code class="docutils literal notranslate"><span class="pre">intrinsic_axis_ratio(q_projected,</span> <span class="pre">inclination)</span></code>
+provides the same conversion. A round image at exactly zero inclination is
+degenerate and is rejected; use an explicitly supplied intrinsic q for a
+face-on model. Unknown parameter names and nonscalar physical parameters are
+errors. Use <code class="docutils literal notranslate"><span class="pre">jax.vmap</span></code> over parameter dictionaries for batched JAX predictions.</p>
+<p>The halo density is</p>
+<div class="math notranslate nohighlight">
+\[
+\rho(m)=\rho_s (m/r_s)^{-\gamma}
+ \left[1+(m/r_s)^\alpha\right]^{(\gamma-\beta)/\alpha},
+\qquad m^2=R^2+z^2/Q^2.
+\]</div>
+<p>A finite <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> sets this density to zero for m &gt; r_t in the density, mass,
+force and J/D calculations. <code class="docutils literal notranslate"><span class="pre">enclosed_mass(m_pc)</span></code> means mass inside the
+<strong>spheroid</strong> m &lt;= m_pc and includes the factor Q in its volume element. It
+saturates outside r_t. The Hayashi 2015 halo uses <code class="docutils literal notranslate"><span class="pre">alpha=2,</span> <span class="pre">beta=3</span></code> and
+<code class="docutils literal notranslate"><span class="pre">gamma=-alpha_paper</span></code>; NFW uses <code class="docutils literal notranslate"><span class="pre">alpha=1,</span> <span class="pre">beta=3,</span> <span class="pre">gamma=1</span></code>.</p>
+</section>
+<section id="forward-apis">
+<h2>Forward APIs<a class="headerlink" href="#forward-apis" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphModel</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
+              <span class="n">q_projected</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span>
+              <span class="n">beta_z</span><span class="o">=-</span><span class="mf">.3</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">70</span><span class="p">),</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">3000.</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">AxisymmetricDSphModel</span><span class="p">(</span><span class="n">n_force</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="mi">96</span><span class="p">)</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">,</span> <span class="mf">900.</span><span class="p">])</span>
+<span class="n">major_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span>
+<span class="n">minor_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span>
+<span class="n">vR2</span><span class="p">,</span> <span class="n">vz2</span><span class="p">,</span> <span class="n">vphi2</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">intrinsic_moments</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="n">gR</span><span class="p">,</span> <span class="n">gz</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">potential_gradient</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The force method returns the <strong>potential gradient</strong>, opposite to gravitational
+acceleration. Exact cusp-origin force evaluation is undefined in this API;
+cored-origin force, intrinsic central moments and projected central moments
+are supported. Intrinsic moments are ordered <code class="docutils literal notranslate"><span class="pre">(vR2,</span> <span class="pre">vz2,</span> <span class="pre">vphi2)</span></code>. These and LOS
+outputs are second moments, equal to dispersion squared under the zero
+streaming assumption used by the likelihood.</p>
+<p>The component API from PR #63 also remains available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricJeans</span><span class="p">,</span> <span class="n">PlummerTracer</span><span class="p">,</span> <span class="n">ZhaoHalo</span>
+
+<span class="n">forward</span> <span class="o">=</span> <span class="n">AxisymmetricJeans</span><span class="p">(</span>
+    <span class="n">PlummerTracer</span><span class="p">(</span><span class="n">a_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mf">.65</span><span class="p">),</span>
+    <span class="n">ZhaoHalo</span><span class="p">(</span><span class="n">rho_s</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_s</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">3000.</span><span class="p">),</span>
+    <span class="n">beta_z</span><span class="o">=-</span><span class="mf">.3</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">forward</span><span class="o">.</span><span class="n">los_second_moment</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both forward configurations are immutable; use <code class="docutils literal notranslate"><span class="pre">dataclasses.replace</span></code> for
+changes. NumPy raises <code class="docutils literal notranslate"><span class="pre">InvalidAxisymmetricModelError</span></code> (a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>) for
+inadmissible physical parameters or negative/nonfinite intrinsic moments.</p>
+<p>The corresponding JAX API accepts the same physical dictionary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Configure JEANSPY_JAX_ENABLE_X64=true before starting Python for float64.</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphModel</span> <span class="k">as</span> <span class="n">JaxAxisymmetricModel</span>
+
+<span class="n">jax_model</span> <span class="o">=</span> <span class="n">JaxAxisymmetricModel</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="n">derivative</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">rho</span><span class="p">:</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span>
+    <span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">:</span> <span class="n">rho</span><span class="p">}))(</span><span class="mf">.1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It uses JAX operations throughout, with no SciPy callbacks. Invalid dynamic
+proposals give NaN forward outputs and are rejected by the likelihood.
+Coordinate and schema shape errors raise immediately. Arrays broadcast and
+scalar coordinates produce scalar outputs in both backends.</p>
+</section>
+<section id="inference-and-restart">
+<h2>Inference and restart<a class="headerlink" href="#inference-and-restart" title="Link to this heading">#</a></h2>
+<p>Observations require matching, finite, nonempty 1-D arrays <code class="docutils literal notranslate"><span class="pre">x_pc</span></code>, <code class="docutils literal notranslate"><span class="pre">y_pc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vlos_kms</span></code>, <code class="docutils literal notranslate"><span class="pre">e_vlos_kms</span></code>. Errors must be nonnegative; zero is allowed. A
+DataFrame or mapping is accepted by the classical model. The explicit
+<code class="docutils literal notranslate"><span class="pre">AxisymmetricKinematicData</span></code> object copies observations and supplies detached
+arrays with <code class="docutils literal notranslate"><span class="pre">as_kwargs()</span></code> for NumPyro calls. <code class="docutils literal notranslate"><span class="pre">reset_data</span></code> validates replacements
+before mutation; user-provided priors are never derived from velocities.</p>
+<p>The unbinned likelihood is</p>
+<div class="math notranslate nohighlight">
+\[
+\log L_i = \log\mathcal N\!\left(v_i\mid v_{\rm mem},
+ \sqrt{\sigma_{\rm los}^2(x_i,y_i)+e_i^2}\right).
+\]</div>
+<p>The classical prior table names the <strong>sampling coordinates</strong>, in sampler
+order. Prefixes <code class="docutils literal notranslate"><span class="pre">log10_</span></code> and <code class="docutils literal notranslate"><span class="pre">bfunc_</span></code> mean <code class="docutils literal notranslate"><span class="pre">10**x</span></code> and <code class="docutils literal notranslate"><span class="pre">1-10**x</span></code>, respectively.
+<code class="docutils literal notranslate"><span class="pre">cos_inclination</span></code> maps to <code class="docutils literal notranslate"><span class="pre">arccos(x)</span></code> in radians. Uniform bounds on this last
+coordinate give an isotropic orientation prior over the explicitly chosen
+range; use bounds compatible with photometry, or allow the deprojection
+constraint to reject inadmissible proposals. No implicit transformation
+Jacobian is added: the prior is defined in the named sampling coordinate.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric_inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphEstimationModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
+
+<span class="n">prior</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"lower"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.</span><span class="p">],</span> <span class="s2">"upper"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">30.</span><span class="p">]},</span>
+                     <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">])</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x_pc</span><span class="o">=</span><span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="o">-</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">],</span> <span class="n">y_pc</span><span class="o">=</span><span class="p">[</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">70.</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.</span><span class="p">],</span>
+            <span class="n">vlos_kms</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">AxisymmetricDSphEstimationModel</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">fixed_params</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span>
+                                     <span class="n">dsph_model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">"axisymmetric_"</span><span class="p">)</span>
+<span class="c1"># sampler.run_mcmc(iterations=100, loops=1)</span>
+</pre></div>
+</div>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">PhotometryPriorModel</span></code> multiplies the prior on <code class="docutils literal notranslate"><span class="pre">log10_re_pc</span></code>;
+initial points then use the appropriately truncated Gaussian. <code class="docutils literal notranslate"><span class="pre">fit.sample</span></code>
+accepts an RNG/seed and bounded rejection to return feasible initial points.
+Impossible support raises an error rather than changing the priors.
+<code class="docutils literal notranslate"><span class="pre">lnlikelihoods</span></code>, <code class="docutils literal notranslate"><span class="pre">lnlikelihood</span></code>, <code class="docutils literal notranslate"><span class="pre">lnpriors</span></code>, <code class="docutils literal notranslate"><span class="pre">lnposterior</span></code>,
+<code class="docutils literal notranslate"><span class="pre">lnposterior_wbic</span></code>, and <code class="docutils literal notranslate"><span class="pre">sample_data</span></code> are available. WBIC needs at least two
+stars. Classical data are process-local and pickleable; shared-memory buffers
+specific to the spherical implementation are not used.</p>
+<p>NumPyro uses the existing <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> and sampler:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AxisymmetricJeansLikelihoodModel</span><span class="p">,</span> <span class="n">NumPyroSampler</span><span class="p">,</span> <span class="n">ParameterSpec</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">likelihood</span> <span class="o">=</span> <span class="n">AxisymmetricJeansLikelihoodModel</span><span class="p">(</span>
+    <span class="n">jax_model</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rho"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">.5</span><span class="p">),</span>
+                          <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">))],</span>
+    <span class="n">fixed_params</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">),</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">num_chains</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1"># with NumPyroSampler(mcmc, output_dir="axisymmetric_nuts") as sampler:</span>
+<span class="c1">#     sampler.run(jax.random.PRNGKey(52), **data)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> supports general priors/transforms and deterministic physical
+sites. Sampled and fixed physical names must be disjoint; optional
+postprocessing receives their combined dictionary. The NumPyro likelihood
+also accepts the existing configurable velocity-mean and observation-distribution
+hooks. Without postprocessing, construction checks required and supported
+physical names, exactly one of <code class="docutils literal notranslate"><span class="pre">q</span></code> and <code class="docutils literal notranslate"><span class="pre">q_projected</span></code>, and the parameter selected
+by a named <code class="docutils literal notranslate"><span class="pre">velocity_mean</span></code> (default <code class="docutils literal notranslate"><span class="pre">vmem_kms</span></code>). A callable mean does not require
+<code class="docutils literal notranslate"><span class="pre">vmem_kms</span></code>. With postprocessing, these checks apply to its output immediately
+before evaluating the forward model; construction does not execute callbacks or
+sample priors. Configuration errors raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>, while inadmissible
+physical proposals still receive log probability minus infinity.</p>
+<p>Its <code class="docutils literal notranslate"><span class="pre">sigma2_bounds</span></code> are rejection limits (default 1e-12 to 1e12 in
+(km/s)²); finite variances outside them are rejected, never clipped into range.</p>
+<p>Both inference paths reject inadmissible Jeans moments with log probability
+minus infinity. This is not a proof of a positive distribution function or of
+moment positivity at unobserved positions.</p>
+<p>Persisted analysis identity includes sky coordinates <strong>in both axes</strong>, velocity
+errors, priors and transformations, parameter order, fixed physical parameters,
+quadrature settings, source/dependency versions, and (for JAX) backend and
+precision. A different analysis is rejected before appending samples. Restore
+the original analysis or use a new output location. A missing NumPyro
+<code class="docutils literal notranslate"><span class="pre">metadata.json</span></code> never gets silently regenerated for an existing chain.</p>
+<p>The complete executable example samples scale radius, density, anisotropy,
+inclination and systemic velocity, writes posterior draws and J/D factors,
+and resumes when repeated with the same arguments:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/axisymmetric_inference.py<span class="w"> </span>--backend<span class="w"> </span>classical<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/axisym-emcee
+<span class="nv">JEANSPY_JAX_ENABLE_X64</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>python<span class="w"> </span>examples/axisymmetric_inference.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--backend<span class="w"> </span>numpyro<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/axisym-nuts
+</pre></div>
+</div>
+<p>Defaults use eight synthetic stars and short chains to exercise the workflow;
+convergence, coverage and scientific calibration are not established by this
+example. Increase warmup/draw counts and check diagnostics for an actual fit.
+Use the same warmup setting when resuming the classical example, since its
+stored warmup steps are explicitly discarded from the exported posterior.</p>
+</section>
+<section id="j-and-d-factors">
+<h2>J and D factors<a class="headerlink" href="#j-and-d-factors" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">J</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">jfactor</span><span class="p">(</span><span class="mf">80000.</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>  <span class="c1"># GeV^2 cm^-5</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dfactor</span><span class="p">(</span><span class="mf">80000.</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>  <span class="c1"># GeV cm^-2</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">roi_deg</span></code> is a <strong>circular cone half-angle in degrees</strong>, in [0,90). A finite
+<code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> must be supplied. The observer must lie outside a sphere enclosing the
+halo: <code class="docutils literal notranslate"><span class="pre">dist_pc</span> <span class="pre">&gt;</span> <span class="pre">r_t_pc</span> <span class="pre">*</span> <span class="pre">max(1,Q)</span></code>. J needs <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">&lt;</span> <span class="pre">1.5</span></code>; an integrated central
+aperture with a steeper annihilation cusp diverges and raises. No central core
+or artificial radius floor regularizes this divergence. D is finite over the
+supported density-slope domain.</p>
+<p>The implementation evaluates the exact observer integral</p>
+<div class="math notranslate nohighlight">
+\[
+F_p=\int_{\rm cone}\rho^p\,ds\,d\Omega
+   =\int_{\rm halo\cap cone}\frac{\rho^p}{s^2}\,d^3r,
+\qquad p=2\ (J),\quad p=1\ (D).
+\]</div>
+<p>Spheroidal volume coordinates have <code class="docutils literal notranslate"><span class="pre">d³r</span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">m²</span> <span class="pre">dm</span> <span class="pre">dmu</span> <span class="pre">dphi</span></code>. For a unit
+spheroidal direction with LOS component L and sky-plane length B, the cone
+bounds m by <code class="docutils literal notranslate"><span class="pre">m*(B*cos(theta)-L*sin(theta))</span> <span class="pre">&lt;=</span> <span class="pre">dist_pc*sin(theta)</span></code> and the
+observer distance is <code class="docutils literal notranslate"><span class="pre">s²</span> <span class="pre">=</span> <span class="pre">dist_pc²</span> <span class="pre">+</span> <span class="pre">2*dist_pc*m*L</span> <span class="pre">+</span> <span class="pre">m²*|e|²</span></code>.
+This retains finite-distance geometry and contributions from outer shells
+projected into the aperture. It does not replace the aperture by a sphere.</p>
+<p>Radial quadrature is cusp-regularized analytically and split at rs; angles use
+Gauss–Legendre and periodic azimuth quadrature. Expose accuracy with <code class="docutils literal notranslate"><span class="pre">n_mu</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_phi</span></code>, <code class="docutils literal notranslate"><span class="pre">n_radial</span></code> (defaults 96,96,128). The cone/cutoff intersection can
+require angular refinement. These settings are independent of the three Jeans
+quadrature orders. J/D evaluation is a NumPy postprocessing operation for
+chains from either backend, as in the spherical workflow.</p>
+</section>
+<section id="numerical-equations-and-validation">
+<h2>Numerical equations and validation<a class="headerlink" href="#numerical-equations-and-validation" title="Link to this heading">#</a></h2>
+<p>Writing <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">=</span> <span class="pre">nu*vz2</span></code>, the aligned Jeans equations are</p>
+<div class="math notranslate nohighlight">
+\[
+P(R,z)=\int_{|z|}^\infty \nu(R,z')\Phi_z(R,z')\,dz',\qquad
+v_R^2=\frac{P}{(1-\beta_z)\nu},\qquad
+\overline{v_\phi^2}=\frac{P+R P_R}{(1-\beta_z)\nu}+R\Phi_R.
+\]</div>
+<p>The homoeoidal force has <code class="docutils literal notranslate"><span class="pre">D(t)²=1+(Q²-1)t²</span></code>,
+<code class="docutils literal notranslate"><span class="pre">m(t)²=t²*(R²+z²/D(t)²)</span></code>, and</p>
+<div class="math notranslate nohighlight">
+\[
+\Phi_R=4\pi GQR\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)}\,dt,
+\qquad
+\Phi_z=4\pi GQz\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)^3}\,dt.
+\]</div>
+<p>Without a cutoff, t_max=1. Outside a finite halo, m(t_max)=r_t.
+The analytic radial derivative includes the moving endpoint contribution
+<code class="docutils literal notranslate"><span class="pre">integrand(t_max)*dt_max/dR</span></code>; omitting it would give incorrect azimuthal
+moments outside the cutoff. The pressure boundary condition is P -&gt; 0 at
+infinity, and stellar tracers continue outside the finite halo.</p>
+<p>Vertical and LOS integrals use fixed Gauss–Legendre nodes with rational
+infinity maps. LOS quadrature is centered at maximum tracer density. Defaults
+are 96 nodes per integral; numerical settings must be refined for the actual
+parameter regime, especially sharp truncation, extreme scale ratios/cusps,
+flattening and outer positions. There is no global adaptive accuracy guarantee.
+Cost grows approximately as <code class="docutils literal notranslate"><span class="pre">N_stars*n_force*n_vertical*n_los</span></code>. NumPy processes
+one sky position at a time; JAX uses <code class="docutils literal notranslate"><span class="pre">lax.map</span></code> and rematerialization to bound
+intermediate memory during parameter differentiation.</p>
+<p>The recorded <a class="reference external" href="https://github.com/gomeshun/jeanspy/blob/1a0ad4028d26af1df389ebdfdf992285ec50f8bb/validation/axisymmetric_runtime.json">CPU runtime sample</a>
+uses eight stars and float64. At 96 nodes per integral, one NumPy prediction
+took 1.54 s, a warm JAX prediction 0.105 s, and a warm gradient of the summed
+predictions with respect to all physical parameters 0.476 s. First calls,
+including compilation, are recorded separately. These are single-run timings
+for the stated parameters and machine, not an inference-throughput or accuracy
+guarantee. Reproduce the measurement with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JEANSPY_JAX_ENABLE_X64</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>python<span class="w"> </span>scripts/benchmark_axisymmetric.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output<span class="w"> </span>validation/axisymmetric_runtime.json
+</pre></div>
+</div>
+<p>Automated checks cover:</p>
+<ul class="simple">
+<li><p>Exact spherical Plummer intrinsic/LOS moments; existing spherical NFW Jeans
+and force limits, including finite truncation.</p></li>
+<li><p>Oblate/prolate Plummer projection and geometry; force parity, Poisson and
+Jeans equations, the cutoff derivative, and quadrature refinement.</p></li>
+<li><p>An independent flattened, face-on Plummer-tracer reference with analytic
+Plummer force and adaptive LOS integration.</p></li>
+<li><p>Matched NumPy/JAX values, all physical-parameter derivatives, finite-cutoff
+derivatives, cored-origin force gradients, invalid proposals, and float32.</p></li>
+<li><p>Explicit prior schemas, physical rejection, data replacement, emcee export,
+real NUTS/emcee restart, and rejection before changing stored samples.</p></li>
+<li><p>Exact finite-cone J/D geometry against independent observer-ray quadrature;
+the spherical J limit against <code class="docutils literal notranslate"><span class="pre">jfactor_ullio2016</span></code>, convergence and divergent
+central-cusp rejection.</p></li>
+</ul>
+<p>The independent <a class="reference external" href="https://github.com/gomeshun/jeanspy/blob/1a0ad4028d26af1df389ebdfdf992285ec50f8bb/validation/axisymmetric_jam_reference.json">JAM benchmark</a>
+records two oblate/prolate Zhao cases, all MGE coefficients, package versions,
+a kernel SHA256, effective calculation paths and numerical refinements.
+Reproduce it with the stored MGE coefficients:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/validate_axisymmetric_jam.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--reuse-mge<span class="w"> </span>validation/axisymmetric_jam_reference.json<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output<span class="w"> </span>/tmp/axisymmetric_jam_recheck.json
+</pre></div>
+</div>
+<p>Omit <code class="docutils literal notranslate"><span class="pre">--reuse-mge</span></code> to refit the MGE approximations with requested Gaussian
+budgets of 32 and 48. Nonnegative fitting can retain fewer components; the
+report records both the requested and retained counts. It stores both sets
+of coefficients so an integration recheck can hold the approximation fixed.</p>
+<p>It uses Cappellari (2008) equation (28) as implemented by jampy, independently
+of JeansPy’s three nested integrations. The JAM gravitational constant is
+explicitly converted to JeansPy’s constant. In the recorded run the maximum
+JeansPy/reference differences are 1.13e-5 and 2.87e-5 in second moments; MGE
+order refinement changes the reference by at most 7.75e-4. The declared
+agreement gate is 3e-3, accounting for the MGE approximation.</p>
+<p>In jampy 8.1.4, <code class="docutils literal notranslate"><span class="pre">interp=False</span></code> at the public entry point overrides
+<code class="docutils literal notranslate"><span class="pre">analytic_los=True</span></code> and selects numerical LOS integration with internally
+interpolated intrinsic moments. The analytic benchmark therefore requests
+<code class="docutils literal notranslate"><span class="pre">interp=True</span></code> and checks that the returned <code class="docutils literal notranslate"><span class="pre">vel2</span></code> tensor is <code class="docutils literal notranslate"><span class="pre">None</span></code>, confirming
+the analytic path. With these ten positions, no PSF or pixel averaging and
+<code class="docutils literal notranslate"><span class="pre">nrad*nang</span> <span class="pre">&gt;</span> <span class="pre">10</span></code>, that path evaluates each requested position directly rather
+than interpolating an output grid.</p>
+<p>The public analytic path agrees with the independently integrated kernel to
+7.39e-9 and 1.75e-10 in relative second moments. Direct calls to JAM’s standard
+<code class="docutils literal notranslate"><span class="pre">quad1d</span></code> and SciPy quadrature with explicit breakpoints in u confirm the
+log(u) integral. There is no evidence in these cases that JAM’s standard
+one-dimensional kernel quadrature fails to resolve the MGE.</p>
+<p>The report also retains the <code class="docutils literal notranslate"><span class="pre">interp=False</span></code> numerical-LOS results. At the
+default 20-by-10 intrinsic grid, their maximum differences are 1.27% and
+2.46%. Increasing only that grid to 40-by-20 reduces them to 0.233% and
+0.441%; using an 80-by-40 grid, 3000 LOS points and <code class="docutils literal notranslate"><span class="pre">epsrel=1e-6</span></code> reduces
+them to 0.0596% and 0.115%. This establishes resolution dependence in the
+numerical path, not a discrepancy in the analytic JAM equation. Those
+finite-grid residuals are not global error bounds.</p>
+<p>The two cases and ten positions do not establish an accuracy guarantee over
+all parameters. MGE approximation and JeansPy quadrature still need their own
+refinement checks. These JAM cases have no halo cutoff; finite-cutoff checks
+are covered by separate tests. The benchmark does not reproduce the Hayashi
+galaxy fits or establish coverage/calibration of a real-data inference.</p>
+<p>The <a class="reference external" href="https://github.com/gomeshun/jeanspy/blob/1a0ad4028d26af1df389ebdfdf992285ec50f8bb/validation/axisymmetric_workflow.md">workflow validation record</a>
+collects the integration-test results, persisted example runs and installed
+wheel/source-distribution checks.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="profiles.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tracers, halos and anisotropy</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="jax.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">JAX, precision and gradients</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#units-geometry-and-physical-parameters">Units, geometry and physical parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-apis">Forward APIs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-and-restart">Inference and restart</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#j-and-d-factors">J and D factors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-equations-and-validation">Numerical equations and validation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/guides/axisymmetric.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

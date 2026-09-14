@@ -1,0 +1,10 @@
+﻿jeanspy.sampler.Sampler
+=======================
+
+.. currentmodule:: jeanspy.sampler
+
+.. autoclass:: Sampler
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

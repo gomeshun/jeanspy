@@ -1,0 +1,20 @@
+NumPyro likelihoods, sampling and storage
+=========================================
+
+.. py:module:: jeanspy.sampler_numpyro
+
+.. currentmodule:: jeanspy.sampler_numpyro
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+   :toctree: generated
+
+   AxisymmetricJeansLikelihoodModel
+   JeansLikelihoodModel
+   NumPyroSampler
+   ParameterSpec
+   SamplerRunResult
+   StorageBackend
+

@@ -1,0 +1,6 @@
+﻿jeanspy.axisymmetric.InvalidAxisymmetricModelError
+==================================================
+
+.. currentmodule:: jeanspy.axisymmetric
+
+.. autoexception:: InvalidAxisymmetricModelError

@@ -1,0 +1,10 @@
+﻿jeanspy.model.PhotometryPriorModel
+==================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: PhotometryPriorModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

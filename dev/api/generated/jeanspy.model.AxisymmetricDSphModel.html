@@ -1,0 +1,964 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>jeanspy.model.AxisymmetricDSphModel &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/jeanspy.model.AxisymmetricDSphModel';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/api/generated/jeanspy.model.AxisymmetricDSphModel.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="jeanspy.model.AxisymmetricDSphEstimationModel" href="jeanspy.model.AxisymmetricDSphEstimationModel.html" />
+    <link rel="prev" title="jeanspy.model.get_default_estimation_model" href="jeanspy.model.get_default_estimation_model.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-14"/>
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Feature guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Analysis tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../validation/index.html">
+    Validation and reproducibility
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../comparison/index.html">
+    Related software and comparison questions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog.html">
+    Change history
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../development.html">
+    Building and maintaining the documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../model.html">Classical spherical models and convenience exports</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AnisotropyModel.html">jeanspy.model.AnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.html">jeanspy.model.BaesAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.C_J.html">jeanspy.model.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.html">jeanspy.model.ConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DMModel.html">jeanspy.model.DMModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DSphModel.html">jeanspy.model.DSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DotDict.html">jeanspy.model.DotDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Exp2dModel.html">jeanspy.model.Exp2dModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Exp3dModel.html">jeanspy.model.Exp3dModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FittableModel.html">jeanspy.model.FittableModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FlatPriorModel.html">jeanspy.model.FlatPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.GMsun_m3s2.html">jeanspy.model.GMsun_m3s2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Model.html">jeanspy.model.Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.NFWModel.html">jeanspy.model.NFWModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.html">jeanspy.model.OsipkovMerrittModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Parameters.html">jeanspy.model.Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.html">jeanspy.model.PhotometryPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PlummerModel.html">jeanspy.model.PlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SersicModel.html">jeanspy.model.SersicModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.html">jeanspy.model.SimpleDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.StellarModel.html">jeanspy.model.StellarModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Uniform2dModel.html">jeanspy.model.Uniform2dModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.ZhaoModel.html">jeanspy.model.ZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.get_default_estimation_model.html">jeanspy.model.get_default_estimation_model</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">jeanspy.model.AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.html">jeanspy.model.AxisymmetricDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.html">jeanspy.model.AxisymmetricKinematicData</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric.html">Axisymmetric components and NumPy forward model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../axisymmetric_inference.html">Axisymmetric observations and classical inference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../model_numpyro.html">Functional JAX spherical models and runtime configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.html">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.Model.html">jeanspy.model_numpyro.Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.html">jeanspy.model_numpyro.PlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.html">jeanspy.model_numpyro.ZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.html">jeanspy.model_numpyro.NFWModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.ConstantAnisotropyModel.html">jeanspy.model_numpyro.ConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.BaesAnisotropyModel.html">jeanspy.model_numpyro.BaesAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.OsipkovMerrittModel.html">jeanspy.model_numpyro.OsipkovMerrittModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.DSphModel.html">jeanspy.model_numpyro.DSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.configure_runtime.html">jeanspy.model_numpyro.configure_runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.get_runtime_config.html">jeanspy.model_numpyro.get_runtime_config</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../axisymmetric_numpyro.html">JAX axisymmetric forward model</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric_factors.html">Finite-cone NumPy J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.jfactor.html">jeanspy.axisymmetric_factors.jfactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.dfactor.html">jeanspy.axisymmetric_factors.dfactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_J.html">jeanspy.axisymmetric_factors.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_D.html">jeanspy.axisymmetric_factors.C_D</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../sampler.html">Classical emcee sampling and HDF5 storage</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler.Sampler.html">jeanspy.sampler.Sampler</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../sampler_numpyro.html">NumPyro likelihoods, sampling and storage</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.html">jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.JeansLikelihoodModel.html">jeanspy.sampler_numpyro.JeansLikelihoodModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.html">jeanspy.sampler_numpyro.NumPyroSampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.ParameterSpec.html">jeanspy.sampler_numpyro.ParameterSpec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.SamplerRunResult.html">jeanspy.sampler_numpyro.SamplerRunResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.StorageBackend.html">jeanspy.sampler_numpyro.StorageBackend</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../sersic.html">Spherical Sersic tracer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../baes_eta2.html">Specialized Baes anisotropy kernels</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.BaesEta2AnisotropyModel.html">jeanspy.baes_eta2.BaesEta2AnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html">jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_appell_reference.html">jeanspy.baes_eta2.baes_eta2_kernel_appell_reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_jax.html">jeanspy.baes_eta2.baes_eta2_kernel_jax</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../hyp2f1_jax.html">JAX hypergeometric numerical helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.GaussLegendre01.html">jeanspy.hyp2f1_jax.GaussLegendre01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.TanhSinh01.html">jeanspy.hyp2f1_jax.TanhSinh01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_d_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_d_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dequad.html">Double-exponential integration helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.hashable.html">jeanspy.dequad.hashable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.memorize.html">jeanspy.dequad.memorize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.generate_x_w.html">jeanspy.dequad.generate_x_w</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.dequad.html">jeanspy.dequad.dequad</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../model.html" class="nav-link">Classical spherical models and convenience exports</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">jeanspy.model.AxisymmetricDSphModel</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="jeanspy-model-axisymmetricdsphmodel">
+<h1>jeanspy.model.AxisymmetricDSphModel<a class="headerlink" href="#jeanspy-model-axisymmetricdsphmodel" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel"></span><span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">jeanspy.model.</span></span><span class="sig-name descname"><span class="pre">AxisymmetricDSphModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_los</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Parameter-dictionary forward API shared with the JAX backend.</p>
+<p>Required: re_pc, rs_pc, rhos_Msunpc3 and exactly one of q/q_projected.
+Optional: Q, alpha, beta, gamma, beta_z, inclination (radians).</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> params requires <code class="docutils literal notranslate"><span class="pre">re_pc</span></code>, <code class="docutils literal notranslate"><span class="pre">rs_pc</span></code> (pc),
+<code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span></code> (Msun/pc^3), and exactly one of q or <code class="docutils literal notranslate"><span class="pre">q_projected</span></code>.
+Optional Q, alpha, beta, gamma, <code class="docutils literal notranslate"><span class="pre">beta_z</span></code> and inclination (radians) have
+the defaults shown in the axisymmetric guide. <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> is a positive
+ellipsoidal cutoff (pc). Use alpha/beta/gamma; spherical a/b/g names are not
+accepted. Physical parameter dictionaries hold scalar values; radius arrays
+are broadcast independently. Use vmap to batch parameter dictionaries.
+Constructor node counts <code class="docutils literal notranslate"><span class="pre">n_force</span></code>/<code class="docutils literal notranslate"><span class="pre">n_vertical</span></code>/<code class="docutils literal notranslate"><span class="pre">n_los</span></code> are static
+integers &gt;=16.</p>
+<p><strong>Returns and shape.</strong> sigmalos2 and <code class="docutils literal notranslate"><span class="pre">intrinsic_moments</span></code> return (km/s)^2;
+<code class="docutils literal notranslate"><span class="pre">density_3d</span></code> is normalized pc^-3, <code class="docutils literal notranslate"><span class="pre">surface_density</span></code> pc^-2,
+<code class="docutils literal notranslate"><span class="pre">mass_density_3d</span></code> Msun/pc^3, <code class="docutils literal notranslate"><span class="pre">enclosed_mass</span></code> Msun inside an ellipsoid;
+<code class="docutils literal notranslate"><span class="pre">potential_gradient</span></code> is (km/s)^2/pc. Coordinates broadcast; intrinsic
+moments and forces are tuples of matching arrays.</p>
+<p><strong>Validity.</strong> Cylindrical alignment with constant <code class="docutils literal notranslate"><span class="pre">beta_z</span></code>; same physical
+restrictions as AxisymmetricJeans. Scalar sky inputs yield scalars; centers
+are allowed for projected moments.</p>
+<p><strong>Errors.</strong> Invalid schema/values raise ValueError; nonphysical moments
+raise InvalidAxisymmetricModelError.</p>
+<p><strong>Backend.</strong> NumPy/SciPy CPU.</p>
+<p><strong>Differentiation.</strong> No physical-parameter automatic differentiation on this
+API.</p>
+<p><strong>Examples.</strong> <code class="docutils literal notranslate"><span class="pre">examples/docs_axisymmetric.py</span></code>; <code class="docutils literal notranslate"><span class="pre">examples/docs_jax.py</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_force</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>n_vertical</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>n_los</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.n_force">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.n_force"></span><span class="sig-name descname"><span class="pre">n_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.n_force" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.n_vertical">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.n_vertical"></span><span class="sig-name descname"><span class="pre">n_vertical</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.n_vertical" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.n_los">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.n_los"></span><span class="sig-name descname"><span class="pre">n_los</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.n_los" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.sampling_identity">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.sampling_identity"></span><span class="sig-name descname"><span class="pre">sampling_identity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.sampling_identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.sampling_identity" title="Link to this definition">#</a></dt>
+<dd><p>Return the three fixed quadrature orders used to identify a sampling target.</p>
+<p>The host dictionary contains n_force, n_vertical and n_los. Physical
+parameters and observations are identified separately by the likelihood.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.sigmalos2">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.sigmalos2"></span><span class="sig-name descname"><span class="pre">sigmalos2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.sigmalos2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.sigmalos2" title="Link to this definition">#</a></dt>
+<dd><p>Project a cylindrically aligned second moment.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> Signed <code class="docutils literal notranslate"><span class="pre">x_pc</span></code>/<code class="docutils literal notranslate"><span class="pre">y_pc</span></code> in pc, broadcastable
+scalar/arrays; params is the explicit physical dictionary.</p>
+<p><strong>Returns and shape.</strong> LOS second moment in (km/s)^2 with the broadcast
+coordinate shape, including scalar output.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.intrinsic_moments">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.intrinsic_moments"></span><span class="sig-name descname"><span class="pre">intrinsic_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.intrinsic_moments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.intrinsic_moments" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the intrinsic Jeans second moments.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">R_pc</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code> and signed <code class="docutils literal notranslate"><span class="pre">z_pc</span></code> in pc, broadcastable;
+params supplies the physical dictionary.</p>
+<p><strong>Returns and shape.</strong> Tuple (vR2,vz2,vphi2), each in (km/s)^2 with the
+broadcast coordinate shape. vphi2 is the total azimuthal second moment; no
+rotation/dispersion split is assigned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.potential_gradient">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.potential_gradient"></span><span class="sig-name descname"><span class="pre">potential_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.potential_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.potential_gradient" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate derivatives of the gravitational potential.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">R_pc</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>, signed <code class="docutils literal notranslate"><span class="pre">z_pc</span></code> in pc and explicit
+params.</p>
+<p><strong>Returns and shape.</strong> Tuple (dPhi/dR,dPhi/dz) in (km/s)^2/pc; gravitational
+acceleration has the opposite sign.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.surface_density">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.surface_density"></span><span class="sig-name descname"><span class="pre">surface_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.surface_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.surface_density" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the projected spheroidal Plummer tracer.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> Signed <code class="docutils literal notranslate"><span class="pre">x_pc</span></code>/<code class="docutils literal notranslate"><span class="pre">y_pc</span></code> in pc and explicit params;
+coordinates broadcast.</p>
+<p><strong>Returns and shape.</strong> Normalized surface density in pc^-2 with the
+broadcast coordinate shape.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.density_3d">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.density_3d"></span><span class="sig-name descname"><span class="pre">density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.density_3d" title="Link to this definition">#</a></dt>
+<dd><p>Unit-normalized stellar density in pc^-3.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.mass_density_3d">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.mass_density_3d"></span><span class="sig-name descname"><span class="pre">mass_density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.mass_density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.mass_density_3d" title="Link to this definition">#</a></dt>
+<dd><p>Halo density in Msun pc^-3, including the optional ellipsoidal cutoff.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.enclosed_mass">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.enclosed_mass"></span><span class="sig-name descname"><span class="pre">enclosed_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.enclosed_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.enclosed_mass" title="Link to this definition">#</a></dt>
+<dd><p>Integrate mass inside a similar halo ellipsoid.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">m_pc</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code> is the ellipsoidal radius in pc; params
+supplies halo scales, slopes, Q and cutoff.</p>
+<p><strong>Returns and shape.</strong> Msun inside R^2+z^2/Q^2&lt;=``min(m_pc, r_t_pc)``^2,
+matching <code class="docutils literal notranslate"><span class="pre">m_pc</span></code> shape.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.jfactor">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.jfactor"></span><span class="sig-name descname"><span class="pre">jfactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_deg</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">quadrature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.jfactor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.jfactor" title="Link to this definition">#</a></dt>
+<dd><p>Postprocess an axisymmetric finite-cone factor.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> Scalar <code class="docutils literal notranslate"><span class="pre">dist_pc</span></code> and <code class="docutils literal notranslate"><span class="pre">roi_deg</span></code>; params specifies
+halo, inclination and finite <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>; <code class="docutils literal notranslate"><span class="pre">n_mu</span></code>/<code class="docutils literal notranslate"><span class="pre">n_phi</span></code>/<code class="docutils literal notranslate"><span class="pre">n_radial</span></code> set
+independent factor quadratures, all &gt;=16.</p>
+<p><strong>Returns and shape.</strong> Python float in GeV^2 cm^-5.</p>
+<p><strong>Validity.</strong> Require explicit finite <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>, observer distance &gt;
+<code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>*max(1,Q), <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">roi_deg</span> <span class="pre">&lt;</span> <span class="pre">90</span></code> and gamma&lt;1.5 (finite central
+annihilation integral). <code class="docutils literal notranslate"><span class="pre">n_phi</span></code> uses a periodic rule; refine all orders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricDSphModel.dfactor">
+<span id="jeanspy.axisymmetric.AxisymmetricDSphModel.dfactor"></span><span class="sig-name descname"><span class="pre">dfactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_deg</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">quadrature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricDSphModel.dfactor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricDSphModel.dfactor" title="Link to this definition">#</a></dt>
+<dd><p>Postprocess an axisymmetric finite-cone factor.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> Scalar <code class="docutils literal notranslate"><span class="pre">dist_pc</span></code> and <code class="docutils literal notranslate"><span class="pre">roi_deg</span></code>; params specifies
+halo, inclination and finite <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>; <code class="docutils literal notranslate"><span class="pre">n_mu</span></code>/<code class="docutils literal notranslate"><span class="pre">n_phi</span></code>/<code class="docutils literal notranslate"><span class="pre">n_radial</span></code> set
+independent factor quadratures, all &gt;=16.</p>
+<p><strong>Returns and shape.</strong> Python float in GeV cm^-2.</p>
+<p><strong>Validity.</strong> Require explicit finite <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>, observer distance &gt;
+<code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>*max(1,Q), <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">roi_deg</span> <span class="pre">&lt;</span> <span class="pre">90</span></code> and gamma&lt;2 under the ZhaoHalo
+constructor domain. <code class="docutils literal notranslate"><span class="pre">n_phi</span></code> uses a periodic rule; refine all orders.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="jeanspy.model.get_default_estimation_model.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">jeanspy.model.get_default_estimation_model</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="jeanspy.model.AxisymmetricDSphEstimationModel.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">jeanspy.model.AxisymmetricDSphEstimationModel</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.n_force"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.n_force</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.n_vertical"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.n_vertical</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.n_los"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.n_los</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.sampling_identity"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.sampling_identity()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.sigmalos2"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.sigmalos2()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.intrinsic_moments"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.intrinsic_moments()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.potential_gradient"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.potential_gradient()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.surface_density"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.surface_density()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.density_3d"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.density_3d()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.mass_density_3d"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.mass_density_3d()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.enclosed_mass"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.enclosed_mass()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.jfactor"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.jfactor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricDSphModel.dfactor"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.dfactor()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/api/generated/jeanspy.model.AxisymmetricDSphModel.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
