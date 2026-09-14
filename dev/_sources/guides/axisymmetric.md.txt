@@ -1,11 +1,13 @@
 # Axisymmetric Jeans modeling and inference
 
-JeansPy supports the stationary, cylindrically aligned, nonrotating model in
-[Hayashi & Chiba (2015)](https://arxiv.org/abs/1507.07620), equations 1–5, and
-[Hayashi et al. (2016)](https://arxiv.org/abs/1603.08046), equations 3–16.
+JeansPy solves the stationary, cylindrically aligned Jeans equations with
+constant meridional anisotropy. The general anisotropic closure follows
+Cappellari (2008), while the spheroidal dwarf-galaxy models follow
+Hayashi & Chiba (2012, 2015) and Hayashi et al. (2016). See
+[References](https://gomeshun.github.io/jeanspy/dev/references.html#references-jeans-equations-and-axisymmetric-dynamics)
+for the foundational equations, earlier axisymmetric models and applications.
 Stellar and halo axes coincide, mixed velocity moments vanish, and
-`beta_z = 1 - <vz²>/<vR²>` is constant. These assumptions define this extension
-of [issue #52](https://github.com/gomeshun/jeanspy/issues/52).
+`beta_z = 1 - <vz²>/<vR²>` is constant.
 
 | Capability | NumPy/SciPy | JAX/NumPyro |
 | --- | --- | --- |
@@ -70,20 +72,43 @@ saturates outside r_t. The Hayashi 2015 halo uses `alpha=2, beta=3` and
 
 ## Forward APIs
 
+As with spherical models, select a stellar profile, a dark-matter halo and an
+anisotropy model. The NumPy/SciPy components store their physical parameters:
+
 ```python
 import numpy as np
-from jeanspy.model import AxisymmetricDSphModel
+from jeanspy.model import (
+    AxisymmetricDSphModel, AxisymmetricPlummerModel,
+    AxisymmetricZhaoModel, AxisymmetricConstantAnisotropyModel,
+)
+from jeanspy.axisymmetric import intrinsic_axis_ratio
 
-params = dict(re_pc=300., rs_pc=500., rhos_Msunpc3=.1,
-              q_projected=.8, Q=.7, alpha=2., beta=3., gamma=.8,
-              beta_z=-.3, inclination=np.deg2rad(70), r_t_pc=3000.)
-model = AxisymmetricDSphModel(n_force=96, n_vertical=96, n_los=96)
+inclination = np.deg2rad(70)
+model = AxisymmetricDSphModel(
+    submodels={
+        "StellarModel": AxisymmetricPlummerModel(
+            re_pc=300., q=intrinsic_axis_ratio(.8, inclination)),
+        "DMModel": AxisymmetricZhaoModel(
+            rs_pc=500., rhos_Msunpc3=.1, Q=.7,
+            alpha=2., beta=3., gamma=.8, r_t_pc=3000.),
+        "AnisotropyModel": AxisymmetricConstantAnisotropyModel(beta_z=-.3),
+    },
+    inclination=inclination, n_force=96, n_vertical=96, n_los=96,
+)
 radius = np.array([0., 100., 300., 900.])
-major_sigma = np.sqrt(model.sigmalos2(radius, 0., params=params))
-minor_sigma = np.sqrt(model.sigmalos2(0., radius, params=params))
-vR2, vz2, vphi2 = model.intrinsic_moments(100., 50., params=params)
-gR, gz = model.potential_gradient(100., 50., params=params)
+major_sigma = np.sqrt(model.sigmalos2(radius, 0.))
+minor_sigma = np.sqrt(model.sigmalos2(0., radius))
+vR2, vz2, vphi2 = model.intrinsic_moments(100., 50.)
+gR, gz = model.potential_gradient(100., 50.)
+tracer_density = model["StellarModel"].density_3d(100., 50.)
+halo_density = model["DMModel"].mass_density_3d(100., 50.)
 ```
+
+`AxisymmetricStellarModel`, `AxisymmetricDMModel` and
+`AxisymmetricAnisotropyModel` define the component interfaces. The current
+solver supports the Plummer, Zhao and constant-anisotropy families shown above.
+Their parameters use the same units as the spherical components. The Zhao
+exponents retain the names `alpha`, `beta`, `gamma` in this axisymmetric API.
 
 The force method returns the **potential gradient**, opposite to gravitational
 acceleration. Exact cusp-origin force evaluation is undefined in this API;
@@ -92,34 +117,42 @@ are supported. Intrinsic moments are ordered `(vR2, vz2, vphi2)`. These and LOS
 outputs are second moments, equal to dispersion squared under the zero
 streaming assumption used by the likelihood.
 
-The component API from PR #63 also remains available:
+The components and forward configuration are immutable; use
+`dataclasses.replace` to construct changed components or quadrature settings.
+A per-call `params` dictionary overrides stored values without changing the
+model. `model.physical_params` returns a detached dictionary of all stored
+physical values. Supplying `q_projected` as an override replaces the stored
+intrinsic `q` and applies the same deprojection rule.
 
-```python
-from jeanspy.axisymmetric import AxisymmetricJeans, PlummerTracer, ZhaoHalo
+NumPy raises `InvalidAxisymmetricModelError` (a `ValueError`) for inadmissible
+physical parameters or negative/nonfinite intrinsic moments.
 
-forward = AxisymmetricJeans(
-    PlummerTracer(a_pc=300., q=.65),
-    ZhaoHalo(rho_s=.1, r_s=500., Q=.7, r_t_pc=3000.),
-    beta_z=-.3, inclination=1.1,
-)
-value = forward.los_second_moment(100., 50.)
-```
-
-Both forward configurations are immutable; use `dataclasses.replace` for
-changes. NumPy raises `InvalidAxisymmetricModelError` (a `ValueError`) for
-inadmissible physical parameters or negative/nonfinite intrinsic moments.
-
-The corresponding JAX API accepts the same physical dictionary:
+JAX uses the same component hierarchy, with physical parameters passed at
+evaluation time, as in the spherical JAX API:
 
 ```python
 # Configure JEANSPY_JAX_ENABLE_X64=true before starting Python for float64.
+from jeanspy.model_numpyro import (
+    AxisymmetricDSphModel as JaxAxisymmetricModel,
+    AxisymmetricPlummerModel as JaxPlummerModel,
+    AxisymmetricZhaoModel as JaxZhaoModel,
+    AxisymmetricConstantAnisotropyModel as JaxAnisotropyModel,
+)
 import jax
-from jeanspy.model_numpyro import AxisymmetricDSphModel as JaxAxisymmetricModel
 
-jax_model = JaxAxisymmetricModel(48, 48, 48)
+jax_model = JaxAxisymmetricModel(
+    submodels={
+        "StellarModel": JaxPlummerModel(),
+        "DMModel": JaxZhaoModel(),
+        "AnisotropyModel": JaxAnisotropyModel(),
+    }, n_force=48, n_vertical=48, n_los=48,
+)
+params = model.physical_params
 value = jax_model.sigmalos2(100., 50., params=params)
 derivative = jax.grad(lambda rho: jax_model.sigmalos2(
     100., 50., params={**params, "rhos_Msunpc3": rho}))(.1)
+tracer_density = jax_model["StellarModel"].density_3d(
+    100., 50., params={"re_pc": 300., "q": .7})
 ```
 
 It uses JAX operations throughout, with no SciPy callbacks. Invalid dynamic
@@ -161,8 +194,8 @@ prior = pd.DataFrame({"lower": [-1.5, -30.], "upper": [-.5, 30.]},
 fixed = {name: value for name, value in params.items() if name != "rhos_Msunpc3"}
 data = dict(x_pc=[30., -100., 300.], y_pc=[20., 70., -50.],
             vlos_kms=[1., -3., 5.], e_vlos_kms=[2., 2., 1.])
-fit = AxisymmetricDSphEstimationModel(data, prior, fixed_params=fixed,
-                                     dsph_model=model)
+# Stored components supply values for physical parameters not sampled here.
+fit = AxisymmetricDSphEstimationModel(data, prior, dsph_model=model)
 sampler = Sampler(fit, fit.sample, nwalkers=6, prefix="axisymmetric_")
 # sampler.run_mcmc(iterations=100, loops=1)
 ```

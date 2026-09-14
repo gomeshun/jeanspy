@@ -1,0 +1,12 @@
+Stored chain shape: (384, 16, 4)
+Warmup discarded: 128
+Original stored draws preserved: True
+Mean acceptance fraction: 0.544
+Parameter                 16%      50%      84%
+log10_rs_pc                 2.779    2.967    3.108
+log10_rhos_Msunpc3         -1.525   -1.341   -1.120
+beta_ani                   -0.205    0.177    0.399
+vmem_kms                   -1.753   -0.433    1.004
+Short-run autocorrelation-time estimates:
+[16.6 17.3 17.9 18.8]
+Walkers interact: no R-hat from this single ensemble.

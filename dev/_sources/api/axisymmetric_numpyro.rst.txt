@@ -12,3 +12,9 @@ Aliases
 -------
 
 * ``jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel`` is :py:obj:`jeanspy.model_numpyro.AxisymmetricDSphModel`.
+* ``jeanspy.axisymmetric_numpyro.AxisymmetricPlummerModel`` is :py:obj:`jeanspy.model_numpyro.AxisymmetricPlummerModel`.
+* ``jeanspy.axisymmetric_numpyro.AxisymmetricZhaoModel`` is :py:obj:`jeanspy.model_numpyro.AxisymmetricZhaoModel`.
+* ``jeanspy.axisymmetric_numpyro.AxisymmetricConstantAnisotropyModel`` is :py:obj:`jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel`.
+* ``jeanspy.axisymmetric_numpyro.AxisymmetricStellarModel`` is :py:obj:`jeanspy.model.AxisymmetricStellarModel`.
+* ``jeanspy.axisymmetric_numpyro.AxisymmetricDMModel`` is :py:obj:`jeanspy.model.AxisymmetricDMModel`.
+* ``jeanspy.axisymmetric_numpyro.AxisymmetricAnisotropyModel`` is :py:obj:`jeanspy.model.AxisymmetricAnisotropyModel`.

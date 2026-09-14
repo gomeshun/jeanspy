@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="../_static/documentation_options.js?v=01f34227"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guides/axisymmetric';</script>
@@ -465,7 +467,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical accuracy</a></li>
 </ul>
 </div>
 </nav></div>
@@ -528,12 +530,14 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="axisymmetric-jeans-modeling-and-inference">
 <h1>Axisymmetric Jeans modeling and inference<a class="headerlink" href="#axisymmetric-jeans-modeling-and-inference" title="Link to this heading">#</a></h1>
-<p>JeansPy supports the stationary, cylindrically aligned, nonrotating model in
-<a class="reference external" href="https://arxiv.org/abs/1507.07620">Hayashi &amp; Chiba (2015)</a>, equations 1–5, and
-<a class="reference external" href="https://arxiv.org/abs/1603.08046">Hayashi et al. (2016)</a>, equations 3–16.
+<p>JeansPy solves the stationary, cylindrically aligned Jeans equations with
+constant meridional anisotropy. The general anisotropic closure follows
+Cappellari (2008), while the spheroidal dwarf-galaxy models follow
+Hayashi &amp; Chiba (2012, 2015) and Hayashi et al. (2016). See
+<a class="reference external" href="https://gomeshun.github.io/jeanspy/dev/references.html#references-jeans-equations-and-axisymmetric-dynamics">References</a>
+for the foundational equations, earlier axisymmetric models and applications.
 Stellar and halo axes coincide, mixed velocity moments vanish, and
-<code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">&lt;vz²&gt;/&lt;vR²&gt;</span></code> is constant. These assumptions define this extension
-of <a class="reference external" href="https://github.com/gomeshun/jeanspy/issues/52">issue #52</a>.</p>
+<code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">&lt;vz²&gt;/&lt;vR²&gt;</span></code> is constant.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Capability</p></th>
@@ -649,49 +653,79 @@ saturates outside r_t. The Hayashi 2015 halo uses <code class="docutils literal 
 </section>
 <section id="forward-apis">
 <h2>Forward APIs<a class="headerlink" href="#forward-apis" title="Link to this heading">#</a></h2>
+<p>As with spherical models, select a stellar profile, a dark-matter halo and an
+anisotropy model. The NumPy/SciPy components store their physical parameters:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AxisymmetricDSphModel</span><span class="p">,</span> <span class="n">AxisymmetricPlummerModel</span><span class="p">,</span>
+    <span class="n">AxisymmetricZhaoModel</span><span class="p">,</span> <span class="n">AxisymmetricConstantAnisotropyModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">intrinsic_axis_ratio</span>
 
-<span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-              <span class="n">q_projected</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span>
-              <span class="n">beta_z</span><span class="o">=-</span><span class="mf">.3</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">70</span><span class="p">),</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">3000.</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">AxisymmetricDSphModel</span><span class="p">(</span><span class="n">n_force</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="mi">96</span><span class="p">)</span>
+<span class="n">inclination</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">AxisymmetricDSphModel</span><span class="p">(</span>
+    <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">AxisymmetricPlummerModel</span><span class="p">(</span>
+            <span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">intrinsic_axis_ratio</span><span class="p">(</span><span class="mf">.8</span><span class="p">,</span> <span class="n">inclination</span><span class="p">)),</span>
+        <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">AxisymmetricZhaoModel</span><span class="p">(</span>
+            <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">3000.</span><span class="p">),</span>
+        <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">AxisymmetricConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_z</span><span class="o">=-</span><span class="mf">.3</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">inclination</span><span class="o">=</span><span class="n">inclination</span><span class="p">,</span> <span class="n">n_force</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">,</span> <span class="mf">900.</span><span class="p">])</span>
-<span class="n">major_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span>
-<span class="n">minor_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span>
-<span class="n">vR2</span><span class="p">,</span> <span class="n">vz2</span><span class="p">,</span> <span class="n">vphi2</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">intrinsic_moments</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-<span class="n">gR</span><span class="p">,</span> <span class="n">gz</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">potential_gradient</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="n">major_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+<span class="n">minor_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+<span class="n">vR2</span><span class="p">,</span> <span class="n">vz2</span><span class="p">,</span> <span class="n">vphi2</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">intrinsic_moments</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
+<span class="n">gR</span><span class="p">,</span> <span class="n">gz</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">potential_gradient</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
+<span class="n">tracer_density</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">"StellarModel"</span><span class="p">]</span><span class="o">.</span><span class="n">density_3d</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
+<span class="n">halo_density</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">"DMModel"</span><span class="p">]</span><span class="o">.</span><span class="n">mass_density_3d</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">AxisymmetricStellarModel</span></code>, <code class="docutils literal notranslate"><span class="pre">AxisymmetricDMModel</span></code> and
+<code class="docutils literal notranslate"><span class="pre">AxisymmetricAnisotropyModel</span></code> define the component interfaces. The current
+solver supports the Plummer, Zhao and constant-anisotropy families shown above.
+Their parameters use the same units as the spherical components. The Zhao
+exponents retain the names <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code> in this axisymmetric API.</p>
 <p>The force method returns the <strong>potential gradient</strong>, opposite to gravitational
 acceleration. Exact cusp-origin force evaluation is undefined in this API;
 cored-origin force, intrinsic central moments and projected central moments
 are supported. Intrinsic moments are ordered <code class="docutils literal notranslate"><span class="pre">(vR2,</span> <span class="pre">vz2,</span> <span class="pre">vphi2)</span></code>. These and LOS
 outputs are second moments, equal to dispersion squared under the zero
 streaming assumption used by the likelihood.</p>
-<p>The component API from PR #63 also remains available:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricJeans</span><span class="p">,</span> <span class="n">PlummerTracer</span><span class="p">,</span> <span class="n">ZhaoHalo</span>
-
-<span class="n">forward</span> <span class="o">=</span> <span class="n">AxisymmetricJeans</span><span class="p">(</span>
-    <span class="n">PlummerTracer</span><span class="p">(</span><span class="n">a_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mf">.65</span><span class="p">),</span>
-    <span class="n">ZhaoHalo</span><span class="p">(</span><span class="n">rho_s</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_s</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">3000.</span><span class="p">),</span>
-    <span class="n">beta_z</span><span class="o">=-</span><span class="mf">.3</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">value</span> <span class="o">=</span> <span class="n">forward</span><span class="o">.</span><span class="n">los_second_moment</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Both forward configurations are immutable; use <code class="docutils literal notranslate"><span class="pre">dataclasses.replace</span></code> for
-changes. NumPy raises <code class="docutils literal notranslate"><span class="pre">InvalidAxisymmetricModelError</span></code> (a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>) for
-inadmissible physical parameters or negative/nonfinite intrinsic moments.</p>
-<p>The corresponding JAX API accepts the same physical dictionary:</p>
+<p>The components and forward configuration are immutable; use
+<code class="docutils literal notranslate"><span class="pre">dataclasses.replace</span></code> to construct changed components or quadrature settings.
+A per-call <code class="docutils literal notranslate"><span class="pre">params</span></code> dictionary overrides stored values without changing the
+model. <code class="docutils literal notranslate"><span class="pre">model.physical_params</span></code> returns a detached dictionary of all stored
+physical values. Supplying <code class="docutils literal notranslate"><span class="pre">q_projected</span></code> as an override replaces the stored
+intrinsic <code class="docutils literal notranslate"><span class="pre">q</span></code> and applies the same deprojection rule.</p>
+<p>NumPy raises <code class="docutils literal notranslate"><span class="pre">InvalidAxisymmetricModelError</span></code> (a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>) for inadmissible
+physical parameters or negative/nonfinite intrinsic moments.</p>
+<p>JAX uses the same component hierarchy, with physical parameters passed at
+evaluation time, as in the spherical JAX API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Configure JEANSPY_JAX_ENABLE_X64=true before starting Python for float64.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AxisymmetricDSphModel</span> <span class="k">as</span> <span class="n">JaxAxisymmetricModel</span><span class="p">,</span>
+    <span class="n">AxisymmetricPlummerModel</span> <span class="k">as</span> <span class="n">JaxPlummerModel</span><span class="p">,</span>
+    <span class="n">AxisymmetricZhaoModel</span> <span class="k">as</span> <span class="n">JaxZhaoModel</span><span class="p">,</span>
+    <span class="n">AxisymmetricConstantAnisotropyModel</span> <span class="k">as</span> <span class="n">JaxAnisotropyModel</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphModel</span> <span class="k">as</span> <span class="n">JaxAxisymmetricModel</span>
 
-<span class="n">jax_model</span> <span class="o">=</span> <span class="n">JaxAxisymmetricModel</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+<span class="n">jax_model</span> <span class="o">=</span> <span class="n">JaxAxisymmetricModel</span><span class="p">(</span>
+    <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">JaxPlummerModel</span><span class="p">(),</span>
+        <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">JaxZhaoModel</span><span class="p">(),</span>
+        <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">JaxAnisotropyModel</span><span class="p">(),</span>
+    <span class="p">},</span> <span class="n">n_force</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">physical_params</span>
 <span class="n">value</span> <span class="o">=</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
 <span class="n">derivative</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">rho</span><span class="p">:</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span>
     <span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">:</span> <span class="n">rho</span><span class="p">}))(</span><span class="mf">.1</span><span class="p">)</span>
+<span class="n">tracer_density</span> <span class="o">=</span> <span class="n">jax_model</span><span class="p">[</span><span class="s2">"StellarModel"</span><span class="p">]</span><span class="o">.</span><span class="n">density_3d</span><span class="p">(</span>
+    <span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"re_pc"</span><span class="p">:</span> <span class="mf">300.</span><span class="p">,</span> <span class="s2">"q"</span><span class="p">:</span> <span class="mf">.7</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>It uses JAX operations throughout, with no SciPy callbacks. Invalid dynamic
@@ -729,8 +763,8 @@ Jacobian is added: the prior is defined in the named sampling coordinate.</p>
 <span class="n">fixed</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">}</span>
 <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x_pc</span><span class="o">=</span><span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="o">-</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">],</span> <span class="n">y_pc</span><span class="o">=</span><span class="p">[</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">70.</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.</span><span class="p">],</span>
             <span class="n">vlos_kms</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
-<span class="n">fit</span> <span class="o">=</span> <span class="n">AxisymmetricDSphEstimationModel</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">fixed_params</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span>
-                                     <span class="n">dsph_model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+<span class="c1"># Stored components supply values for physical parameters not sampled here.</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">AxisymmetricDSphEstimationModel</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">dsph_model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">"axisymmetric_"</span><span class="p">)</span>
 <span class="c1"># sampler.run_mcmc(iterations=100, loops=1)</span>
 </pre></div>

@@ -1,23 +1,24 @@
 # API reference
 
-This inventory is generated from the checked-out public modules.
-Each entry exposes its real signature and source documentation; aliases
-link to the same underlying object. See the [units and shape contract](../guides/contracts.md)
-and the [executable examples](../quickstart.md).
+Choose a category, then the NumPy/SciPy or JAX implementation.
+
+| Category | Contents |
+| --- | --- |
+| [Core utilities](core) | Units, parameter containers, runtime settings and numerical helpers |
+| [Spherical models](spherical) | Stellar profiles, dark-matter halos, anisotropy and Jeans solvers |
+| [Axisymmetric models](axisymmetric-models) | Flattened components, projection, Jeans solvers and J/D factors |
+| [Statistical inference](inference) | Observations, priors, likelihoods, MCMC and storage |
+
+See also the [units and shape contract](../guides/contracts.md) and
+[Quickstart](../quickstart.md). [Browse by import module](modules).
 
 ```{toctree}
-:maxdepth: 1
+:hidden:
+:maxdepth: 2
 
-model
-axisymmetric
-axisymmetric_inference
-model_numpyro
-axisymmetric_numpyro
-axisymmetric_factors
-sampler
-sampler_numpyro
-sersic
-baes_eta2
-hyp2f1_jax
-dequad
+core
+spherical
+axisymmetric-models
+inference
+modules
 ```

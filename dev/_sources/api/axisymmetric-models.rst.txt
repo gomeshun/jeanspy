@@ -1,0 +1,48 @@
+Axisymmetric models
+===================
+
+NumPy/SciPy
+-----------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.model.AxisymmetricDSphModel
+   jeanspy.model.AxisymmetricPlummerModel
+   jeanspy.model.AxisymmetricZhaoModel
+   jeanspy.model.AxisymmetricConstantAnisotropyModel
+   jeanspy.model.AxisymmetricStellarModel
+   jeanspy.model.AxisymmetricDMModel
+   jeanspy.model.AxisymmetricAnisotropyModel
+
+Axisymmetric components and NumPy forward model
+-----------------------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.axisymmetric.AxisymmetricJeans
+   jeanspy.axisymmetric.PlummerTracer
+   jeanspy.axisymmetric.ZhaoHalo
+   jeanspy.axisymmetric.intrinsic_axis_ratio
+   jeanspy.axisymmetric.InvalidAxisymmetricModelError
+
+JAX
+---
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.model_numpyro.AxisymmetricDSphModel
+   jeanspy.model_numpyro.AxisymmetricPlummerModel
+   jeanspy.model_numpyro.AxisymmetricZhaoModel
+   jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel
+
+Finite-cone NumPy J and D factors
+---------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.axisymmetric_factors.jfactor
+   jeanspy.axisymmetric_factors.dfactor

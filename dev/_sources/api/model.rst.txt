@@ -1,5 +1,5 @@
-Classical spherical models and convenience exports
-==================================================
+NumPy/SciPy
+===========
 
 .. py:module:: jeanspy.model
 
@@ -9,7 +9,6 @@ See :doc:`../guides/contracts` for units, shapes, domains and backend
 boundaries, and :doc:`../quickstart` for executable minimal examples.
 
 .. autosummary::
-   :toctree: generated
 
    AnisotropyModel
    BaesAnisotropyModel
@@ -38,4 +37,10 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
    AxisymmetricDSphModel
    AxisymmetricDSphEstimationModel
    AxisymmetricKinematicData
+   AxisymmetricPlummerModel
+   AxisymmetricZhaoModel
+   AxisymmetricConstantAnisotropyModel
+   AxisymmetricStellarModel
+   AxisymmetricDMModel
+   AxisymmetricAnisotropyModel
 

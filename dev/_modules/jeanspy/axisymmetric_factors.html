@@ -30,6 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -41,6 +42,7 @@
     <script src="../../_static/documentation_options.js?v=01f34227"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/jeanspy/axisymmetric_factors';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -503,7 +505,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">parsec</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._classical.jfactor</span><span class="w"> </span><span class="kn">import</span> <span class="n">C_J</span><span class="p">,</span> <span class="n">kg_eV</span><span class="p">,</span> <span class="n">solar_mass_kg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZhaoHalo</span><span class="p">,</span> <span class="n">_inclination</span><span class="p">,</span> <span class="n">_positive</span><span class="p">,</span> <span class="n">_rule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricZhaoModel</span><span class="p">,</span> <span class="n">_inclination</span><span class="p">,</span> <span class="n">_positive</span><span class="p">,</span> <span class="n">_rule</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"jfactor"</span><span class="p">,</span> <span class="s2">"dfactor"</span><span class="p">,</span> <span class="s2">"C_J"</span><span class="p">,</span> <span class="s2">"C_D"</span><span class="p">]</span>
 
@@ -515,8 +517,8 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_factor</span><span class="p">(</span><span class="n">halo</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">,</span> <span class="n">inclination</span><span class="p">,</span> <span class="n">power</span><span class="p">,</span> <span class="n">n_mu</span><span class="p">,</span> <span class="n">n_phi</span><span class="p">,</span> <span class="n">n_radial</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">halo</span><span class="p">,</span> <span class="n">ZhaoHalo</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"halo must be a ZhaoHalo"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">halo</span><span class="p">,</span> <span class="n">AxisymmetricZhaoModel</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"halo must be an AxisymmetricZhaoModel"</span><span class="p">)</span>
     <span class="n">_positive</span><span class="p">(</span><span class="s2">"dist_pc"</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">)</span>
     <span class="n">_inclination</span><span class="p">(</span><span class="n">inclination</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">roi_deg</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">roi_deg</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">:</span>

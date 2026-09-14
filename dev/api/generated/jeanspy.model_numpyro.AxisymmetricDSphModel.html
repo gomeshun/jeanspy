@@ -31,6 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="../../_static/documentation_options.js?v=01f34227"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -54,8 +56,8 @@
     <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="jeanspy.model_numpyro.Model" href="jeanspy.model_numpyro.Model.html" />
-    <link rel="prev" title="Functional JAX spherical models and runtime configuration" href="../model_numpyro.html" />
+    <link rel="next" title="jeanspy.model_numpyro.AxisymmetricPlummerModel" href="jeanspy.model_numpyro.AxisymmetricPlummerModel.html" />
+    <link rel="prev" title="jeanspy.axisymmetric.InvalidAxisymmetricModelError" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
@@ -454,48 +456,45 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../model.html">Classical spherical models and convenience exports</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core.html">Core utilities</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.C_J.html">jeanspy.model.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DotDict.html">jeanspy.model.DotDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.GMsun_m3s2.html">jeanspy.model.GMsun_m3s2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Model.html">jeanspy.model.Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Parameters.html">jeanspy.model.Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.Model.html">jeanspy.model_numpyro.Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.configure_runtime.html">jeanspy.model_numpyro.configure_runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.get_runtime_config.html">jeanspy.model_numpyro.get_runtime_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_J.html">jeanspy.axisymmetric_factors.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_D.html">jeanspy.axisymmetric_factors.C_D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.GaussLegendre01.html">jeanspy.hyp2f1_jax.GaussLegendre01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.TanhSinh01.html">jeanspy.hyp2f1_jax.TanhSinh01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_d_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_d_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.hashable.html">jeanspy.dequad.hashable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.memorize.html">jeanspy.dequad.memorize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.generate_x_w.html">jeanspy.dequad.generate_x_w</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.dequad.html">jeanspy.dequad.dequad</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../spherical.html">Spherical models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AnisotropyModel.html">jeanspy.model.AnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.html">jeanspy.model.BaesAnisotropyModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.C_J.html">jeanspy.model.C_J</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.html">jeanspy.model.ConstantAnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DMModel.html">jeanspy.model.DMModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DSphModel.html">jeanspy.model.DSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DotDict.html">jeanspy.model.DotDict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Exp2dModel.html">jeanspy.model.Exp2dModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Exp3dModel.html">jeanspy.model.Exp3dModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FittableModel.html">jeanspy.model.FittableModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FlatPriorModel.html">jeanspy.model.FlatPriorModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.GMsun_m3s2.html">jeanspy.model.GMsun_m3s2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Model.html">jeanspy.model.Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.NFWModel.html">jeanspy.model.NFWModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.html">jeanspy.model.OsipkovMerrittModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Parameters.html">jeanspy.model.Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.html">jeanspy.model.PhotometryPriorModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PlummerModel.html">jeanspy.model.PlummerModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SersicModel.html">jeanspy.model.SersicModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.html">jeanspy.model.SimpleDSphEstimationModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.StellarModel.html">jeanspy.model.StellarModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Uniform2dModel.html">jeanspy.model.Uniform2dModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.ZhaoModel.html">jeanspy.model.ZhaoModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.get_default_estimation_model.html">jeanspy.model.get_default_estimation_model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.html">jeanspy.model.AxisymmetricDSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.html">jeanspy.model.AxisymmetricDSphEstimationModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.html">jeanspy.model.AxisymmetricKinematicData</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric.html">Axisymmetric components and NumPy forward model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference internal" href="../axisymmetric_inference.html">Axisymmetric observations and classical inference</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../model_numpyro.html">Functional JAX spherical models and runtime configuration</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.Model.html">jeanspy.model_numpyro.Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.html">jeanspy.model_numpyro.PlummerModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.html">jeanspy.model_numpyro.ZhaoModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.html">jeanspy.model_numpyro.NFWModel</a></li>
@@ -503,23 +502,42 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.BaesAnisotropyModel.html">jeanspy.model_numpyro.BaesAnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.OsipkovMerrittModel.html">jeanspy.model_numpyro.OsipkovMerrittModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.DSphModel.html">jeanspy.model_numpyro.DSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.configure_runtime.html">jeanspy.model_numpyro.configure_runtime</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.get_runtime_config.html">jeanspy.model_numpyro.get_runtime_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.BaesEta2AnisotropyModel.html">jeanspy.baes_eta2.BaesEta2AnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html">jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_appell_reference.html">jeanspy.baes_eta2.baes_eta2_kernel_appell_reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_jax.html">jeanspy.baes_eta2.baes_eta2_kernel_jax</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../axisymmetric_numpyro.html">JAX axisymmetric forward model</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric_factors.html">Finite-cone NumPy J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../axisymmetric-models.html">Axisymmetric models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.html">jeanspy.model.AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricPlummerModel.html">jeanspy.model.AxisymmetricPlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.html">jeanspy.model.AxisymmetricZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricConstantAnisotropyModel.html">jeanspy.model.AxisymmetricConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricStellarModel.html">jeanspy.model.AxisymmetricStellarModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDMModel.html">jeanspy.model.AxisymmetricDMModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricAnisotropyModel.html">jeanspy.model.AxisymmetricAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricPlummerModel.html">jeanspy.model_numpyro.AxisymmetricPlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricZhaoModel.html">jeanspy.model_numpyro.AxisymmetricZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.html">jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.jfactor.html">jeanspy.axisymmetric_factors.jfactor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.dfactor.html">jeanspy.axisymmetric_factors.dfactor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_J.html">jeanspy.axisymmetric_factors.C_J</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_D.html">jeanspy.axisymmetric_factors.C_D</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../sampler.html">Classical emcee sampling and HDF5 storage</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../inference.html">Statistical inference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FittableModel.html">jeanspy.model.FittableModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FlatPriorModel.html">jeanspy.model.FlatPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.html">jeanspy.model.PhotometryPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.html">jeanspy.model.SimpleDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.get_default_estimation_model.html">jeanspy.model.get_default_estimation_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.html">jeanspy.model.AxisymmetricDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.html">jeanspy.model.AxisymmetricKinematicData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler.Sampler.html">jeanspy.sampler.Sampler</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../sampler_numpyro.html">NumPyro likelihoods, sampling and storage</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.html">jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.JeansLikelihoodModel.html">jeanspy.sampler_numpyro.JeansLikelihoodModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.html">jeanspy.sampler_numpyro.NumPyroSampler</a></li>
@@ -528,29 +546,19 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.StorageBackend.html">jeanspy.sampler_numpyro.StorageBackend</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../sersic.html">Spherical Sersic tracer</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../baes_eta2.html">Specialized Baes anisotropy kernels</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.BaesEta2AnisotropyModel.html">jeanspy.baes_eta2.BaesEta2AnisotropyModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html">jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_appell_reference.html">jeanspy.baes_eta2.baes_eta2_kernel_appell_reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_jax.html">jeanspy.baes_eta2.baes_eta2_kernel_jax</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../hyp2f1_jax.html">JAX hypergeometric numerical helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.GaussLegendre01.html">jeanspy.hyp2f1_jax.GaussLegendre01</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.TanhSinh01.html">jeanspy.hyp2f1_jax.TanhSinh01</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_d_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_d_series</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../dequad.html">Double-exponential integration helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.hashable.html">jeanspy.dequad.hashable</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.memorize.html">jeanspy.dequad.memorize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.generate_x_w.html">jeanspy.dequad.generate_x_w</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.dequad.html">jeanspy.dequad.dequad</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../modules.html">Import modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model.html">NumPy/SciPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric.html">Axisymmetric components and NumPy forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_inference.html">Axisymmetric observations and classical inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_numpyro.html">JAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_numpyro.html">JAX axisymmetric forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_factors.html">Finite-cone NumPy J and D factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sampler.html">Classical emcee sampling and HDF5 storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sampler_numpyro.html">NumPyro likelihoods, sampling and storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sersic.html">Spherical Sersic tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../baes_eta2.html">Specialized Baes anisotropy kernels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hyp2f1_jax.html">JAX hypergeometric numerical helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dequad.html">Double-exponential integration helpers</a></li>
 </ul>
 </details></li>
 </ul>
@@ -597,7 +605,7 @@
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
     
     
-    <li class="breadcrumb-item"><a href="../model_numpyro.html" class="nav-link">Functional JAX spherical models and runtime configuration</a></li>
+    <li class="breadcrumb-item"><a href="../axisymmetric-models.html" class="nav-link">Axisymmetric models</a></li>
     
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">jeanspy.model_numpyro.AxisymmetricDSphModel</span></li>
   </ul>
@@ -620,9 +628,14 @@
 <h1>jeanspy.model_numpyro.AxisymmetricDSphModel<a class="headerlink" href="#jeanspy-model-numpyro-axisymmetricdsphmodel" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">jeanspy.model_numpyro.</span></span><span class="sig-name descname"><span class="pre">AxisymmetricDSphModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_los</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel"></span><span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">jeanspy.model_numpyro.</span></span><span class="sig-name descname"><span class="pre">AxisymmetricDSphModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_los</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submodels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Same parameters and units as axisymmetric.AxisymmetricDSphModel.</p>
+<p>Compose functional JAX axisymmetric stellar, halo and anisotropy components.</p>
+<p>submodels uses StellarModel=AxisymmetricPlummerModel(),
+DMModel=AxisymmetricZhaoModel() and
+AnisotropyModel=AxisymmetricConstantAnisotropyModel(). These are also the
+defaults. Physical parameters remain explicit in params on every call.
+Components are immutable and participate in JIT and sampling identity.</p>
 <p>Fixed quadrature settings are static under JIT. lax.map with rematerialized
 per-star evaluation bounds intermediate memory when differentiating catalogs.</p>
 <p class="rubric">Notes</p>
@@ -659,27 +672,33 @@ model parameters. J/D methods are not part of this JAX class.</p>
 <li><p><strong>n_force</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
 <li><p><strong>n_vertical</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
 <li><p><strong>n_los</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>submodels</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><em>object</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.n_force">
-<span class="sig-name descname"><span class="pre">n_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_force" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.n_force"></span><span class="sig-name descname"><span class="pre">n_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_force" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.n_vertical">
-<span class="sig-name descname"><span class="pre">n_vertical</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_vertical" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.n_vertical"></span><span class="sig-name descname"><span class="pre">n_vertical</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_vertical" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.n_los">
-<span class="sig-name descname"><span class="pre">n_los</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_los" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.n_los"></span><span class="sig-name descname"><span class="pre">n_los</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></span><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_los" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.submodels">
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.submodels"></span><span class="sig-name descname"><span class="pre">submodels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.submodels" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity">
-<span class="sig-name descname"><span class="pre">sampling_identity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.sampling_identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.sampling_identity"></span><span class="sig-name descname"><span class="pre">sampling_identity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.sampling_identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity" title="Link to this definition">#</a></dt>
 <dd><p>Return the three fixed quadrature orders used to identify a sampling target.</p>
 <p>The host dictionary contains n_force, n_vertical and n_los. This metadata
 helper has no physical-parameter derivative.</p>
@@ -687,7 +706,7 @@ helper has no physical-parameter derivative.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments">
-<span class="sig-name descname"><span class="pre">intrinsic_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.intrinsic_moments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.intrinsic_moments"></span><span class="sig-name descname"><span class="pre">intrinsic_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.intrinsic_moments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate the intrinsic Jeans second moments.</p>
 <p class="rubric">Notes</p>
 <p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">R_pc</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code> and signed <code class="docutils literal notranslate"><span class="pre">z_pc</span></code> in pc, broadcastable;
@@ -699,7 +718,7 @@ rotation/dispersion split is assigned.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient">
-<span class="sig-name descname"><span class="pre">potential_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.potential_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.potential_gradient"></span><span class="sig-name descname"><span class="pre">potential_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.potential_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate derivatives of the gravitational potential.</p>
 <p class="rubric">Notes</p>
 <p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">R_pc</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>, signed <code class="docutils literal notranslate"><span class="pre">z_pc</span></code> in pc and explicit
@@ -710,7 +729,7 @@ acceleration has the opposite sign.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density">
-<span class="sig-name descname"><span class="pre">surface_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.surface_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.surface_density"></span><span class="sig-name descname"><span class="pre">surface_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.surface_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate the projected spheroidal Plummer tracer.</p>
 <p class="rubric">Notes</p>
 <p><strong>Inputs and units.</strong> Signed <code class="docutils literal notranslate"><span class="pre">x_pc</span></code>/<code class="docutils literal notranslate"><span class="pre">y_pc</span></code> in pc and explicit params;
@@ -721,19 +740,19 @@ broadcast coordinate shape.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d">
-<span class="sig-name descname"><span class="pre">density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.density_3d"></span><span class="sig-name descname"><span class="pre">density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d" title="Link to this definition">#</a></dt>
 <dd><p>Unit-normalized stellar density in pc^-3.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d">
-<span class="sig-name descname"><span class="pre">mass_density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.mass_density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.mass_density_3d"></span><span class="sig-name descname"><span class="pre">mass_density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.mass_density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d" title="Link to this definition">#</a></dt>
 <dd><p>Halo density, including the optional ellipsoidal cutoff.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass">
-<span class="sig-name descname"><span class="pre">enclosed_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.enclosed_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.enclosed_mass"></span><span class="sig-name descname"><span class="pre">enclosed_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.enclosed_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass" title="Link to this definition">#</a></dt>
 <dd><p>Mass in Msun inside the spheroid m &lt;= m_pc (with truncation).</p>
 <p class="rubric">Notes</p>
 <p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">m_pc</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code> is the ellipsoidal radius in pc; params
@@ -744,7 +763,7 @@ matching <code class="docutils literal notranslate"><span class="pre">m_pc</span
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2">
-<span class="sig-name descname"><span class="pre">sigmalos2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.sigmalos2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2" title="Link to this definition">#</a></dt>
+<span id="jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.sigmalos2"></span><span class="sig-name descname"><span class="pre">sigmalos2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric_numpyro.html#AxisymmetricDSphModel.sigmalos2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2" title="Link to this definition">#</a></dt>
 <dd><p>Project a cylindrically aligned second moment.</p>
 <p class="rubric">Notes</p>
 <p><strong>Inputs and units.</strong> Signed <code class="docutils literal notranslate"><span class="pre">x_pc</span></code>/<code class="docutils literal notranslate"><span class="pre">y_pc</span></code> in pc, broadcastable
@@ -768,20 +787,20 @@ coordinate shape, including scalar output.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../model_numpyro.html"
+       href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Functional JAX spherical models and runtime configuration</p>
+        <p class="prev-next-title">jeanspy.axisymmetric.InvalidAxisymmetricModelError</p>
       </div>
     </a>
     <a class="right-next"
-       href="jeanspy.model_numpyro.Model.html"
+       href="jeanspy.model_numpyro.AxisymmetricPlummerModel.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">jeanspy.model_numpyro.Model</p>
+        <p class="prev-next-title">jeanspy.model_numpyro.AxisymmetricPlummerModel</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -808,6 +827,7 @@ coordinate shape, including scalar output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_force"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.n_force</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_vertical"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.n_vertical</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.n_los"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.n_los</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.submodels"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.submodels</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.sampling_identity()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.intrinsic_moments()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient"><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel.potential_gradient()</span></code></a></li>

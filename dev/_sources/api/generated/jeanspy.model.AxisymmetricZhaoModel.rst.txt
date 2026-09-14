@@ -1,0 +1,10 @@
+﻿jeanspy.model.AxisymmetricZhaoModel
+===================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: AxisymmetricZhaoModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

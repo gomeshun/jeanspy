@@ -1,0 +1,48 @@
+Spherical models
+================
+
+NumPy/SciPy
+-----------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.model.AnisotropyModel
+   jeanspy.model.BaesAnisotropyModel
+   jeanspy.model.ConstantAnisotropyModel
+   jeanspy.model.DMModel
+   jeanspy.model.DSphModel
+   jeanspy.model.Exp2dModel
+   jeanspy.model.Exp3dModel
+   jeanspy.model.NFWModel
+   jeanspy.model.OsipkovMerrittModel
+   jeanspy.model.PlummerModel
+   jeanspy.model.SersicModel
+   jeanspy.model.StellarModel
+   jeanspy.model.Uniform2dModel
+   jeanspy.model.ZhaoModel
+
+JAX
+---
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.model_numpyro.PlummerModel
+   jeanspy.model_numpyro.ZhaoModel
+   jeanspy.model_numpyro.NFWModel
+   jeanspy.model_numpyro.ConstantAnisotropyModel
+   jeanspy.model_numpyro.BaesAnisotropyModel
+   jeanspy.model_numpyro.OsipkovMerrittModel
+   jeanspy.model_numpyro.DSphModel
+
+Specialized Baes anisotropy kernels
+-----------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.baes_eta2.BaesEta2AnisotropyModel
+   jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD
+   jeanspy.baes_eta2.baes_eta2_kernel_appell_reference
+   jeanspy.baes_eta2.baes_eta2_kernel_jax

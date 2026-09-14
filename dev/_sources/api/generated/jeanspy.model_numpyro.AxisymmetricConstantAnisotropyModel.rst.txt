@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.AxisymmetricConstantAnisotropyModel
+==========================================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: AxisymmetricConstantAnisotropyModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

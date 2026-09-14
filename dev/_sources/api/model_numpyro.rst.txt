@@ -1,5 +1,5 @@
-Functional JAX spherical models and runtime configuration
-=========================================================
+JAX
+===
 
 .. py:module:: jeanspy.model_numpyro
 
@@ -9,7 +9,6 @@ See :doc:`../guides/contracts` for units, shapes, domains and backend
 boundaries, and :doc:`../quickstart` for executable minimal examples.
 
 .. autosummary::
-   :toctree: generated
 
    AxisymmetricDSphModel
    Model
@@ -22,4 +21,13 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
    DSphModel
    configure_runtime
    get_runtime_config
+   AxisymmetricPlummerModel
+   AxisymmetricZhaoModel
+   AxisymmetricConstantAnisotropyModel
 
+Aliases
+-------
+
+* ``jeanspy.model_numpyro.AxisymmetricStellarModel`` is :py:obj:`jeanspy.model.AxisymmetricStellarModel`.
+* ``jeanspy.model_numpyro.AxisymmetricDMModel`` is :py:obj:`jeanspy.model.AxisymmetricDMModel`.
+* ``jeanspy.model_numpyro.AxisymmetricAnisotropyModel`` is :py:obj:`jeanspy.model.AxisymmetricAnisotropyModel`.

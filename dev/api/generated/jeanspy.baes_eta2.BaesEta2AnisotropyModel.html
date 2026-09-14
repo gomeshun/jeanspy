@@ -31,6 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="../../_static/documentation_options.js?v=01f34227"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/jeanspy.baes_eta2.BaesEta2AnisotropyModel';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -55,7 +57,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD" href="jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html" />
-    <link rel="prev" title="Specialized Baes anisotropy kernels" href="../baes_eta2.html" />
+    <link rel="prev" title="jeanspy.model_numpyro.DSphModel" href="jeanspy.model_numpyro.DSphModel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
@@ -454,48 +456,45 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../model.html">Classical spherical models and convenience exports</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core.html">Core utilities</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.C_J.html">jeanspy.model.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DotDict.html">jeanspy.model.DotDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.GMsun_m3s2.html">jeanspy.model.GMsun_m3s2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Model.html">jeanspy.model.Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Parameters.html">jeanspy.model.Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.Model.html">jeanspy.model_numpyro.Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.configure_runtime.html">jeanspy.model_numpyro.configure_runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.get_runtime_config.html">jeanspy.model_numpyro.get_runtime_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_J.html">jeanspy.axisymmetric_factors.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_D.html">jeanspy.axisymmetric_factors.C_D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.GaussLegendre01.html">jeanspy.hyp2f1_jax.GaussLegendre01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.TanhSinh01.html">jeanspy.hyp2f1_jax.TanhSinh01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_d_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_d_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.hashable.html">jeanspy.dequad.hashable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.memorize.html">jeanspy.dequad.memorize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.generate_x_w.html">jeanspy.dequad.generate_x_w</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.dequad.html">jeanspy.dequad.dequad</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../spherical.html">Spherical models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AnisotropyModel.html">jeanspy.model.AnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.html">jeanspy.model.BaesAnisotropyModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.C_J.html">jeanspy.model.C_J</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.html">jeanspy.model.ConstantAnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DMModel.html">jeanspy.model.DMModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DSphModel.html">jeanspy.model.DSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.DotDict.html">jeanspy.model.DotDict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Exp2dModel.html">jeanspy.model.Exp2dModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Exp3dModel.html">jeanspy.model.Exp3dModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FittableModel.html">jeanspy.model.FittableModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FlatPriorModel.html">jeanspy.model.FlatPriorModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.GMsun_m3s2.html">jeanspy.model.GMsun_m3s2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Model.html">jeanspy.model.Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.NFWModel.html">jeanspy.model.NFWModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.html">jeanspy.model.OsipkovMerrittModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Parameters.html">jeanspy.model.Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.html">jeanspy.model.PhotometryPriorModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PlummerModel.html">jeanspy.model.PlummerModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SersicModel.html">jeanspy.model.SersicModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.html">jeanspy.model.SimpleDSphEstimationModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.StellarModel.html">jeanspy.model.StellarModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.Uniform2dModel.html">jeanspy.model.Uniform2dModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.ZhaoModel.html">jeanspy.model.ZhaoModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.get_default_estimation_model.html">jeanspy.model.get_default_estimation_model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.html">jeanspy.model.AxisymmetricDSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.html">jeanspy.model.AxisymmetricDSphEstimationModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.html">jeanspy.model.AxisymmetricKinematicData</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric.html">Axisymmetric components and NumPy forward model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference internal" href="../axisymmetric_inference.html">Axisymmetric observations and classical inference</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../model_numpyro.html">Functional JAX spherical models and runtime configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.html">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.Model.html">jeanspy.model_numpyro.Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.html">jeanspy.model_numpyro.PlummerModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.html">jeanspy.model_numpyro.ZhaoModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.html">jeanspy.model_numpyro.NFWModel</a></li>
@@ -503,23 +502,42 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.BaesAnisotropyModel.html">jeanspy.model_numpyro.BaesAnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.OsipkovMerrittModel.html">jeanspy.model_numpyro.OsipkovMerrittModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.DSphModel.html">jeanspy.model_numpyro.DSphModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.configure_runtime.html">jeanspy.model_numpyro.configure_runtime</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.get_runtime_config.html">jeanspy.model_numpyro.get_runtime_config</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">jeanspy.baes_eta2.BaesEta2AnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html">jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_appell_reference.html">jeanspy.baes_eta2.baes_eta2_kernel_appell_reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_jax.html">jeanspy.baes_eta2.baes_eta2_kernel_jax</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../axisymmetric_numpyro.html">JAX axisymmetric forward model</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric_factors.html">Finite-cone NumPy J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric-models.html">Axisymmetric models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.html">jeanspy.model.AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricPlummerModel.html">jeanspy.model.AxisymmetricPlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.html">jeanspy.model.AxisymmetricZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricConstantAnisotropyModel.html">jeanspy.model.AxisymmetricConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricStellarModel.html">jeanspy.model.AxisymmetricStellarModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDMModel.html">jeanspy.model.AxisymmetricDMModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricAnisotropyModel.html">jeanspy.model.AxisymmetricAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.html">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricPlummerModel.html">jeanspy.model_numpyro.AxisymmetricPlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricZhaoModel.html">jeanspy.model_numpyro.AxisymmetricZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.html">jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.jfactor.html">jeanspy.axisymmetric_factors.jfactor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.dfactor.html">jeanspy.axisymmetric_factors.dfactor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_J.html">jeanspy.axisymmetric_factors.C_J</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_D.html">jeanspy.axisymmetric_factors.C_D</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../sampler.html">Classical emcee sampling and HDF5 storage</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../inference.html">Statistical inference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FittableModel.html">jeanspy.model.FittableModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FlatPriorModel.html">jeanspy.model.FlatPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.html">jeanspy.model.PhotometryPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.html">jeanspy.model.SimpleDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.get_default_estimation_model.html">jeanspy.model.get_default_estimation_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.html">jeanspy.model.AxisymmetricDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.html">jeanspy.model.AxisymmetricKinematicData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler.Sampler.html">jeanspy.sampler.Sampler</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../sampler_numpyro.html">NumPyro likelihoods, sampling and storage</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.html">jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.JeansLikelihoodModel.html">jeanspy.sampler_numpyro.JeansLikelihoodModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.html">jeanspy.sampler_numpyro.NumPyroSampler</a></li>
@@ -528,29 +546,19 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.sampler_numpyro.StorageBackend.html">jeanspy.sampler_numpyro.StorageBackend</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../sersic.html">Spherical Sersic tracer</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../baes_eta2.html">Specialized Baes anisotropy kernels</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">jeanspy.baes_eta2.BaesEta2AnisotropyModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html">jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_appell_reference.html">jeanspy.baes_eta2.baes_eta2_kernel_appell_reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.baes_eta2.baes_eta2_kernel_jax.html">jeanspy.baes_eta2.baes_eta2_kernel_jax</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../hyp2f1_jax.html">JAX hypergeometric numerical helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.GaussLegendre01.html">jeanspy.hyp2f1_jax.GaussLegendre01</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.TanhSinh01.html">jeanspy.hyp2f1_jax.TanhSinh01</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_d_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_d_series</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html">jeanspy.hyp2f1_jax.hyp2f1_1b_3half</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../dequad.html">Double-exponential integration helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.hashable.html">jeanspy.dequad.hashable</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.memorize.html">jeanspy.dequad.memorize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.generate_x_w.html">jeanspy.dequad.generate_x_w</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.dequad.html">jeanspy.dequad.dequad</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../modules.html">Import modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model.html">NumPy/SciPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric.html">Axisymmetric components and NumPy forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_inference.html">Axisymmetric observations and classical inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_numpyro.html">JAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_numpyro.html">JAX axisymmetric forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_factors.html">Finite-cone NumPy J and D factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sampler.html">Classical emcee sampling and HDF5 storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sampler_numpyro.html">NumPyro likelihoods, sampling and storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sersic.html">Spherical Sersic tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../baes_eta2.html">Specialized Baes anisotropy kernels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hyp2f1_jax.html">JAX hypergeometric numerical helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dequad.html">Double-exponential integration helpers</a></li>
 </ul>
 </details></li>
 </ul>
@@ -597,7 +605,7 @@
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
     
     
-    <li class="breadcrumb-item"><a href="../baes_eta2.html" class="nav-link">Specialized Baes anisotropy kernels</a></li>
+    <li class="breadcrumb-item"><a href="../spherical.html" class="nav-link">Spherical models</a></li>
     
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">jeanspy.baes_eta2.BaesEta2AnisotropyModel</span></li>
   </ul>
@@ -746,12 +754,12 @@ follow baes_eta2_kernel_jax and its documented domain restrictions.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../baes_eta2.html"
+       href="jeanspy.model_numpyro.DSphModel.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Specialized Baes anisotropy kernels</p>
+        <p class="prev-next-title">jeanspy.model_numpyro.DSphModel</p>
       </div>
     </a>
     <a class="right-next"

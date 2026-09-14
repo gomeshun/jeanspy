@@ -1,0 +1,58 @@
+Core utilities
+==============
+
+NumPy/SciPy
+-----------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.model.C_J
+   jeanspy.model.DotDict
+   jeanspy.model.GMsun_m3s2
+   jeanspy.model.Model
+   jeanspy.model.Parameters
+
+JAX
+---
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.model_numpyro.Model
+   jeanspy.model_numpyro.configure_runtime
+   jeanspy.model_numpyro.get_runtime_config
+
+Finite-cone NumPy J and D factors
+---------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.axisymmetric_factors.C_J
+   jeanspy.axisymmetric_factors.C_D
+
+JAX hypergeometric numerical helpers
+------------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.hyp2f1_jax.GaussLegendre01
+   jeanspy.hyp2f1_jax.TanhSinh01
+   jeanspy.hyp2f1_jax.hyp2f1_1b_d_series
+   jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series
+   jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad
+   jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic
+   jeanspy.hyp2f1_jax.hyp2f1_1b_3half
+
+Double-exponential integration helpers
+--------------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.dequad.hashable
+   jeanspy.dequad.memorize
+   jeanspy.dequad.generate_x_w
+   jeanspy.dequad.dequad

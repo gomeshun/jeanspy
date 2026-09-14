@@ -31,6 +31,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="_static/documentation_options.js?v=01f34227"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'references';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -305,7 +307,7 @@
       
       
       <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -439,23 +441,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
-  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
-  </svg>
-  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
-  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
-</button></div>
-        <div class="sidebar-primary-item">
-
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"></div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
       <div class="sidebar-primary-item">
@@ -510,145 +495,144 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="references">
 <h1>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h1>
-<p>This list covers scientific methods, comparison papers, data and inference
-software used in these documents. Cite only the methods and resources
-used in a particular analysis, together with their actual code versions.</p>
+<p>References are grouped by their role in an analysis. Cite the methods you use
+together with the version of JeansPy and its dependencies.</p>
 <p>Download the <a class="reference download internal" download="" href="_downloads/33e59b5ca9ec342068223d604c3f8d55/references.bib"><code class="xref download docutils literal notranslate"><span class="pre">BibTeX</span> <span class="pre">file</span></code></a>.</p>
-<section id="cappellari-2008">
-<span id="reference-cappellari2008"></span><h2>Cappellari (2008)<a class="headerlink" href="#cappellari-2008" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1111/j.1365-2966.2008.13754.x">Measuring the inclination and mass-to-light ratio of axisymmetric galaxies via anisotropic Jeans models of stellar kinematics</a>. Monthly Notices of the Royal Astronomical Society, 390, 71-86.</p>
+<section id="jeans-equations-and-axisymmetric-dynamics">
+<span id="references-jeans-equations-and-axisymmetric-dynamics"></span><h2>Jeans equations and axisymmetric dynamics<a class="headerlink" href="#jeans-equations-and-axisymmetric-dynamics" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Reference</p></th>
+<th class="head"><p>Work</p></th>
+<th class="head"><p>Relevance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span id="reference-binneytremaine2008"></span>Binney &amp; Tremaine (2008)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1515/9781400828722">Galactic Dynamics</a></p></td>
+<td><p>Collisionless dynamics and Jeans equations; 2nd edition, Section 4.8.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-vandermarel1994"></span>van der Marel et al. (1994)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1093/mnras/271.1.99">Velocity profiles of galaxies with claimed black holes - II. f(E, Lz) models for M32</a></p></td>
+<td><p>Earlier two-integral axisymmetric models and spheroidal potential integrals.</p></td>
+</tr>
+<tr class="row-even"><td><p><span id="reference-cappellari2008"></span>Cappellari (2008)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1111/j.1365-2966.2008.13754.x">Measuring the inclination and mass-to-light ratio of axisymmetric galaxies via anisotropic Jeans models of stellar kinematics</a></p></td>
+<td><p>Cylindrical alignment and constant meridional anisotropy; general Jeans solution in Section 3.1.1.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-hayashi2012"></span>Hayashi &amp; Chiba (2012)</p></td>
+<td><p><a class="reference external" href="https://arxiv.org/abs/1206.3888">Probing non-spherical dark halos in the Galactic dwarf galaxies</a></p></td>
+<td><p>Application of semi-isotropic axisymmetric models to dwarf spheroidal galaxies.</p></td>
+</tr>
+<tr class="row-even"><td><p><span id="reference-hayashi2015"></span>Hayashi &amp; Chiba (2015)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1088/0004-637x/810/1/22">Structural properties of non-spherical dark halos in Milky Way and Andromeda dwarf spheroidal galaxies</a></p></td>
+<td><p>Dwarf-galaxy modelling with nonzero constant cylindrical anisotropy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-hayashi2016"></span>Hayashi et al. (2016)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1093/mnras/stw1457">Dark matter annihilation and decay from non-spherical dark halos in galactic dwarf satellites</a></p></td>
+<td><p>Non-spherical dwarf-halo inference and annihilation/decay factors.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
-<section id="cappellari-2020">
-<span id="reference-cappellari2020"></span><h2>Cappellari (2020)<a class="headerlink" href="#cappellari-2020" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/staa959">Efficient solution of the anisotropic spherically aligned axisymmetric Jeans equations of stellar hydrodynamics for galactic dynamics</a>. Monthly Notices of the Royal Astronomical Society, 494, 4819-4837.</p>
+<section id="density-and-anisotropy-profiles">
+<span id="references-density-and-anisotropy-profiles"></span><h2>Density and anisotropy profiles<a class="headerlink" href="#density-and-anisotropy-profiles" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Reference</p></th>
+<th class="head"><p>Work</p></th>
+<th class="head"><p>Relevance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span id="reference-plummer1911"></span>Plummer (1911)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1093/mnras/71.5.460">On the Problem of Distribution in Globular Star Clusters: (Plate 8.)</a></p></td>
+<td><p>Plummer tracer profile.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-zhao1996"></span>Zhao (1996)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1093/mnras/278.2.488">Analytical models for galactic nuclei</a></p></td>
+<td><p>Double power-law halo family.</p></td>
+</tr>
+<tr class="row-even"><td><p><span id="reference-navarro1997"></span>Navarro et al. (1997)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1086/304888">A Universal Density Profile from Hierarchical Clustering</a></p></td>
+<td><p>NFW halo profile.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-baesvanhese2007"></span>Baes &amp; Van Hese (2007)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1051/0004-6361:20077672">Dynamical models with a general anisotropy profile</a></p></td>
+<td><p>Flexible spherical anisotropy profiles.</p></td>
+</tr>
+<tr class="row-even"><td><p><span id="reference-vitral2020"></span>Vitral &amp; Mamon (2020)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1051/0004-6361/201937202">A precise analytical approximation for the deprojection of the Sérsic profile</a></p></td>
+<td><p>Sersic deprojection approximation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-vitral2021"></span>Vitral &amp; Mamon (2021)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1051/0004-6361/202039650">Does NGC 6397 contain an intermediate-mass black hole or a more diffuse inner subcluster?</a></p></td>
+<td><p>Extended Sersic deprojection coefficients in Appendix A.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
-<section id="cappellari-2026">
-<span id="reference-cappellari2026"></span><h2>Cappellari (2026)<a class="headerlink" href="#cappellari-2026" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/stag420">A general spectral solver for the axisymmetric Jeans equations: fast dynamical modelling of galaxies with arbitrary anisotropy</a>. Monthly Notices of the Royal Astronomical Society, 549, stag420.</p>
+<section id="j-and-d-factors">
+<span id="references-j-and-d-factors"></span><h2>J and D factors<a class="headerlink" href="#j-and-d-factors" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Reference</p></th>
+<th class="head"><p>Work</p></th>
+<th class="head"><p>Relevance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span id="reference-ullio2016"></span>Ullio &amp; Valli (2016)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1088/1475-7516/2016/07/025">A critical reassessment of particle Dark Matter limits from dwarf satellites</a></p></td>
+<td><p>Finite-distance spherical J-factor geometry.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-evans2016"></span>Evans et al. (2016)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1103/physrevd.93.103512">Simple J-factors and D-factors for indirect dark matter detection</a></p></td>
+<td><p>Analytic J/D-factor results and scaling relations.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
-<section id="wang-et-al-2025">
-<span id="reference-wang2025glad"></span><h2>Wang et al. (2025)<a class="headerlink" href="#wang-et-al-2025" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1051/0004-6361/202554861">GPU-Accelerated Gravitational Lensing and Dynamical (GLaD) modeling for cosmology and galaxies</a>. Astronomy &amp; Astrophysics, 701, A280.</p>
-</section>
-<section id="gomer-et-al-2023">
-<span id="reference-skinn2023"></span><h2>Gomer et al. (2023)<a class="headerlink" href="#gomer-et-al-2023" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1051/0004-6361/202347507">Accelerating galaxy dynamical modeling using a neural network for joint lensing and kinematic analyses</a>. Astronomy &amp; Astrophysics, 679, A59.</p>
-</section>
-<section id="bovy-2015">
-<span id="reference-bovy2015"></span><h2>Bovy (2015)<a class="headerlink" href="#bovy-2015" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1088/0067-0049/216/2/29">galpy: A python LIBRARY FOR GALACTIC DYNAMICS</a>. The Astrophysical Journal Supplement Series, 216, 29.</p>
-</section>
-<section id="banares-hernandez-read-julio-2026">
-<span id="reference-gravsphere2026"></span><h2>Bañares-Hernández, Read, Júlio (2026)<a class="headerlink" href="#banares-hernandez-read-julio-2026" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1051/0004-6361/202557195">GravSphere2: A higher order Jeans method for mass modeling spherical stellar systems</a>. Astronomy &amp; Astrophysics, 705, A212.</p>
-</section>
-<section id="genina-et-al-2020">
-<span id="reference-genina2020"></span><h2>Genina et al. (2020)<a class="headerlink" href="#genina-et-al-2020" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/staa2352">To β or not to β: can higher order Jeans analysis break the mass–anisotropy degeneracy in simulated dwarfs?</a>. Monthly Notices of the Royal Astronomical Society, 498, 144-163.</p>
-</section>
-<section id="mamon-biviano-boue-2013">
-<span id="reference-mamon2013"></span><h2>Mamon, Biviano, Boué (2013)<a class="headerlink" href="#mamon-biviano-boue-2013" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/sts565">MAMPOSSt: Modelling Anisotropy and Mass Profiles of Observed Spherical Systems – I. Gaussian 3D velocities</a>. Monthly Notices of the Royal Astronomical Society, 429, 3079-3098.</p>
-</section>
-<section id="hutten-combet-maurin-2019">
-<span id="reference-hutten2019"></span><h2>Hütten, Combet, Maurin (2019)<a class="headerlink" href="#hutten-combet-maurin-2019" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1016/j.cpc.2018.10.001">CLUMPY v3: γ-ray and ν signals from dark matter at all scales</a>. Computer Physics Communications, 235, 336-345.</p>
-</section>
-<section id="m-price-whelan-2017">
-<span id="reference-pricewhelan2017"></span><h2>M. Price-Whelan (2017)<a class="headerlink" href="#m-price-whelan-2017" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.21105/joss.00388">Gala: A Python package for galactic dynamics</a>. The Journal of Open Source Software, 2, 388.</p>
-</section>
-<section id="walker-olszewski-mateo-2015">
-<span id="reference-walker2015"></span><h2>Walker, Olszewski, Mateo (2015)<a class="headerlink" href="#walker-olszewski-mateo-2015" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/stv099">Bayesian analysis of resolved stellar spectra: application to MMT/Hectochelle observations of the Draco dwarf spheroidal</a>. Monthly Notices of the Royal Astronomical Society, 448, 2717-2732.</p>
-</section>
-<section id="mcconnachie-2012">
-<span id="reference-mcconnachie2012"></span><h2>McConnachie (2012)<a class="headerlink" href="#mcconnachie-2012" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1088/0004-6256/144/1/4">THE OBSERVED PROPERTIES OF DWARF GALAXIES IN AND AROUND THE LOCAL GROUP</a>. The Astronomical Journal, 144, 4.</p>
-</section>
-<section id="hayashi-chiba-2015">
-<span id="reference-hayashi2015"></span><h2>Hayashi, Chiba (2015)<a class="headerlink" href="#hayashi-chiba-2015" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1088/0004-637x/810/1/22">STRUCTURAL PROPERTIES OF NON-SPHERICAL DARK HALOS IN MILKY WAY AND ANDROMEDA DWARF SPHEROIDAL GALAXIES</a>. The Astrophysical Journal, 810, 22.</p>
-</section>
-<section id="ullio-valli-2016">
-<span id="reference-ullio2016"></span><h2>Ullio, Valli (2016)<a class="headerlink" href="#ullio-valli-2016" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1088/1475-7516/2016/07/025">A critical reassessment of particle Dark Matter limits from dwarf satellites</a>. Journal of Cosmology and Astroparticle Physics, 2016, 025-025.</p>
-</section>
-<section id="foreman-mackey-hogg-lang-goodman-2013">
-<span id="reference-foremanmackey2013"></span><h2>Foreman-Mackey, Hogg, Lang, Goodman (2013)<a class="headerlink" href="#foreman-mackey-hogg-lang-goodman-2013" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1086/670067">emcee : The MCMC Hammer</a>. Publications of the Astronomical Society of the Pacific, 125, 306-312.</p>
-</section>
-<section id="kumar-carroll-hartikainen-martin-2019">
-<span id="reference-kumar2019"></span><h2>Kumar, Carroll, Hartikainen, Martin (2019)<a class="headerlink" href="#kumar-carroll-hartikainen-martin-2019" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.21105/joss.01143">ArviZ a unified library for exploratory analysis of Bayesian models in Python</a>. Journal of Open Source Software, 4, 1143.</p>
-</section>
-<section id="vehtari-et-al-2021">
-<span id="reference-vehtari2021"></span><h2>Vehtari et al. (2021)<a class="headerlink" href="#vehtari-et-al-2021" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1214/20-ba1221">Rank-normalization, folding, and localization: An improved R-hat for assessing convergence of MCMC (with Discussion)</a>. Bayesian Analysis, 16.</p>
-</section>
-<section id="plummer-1911">
-<span id="reference-plummer1911"></span><h2>Plummer (1911)<a class="headerlink" href="#plummer-1911" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/71.5.460">On the Problem of Distribution in Globular Star Clusters: (Plate 8.)</a>. Monthly Notices of the Royal Astronomical Society, 71, 460-470.</p>
-</section>
-<section id="zhao-1996">
-<span id="reference-zhao1996"></span><h2>Zhao (1996)<a class="headerlink" href="#zhao-1996" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/278.2.488">Analytical models for galactic nuclei</a>. Monthly Notices of the Royal Astronomical Society, 278, 488-496.</p>
-</section>
-<section id="navarro-frenk-white-1997">
-<span id="reference-navarro1997"></span><h2>Navarro, Frenk, White (1997)<a class="headerlink" href="#navarro-frenk-white-1997" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1086/304888">A Universal Density Profile from Hierarchical Clustering</a>. The Astrophysical Journal, 490, 493-508.</p>
-</section>
-<section id="evans-sanders-geringer-sameth-2016">
-<span id="reference-evans2016"></span><h2>Evans, Sanders, Geringer-Sameth (2016)<a class="headerlink" href="#evans-sanders-geringer-sameth-2016" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1103/physrevd.93.103512">Simple J-factors and D-factors for indirect dark matter detection</a>. Physical Review D, 93, 103512.</p>
-</section>
-<section id="vasiliev-2019">
-<span id="reference-vasiliev2019"></span><h2>Vasiliev (2019)<a class="headerlink" href="#vasiliev-2019" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/sty2672">AGAMA: action-based galaxy modelling architecture</a>. Monthly Notices of the Royal Astronomical Society, 482, 1525-1544.</p>
-</section>
-<section id="read-steger-2017">
-<span id="reference-readsteger2017"></span><h2>Read, Steger (2017)<a class="headerlink" href="#read-steger-2017" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/stx1798">How to break the density-anisotropy degeneracy in spherical stellar systems</a>. Monthly Notices of the Royal Astronomical Society, 471, 4541-4558.</p>
-</section>
-<section id="bonnivard-et-al-2016">
-<span id="reference-bonnivard2016"></span><h2>Bonnivard et al. (2016)<a class="headerlink" href="#bonnivard-et-al-2016" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1016/j.cpc.2015.11.012">CLUMPY : Jeans analysis,γ-ray andνfluxes from dark matter (sub-)structures</a>. Computer Physics Communications, 200, 336-349.</p>
-</section>
-<section id="hayashi-et-al-2016">
-<span id="reference-hayashi2016"></span><h2>Hayashi et al. (2016)<a class="headerlink" href="#hayashi-et-al-2016" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/stw1457">Dark matter annihilation and decay from non-spherical dark halos in galactic dwarf satellites</a>. Monthly Notices of the Royal Astronomical Society, 461, 2914-2928.</p>
-</section>
-<section id="wang-et-al-2022">
-<span id="reference-wang2022auriga"></span><h2>Wang et al. (2022)<a class="headerlink" href="#wang-et-al-2022" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.3847/1538-4357/ac9b19">Is the Core-cusp Problem a Matter of Perspective? Jeans Anisotropic Modeling against Numerical Simulations</a>. The Astrophysical Journal, 941, 108.</p>
-</section>
-<section id="baes-van-hese-2007">
-<span id="reference-baesvanhese2007"></span><h2>Baes, Van Hese (2007)<a class="headerlink" href="#baes-van-hese-2007" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1051/0004-6361:20077672">Dynamical models with a general anisotropy profile</a>. Astronomy &amp; Astrophysics, 471, 419-432.</p>
-</section>
-<section id="vitral-mamon-2020">
-<span id="reference-vitral2020"></span><h2>Vitral, Mamon (2020)<a class="headerlink" href="#vitral-mamon-2020" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1051/0004-6361/201937202">A precise analytical approximation for the deprojection of the Sérsic profile</a>. Astronomy &amp; Astrophysics, 635, A20.</p>
-</section>
-<section id="vitral-mamon-2021">
-<span id="reference-vitral2021"></span><h2>Vitral, Mamon (2021)<a class="headerlink" href="#vitral-mamon-2021" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1051/0004-6361/202039650">Does NGC 6397 contain an intermediate-mass black hole or a more diffuse inner subcluster?</a>. Astronomy &amp; Astrophysics, 646, A63.</p>
-</section>
-<section id="watkins-van-de-ven-den-brok-van-den-bosch-2013">
-<span id="reference-watkins2013"></span><h2>Watkins, van de Ven, den Brok, van den Bosch (2013)<a class="headerlink" href="#watkins-van-de-ven-den-brok-van-den-bosch-2013" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://doi.org/10.1093/mnras/stt1756">Discrete dynamical models of ω Centauri</a>. Monthly Notices of the Royal Astronomical Society, 436, 2598-2615.</p>
-</section>
-<section id="phan-pradhan-jankowiak-2019">
-<span id="reference-numpyro2019"></span><h2>Phan, Pradhan, Jankowiak (2019)<a class="headerlink" href="#phan-pradhan-jankowiak-2019" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://arxiv.org/abs/1912.11554">Composable Effects for Flexible and Accelerated Probabilistic Programming in NumPyro</a>.</p>
-</section>
-<section id="hoffman-gelman-2014">
-<span id="reference-hoffman2014"></span><h2>Hoffman, Gelman (2014)<a class="headerlink" href="#hoffman-gelman-2014" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://jmlr.org/papers/v15/hoffman14a.html">The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo</a>. Journal of Machine Learning Research, 15, 1593-1623.</p>
-</section>
-<section id="bradbury-et-al-2018">
-<span id="reference-jax2018"></span><h2>Bradbury et al. (2018)<a class="headerlink" href="#bradbury-et-al-2018" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://github.com/jax-ml/jax">JAX: composable transformations of Python+NumPy programs</a>.</p>
+<section id="inference-and-computation">
+<span id="references-inference-and-computation"></span><h2>Inference and computation<a class="headerlink" href="#inference-and-computation" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Reference</p></th>
+<th class="head"><p>Work</p></th>
+<th class="head"><p>Relevance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span id="reference-foremanmackey2013"></span>Foreman-Mackey et al. (2013)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1086/670067">emcee : The MCMC Hammer</a></p></td>
+<td><p>emcee ensemble sampling.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-hoffman2014"></span>Hoffman &amp; Gelman (2014)</p></td>
+<td><p><a class="reference external" href="https://jmlr.org/papers/v15/hoffman14a.html">The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo</a></p></td>
+<td><p>No-U-Turn Hamiltonian Monte Carlo.</p></td>
+</tr>
+<tr class="row-even"><td><p><span id="reference-numpyro2019"></span>Phan et al. (2019)</p></td>
+<td><p><a class="reference external" href="https://arxiv.org/abs/1912.11554">Composable Effects for Flexible and Accelerated Probabilistic Programming in NumPyro</a></p></td>
+<td><p>NumPyro probabilistic programming.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-jax2018"></span>Bradbury et al. (2018)</p></td>
+<td><p><a class="reference external" href="https://github.com/jax-ml/jax">JAX: composable transformations of Python+NumPy programs</a></p></td>
+<td><p>JAX array transformations and automatic differentiation.</p></td>
+</tr>
+<tr class="row-even"><td><p><span id="reference-kumar2019"></span>Kumar et al. (2019)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.21105/joss.01143">ArviZ a unified library for exploratory analysis of Bayesian models in Python</a></p></td>
+<td><p>ArviZ posterior analysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span id="reference-vehtari2021"></span>Vehtari et al. (2021)</p></td>
+<td><p><a class="reference external" href="https://doi.org/10.1214/20-ba1221">Rank-normalization, folding, and localization: An improved R-hat for assessing convergence of MCMC (with Discussion)</a></p></td>
+<td><p>Rank-normalized R-hat and effective sample size diagnostics.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 
@@ -690,40 +674,10 @@ used in a particular analysis, together with their actual code versions.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cappellari-2008">Cappellari (2008)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cappellari-2020">Cappellari (2020)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cappellari-2026">Cappellari (2026)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wang-et-al-2025">Wang et al. (2025)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gomer-et-al-2023">Gomer et al. (2023)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bovy-2015">Bovy (2015)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#banares-hernandez-read-julio-2026">Bañares-Hernández, Read, Júlio (2026)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#genina-et-al-2020">Genina et al. (2020)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mamon-biviano-boue-2013">Mamon, Biviano, Boué (2013)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hutten-combet-maurin-2019">Hütten, Combet, Maurin (2019)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#m-price-whelan-2017">M. Price-Whelan (2017)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#walker-olszewski-mateo-2015">Walker, Olszewski, Mateo (2015)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mcconnachie-2012">McConnachie (2012)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hayashi-chiba-2015">Hayashi, Chiba (2015)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ullio-valli-2016">Ullio, Valli (2016)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#foreman-mackey-hogg-lang-goodman-2013">Foreman-Mackey, Hogg, Lang, Goodman (2013)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kumar-carroll-hartikainen-martin-2019">Kumar, Carroll, Hartikainen, Martin (2019)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vehtari-et-al-2021">Vehtari et al. (2021)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plummer-1911">Plummer (1911)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zhao-1996">Zhao (1996)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navarro-frenk-white-1997">Navarro, Frenk, White (1997)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evans-sanders-geringer-sameth-2016">Evans, Sanders, Geringer-Sameth (2016)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vasiliev-2019">Vasiliev (2019)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-steger-2017">Read, Steger (2017)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bonnivard-et-al-2016">Bonnivard et al. (2016)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hayashi-et-al-2016">Hayashi et al. (2016)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wang-et-al-2022">Wang et al. (2022)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#baes-van-hese-2007">Baes, Van Hese (2007)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitral-mamon-2020">Vitral, Mamon (2020)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitral-mamon-2021">Vitral, Mamon (2021)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#watkins-van-de-ven-den-brok-van-den-bosch-2013">Watkins, van de Ven, den Brok, van den Bosch (2013)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phan-pradhan-jankowiak-2019">Phan, Pradhan, Jankowiak (2019)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hoffman-gelman-2014">Hoffman, Gelman (2014)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bradbury-et-al-2018">Bradbury et al. (2018)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jeans-equations-and-axisymmetric-dynamics">Jeans equations and axisymmetric dynamics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#density-and-anisotropy-profiles">Density and anisotropy profiles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#j-and-d-factors">J and D factors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-and-computation">Inference and computation</a></li>
 </ul>
   </nav></div>
 

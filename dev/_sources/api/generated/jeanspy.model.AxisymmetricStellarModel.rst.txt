@@ -1,0 +1,10 @@
+﻿jeanspy.model.AxisymmetricStellarModel
+======================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: AxisymmetricStellarModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

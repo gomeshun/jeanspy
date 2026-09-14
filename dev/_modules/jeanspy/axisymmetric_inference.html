@@ -30,6 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -41,6 +42,7 @@
     <script src="../../_static/documentation_options.js?v=01f34227"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/jeanspy/axisymmetric_inference';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -607,7 +609,9 @@
 <span class="sd">    ``prior`` is a :class:`FlatPriorModel`, a DataFrame, or a CSV with finite</span>
 <span class="sd">    ``lower``/``upper`` bounds. Its row order defines the sampler coordinates.</span>
 <span class="sd">    ``fixed_params`` supplies remaining physical parameters; sampled and fixed</span>
-<span class="sd">    names must be disjoint. Supply exactly one of q and q_projected across them.</span>
+<span class="sd">    names must be disjoint. Stored components supply defaults for parameters</span>
+<span class="sd">    not sampled; explicit fixed_params override those defaults. Supply exactly</span>
+<span class="sd">    one of q and q_projected across the resulting physical schema.</span>
 
 <span class="sd">    An optional :class:`PhotometryPriorModel` multiplies the flat prior on</span>
 <span class="sd">    ``log10_re_pc``. A uniform ``cos_inclination`` coordinate gives an isotropic</span>
@@ -653,7 +657,12 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"dsph_model must be a classical AxisymmetricDSphModel"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prior</span> <span class="o">=</span> <span class="p">(</span><span class="n">FlatPriorModel</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">FlatPriorModel</span><span class="p">)</span>
                       <span class="k">else</span> <span class="n">FlatPriorModel</span><span class="p">(</span><span class="n">prior</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fixed_params</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">sampled</span> <span class="o">=</span> <span class="p">{</span><span class="n">_physical_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">}</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsph_model</span><span class="o">.</span><span class="n">physical_params</span>
+        <span class="k">if</span> <span class="s2">"q_projected"</span> <span class="ow">in</span> <span class="n">sampled</span> <span class="ow">or</span> <span class="s2">"q_projected"</span> <span class="ow">in</span> <span class="p">(</span><span class="n">fixed_params</span> <span class="ow">or</span> <span class="p">{}):</span>
+            <span class="n">defaults</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"q"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sampled</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fixed_params</span> <span class="ow">or</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">photometry_prior</span> <span class="o">=</span> <span class="n">photometry_prior</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_schema</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>

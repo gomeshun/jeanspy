@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="../_static/documentation_options.js?v=01f34227"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/axisymmetric';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -552,7 +554,11 @@ are unestablished.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AxisymmetricDSphModel</span><span class="p">,</span> <span class="n">AxisymmetricPlummerModel</span><span class="p">,</span>
+    <span class="n">AxisymmetricZhaoModel</span><span class="p">,</span> <span class="n">AxisymmetricConstantAnisotropyModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">intrinsic_axis_ratio</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric_inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphEstimationModel</span><span class="p">,</span> <span class="n">AxisymmetricKinematicData</span>
 
 
@@ -565,6 +571,19 @@ are unestablished.</p>
                             <span class="s2">"cos_inclination"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">])</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">classical_model</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">AxisymmetricDSphModel</span><span class="p">(</span>
+        <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">AxisymmetricPlummerModel</span><span class="p">(</span>
+                <span class="n">re_pc</span><span class="o">=</span><span class="n">TRUTH</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">],</span>
+                <span class="n">q</span><span class="o">=</span><span class="n">intrinsic_axis_ratio</span><span class="p">(</span><span class="n">TRUTH</span><span class="p">[</span><span class="s2">"q_projected"</span><span class="p">],</span> <span class="n">TRUTH</span><span class="p">[</span><span class="s2">"inclination"</span><span class="p">])),</span>
+            <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">AxisymmetricZhaoModel</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">TRUTH</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span>
+                <span class="p">(</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">,</span> <span class="s2">"beta"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">)}),</span>
+            <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">AxisymmetricConstantAnisotropyModel</span><span class="p">(</span><span class="n">TRUTH</span><span class="p">[</span><span class="s2">"beta_z"</span><span class="p">]),</span>
+        <span class="p">},</span> <span class="n">inclination</span><span class="o">=</span><span class="n">TRUTH</span><span class="p">[</span><span class="s2">"inclination"</span><span class="p">],</span> <span class="n">n_force</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">mock_data</span><span class="p">(</span><span class="n">stars</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
     <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="c1"># Positions selected inside a finite photometric window. The inference</span>
@@ -574,7 +593,7 @@ are unestablished.</p>
     <span class="n">azimuth</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">stars</span><span class="p">)</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">azimuth</span><span class="p">),</span> <span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">azimuth</span><span class="p">)</span><span class="o">*</span><span class="n">TRUTH</span><span class="p">[</span><span class="s2">"q_projected"</span><span class="p">]</span>
     <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">stars</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span>
-    <span class="n">variance</span> <span class="o">=</span> <span class="n">AxisymmetricDSphModel</span><span class="p">(</span><span class="mi">96</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">96</span><span class="p">)</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">TRUTH</span><span class="p">)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">classical_model</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="n">velocity</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">TRUTH</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="o">+</span><span class="n">error</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">AxisymmetricKinematicData</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
 
@@ -601,7 +620,12 @@ are unestablished.</p>
     <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span><span class="p">,</span> <span class="n">init_to_value</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphModel</span> <span class="k">as</span> <span class="n">JaxModel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">AxisymmetricDSphModel</span> <span class="k">as</span> <span class="n">JaxModel</span><span class="p">,</span>
+        <span class="n">AxisymmetricPlummerModel</span> <span class="k">as</span> <span class="n">JaxPlummerModel</span><span class="p">,</span>
+        <span class="n">AxisymmetricZhaoModel</span> <span class="k">as</span> <span class="n">JaxZhaoModel</span><span class="p">,</span>
+        <span class="n">AxisymmetricConstantAnisotropyModel</span> <span class="k">as</span> <span class="n">JaxAnisotropyModel</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricJeansLikelihoodModel</span><span class="p">,</span> <span class="n">ParameterSpec</span><span class="p">,</span> <span class="n">NumPyroSampler</span>
 
     <span class="n">specifications</span> <span class="o">=</span> <span class="p">[]</span>
@@ -616,8 +640,12 @@ are unestablished.</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">spec</span> <span class="o">=</span> <span class="n">ParameterSpec</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">distribution</span><span class="p">)</span>
         <span class="n">specifications</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
-    <span class="n">likelihood</span> <span class="o">=</span> <span class="n">AxisymmetricJeansLikelihoodModel</span><span class="p">(</span><span class="n">JaxModel</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span>
-                                                  <span class="n">specifications</span><span class="p">,</span> <span class="n">fixed_params</span><span class="o">=</span><span class="n">FIXED</span><span class="p">)</span>
+    <span class="n">forward</span> <span class="o">=</span> <span class="n">JaxModel</span><span class="p">(</span>
+        <span class="n">submodels</span><span class="o">=</span><span class="p">{</span><span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">JaxPlummerModel</span><span class="p">(),</span> <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">JaxZhaoModel</span><span class="p">(),</span>
+                   <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">JaxAnisotropyModel</span><span class="p">()},</span>
+        <span class="n">n_force</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">likelihood</span> <span class="o">=</span> <span class="n">AxisymmetricJeansLikelihoodModel</span><span class="p">(</span><span class="n">forward</span><span class="p">,</span> <span class="n">specifications</span><span class="p">,</span> <span class="n">fixed_params</span><span class="o">=</span><span class="n">FIXED</span><span class="p">)</span>
     <span class="n">initial</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">log10_rhos_Msunpc3</span><span class="o">=-</span><span class="mf">1.</span><span class="p">,</span> <span class="n">log10_rs_pc</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">)),</span>
                    <span class="n">bfunc_beta_z</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1.3</span><span class="p">)),</span> <span class="n">cos_inclination</span><span class="o">=</span><span class="mf">.3</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
     <span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">max_tree_depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">initial</span><span class="p">))</span>
@@ -648,7 +676,7 @@ are unestablished.</p>
         <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"stars &gt;= 2 and positive warmup/draws are required"</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">mock_data</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">stars</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">estimation</span> <span class="o">=</span> <span class="n">AxisymmetricDSphEstimationModel</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">PRIOR</span><span class="p">,</span> <span class="n">fixed_params</span><span class="o">=</span><span class="n">FIXED</span><span class="p">,</span>
-                    <span class="n">dsph_model</span><span class="o">=</span><span class="n">AxisymmetricDSphModel</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">))</span>
+                    <span class="n">dsph_model</span><span class="o">=</span><span class="n">classical_model</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">nodes</span><span class="p">))</span>
     <span class="n">args</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">frame</span><span class="p">,</span> <span class="n">diagnostics</span> <span class="o">=</span> <span class="p">(</span><span class="n">run_classical</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">estimation</span><span class="p">)</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">"classical"</span>
                            <span class="k">else</span> <span class="n">run_numpyro</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>

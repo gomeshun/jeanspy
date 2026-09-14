@@ -1,0 +1,37 @@
+Statistical inference
+=====================
+
+NumPy/SciPy
+-----------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.model.FittableModel
+   jeanspy.model.FlatPriorModel
+   jeanspy.model.PhotometryPriorModel
+   jeanspy.model.SimpleDSphEstimationModel
+   jeanspy.model.get_default_estimation_model
+   jeanspy.model.AxisymmetricDSphEstimationModel
+   jeanspy.model.AxisymmetricKinematicData
+
+Classical emcee sampling and HDF5 storage
+-----------------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.sampler.Sampler
+
+NumPyro likelihoods, sampling and storage
+-----------------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel
+   jeanspy.sampler_numpyro.JeansLikelihoodModel
+   jeanspy.sampler_numpyro.NumPyroSampler
+   jeanspy.sampler_numpyro.ParameterSpec
+   jeanspy.sampler_numpyro.SamplerRunResult
+   jeanspy.sampler_numpyro.StorageBackend

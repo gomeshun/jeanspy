@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.AxisymmetricZhaoModel
+============================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: AxisymmetricZhaoModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

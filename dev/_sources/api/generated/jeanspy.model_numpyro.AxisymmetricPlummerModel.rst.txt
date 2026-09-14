@@ -1,0 +1,10 @@
+﻿jeanspy.model\_numpyro.AxisymmetricPlummerModel
+===============================================
+
+.. currentmodule:: jeanspy.model_numpyro
+
+.. autoclass:: AxisymmetricPlummerModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

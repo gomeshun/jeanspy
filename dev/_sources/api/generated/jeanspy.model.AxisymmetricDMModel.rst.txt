@@ -1,0 +1,10 @@
+﻿jeanspy.model.AxisymmetricDMModel
+=================================
+
+.. currentmodule:: jeanspy.model
+
+.. autoclass:: AxisymmetricDMModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

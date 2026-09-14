@@ -9,7 +9,6 @@ See :doc:`../guides/contracts` for units, shapes, domains and backend
 boundaries, and :doc:`../quickstart` for executable minimal examples.
 
 .. autosummary::
-   :toctree: generated
 
    AxisymmetricJeansLikelihoodModel
    JeansLikelihoodModel

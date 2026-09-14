@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="../_static/documentation_options.js?v=01f34227"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/spherical';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -532,7 +534,7 @@ scripts using a <code class="docutils literal notranslate"><span class="pre">spa
 <p>Use a new output directory. Inputs and outputs include <code class="docutils literal notranslate"><span class="pre">observations.csv</span></code>,
 <code class="docutils literal notranslate"><span class="pre">prior.csv</span></code>, the persisted sampler state and <code class="docutils literal notranslate"><span class="pre">result.json</span></code>. The seed is 55.
 The displayed run contains only 12 stored steps and does not establish
-convergence. Longer runs and posterior diagnostics are needed for inference.</p>
+convergence. Use the <a class="reference internal" href="../quickstart.html"><span class="std std-doc">Quickstart</span></a> for a complete spherical model and MCMC example.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="sd">"""Small reproducible classical inference/storage example, not a calibration run.</span>
 

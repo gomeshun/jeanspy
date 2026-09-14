@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="../_static/documentation_options.js?v=01f34227"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guides/contracts';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
@@ -463,7 +465,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical accuracy</a></li>
 </ul>
 </div>
 </nav></div>
@@ -574,12 +576,13 @@ to a common shape, include signed positions and the projected center, and
 return that shape. Physical parameter dictionaries contain scalar values;
 use <code class="docutils literal notranslate"><span class="pre">jax.vmap</span></code> to batch dictionaries explicitly. Inference data contain matching
 nonempty finite 1-D arrays; measurement errors must be nonnegative.</p>
-<p>Classical models are stateful: construct components, then update their named
-parameters. JAX spherical models use explicit <code class="docutils literal notranslate"><span class="pre">params</span></code> dictionaries. The
-axisymmetric forward configurations are frozen dataclasses in both backends;
-use <code class="docutils literal notranslate"><span class="pre">dataclasses.replace</span></code> or construct another configuration to change node
-counts. The convenience exports in <code class="docutils literal notranslate"><span class="pre">jeanspy.model</span></code> preserve the defining
-axisymmetric classes.</p>
+<p>Classical spherical models store parameters and support <code class="docutils literal notranslate"><span class="pre">update</span></code>. Axisymmetric
+NumPy components also store parameters, but are immutable: use
+<code class="docutils literal notranslate"><span class="pre">dataclasses.replace</span></code> to change a component or the forward model’s node counts.
+An axisymmetric per-call <code class="docutils literal notranslate"><span class="pre">params</span></code> mapping overrides stored physical values
+without modifying the components. Both JAX geometries receive physical
+parameters explicitly. The convenience exports in <code class="docutils literal notranslate"><span class="pre">jeanspy.model</span></code> preserve
+the defining axisymmetric classes.</p>
 <p>NumPy raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (including <code class="docutils literal notranslate"><span class="pre">InvalidAxisymmetricModelError</span></code>) for invalid
 axisymmetric models. JAX uses NaN forward values for invalid dynamic physical
 proposals, which the likelihood rejects with minus infinity; schema and shape

@@ -9,7 +9,6 @@ See :doc:`../guides/contracts` for units, shapes, domains and backend
 boundaries, and :doc:`../quickstart` for executable minimal examples.
 
 .. autosummary::
-   :toctree: generated
 
    AxisymmetricJeans
    PlummerTracer
@@ -20,4 +19,10 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
 Aliases
 -------
 
+* ``jeanspy.axisymmetric.AxisymmetricStellarModel`` is :py:obj:`jeanspy.model.AxisymmetricStellarModel`.
+* ``jeanspy.axisymmetric.AxisymmetricPlummerModel`` is :py:obj:`jeanspy.model.AxisymmetricPlummerModel`.
+* ``jeanspy.axisymmetric.AxisymmetricDMModel`` is :py:obj:`jeanspy.model.AxisymmetricDMModel`.
+* ``jeanspy.axisymmetric.AxisymmetricZhaoModel`` is :py:obj:`jeanspy.model.AxisymmetricZhaoModel`.
+* ``jeanspy.axisymmetric.AxisymmetricAnisotropyModel`` is :py:obj:`jeanspy.model.AxisymmetricAnisotropyModel`.
+* ``jeanspy.axisymmetric.AxisymmetricConstantAnisotropyModel`` is :py:obj:`jeanspy.model.AxisymmetricConstantAnisotropyModel`.
 * ``jeanspy.axisymmetric.AxisymmetricDSphModel`` is :py:obj:`jeanspy.model.AxisymmetricDSphModel`.

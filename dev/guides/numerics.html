@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Numerical helpers &#8212; JeansPy documentation</title>
+    <title>Numerical accuracy &#8212; JeansPy documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=b635b406" />
   
   <!-- So that users can add custom icons -->
@@ -42,6 +43,7 @@
     <script src="../_static/documentation_options.js?v=01f34227"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guides/numerics';</script>
@@ -465,7 +467,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Numerical helpers</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Numerical accuracy</a></li>
 </ul>
 </div>
 </nav></div>
@@ -509,7 +511,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Feature guides</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Numerical helpers</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Numerical accuracy</span></li>
   </ul>
 </nav>
 </div>
@@ -526,26 +528,11 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="numerical-helpers">
-<h1>Numerical helpers<a class="headerlink" href="#numerical-helpers" title="Link to this heading">#</a></h1>
-<p>The classical double-exponential quadrature takes a vectorized function and
-fixed nodes. It returns an integral without an error estimate. Compare several
-node counts and an independent reference before adopting it for a new domain.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Fixed quadrature and a specialized JAX kernel reference check."""</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.dequad</span><span class="w"> </span><span class="kn">import</span> <span class="n">dequad</span><span class="p">,</span> <span class="n">generate_x_w</span>
-
-<span class="c1"># quadrature-start</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
-
-<span class="n">value</span> <span class="o">=</span> <span class="n">dequad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
-<span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">generate_x_w</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">nodes</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
-<span class="c1"># These fixed rules provide no automatic error estimate. Compare node counts.</span>
-</pre></div>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="numerical-accuracy">
+<h1>Numerical accuracy<a class="headerlink" href="#numerical-accuracy" title="Link to this heading">#</a></h1>
+<p>The solvers use fixed quadrature rules without an automatic error estimate.
+Compare increasing node counts and an independent reference when using a new
+parameter domain. See the API reference for each solver’s numerical options.</p>
 <p>The specialized hypergeometric and fixed-<span class="math notranslate nohighlight">\(\eta=2\)</span> Baes kernels support the
 spherical JAX solver. They are real-valued approximations with restricted
 domains; they do not replace a general complex special-function library.
@@ -569,9 +556,7 @@ The following check uses SciPy and mpmath references in a small regular domain.<
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">baes_eta2_kernel_jax</span></code> clamps some intermediate arguments and replaces
 nonfinite values. Validate physical parameters separately: a finite low-level
-kernel output does not certify a valid anisotropy model. Likewise, the
-<code class="docutils literal notranslate"><span class="pre">xp</span></code> argument of classical <code class="docutils literal notranslate"><span class="pre">dequad</span></code> is not a promise of JAX tracing through
-node generation or physical parameters.</p>
+kernel output does not certify a valid anisotropy model.</p>
 </section>
 
 
