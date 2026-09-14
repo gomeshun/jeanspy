@@ -151,16 +151,3 @@ def setup(app):
     app.connect("source-read", substitute_build_identity)
     app.connect("doctree-read", qualify_imported_types)
     app.connect("doctree-read", preserve_source_alias_anchors)
-    app.connect("build-finished", retire_research_pages)
-
-
-def retire_research_pages(app, exception):
-    """Keep old bookmarks usable without publishing research pages or data."""
-    if exception is not None or app.builder.name != "html":
-        return
-    sys.path.insert(0, str(ROOT / "scripts"))
-    from check_public_docs import RETIRED_PAGES, redirect_page
-    for old, target in RETIRED_PAGES.items():
-        path = Path(app.outdir) / old
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(redirect_page(target))

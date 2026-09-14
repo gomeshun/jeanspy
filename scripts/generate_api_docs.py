@@ -142,6 +142,11 @@ def main():
     for original, target in [("axisymmetric.md", "axisymmetric.md"),
                              ("ullio_jfactor_geometry.md", "ullio-geometry.md")]:
         body = (ROOT / "docs" / original).read_text()
+        if original == "axisymmetric.md":
+            # The repository guide also retains research measurements. Only
+            # the user-facing model and numerical settings belong on the site.
+            body = body.split("The recorded [CPU runtime sample]", 1)[0]
+            body = body.replace("## Numerical equations and validation", "## Numerical equations")
         body = re.sub(r"```math\n(.*?)\n```", r"$$\n\1\n$$", body, flags=re.S)
         body = re.sub(r"\]\(\.\./([^)]*)\)",
                       r"](https://github.com/gomeshun/jeanspy/blob/" +
