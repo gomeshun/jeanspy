@@ -10,6 +10,12 @@ Further software/venue research and a submission-ready manuscript are outside
 the active objective. Existing comparison materials are retained as background.
 Preparing the PyPI release does not authorize an actual package upload.
 
+The author subsequently excluded MCMC comparisons and requested matched
+function timing, with line-of-sight velocity dispersion accuracy and time as
+the preferred Jeans benchmark. The frozen `matched-los-accuracy-time-v1`
+experiment implements that direction within the existing cumulative budget.
+It does not resume the earlier inference queue or core/cusp research.
+
 Prepare and review the release changes before merging or publishing. The
 author's earlier requirement to inspect the planned publication and explicitly
 approve merging remains in effect. The experiment decisions below are retained

@@ -36,6 +36,17 @@ additional experiments. Review existing evidence for the release before
 bringing it into this branch. Do not silently substitute new seeds, relax
 diagnostics or relabel an author-directed amendment as a preregistered run.
 
+On 2026-09-14 the author excluded MCMC comparisons because of their cost and
+prioritized line-of-sight dispersion accuracy and evaluation time. The new
+`matched-los-accuracy-time-v1` protocol fixes matched spherical/oblate Plummer
+cases, three position counts, three numerical resolutions and ten prescribed
+mass-normalization changes. It compares the public NumPy/JAX solvers and
+JAM 9.0.2 against an independent reference, separating MGE fitting, input
+transfer, first-call compilation, warm evaluation and output transfer. Its
+runtime is charged to the existing campaign budget. The familiar physical
+cases come from the earlier JAM validation; only the new experiment is frozen
+before its first execution. Failed settings remain part of the report.
+
 Main publishes development documentation. A published GitHub Release adds an
 immutable documentation version; the highest formal release supplies `stable`.
 The package tag and GitHub Release are separate required steps in the
