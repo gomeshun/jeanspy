@@ -70,6 +70,62 @@ def test_component_replacement_and_call_overrides_are_effective():
         composed.sigmalos2(100., 50., params={"q": .7, "q_projected": qp})
 
 
+def test_legacy_components_preserve_physics_and_replacement_fields():
+    parts = components()
+    parts["StellarModel"] = classical.PlummerTracer(a_pc=300., q=.7)
+    parts["DMModel"] = classical.ZhaoHalo(
+        rho_s=.1, r_s=500., Q=.8, alpha=2., beta=3., gamma=.5, r_t_pc=2000.)
+    legacy = classical.AxisymmetricDSphModel(16, 16, 16, submodels=parts, inclination=1.1)
+    reference = model()
+    for method in ("sigmalos2", "density_3d", "mass_density_3d", "surface_density",
+                   "intrinsic_moments", "potential_gradient"):
+        np.testing.assert_allclose(getattr(legacy, method)(100., 50.),
+                                   getattr(reference, method)(100., 50.), rtol=1e-13)
+    np.testing.assert_allclose(legacy.enclosed_mass([100., 3000.]),
+                               reference.enclosed_mass([100., 3000.]))
+    for method in ("jfactor", "dfactor"):
+        options = dict(n_mu=16, n_phi=16, n_radial=16)
+        np.testing.assert_allclose(getattr(legacy, method)(1e5, .1, **options),
+                                   getattr(reference, method)(1e5, .1, **options))
+    # dataclasses.replace forwards explicit legacy names to the custom initializer.
+    assert replace(parts["StellarModel"], a_pc=350.).re_pc == 350.
+    assert replace(parts["DMModel"], r_s=600.).rs_pc == 600.
+    doubled = replace(parts["DMModel"], rho_s=.2)
+    changed = replace(legacy, submodels={**parts, "DMModel": doubled})
+    np.testing.assert_allclose(changed.sigmalos2(100., 50.), 2*legacy.sigmalos2(100., 50.))
+    np.testing.assert_allclose(legacy.sigmalos2(100., 50., params={"rhos_Msunpc3": .2}),
+                               changed.sigmalos2(100., 50.))
+    assert legacy.physical_params == PARAMS
+
+
+@pytest.mark.parametrize("backend_name", ["classical", "jax"])
+@pytest.mark.parametrize("role,base_name,methods", [
+    ("StellarModel", "AxisymmetricStellarModel",
+     ("density_3d", "surface_density", "radial_derivative")),
+    ("DMModel", "AxisymmetricDMModel",
+     ("mass_density_3d", "enclosed_mass", "potential_gradient")),
+    ("AnisotropyModel", "AxisymmetricAnisotropyModel", ("beta",)),
+])
+def test_public_interface_alone_is_rejected_before_solver_hooks(backend_name, role, base_name, methods):
+    backend = classical
+    parts = components()
+    if backend_name == "jax":
+        pytest.importorskip("jax")
+        from jeanspy import axisymmetric_numpyro as backend
+        parts = dict(StellarModel=backend.AxisymmetricPlummerModel(),
+                     DMModel=backend.AxisymmetricZhaoModel(),
+                     AnisotropyModel=backend.AxisymmetricConstantAnisotropyModel())
+
+    def unexpected_evaluation(*args, **kwargs):
+        raise AssertionError("Unsupported components must be rejected at construction")
+
+    custom = type("CustomComponent", (getattr(backend, base_name),),
+                  dict.fromkeys(methods, unexpected_evaluation))()
+    assert isinstance(custom, getattr(backend, base_name))
+    with pytest.raises(TypeError, match="Expected jeanspy"):
+        backend.AxisymmetricDSphModel(submodels={**parts, role: custom})
+
+
 def test_anisotropy_component_controls_both_meridional_and_azimuthal_moments():
     parts = components()
     old = classical.AxisymmetricJeans(parts["StellarModel"], parts["DMModel"], -.3,

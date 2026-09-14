@@ -463,7 +463,7 @@ class AxisymmetricJeans:
 
     def __post_init__(self):
         if not isinstance(self.tracer, AxisymmetricPlummerModel) or not isinstance(self.halo, AxisymmetricZhaoModel):
-            raise TypeError("require PlummerTracer and ZhaoHalo components")
+            raise TypeError("require AxisymmetricPlummerModel and AxisymmetricZhaoModel components")
         if not np.isscalar(self.beta_z) or not np.isfinite(self.beta_z) or self.beta_z >= 1:
             raise ValueError("beta_z must be finite and < 1")
         if self.anisotropy is not None:
@@ -645,12 +645,12 @@ class AxisymmetricDSphModel:
                 "Invalid axisymmetric physical parameters or inclination/flattening")
         p = {k: float(v) for k, v in p.items()}
         return AxisymmetricJeans(
-            stellar_type(p["re_pc"], p["q"]),
-            halo_type(p["rs_pc"], p["rhos_Msunpc3"], p["Q"],
-                                  p["alpha"], p["beta"], p["gamma"], p["r_t_pc"]),
+            stellar_type(re_pc=p["re_pc"], q=p["q"]),
+            halo_type(rs_pc=p["rs_pc"], rhos_Msunpc3=p["rhos_Msunpc3"], Q=p["Q"],
+                      alpha=p["alpha"], beta=p["beta"], gamma=p["gamma"], r_t_pc=p["r_t_pc"]),
             inclination=p["inclination"], n_force=self.n_force,
             n_vertical=self.n_vertical, n_los=self.n_los,
-            anisotropy=anisotropy_type(p["beta_z"]),
+            anisotropy=anisotropy_type(beta_z=p["beta_z"]),
         )
 
     def sigmalos2(self, x_pc, y_pc, *, params=None):

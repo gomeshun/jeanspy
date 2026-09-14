@@ -5,7 +5,7 @@ the exact commit used. Do not cite an unpublished manuscript as an accepted
 paper. A suitable development-software reference is:
 
 > Horigome, S., JeansPy, development source at commit
-> <commit used in your analysis>,
+> `<commit used in your analysis>`,
 > https://github.com/gomeshun/jeanspy.
 
 Cite the scientific methods and software actually used in your analysis.

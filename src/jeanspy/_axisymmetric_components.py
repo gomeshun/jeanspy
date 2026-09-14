@@ -21,6 +21,7 @@ class Components(Mapping):
 
 
 def component_models(submodels, expected):
+    """Require the backend's concrete supported families, not just their ABCs."""
     if not isinstance(submodels, Mapping) or set(submodels) != {
         "StellarModel", "DMModel", "AnisotropyModel",
     }:
