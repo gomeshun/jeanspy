@@ -30,8 +30,9 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -1219,7 +1220,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">submodels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Model.sampling_identity">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.Model.html#jeanspy.model_numpyro.Model.sampling_identity">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.Model.sampling_identity.html#jeanspy.model_numpyro.Model.sampling_identity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampling_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Model configuration without the derived compilation cache."""</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">"_jit_cache"</span><span class="p">}</span></div>
@@ -1272,7 +1273,7 @@
     <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"re_pc"</span><span class="p">,)</span>
 
 <div class="viewcode-block" id="PlummerModel.density_2d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.PlummerModel.html#jeanspy.model_numpyro.PlummerModel.density_2d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.PlummerModel.density_2d.html#jeanspy.model_numpyro.PlummerModel.density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">re_pc</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return unit-normalized Plummer surface density in pc^-2 on JAX.</span>
 
@@ -1287,7 +1288,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.density_3d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.PlummerModel.html#jeanspy.model_numpyro.PlummerModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.PlummerModel.density_3d.html#jeanspy.model_numpyro.PlummerModel.density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">re_pc</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return unit-normalized Plummer density in pc^-3 on the JAX backend.</span>
 
@@ -1302,7 +1303,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.log_prob_R">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.PlummerModel.html#jeanspy.model_numpyro.PlummerModel.log_prob_R">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.PlummerModel.log_prob_R.html#jeanspy.model_numpyro.PlummerModel.log_prob_R">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_prob_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">re_pc</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Log-pdf of observed projected radius R (i.e. p(R) dR).</span>
 
@@ -1324,7 +1325,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.sample_R">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.PlummerModel.html#jeanspy.model_numpyro.PlummerModel.sample_R">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.PlummerModel.sample_R.html#jeanspy.model_numpyro.PlummerModel.sample_R">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">jax</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">re_pc</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Sample projected radii using the analytic inverse CDF.</span>
 
@@ -1543,7 +1544,7 @@
     <span class="n">analytic_enclosed_mass_autodiff_safe</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="NFWModel.resolve_params">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.NFWModel.html#jeanspy.model_numpyro.NFWModel.resolve_params">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.NFWModel.resolve_params.html#jeanspy.model_numpyro.NFWModel.resolve_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">resolve_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Resolve NFW scales and cache their mass coefficient as JAX arrays.</span>
 
@@ -1565,7 +1566,7 @@
 
 
 <div class="viewcode-block" id="NFWModel.mass_density_3d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.NFWModel.html#jeanspy.model_numpyro.NFWModel.mass_density_3d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.NFWModel.mass_density_3d.html#jeanspy.model_numpyro.NFWModel.mass_density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -1587,7 +1588,7 @@
 
 
 <div class="viewcode-block" id="NFWModel.enclosed_mass_analytic">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.NFWModel.html#jeanspy.model_numpyro.NFWModel.enclosed_mass_analytic">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.NFWModel.enclosed_mass_analytic.html#jeanspy.model_numpyro.NFWModel.enclosed_mass_analytic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass_analytic</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -1654,7 +1655,7 @@
     <span class="n">analytic_enclosed_mass_autodiff_safe</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="ZhaoModel.mass_density_3d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.ZhaoModel.html#jeanspy.model_numpyro.ZhaoModel.mass_density_3d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.ZhaoModel.mass_density_3d.html#jeanspy.model_numpyro.ZhaoModel.mass_density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -1678,7 +1679,7 @@
 
 
 <div class="viewcode-block" id="ZhaoModel.enclosed_mass_numeric">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.ZhaoModel.html#jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric.html#jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass_numeric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Cusp-regularized, differentiable quadrature without a central cutoff.</span>
 
@@ -1695,7 +1696,7 @@
 
 
 <div class="viewcode-block" id="ZhaoModel.enclosed_mass_betainc">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.ZhaoModel.html#jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc.html#jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass_betainc</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -1755,7 +1756,7 @@
 
 
 <div class="viewcode-block" id="ZhaoModel.enclosed_mass_analytic">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.ZhaoModel.html#jeanspy.model_numpyro.ZhaoModel.enclosed_mass_analytic">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.ZhaoModel.enclosed_mass_analytic.html#jeanspy.model_numpyro.ZhaoModel.enclosed_mass_analytic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass_analytic</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -1844,14 +1845,14 @@
     <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,)</span>
 
 <div class="viewcode-block" id="ConstantAnisotropyModel.beta">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.ConstantAnisotropyModel.html#jeanspy.model_numpyro.ConstantAnisotropyModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.ConstantAnisotropyModel.beta.html#jeanspy.model_numpyro.ConstantAnisotropyModel.beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return constant beta_ani with the same shape as `r_pc`."""</span>
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">])</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ConstantAnisotropyModel.f">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.ConstantAnisotropyModel.html#jeanspy.model_numpyro.ConstantAnisotropyModel.f">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.ConstantAnisotropyModel.f.html#jeanspy.model_numpyro.ConstantAnisotropyModel.f">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return f(r)=r^(2 beta_ani) from the note definition."""</span>
         <span class="n">beta_ani</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">])</span>
@@ -1860,7 +1861,7 @@
 
 
 <div class="viewcode-block" id="ConstantAnisotropyModel.kernel">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.ConstantAnisotropyModel.html#jeanspy.model_numpyro.ConstantAnisotropyModel.kernel">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.ConstantAnisotropyModel.kernel.html#jeanspy.model_numpyro.ConstantAnisotropyModel.kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">u</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -1979,7 +1980,7 @@
     <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"beta_0"</span><span class="p">,</span> <span class="s2">"beta_inf"</span><span class="p">,</span> <span class="s2">"r_a"</span><span class="p">,</span> <span class="s2">"eta"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaesAnisotropyModel.beta">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.BaesAnisotropyModel.html#jeanspy.model_numpyro.BaesAnisotropyModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.BaesAnisotropyModel.beta.html#jeanspy.model_numpyro.BaesAnisotropyModel.beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Baes &amp; van Hese profile</span>
 
@@ -2000,7 +2001,7 @@
 
 
 <div class="viewcode-block" id="BaesAnisotropyModel.f">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.BaesAnisotropyModel.html#jeanspy.model_numpyro.BaesAnisotropyModel.f">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.BaesAnisotropyModel.f.html#jeanspy.model_numpyro.BaesAnisotropyModel.f">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return</span>
 
@@ -2035,7 +2036,7 @@
         <span class="p">)</span> <span class="o">*</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="n">ell</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaesAnisotropyModel.kernel">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.BaesAnisotropyModel.html#jeanspy.model_numpyro.BaesAnisotropyModel.kernel">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.BaesAnisotropyModel.kernel.html#jeanspy.model_numpyro.BaesAnisotropyModel.kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">u</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -2119,7 +2120,7 @@
     <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"r_a"</span><span class="p">,)</span>
 
 <div class="viewcode-block" id="OsipkovMerrittModel.beta">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.OsipkovMerrittModel.html#jeanspy.model_numpyro.OsipkovMerrittModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.OsipkovMerrittModel.beta.html#jeanspy.model_numpyro.OsipkovMerrittModel.beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return beta(r)=r^2/(r^2+r_a^2)."""</span>
         <span class="n">r_a</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"r_a"</span><span class="p">])</span>
@@ -2128,7 +2129,7 @@
 
 
 <div class="viewcode-block" id="OsipkovMerrittModel.f">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.OsipkovMerrittModel.html#jeanspy.model_numpyro.OsipkovMerrittModel.f">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.OsipkovMerrittModel.f.html#jeanspy.model_numpyro.OsipkovMerrittModel.f">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return f(r)=1+r^2/r_a^2 from the note table."""</span>
         <span class="n">r_a</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"r_a"</span><span class="p">])</span>
@@ -2137,7 +2138,7 @@
 
 
 <div class="viewcode-block" id="OsipkovMerrittModel.kernel">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.OsipkovMerrittModel.html#jeanspy.model_numpyro.OsipkovMerrittModel.kernel">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.OsipkovMerrittModel.kernel.html#jeanspy.model_numpyro.OsipkovMerrittModel.kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -2231,7 +2232,7 @@
         <span class="k">return</span> <span class="n">method_key</span>
 
 <div class="viewcode-block" id="DSphModel.sigmalos2_kernel">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.DSphModel.html#jeanspy.model_numpyro.DSphModel.sigmalos2_kernel">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.DSphModel.sigmalos2_kernel.html#jeanspy.model_numpyro.DSphModel.sigmalos2_kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos2_kernel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">R_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -2348,7 +2349,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.sigmalos2_abel">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.DSphModel.html#jeanspy.model_numpyro.DSphModel.sigmalos2_abel">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.DSphModel.sigmalos2_abel.html#jeanspy.model_numpyro.DSphModel.sigmalos2_abel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos2_abel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">R_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -2437,7 +2438,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.sigmalos2">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.DSphModel.html#jeanspy.model_numpyro.DSphModel.sigmalos2">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.DSphModel.sigmalos2.html#jeanspy.model_numpyro.DSphModel.sigmalos2">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos2</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">R_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>

@@ -1,0 +1,9 @@
+get_chain
+=========
+
+``jeanspy.sampler.Sampler.get_chain``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.get_chain
+   :no-index:

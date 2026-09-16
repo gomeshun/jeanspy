@@ -1,0 +1,9 @@
+mass_density_3d
+===============
+
+``jeanspy.model.DMModel.mass_density_3d``
+
+Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
+
+.. automethod:: jeanspy.model.DMModel.mass_density_3d
+   :no-index:

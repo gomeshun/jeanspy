@@ -1,0 +1,9 @@
+index
+=====
+
+``jeanspy.model.Parameters.index``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. autoattribute:: jeanspy.model.Parameters.index
+   :no-index:

@@ -1,0 +1,9 @@
+ndim
+====
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.ndim``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.AxisymmetricDSphEstimationModel.ndim
+   :no-index:

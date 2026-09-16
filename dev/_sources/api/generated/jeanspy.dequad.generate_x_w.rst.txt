@@ -1,5 +1,7 @@
-﻿jeanspy.dequad.generate\_x\_w
-=============================
+﻿generate\_x\_w
+==============
+
+``jeanspy.dequad.generate_x_w``
 
 .. currentmodule:: jeanspy.dequad
 

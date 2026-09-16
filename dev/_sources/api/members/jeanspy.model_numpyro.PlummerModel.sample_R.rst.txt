@@ -1,0 +1,9 @@
+sample_R
+========
+
+``jeanspy.model_numpyro.PlummerModel.sample_R``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model_numpyro.PlummerModel>`.
+
+.. automethod:: jeanspy.model_numpyro.PlummerModel.sample_R
+   :no-index:

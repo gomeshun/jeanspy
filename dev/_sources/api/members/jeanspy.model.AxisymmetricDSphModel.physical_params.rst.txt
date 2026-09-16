@@ -1,0 +1,9 @@
+physical_params
+===============
+
+``jeanspy.model.AxisymmetricDSphModel.physical_params``
+
+Class and construction: :doc:`AxisymmetricDSphModel <../generated/jeanspy.model.AxisymmetricDSphModel>`.
+
+.. autoattribute:: jeanspy.model.AxisymmetricDSphModel.physical_params
+   :no-index:

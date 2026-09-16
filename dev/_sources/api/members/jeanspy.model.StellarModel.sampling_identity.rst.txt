@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.StellarModel.sampling_identity``
+
+Class and construction: :doc:`StellarModel <../generated/jeanspy.model.StellarModel>`.
+
+.. automethod:: jeanspy.model.StellarModel.sampling_identity
+   :no-index:

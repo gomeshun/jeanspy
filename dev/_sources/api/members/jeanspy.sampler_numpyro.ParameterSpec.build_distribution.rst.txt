@@ -1,0 +1,9 @@
+build_distribution
+==================
+
+``jeanspy.sampler_numpyro.ParameterSpec.build_distribution``
+
+Class and construction: :doc:`ParameterSpec <../generated/jeanspy.sampler_numpyro.ParameterSpec>`.
+
+.. automethod:: jeanspy.sampler_numpyro.ParameterSpec.build_distribution
+   :no-index:

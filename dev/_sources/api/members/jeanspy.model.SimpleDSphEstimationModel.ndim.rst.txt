@@ -1,0 +1,9 @@
+ndim
+====
+
+``jeanspy.model.SimpleDSphEstimationModel.ndim``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SimpleDSphEstimationModel.ndim
+   :no-index:

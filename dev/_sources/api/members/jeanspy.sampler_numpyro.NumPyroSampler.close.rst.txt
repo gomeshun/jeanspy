@@ -1,0 +1,9 @@
+close
+=====
+
+``jeanspy.sampler_numpyro.NumPyroSampler.close``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.close
+   :no-index:

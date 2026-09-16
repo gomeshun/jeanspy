@@ -1,0 +1,9 @@
+logdensity_2d
+=============
+
+``jeanspy.model.Exp2dModel.logdensity_2d``
+
+Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
+
+.. automethod:: jeanspy.model.Exp2dModel.logdensity_2d
+   :no-index:

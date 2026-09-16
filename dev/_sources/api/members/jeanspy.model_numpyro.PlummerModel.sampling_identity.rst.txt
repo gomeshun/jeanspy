@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model_numpyro.PlummerModel.sampling_identity``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model_numpyro.PlummerModel>`.
+
+.. automethod:: jeanspy.model_numpyro.PlummerModel.sampling_identity
+   :no-index:

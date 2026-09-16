@@ -1,5 +1,7 @@
-﻿jeanspy.model\_numpyro.configure\_runtime
-=========================================
+﻿configure\_runtime
+==================
+
+``jeanspy.model_numpyro.configure_runtime``
 
 .. currentmodule:: jeanspy.model_numpyro
 

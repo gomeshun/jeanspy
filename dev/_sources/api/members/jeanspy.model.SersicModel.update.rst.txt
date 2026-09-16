@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.SersicModel.update``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.update
+   :no-index:

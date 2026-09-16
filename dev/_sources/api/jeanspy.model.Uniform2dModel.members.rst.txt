@@ -1,0 +1,17 @@
+Uniform2dModel members
+======================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.Uniform2dModel.cdf_R
+   members/jeanspy.model.Uniform2dModel.density
+   members/jeanspy.model.Uniform2dModel.density_2d
+   members/jeanspy.model.Uniform2dModel.density_2d_truncated
+   members/jeanspy.model.Uniform2dModel.density_3d
+   members/jeanspy.model.Uniform2dModel.is_required_param_names
+   members/jeanspy.model.Uniform2dModel.params_all
+   members/jeanspy.model.Uniform2dModel.params_all_with_model_name
+   members/jeanspy.model.Uniform2dModel.required_param_names_combined
+   members/jeanspy.model.Uniform2dModel.sampling_identity
+   members/jeanspy.model.Uniform2dModel.update

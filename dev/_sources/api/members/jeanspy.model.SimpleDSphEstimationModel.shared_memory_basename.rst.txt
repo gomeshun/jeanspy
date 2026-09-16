@@ -1,0 +1,9 @@
+shared_memory_basename
+======================
+
+``jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename
+   :no-index:

@@ -1,0 +1,9 @@
+sigmalos2
+=========
+
+``jeanspy.model_numpyro.DSphModel.sigmalos2``
+
+Class and construction: :doc:`DSphModel <../generated/jeanspy.model_numpyro.DSphModel>`.
+
+.. automethod:: jeanspy.model_numpyro.DSphModel.sigmalos2
+   :no-index:

@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.NFWModel.params_all_with_model_name``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. autoattribute:: jeanspy.model.NFWModel.params_all_with_model_name
+   :no-index:

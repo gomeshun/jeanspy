@@ -1,0 +1,9 @@
+cdf_R
+=====
+
+``jeanspy.model.Exp3dModel.cdf_R``
+
+Class and construction: :doc:`Exp3dModel <../generated/jeanspy.model.Exp3dModel>`.
+
+.. automethod:: jeanspy.model.Exp3dModel.cdf_R
+   :no-index:

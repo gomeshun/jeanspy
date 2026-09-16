@@ -1,0 +1,9 @@
+f
+=
+
+``jeanspy.model.OsipkovMerrittModel.f``
+
+Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model.OsipkovMerrittModel>`.
+
+.. automethod:: jeanspy.model.OsipkovMerrittModel.f
+   :no-index:

@@ -1,5 +1,7 @@
-﻿jeanspy.hyp2f1\_jax.hyp2f1\_1b\_3half\_quad
-===========================================
+﻿hyp2f1\_1b\_3half\_quad
+=======================
+
+``jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad``
 
 .. currentmodule:: jeanspy.hyp2f1_jax
 

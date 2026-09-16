@@ -1,0 +1,9 @@
+R_exp_pc
+========
+
+``jeanspy.model.Exp2dModel.R_exp_pc``
+
+Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
+
+.. autoattribute:: jeanspy.model.Exp2dModel.R_exp_pc
+   :no-index:

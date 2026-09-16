@@ -1,0 +1,9 @@
+pending_write_count
+===================
+
+``jeanspy.sampler_numpyro.NumPyroSampler.pending_write_count``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.pending_write_count
+   :no-index:

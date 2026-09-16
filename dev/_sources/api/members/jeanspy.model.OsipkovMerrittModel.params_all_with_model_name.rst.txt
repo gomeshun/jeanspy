@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.OsipkovMerrittModel.params_all_with_model_name``
+
+Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model.OsipkovMerrittModel>`.
+
+.. autoattribute:: jeanspy.model.OsipkovMerrittModel.params_all_with_model_name
+   :no-index:

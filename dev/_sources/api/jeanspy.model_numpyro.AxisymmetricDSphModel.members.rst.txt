@@ -1,0 +1,14 @@
+AxisymmetricDSphModel members
+=============================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2
+   members/jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density

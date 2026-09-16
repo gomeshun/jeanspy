@@ -31,8 +31,9 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -157,22 +158,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -191,6 +178,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="citing.html">
     Citing JeansPy and its dependencies
@@ -339,22 +340,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -362,6 +349,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -480,12 +481,35 @@ the inputs and diagnostics needed to reproduce the analysis.</p>
 <p>This is the <strong>development documentation</strong>. It may describe changes beyond the
 latest published package; use the source checkout in the installation guide.</p>
 <p>Documentation version: <code class="docutils literal notranslate"><span class="pre">dev</span></code>. Source reference:
-<a class="reference external" href="https://github.com/gomeshun/jeanspy/tree/487ffad2e915943ab31c1cb8db61648416a9a7fa"><code class="docutils literal notranslate"><span class="pre">487ffad2e915</span></code></a>.
+<a class="reference external" href="https://github.com/gomeshun/jeanspy/tree/6fd09f095362826aa6a69eb6b3abc55be430ec7b"><code class="docutils literal notranslate"><span class="pre">6fd09f095362</span></code></a>.
 The <a class="reference external" href="https://github.com/gomeshun/jeanspy/releases">release history</a> identifies
 published versions and significant changes.</p>
-<p>Start with the <a class="reference internal" href="installation.html"><span class="std std-doc">installation guide</span></a> and
-<a class="reference internal" href="quickstart.html"><span class="std std-doc">executable quickstart</span></a>. The <a class="reference internal" href="guides/contracts.html"><span class="std std-doc">model contract</span></a>
-defines units, geometry, array shapes and the limits of differentiation.</p>
+<p>Start with the <a class="reference internal" href="installation.html"><span class="std std-doc">installation guide</span></a>, then follow the path
+that matches what you need:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Section</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a></p></td>
+<td><p>Define a model, plot a prediction and mock data, run NumPyro NUTS and inspect the result</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tutorials/index.html"><span class="std std-doc">Tutorials</span></a></p></td>
+<td><p>Learn units, backends, model construction, predictions, MCMC and storage step by step</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/index.html"><span class="std std-doc">API reference</span></a></p></td>
+<td><p>Look up every public class, function, method and property by name</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="guides/index.html"><span class="std std-doc">Topic guides</span></a></p></td>
+<td><p>Consult geometry, profile, numerical and J/D-factor details</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <a class="reference internal" href="guides/contracts.html"><span class="std std-doc">model contract</span></a> defines units, geometry, array shapes
+and the limits of differentiation.</p>
 <div class="toctree-wrapper compound">
 </div>
 </section>

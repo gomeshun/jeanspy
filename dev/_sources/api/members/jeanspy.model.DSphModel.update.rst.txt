@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.DSphModel.update``
+
+Class and construction: :doc:`DSphModel <../generated/jeanspy.model.DSphModel>`.
+
+.. automethod:: jeanspy.model.DSphModel.update
+   :no-index:

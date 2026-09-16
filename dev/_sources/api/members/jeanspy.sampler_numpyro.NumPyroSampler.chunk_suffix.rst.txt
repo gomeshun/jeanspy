@@ -1,0 +1,9 @@
+chunk_suffix
+============
+
+``jeanspy.sampler_numpyro.NumPyroSampler.chunk_suffix``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. autoattribute:: jeanspy.sampler_numpyro.NumPyroSampler.chunk_suffix
+   :no-index:

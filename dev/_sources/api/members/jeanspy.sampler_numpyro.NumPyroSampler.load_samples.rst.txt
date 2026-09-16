@@ -1,0 +1,9 @@
+load_samples
+============
+
+``jeanspy.sampler_numpyro.NumPyroSampler.load_samples``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.load_samples
+   :no-index:

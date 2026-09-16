@@ -1,0 +1,9 @@
+required_param_names_combined
+=============================
+
+``jeanspy.model.BaesAnisotropyModel.required_param_names_combined``
+
+Class and construction: :doc:`BaesAnisotropyModel <../generated/jeanspy.model.BaesAnisotropyModel>`.
+
+.. autoattribute:: jeanspy.model.BaesAnisotropyModel.required_param_names_combined
+   :no-index:

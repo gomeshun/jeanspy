@@ -1,0 +1,9 @@
+f
+=
+
+``jeanspy.model.ConstantAnisotropyModel.f``
+
+Class and construction: :doc:`ConstantAnisotropyModel <../generated/jeanspy.model.ConstantAnisotropyModel>`.
+
+.. automethod:: jeanspy.model.ConstantAnisotropyModel.f
+   :no-index:

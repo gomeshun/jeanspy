@@ -1,5 +1,9 @@
-﻿jeanspy.hyp2f1\_jax.GaussLegendre01
-===================================
+﻿GaussLegendre01
+===============
+
+``jeanspy.hyp2f1_jax.GaussLegendre01``
+
+
 
 .. currentmodule:: jeanspy.hyp2f1_jax
 

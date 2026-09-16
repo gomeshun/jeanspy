@@ -1,0 +1,9 @@
+enclosed_mass_numeric
+=====================
+
+``jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_numpyro.ZhaoModel>`.
+
+.. automethod:: jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric
+   :no-index:

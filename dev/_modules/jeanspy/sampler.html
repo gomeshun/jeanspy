@@ -30,8 +30,9 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -735,7 +736,7 @@
                              <span class="s2">"explicitly reset to start a different analysis."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Sampler.check_parameter_conversion">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.check_parameter_conversion">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.check_parameter_conversion.html#jeanspy.sampler.Sampler.check_parameter_conversion">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_parameter_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p0_generator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">""" check the conversion of parameters.</span>
 <span class="sd">        This is useful to check if the parameters are properly converted from p0 to params.</span>
@@ -761,7 +762,7 @@
 
     
 <div class="viewcode-block" id="Sampler.set_wrapper_function">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.set_wrapper_function">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.set_wrapper_function.html#jeanspy.sampler.Sampler.set_wrapper_function">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_wrapper_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.</span>
         <span class="c1"># Without the wrapper function, multiprocessing.pool will repeat the pickling/unpickling of the model</span>
@@ -786,7 +787,7 @@
 
 
 <div class="viewcode-block" id="Sampler.reset_pool">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.reset_pool">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.reset_pool.html#jeanspy.sampler.Sampler.reset_pool">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">""" reset the pool.</span>
 <span class="sd">        """</span>
@@ -810,7 +811,7 @@
     
 
 <div class="viewcode-block" id="Sampler.burn_in">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.burn_in">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.burn_in.html#jeanspy.sampler.Sampler.burn_in">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">burn_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">p0_generator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Advance warmup and continue from its final ensemble.</span>
 
@@ -845,7 +846,7 @@
 
 
 <div class="viewcode-block" id="Sampler.run_mcmc">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.run_mcmc">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.run_mcmc.html#jeanspy.sampler.Sampler.run_mcmc">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_mcmc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">iterations</span><span class="p">,</span><span class="n">loops</span><span class="p">,</span>
                  <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -970,7 +971,7 @@
 
 
 <div class="viewcode-block" id="Sampler.get_blobs">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_blobs">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.get_blobs.html#jeanspy.sampler.Sampler.get_blobs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">""" get blobs from the backend.</span>
 <span class="sd">        """</span>
@@ -978,7 +979,7 @@
 
     
 <div class="viewcode-block" id="Sampler.get_chain">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_chain">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.get_chain.html#jeanspy.sampler.Sampler.get_chain">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">""" get chain from the backend.</span>
 <span class="sd">        """</span>
@@ -986,7 +987,7 @@
 
     
 <div class="viewcode-block" id="Sampler.get_log_prob">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_log_prob">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.get_log_prob.html#jeanspy.sampler.Sampler.get_log_prob">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">""" get log_prob from the backend.</span>
 <span class="sd">        """</span>
@@ -994,7 +995,7 @@
 
     
 <div class="viewcode-block" id="Sampler.get_last_sample">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_last_sample">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.get_last_sample.html#jeanspy.sampler.Sampler.get_last_sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_last_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">""" get the last sample from the backend.</span>
 <span class="sd">        """</span>
@@ -1002,7 +1003,7 @@
 
     
 <div class="viewcode-block" id="Sampler.get_dataframe">
-<a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_dataframe">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.get_dataframe.html#jeanspy.sampler.Sampler.get_dataframe">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">discard</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">with_lnprob</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">""" get the dataframe from the backend.</span>
 <span class="sd">        """</span>

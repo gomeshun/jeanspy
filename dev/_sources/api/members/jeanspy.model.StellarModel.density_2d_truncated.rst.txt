@@ -1,0 +1,9 @@
+density_2d_truncated
+====================
+
+``jeanspy.model.StellarModel.density_2d_truncated``
+
+Class and construction: :doc:`StellarModel <../generated/jeanspy.model.StellarModel>`.
+
+.. automethod:: jeanspy.model.StellarModel.density_2d_truncated
+   :no-index:

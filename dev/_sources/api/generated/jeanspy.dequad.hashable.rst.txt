@@ -1,5 +1,7 @@
-﻿jeanspy.dequad.hashable
-=======================
+﻿hashable
+========
+
+``jeanspy.dequad.hashable``
 
 .. currentmodule:: jeanspy.dequad
 

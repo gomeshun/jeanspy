@@ -1,0 +1,9 @@
+assert_roi_is_enough_small
+==========================
+
+``jeanspy.model.DMModel.assert_roi_is_enough_small``
+
+Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
+
+.. automethod:: jeanspy.model.DMModel.assert_roi_is_enough_small
+   :no-index:

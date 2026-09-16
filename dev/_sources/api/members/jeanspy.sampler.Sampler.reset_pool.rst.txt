@@ -1,0 +1,9 @@
+reset_pool
+==========
+
+``jeanspy.sampler.Sampler.reset_pool``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.reset_pool
+   :no-index:

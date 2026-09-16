@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.DMModel.sampling_identity``
+
+Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
+
+.. automethod:: jeanspy.model.DMModel.sampling_identity
+   :no-index:

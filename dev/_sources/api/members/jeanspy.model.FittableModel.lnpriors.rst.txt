@@ -1,0 +1,9 @@
+lnpriors
+========
+
+``jeanspy.model.FittableModel.lnpriors``
+
+Class and construction: :doc:`FittableModel <../generated/jeanspy.model.FittableModel>`.
+
+.. automethod:: jeanspy.model.FittableModel.lnpriors
+   :no-index:

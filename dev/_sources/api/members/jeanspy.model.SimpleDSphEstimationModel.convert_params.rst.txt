@@ -1,0 +1,9 @@
+convert_params
+==============
+
+``jeanspy.model.SimpleDSphEstimationModel.convert_params``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SimpleDSphEstimationModel.convert_params
+   :no-index:

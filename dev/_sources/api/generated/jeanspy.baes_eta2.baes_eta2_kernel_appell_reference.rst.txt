@@ -1,5 +1,7 @@
-﻿jeanspy.baes\_eta2.baes\_eta2\_kernel\_appell\_reference
-========================================================
+﻿baes\_eta2\_kernel\_appell\_reference
+=====================================
+
+``jeanspy.baes_eta2.baes_eta2_kernel_appell_reference``
 
 .. currentmodule:: jeanspy.baes_eta2
 

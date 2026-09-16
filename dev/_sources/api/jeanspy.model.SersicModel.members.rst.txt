@@ -1,0 +1,31 @@
+SersicModel members
+===================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.SersicModel.b
+   members/jeanspy.model.SersicModel.b_CB
+   members/jeanspy.model.SersicModel.b_approx
+   members/jeanspy.model.SersicModel.cdf_R
+   members/jeanspy.model.SersicModel.density
+   members/jeanspy.model.SersicModel.density_2d
+   members/jeanspy.model.SersicModel.density_2d_normalized_re
+   members/jeanspy.model.SersicModel.density_2d_truncated
+   members/jeanspy.model.SersicModel.density_3d
+   members/jeanspy.model.SersicModel.density_3d_LGM
+   members/jeanspy.model.SersicModel.density_3d_VM20
+   members/jeanspy.model.SersicModel.density_3d_VM20bis
+   members/jeanspy.model.SersicModel.density_3d_auto
+   members/jeanspy.model.SersicModel.density_3d_numerical
+   members/jeanspy.model.SersicModel.half_light_radius
+   members/jeanspy.model.SersicModel.is_required_param_names
+   members/jeanspy.model.SersicModel.mean_density_2d
+   members/jeanspy.model.SersicModel.norm
+   members/jeanspy.model.SersicModel.norm_3d
+   members/jeanspy.model.SersicModel.p_LGM
+   members/jeanspy.model.SersicModel.params_all
+   members/jeanspy.model.SersicModel.params_all_with_model_name
+   members/jeanspy.model.SersicModel.required_param_names_combined
+   members/jeanspy.model.SersicModel.sampling_identity
+   members/jeanspy.model.SersicModel.update

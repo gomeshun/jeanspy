@@ -30,8 +30,9 @@
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -552,7 +553,7 @@
     <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="StellarModel.density">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.StellarModel.density.html#jeanspy.model.StellarModel.density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance_from_center</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Dispatch to the projected or intrinsic normalized tracer density.</span>
 
@@ -568,7 +569,7 @@
 
 
 <div class="viewcode-block" id="StellarModel.density_2d_truncated">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density_2d_truncated">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.StellarModel.density_2d_truncated.html#jeanspy.model.StellarModel.density_2d_truncated">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d_truncated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">R_trunc_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the normalized 2-D density truncated at ``R_trunc_pc``.</span>
 
@@ -602,7 +603,7 @@
 
 
 <div class="viewcode-block" id="StellarModel.density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.StellarModel.density_2d.html#jeanspy.model.StellarModel.density_2d">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate normalized surface density in pc^-2 at projected R_pc in pc.</span>
@@ -614,7 +615,7 @@
 
 
 <div class="viewcode-block" id="StellarModel.density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.StellarModel.density_3d.html#jeanspy.model.StellarModel.density_3d">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate normalized intrinsic density in pc^-3 at r_pc in pc.</span>
@@ -661,7 +662,7 @@
     <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="PlummerModel.density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PlummerModel.density_2d.html#jeanspy.model.PlummerModel.density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
 
@@ -677,7 +678,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.logdensity_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.logdensity_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PlummerModel.logdensity_2d.html#jeanspy.model.PlummerModel.logdensity_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">logdensity_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate natural log projected density.</span>
 
@@ -697,7 +698,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.density_2d_normalized_re">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.density_2d_normalized_re">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PlummerModel.density_2d_normalized_re.html#jeanspy.model.PlummerModel.density_2d_normalized_re">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d_normalized_re</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return the dimensionless ratio Sigma(R)/Sigma(re).</span>
 
@@ -709,7 +710,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PlummerModel.density_3d.html#jeanspy.model.PlummerModel.density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate the unit-normalized intrinsic tracer density.</span>
 
@@ -736,7 +737,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.cdf_R">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.cdf_R">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PlummerModel.cdf_R.html#jeanspy.model.PlummerModel.cdf_R">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return :math:`\int_0^R 2\pi R'\Sigma(R')\,dR'`.</span>
 
@@ -753,7 +754,7 @@
 
 
 <div class="viewcode-block" id="PlummerModel.mean_density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.mean_density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PlummerModel.mean_density_2d.html#jeanspy.model.PlummerModel.mean_density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean_density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Average surface density inside a circular aperture.</span>
 
@@ -775,7 +776,7 @@
         <span class="k">return</span> <span class="n">re_pc</span>
 
 <div class="viewcode-block" id="PlummerModel.half_light_radius">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel.half_light_radius">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PlummerModel.half_light_radius.html#jeanspy.model.PlummerModel.half_light_radius">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the projected half-light radius.</span>
 
@@ -832,7 +833,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span> <span class="o">/</span> <span class="mf">1.67834699001666</span>
 
 <div class="viewcode-block" id="Exp2dModel.density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp2dModel.density_2d.html#jeanspy.model.Exp2dModel.density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
 
@@ -848,7 +849,7 @@
 
 
 <div class="viewcode-block" id="Exp2dModel.logdensity_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.logdensity_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp2dModel.logdensity_2d.html#jeanspy.model.Exp2dModel.logdensity_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">logdensity_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate natural log projected density.</span>
 
@@ -864,7 +865,7 @@
 
 
 <div class="viewcode-block" id="Exp2dModel.density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp2dModel.density_3d.html#jeanspy.model.Exp2dModel.density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate the unit-normalized intrinsic tracer density.</span>
 
@@ -890,7 +891,7 @@
 
 
 <div class="viewcode-block" id="Exp2dModel.cdf_R">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.cdf_R">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp2dModel.cdf_R.html#jeanspy.model.Exp2dModel.cdf_R">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate projected probability inside a circular radius.</span>
 
@@ -907,7 +908,7 @@
 
 
 <div class="viewcode-block" id="Exp2dModel.mean_density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.mean_density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp2dModel.mean_density_2d.html#jeanspy.model.Exp2dModel.mean_density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean_density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Average surface density inside a circular aperture.</span>
 
@@ -929,7 +930,7 @@
         <span class="k">return</span> <span class="mf">1.67834699001666</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_exp_pc</span>
 
 <div class="viewcode-block" id="Exp2dModel.half_light_radius">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp2dModel.html#jeanspy.model.Exp2dModel.half_light_radius">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp2dModel.half_light_radius.html#jeanspy.model.Exp2dModel.half_light_radius">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the projected half-light radius.</span>
 
@@ -981,7 +982,7 @@
     <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Exp3dModel.density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp3dModel.density_2d.html#jeanspy.model.Exp3dModel.density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
 
@@ -997,7 +998,7 @@
 
 
 <div class="viewcode-block" id="Exp3dModel.density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp3dModel.density_3d.html#jeanspy.model.Exp3dModel.density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate the unit-normalized intrinsic tracer density.</span>
 
@@ -1023,7 +1024,7 @@
 
 
 <div class="viewcode-block" id="Exp3dModel.cdf_R">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.cdf_R">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp3dModel.cdf_R.html#jeanspy.model.Exp3dModel.cdf_R">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate projected probability inside a circular radius.</span>
 
@@ -1040,7 +1041,7 @@
 
 
 <div class="viewcode-block" id="Exp3dModel.mean_density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.mean_density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp3dModel.mean_density_2d.html#jeanspy.model.Exp3dModel.mean_density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean_density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Average surface density inside a circular aperture.</span>
 
@@ -1058,7 +1059,7 @@
 
 
 <div class="viewcode-block" id="Exp3dModel.half_light_radius">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Exp3dModel.html#jeanspy.model.Exp3dModel.half_light_radius">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Exp3dModel.half_light_radius.html#jeanspy.model.Exp3dModel.half_light_radius">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">half_light_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the projected half-light radius.</span>
 
@@ -1111,7 +1112,7 @@
     <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Uniform2dModel.density_2d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Uniform2dModel.html#jeanspy.model.Uniform2dModel.density_2d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Uniform2dModel.density_2d.html#jeanspy.model.Uniform2dModel.density_2d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate normalized projected tracer density.</span>
 
@@ -1127,7 +1128,7 @@
 
 
 <div class="viewcode-block" id="Uniform2dModel.density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Uniform2dModel.html#jeanspy.model.Uniform2dModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Uniform2dModel.density_3d.html#jeanspy.model.Uniform2dModel.density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""This projected uniform-disk model has no implemented 3-D density.</span>
 
@@ -1138,7 +1139,7 @@
 
 
 <div class="viewcode-block" id="Uniform2dModel.cdf_R">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Uniform2dModel.html#jeanspy.model.Uniform2dModel.cdf_R">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Uniform2dModel.cdf_R.html#jeanspy.model.Uniform2dModel.cdf_R">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cdf_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate projected probability inside a circular radius.</span>
 
@@ -1200,7 +1201,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">roi_deg_max_warning</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <div class="viewcode-block" id="DMModel.mass_density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.mass_density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DMModel.mass_density_3d.html#jeanspy.model.DMModel.mass_density_3d">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate spherical halo density in Msun/pc^3 at radius r_pc in pc.</span>
@@ -1212,7 +1213,7 @@
 
 
 <div class="viewcode-block" id="DMModel.enclosed_mass">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.enclosed_mass">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DMModel.enclosed_mass.html#jeanspy.model.DMModel.enclosed_mass">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return mass enclosed within ``r_pc``.</span>
 
@@ -1294,7 +1295,7 @@
         <span class="k">return</span> <span class="n">rho</span>
 
 <div class="viewcode-block" id="DMModel.assert_roi_is_enough_small">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.assert_roi_is_enough_small">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DMModel.assert_roi_is_enough_small.html#jeanspy.model.DMModel.assert_roi_is_enough_small">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assert_roi_is_enough_small</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi_deg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Validate cone half-angles for the small-angle J-factor methods.</span>
 
@@ -1317,7 +1318,7 @@
 
 
 <div class="viewcode-block" id="DMModel.jfactor_ullio2016_simple">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.jfactor_ullio2016_simple">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DMModel.jfactor_ullio2016_simple.html#jeanspy.model.DMModel.jfactor_ullio2016_simple">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_ullio2016_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Calculate the small-angle spherical-aperture approximation.</span>
 
@@ -1372,7 +1373,7 @@
 
 
 <div class="viewcode-block" id="DMModel.jfactor_ullio2016">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DMModel.html#jeanspy.model.DMModel.jfactor_ullio2016">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DMModel.jfactor_ullio2016.html#jeanspy.model.DMModel.jfactor_ullio2016">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_ullio2016</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Calculate the full finite-ROI Ullio &amp; Valli (2016) J-factor.</span>
 
@@ -1491,7 +1492,7 @@
                              <span class="s2">"steeper central cusps have divergent annihilation luminosity"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ZhaoModel.mass_density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ZhaoModel.html#jeanspy.model.ZhaoModel.mass_density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.ZhaoModel.mass_density_3d.html#jeanspy.model.ZhaoModel.mass_density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical halo density.</span>
 
@@ -1513,7 +1514,7 @@
 
 
 <div class="viewcode-block" id="ZhaoModel.enclosed_mass">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ZhaoModel.html#jeanspy.model.ZhaoModel.enclosed_mass">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.ZhaoModel.enclosed_mass.html#jeanspy.model.ZhaoModel.enclosed_mass">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Finite-radius Zhao mass for a &gt; 0 and g &lt; 3, including b &lt;= 3.</span>
 
@@ -1537,7 +1538,7 @@
 
 
 <div class="viewcode-block" id="ZhaoModel.enclosure_mass">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ZhaoModel.html#jeanspy.model.ZhaoModel.enclosure_mass">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.ZhaoModel.enclosure_mass.html#jeanspy.model.ZhaoModel.enclosure_mass">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosure_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate halo mass inside a finite spherical radius.</span>
 
@@ -1592,7 +1593,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"NFW J-factor requires positive rs_pc and rhos_Msunpc3"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NFWModel.mass_density_3d">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.mass_density_3d">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.NFWModel.mass_density_3d.html#jeanspy.model.NFWModel.mass_density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical halo density.</span>
 
@@ -1611,7 +1612,7 @@
 
 
 <div class="viewcode-block" id="NFWModel.enclosure_mass">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.enclosure_mass">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.NFWModel.enclosure_mass.html#jeanspy.model.NFWModel.enclosure_mass">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosure_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate halo mass inside a finite spherical radius.</span>
 
@@ -1635,7 +1636,7 @@
 
 
 <div class="viewcode-block" id="NFWModel.jfactor_ullio2016_simple">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.jfactor_ullio2016_simple">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.NFWModel.jfactor_ullio2016_simple.html#jeanspy.model.NFWModel.jfactor_ullio2016_simple">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_ullio2016_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the NFW spherical-aperture approximation analytically.</span>
 
@@ -1680,7 +1681,7 @@
 
 
 <div class="viewcode-block" id="NFWModel.jfactor_evans2016">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.jfactor_evans2016">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.NFWModel.jfactor_evans2016.html#jeanspy.model.NFWModel.jfactor_evans2016">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">jfactor_evans2016</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_pc</span><span class="p">,</span> <span class="n">roi_deg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the small-angle, infinite-LOS Evans et al. (2016) formula.</span>
 
@@ -1760,7 +1761,7 @@
     <span class="n">name</span> <span class="o">=</span> <span class="s2">"AnisotropyModel"</span>
 
 <div class="viewcode-block" id="AnisotropyModel.beta">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.AnisotropyModel.html#jeanspy.model.AnisotropyModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.AnisotropyModel.beta.html#jeanspy.model.AnisotropyModel.beta">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate dimensionless spherical anisotropy at radius r in pc.</span>
@@ -1772,7 +1773,7 @@
 
 
 <div class="viewcode-block" id="AnisotropyModel.f">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.AnisotropyModel.html#jeanspy.model.AnisotropyModel.f">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.AnisotropyModel.f.html#jeanspy.model.AnisotropyModel.f">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate the Jeans integrating factor at radius r in pc.</span>
@@ -1784,7 +1785,7 @@
 
 
 <div class="viewcode-block" id="AnisotropyModel.kernel">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.AnisotropyModel.html#jeanspy.model.AnisotropyModel.kernel">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.AnisotropyModel.kernel.html#jeanspy.model.AnisotropyModel.kernel">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate the dimensionless LOS kernel for u=r/R and projected radius R.</span>
@@ -1829,7 +1830,7 @@
     <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="ConstantAnisotropyModel.beta">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ConstantAnisotropyModel.html#jeanspy.model.ConstantAnisotropyModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.ConstantAnisotropyModel.beta.html#jeanspy.model.ConstantAnisotropyModel.beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical velocity anisotropy.</span>
 
@@ -1845,7 +1846,7 @@
 
 
 <div class="viewcode-block" id="ConstantAnisotropyModel.f">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ConstantAnisotropyModel.html#jeanspy.model.ConstantAnisotropyModel.f">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.ConstantAnisotropyModel.f.html#jeanspy.model.ConstantAnisotropyModel.f">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the radial Jeans integrating factor.</span>
 
@@ -1860,7 +1861,7 @@
 
 
 <div class="viewcode-block" id="ConstantAnisotropyModel.kernel">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.ConstantAnisotropyModel.html#jeanspy.model.ConstantAnisotropyModel.kernel">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.ConstantAnisotropyModel.kernel.html#jeanspy.model.ConstantAnisotropyModel.kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the spherical LOS projection kernel.</span>
 
@@ -1916,7 +1917,7 @@
     <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="OsipkovMerrittModel.beta">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.OsipkovMerrittModel.beta.html#jeanspy.model.OsipkovMerrittModel.beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical velocity anisotropy.</span>
 
@@ -1932,7 +1933,7 @@
 
 
 <div class="viewcode-block" id="OsipkovMerrittModel.f">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel.f">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.OsipkovMerrittModel.f.html#jeanspy.model.OsipkovMerrittModel.f">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the radial Jeans integrating factor.</span>
 
@@ -1948,7 +1949,7 @@
 
 
 <div class="viewcode-block" id="OsipkovMerrittModel.kernel">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel.kernel">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.OsipkovMerrittModel.kernel.html#jeanspy.model.OsipkovMerrittModel.kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the spherical LOS projection kernel.</span>
 
@@ -2009,7 +2010,7 @@
     <span class="n">required_models</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="BaesAnisotropyModel.beta">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.BaesAnisotropyModel.beta.html#jeanspy.model.BaesAnisotropyModel.beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate spherical velocity anisotropy.</span>
 
@@ -2027,7 +2028,7 @@
 
 
 <div class="viewcode-block" id="BaesAnisotropyModel.f">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.f">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.BaesAnisotropyModel.f.html#jeanspy.model.BaesAnisotropyModel.f">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the radial Jeans integrating factor.</span>
 
@@ -2047,7 +2048,7 @@
 
 
 <div class="viewcode-block" id="BaesAnisotropyModel.integrand_kernel">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.integrand_kernel">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.BaesAnisotropyModel.integrand_kernel.html#jeanspy.model.BaesAnisotropyModel.integrand_kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integrand_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_integ</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Evaluate the inner Baes LOS-kernel integrand.</span>
 
@@ -2066,7 +2067,7 @@
 
 
 <div class="viewcode-block" id="BaesAnisotropyModel.kernel">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel.kernel">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.BaesAnisotropyModel.kernel.html#jeanspy.model.BaesAnisotropyModel.kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the spherical LOS projection kernel.</span>
 

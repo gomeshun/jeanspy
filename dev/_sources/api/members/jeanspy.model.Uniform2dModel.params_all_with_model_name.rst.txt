@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.Uniform2dModel.params_all_with_model_name``
+
+Class and construction: :doc:`Uniform2dModel <../generated/jeanspy.model.Uniform2dModel>`.
+
+.. autoattribute:: jeanspy.model.Uniform2dModel.params_all_with_model_name
+   :no-index:

@@ -1,0 +1,9 @@
+add_note
+========
+
+``jeanspy.axisymmetric.InvalidAxisymmetricModelError.add_note``
+
+Class and construction: :doc:`InvalidAxisymmetricModelError <../generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError>`.
+
+.. automethod:: jeanspy.axisymmetric.InvalidAxisymmetricModelError.add_note
+   :no-index:

@@ -69,3 +69,20 @@ JEANSPY_JAX_PLATFORM=cpu JEANSPY_JAX_ENABLE_X64=true python your_analysis.py
 Keep `uv.lock`, the command, source commit and runtime configuration with the
 analysis. Restart identity also checks dependency and backend changes; see
 [storage](guides/inference.md).
+
+## Run the notebooks
+
+The [Quickstart](quickstart.ipynb) and [tutorials](tutorials/index.md) are
+Jupyter notebooks with saved outputs. Each page has a **Download this notebook**
+link. Install a notebook frontend in the same environment as JeansPy:
+
+```bash
+python -m pip install jupyterlab
+jupyter lab
+```
+
+Open the downloaded `.ipynb`, select the environment containing JeansPy, and
+use **Restart Kernel and Run All Cells**. Each notebook contains its own setup
+and synthetic inputs, so it can run without a source checkout or another
+notebook's state. The website displays saved outputs; running Python cells
+requires a local Jupyter kernel.

@@ -1,0 +1,9 @@
+blobs_dtype
+===========
+
+``jeanspy.model.SimpleDSphEstimationModel.blobs_dtype``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SimpleDSphEstimationModel.blobs_dtype
+   :no-index:

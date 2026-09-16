@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name
+   :no-index:

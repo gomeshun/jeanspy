@@ -1,0 +1,9 @@
+from_data
+=========
+
+``jeanspy.model.AxisymmetricKinematicData.from_data``
+
+Class and construction: :doc:`AxisymmetricKinematicData <../generated/jeanspy.model.AxisymmetricKinematicData>`.
+
+.. automethod:: jeanspy.model.AxisymmetricKinematicData.from_data
+   :no-index:

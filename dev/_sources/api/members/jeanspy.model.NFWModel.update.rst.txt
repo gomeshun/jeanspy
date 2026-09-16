@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.NFWModel.update``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. automethod:: jeanspy.model.NFWModel.update
+   :no-index:

@@ -30,8 +30,9 @@
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -586,7 +587,7 @@
         <span class="k">return</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="DSphModel.sigmar2">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmar2">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DSphModel.sigmar2.html#jeanspy.model.DSphModel.sigmar2">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmar2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the radial velocity dispersion squared at ``r_pc``.</span>
 
@@ -606,7 +607,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.sigmat2">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmat2">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DSphModel.sigmat2.html#jeanspy.model.DSphModel.sigmat2">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmat2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the tangential velocity dispersion squared at ``r_pc``.</span>
 
@@ -627,7 +628,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.integrand_sigmalos2">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.integrand_sigmalos2">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DSphModel.integrand_sigmalos2.html#jeanspy.model.DSphModel.integrand_sigmalos2">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integrand_sigmalos2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return the LOS-dispersion integrand.</span>
 
@@ -671,7 +672,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.sigmalos2_dequad">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmalos2_dequad">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DSphModel.sigmalos2_dequad.html#jeanspy.model.DSphModel.sigmalos2_dequad">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos2_dequad</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">R_pc</span><span class="p">,</span>
@@ -726,7 +727,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.sigmalos_dequad">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmalos_dequad">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DSphModel.sigmalos_dequad.html#jeanspy.model.DSphModel.sigmalos_dequad">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos_dequad</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">R_pc</span><span class="p">,</span>
@@ -755,7 +756,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.sigmalos2">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmalos2">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DSphModel.sigmalos2.html#jeanspy.model.DSphModel.sigmalos2">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos2</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">R_pc</span><span class="p">,</span>
@@ -808,7 +809,7 @@
 
 
 <div class="viewcode-block" id="DSphModel.sigmalos">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmalos">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.DSphModel.sigmalos.html#jeanspy.model.DSphModel.sigmalos">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">R_pc</span><span class="p">,</span>

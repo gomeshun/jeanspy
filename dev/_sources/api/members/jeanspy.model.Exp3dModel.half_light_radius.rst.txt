@@ -1,0 +1,9 @@
+half_light_radius
+=================
+
+``jeanspy.model.Exp3dModel.half_light_radius``
+
+Class and construction: :doc:`Exp3dModel <../generated/jeanspy.model.Exp3dModel>`.
+
+.. automethod:: jeanspy.model.Exp3dModel.half_light_radius
+   :no-index:

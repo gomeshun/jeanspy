@@ -1,0 +1,9 @@
+density_3d
+==========
+
+``jeanspy.model.AxisymmetricStellarModel.density_3d``
+
+Class and construction: :doc:`AxisymmetricStellarModel <../generated/jeanspy.model.AxisymmetricStellarModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricStellarModel.density_3d
+   :no-index:

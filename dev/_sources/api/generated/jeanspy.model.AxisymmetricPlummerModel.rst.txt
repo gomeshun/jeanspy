@@ -1,5 +1,13 @@
-﻿jeanspy.model.AxisymmetricPlummerModel
-======================================
+﻿AxisymmetricPlummerModel
+========================
+
+``jeanspy.model.AxisymmetricPlummerModel``
+
+
+See :doc:`methods and properties <../jeanspy.model.AxisymmetricPlummerModel.members>` for individual
+lookup pages, or the :doc:`alphabetical API dictionary <../all>` to search
+all classes. The full class contract and existing member anchors are retained below.
+
 
 .. currentmodule:: jeanspy.model
 

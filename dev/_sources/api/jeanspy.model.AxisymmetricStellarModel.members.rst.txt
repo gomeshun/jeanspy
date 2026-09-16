@@ -1,0 +1,9 @@
+AxisymmetricStellarModel members
+================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.AxisymmetricStellarModel.density_3d
+   members/jeanspy.model.AxisymmetricStellarModel.radial_derivative
+   members/jeanspy.model.AxisymmetricStellarModel.surface_density

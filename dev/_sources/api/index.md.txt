@@ -1,6 +1,13 @@
 # API reference
 
-Choose a category, then the NumPy/SciPy or JAX implementation.
+Look up an API independently of the tutorials. Each public class,
+function and constant has its own entry; methods and properties also
+have individual lookup pages with their source documentation.
+
+**Find a name:** [Alphabetical API dictionary](all) (including class
+members and aliases), [import modules](modules), or the site search.
+
+**Browse by purpose:** choose a category and implementation below.
 
 | Category | Contents |
 | --- | --- |
@@ -10,7 +17,7 @@ Choose a category, then the NumPy/SciPy or JAX implementation.
 | [Statistical inference](inference) | Observations, priors, likelihoods, MCMC and storage |
 
 See also the [units and shape contract](../guides/contracts.md) and
-[Quickstart](../quickstart.md). [Browse by import module](modules).
+[Quickstart](../quickstart.ipynb). [Browse by import module](modules).
 
 ```{toctree}
 :hidden:
@@ -20,5 +27,6 @@ core
 spherical
 axisymmetric-models
 inference
+all
 modules
 ```

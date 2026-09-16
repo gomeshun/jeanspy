@@ -1,5 +1,7 @@
-﻿jeanspy.model.get\_default\_estimation\_model
-=============================================
+﻿get\_default\_estimation\_model
+===============================
+
+``jeanspy.model.get_default_estimation_model``
 
 .. currentmodule:: jeanspy.model
 

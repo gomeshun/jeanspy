@@ -1,0 +1,9 @@
+density_2d_truncated
+====================
+
+``jeanspy.model.Exp2dModel.density_2d_truncated``
+
+Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
+
+.. automethod:: jeanspy.model.Exp2dModel.density_2d_truncated
+   :no-index:

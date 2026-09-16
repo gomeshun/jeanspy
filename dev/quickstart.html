@@ -31,8 +31,9 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -56,7 +57,7 @@
     <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/quickstart.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Theory and numerical methods" href="theory.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
     <link rel="prev" title="Installation" href="installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -158,22 +159,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -192,6 +179,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="citing.html">
     Citing JeansPy and its dependencies
@@ -338,22 +339,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -361,6 +348,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -495,473 +496,324 @@
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="quickstart">
-<h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">#</a></h1>
-<p>Build a <strong>Plummer + Zhao + constant anisotropy</strong> model, generate mock velocities,
-run MCMC, resume from disk, and inspect the saved posterior. This follows the
-<a class="reference external" href="https://github.com/gomeshun/jeanspy/blob/main/notebooks/sampler_numpyro_demo.ipynb">NumPyro sampler notebook</a>,
-with a small dataset so the complete example can be run on a CPU.</p>
-<p>Install the package using the <a class="reference internal" href="installation.html"><span class="std std-doc">installation guide</span></a>. The emcee
-example needs the <code class="docutils literal notranslate"><span class="pre">plotting</span></code> extra; the NumPyro example also needs
-<code class="docutils literal notranslate"><span class="pre">numpyro_cpu</span></code>. Run the scripts below from the source checkout. Use a new output
-directory for each example.</p>
-<section id="model-and-mock-observations">
-<h2>Model and mock observations<a class="headerlink" href="#model-and-mock-observations" title="Link to this heading">#</a></h2>
-<p>Both backends use the same 32 mock stars. Lengths are in pc, velocities in km/s,
-and halo densities in solar masses per cubic parsec. The Plummer tracer weights
-the kinematics and contributes no gravitational mass. The Zhao exponents
-<code class="docutils literal notranslate"><span class="pre">a=2,</span> <span class="pre">b=4,</span> <span class="pre">g=0.5</span></code>, tracer scale and halo cutoff are fixed in this example.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span>
-
-<span class="c1"># This example conditions on photometry and halo shape, and fits four parameters.</span>
-<span class="n">true_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-                   <span class="n">a</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">4.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-<span class="n">truth_model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">],</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
-    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]),</span>
-    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">true_params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>
-                           <span class="p">(</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">)}),</span>
-    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">]),</span>
-<span class="p">})</span>
-<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
-<span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
-<span class="n">R_pc</span> <span class="o">=</span> <span class="n">true_params</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">u</span><span class="p">))</span>  <span class="c1"># Projected Plummer radii.</span>
-<span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">R_pc</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span>
-<span class="n">sigma2_true</span> <span class="o">=</span> <span class="n">truth_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
-<span class="n">vlos_kms</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sigma2_true</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
-<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">R_pc</span><span class="o">=</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="o">=</span><span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="n">e_vlos_kms</span><span class="p">)</span>
-</pre></div>
-</div>
-<figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="_images/observations.png"><img alt="Synthetic line-of-sight velocities versus projected radius with measurement error bars." src="_images/observations.png" style="width: 640px;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Mock observations generated by the code above, with random seed 123.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<p>We sample four parameters with the same uniform priors in both backends:</p>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Sampling coordinate</p></th>
-<th class="head text-right"><p>Lower</p></th>
-<th class="head text-right"><p>Upper</p></th>
-<th class="head"><p>Physical meaning</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log10_rs_pc</span></code></p></td>
-<td class="text-right"><p>2.4</p></td>
-<td class="text-right"><p>3.2</p></td>
-<td><p>Logarithm of the halo scale radius</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">log10_rhos_Msunpc3</span></code></p></td>
-<td class="text-right"><p>-2.0</p></td>
-<td class="text-right"><p>-0.3</p></td>
-<td><p>Logarithm of the halo density scale</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">beta_ani</span></code></p></td>
-<td class="text-right"><p>-0.5</p></td>
-<td class="text-right"><p>0.5</p></td>
-<td><p>Constant spherical anisotropy</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vmem_kms</span></code></p></td>
-<td class="text-right"><p>-20</p></td>
-<td class="text-right"><p>20</p></td>
-<td><p>Systemic velocity in km/s</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>The priors on the logarithms are log-uniform in the physical scales. These
-bounds illustrate this mock analysis; choose priors for the scientific problem
-being studied.</p>
-</section>
-<section id="sample-and-inspect-the-posterior">
-<h2>Sample and inspect the posterior<a class="headerlink" href="#sample-and-inspect-the-posterior" title="Link to this heading">#</a></h2>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="emcee" for="sd-tab-item-0">
-NumPy / SciPy / emcee</label><div class="sd-tab-content docutils">
-<p>Run the complete example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/docs_quickstart_emcee.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/jeanspy-emcee-example
-</pre></div>
-</div>
-<p><strong>Construct the model.</strong> Classical components store their physical parameters.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_data</span><span class="p">,</span> <span class="n">plot_posterior</span>
-<span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"R_pc"</span><span class="p">,</span> <span class="s2">"vlos_kms"</span><span class="p">,</span> <span class="s2">"e_vlos_kms"</span><span class="p">))</span>
-
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
-    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">),</span>
-    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-                         <span class="n">a</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">4.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
-    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span>
-<span class="p">})</span>
-<span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
-</pre></div>
-</div>
-<p><strong>Define the posterior, sample and resume.</strong> The Gaussian velocity likelihood
-adds the measurement-error variance to the Jeans prediction. The HDF5 backend
-stores the ensemble and its random state. Reopening that backend and passing
-<code class="docutils literal notranslate"><span class="pre">None</span></code> continues from the saved state. Keep the model, priors and observations
-identical when using this emcee interface; the JeansPy
-<a class="reference internal" href="api/generated/jeanspy.sampler.Sampler.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">Sampler</span></code></span></a> adds analysis-identity
-checks for its supported estimation-model classes.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample halo radius, halo density, anisotropy and systemic velocity.</span>
-<span class="c1"># These illustrative priors are uniform in the named coordinates.</span>
-<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
-<span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.</span><span class="p">])</span>
-<span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">.3</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">20.</span><span class="p">])</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">log_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">lower</span> <span class="o">&lt;</span> <span class="n">theta</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">theta</span> <span class="o">&lt;</span> <span class="n">upper</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-    <span class="n">log_rs</span><span class="p">,</span> <span class="n">log_rho</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">theta</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rs</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rho</span><span class="p">,</span>
-                 <span class="n">beta_ani</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
-    <span class="n">variance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span>
-    <span class="k">return</span> <span class="o">-</span><span class="mf">.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">variance</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">vlos_kms</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">variance</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">resume_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
-    <span class="c1"># A new directory prevents an accidental reset of an existing analysis.</span>
-    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-    <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"observations.csv"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
-               <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
-    <span class="n">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
-    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-    <span class="n">initial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
-    <span class="n">walkers</span> <span class="o">=</span> <span class="n">initial</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span> <span class="o">*</span> <span class="p">[</span><span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.5</span><span class="p">]</span>
-    <span class="n">backend</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">HDFBackend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"chain.h5"</span><span class="p">))</span>
-    <span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">log_probability</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
-    <span class="n">sampler</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
-    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">walkers</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">first</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="c1"># resume-start</span>
-    <span class="c1"># Reopen the same target and data. None loads the stored walker/random state.</span>
-    <span class="n">restored_backend</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">HDFBackend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"chain.h5"</span><span class="p">))</span>
-    <span class="n">resumed</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">log_probability</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">restored_backend</span><span class="p">)</span>
-    <span class="n">resumed</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">resume_steps</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">restored_backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()[:</span><span class="n">num_steps</span><span class="p">],</span> <span class="n">first</span><span class="p">)</span>
-    <span class="c1"># resume-end</span>
-    <span class="n">chain</span> <span class="o">=</span> <span class="n">restored_backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">discard</span><span class="o">=</span><span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">samples</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Stored chain shape:"</span><span class="p">,</span> <span class="n">restored_backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Warmup discarded:"</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Original stored draws preserved:"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Mean acceptance fraction:"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">resumed</span><span class="o">.</span><span class="n">acceptance_fraction</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">3</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Parameter                 16</span><span class="si">%      50%</span><span class="s2">      84%"</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="p">[</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">24s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Short-run autocorrelation-time estimates:"</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">emcee</span><span class="o">.</span><span class="n">autocorr</span><span class="o">.</span><span class="n">integrated_time</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Walkers interact: no R-hat from this single ensemble."</span><span class="p">)</span>
-    <span class="n">plot_posterior</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">names</span><span class="p">,</span>
-                   <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">restored_backend</span><span class="o">.</span><span class="n">get_log_prob</span><span class="p">()))</span>
-    <span class="k">return</span> <span class="n">restored_backend</span>
-</pre></div>
-</div>
-<p><strong>Execution result.</strong> The first run stores 256 steps; the resumed run adds 128.
-The first 128 steps are discarded when plotting and summarizing this example.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Stored chain shape: (384, 16, 4)
-Warmup discarded: 128
-Original stored draws preserved: True
-Mean acceptance fraction: 0.544
-Parameter                 16%      50%      84%
-log10_rs_pc                 2.779    2.967    3.108
-log10_rhos_Msunpc3         -1.525   -1.341   -1.120
-beta_ani                   -0.205    0.177    0.399
-vmem_kms                   -1.753   -0.433    1.004
-Short-run autocorrelation-time estimates:
-[16.6 17.3 17.9 18.8]
-Walkers interact: no R-hat from this single ensemble.
-</pre></div>
-</div>
-<figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="_images/emcee-trace.png"><img alt="Posterior histograms and stored emcee walker traces for four sampled parameters." src="_images/emcee-trace.png" style="width: 100%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Posterior histograms and walker traces. Dashed red lines mark the generating values.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="_images/emcee-autocorrelation.png"><img alt="Autocorrelation versus lag for each of the four emcee sampling coordinates." src="_images/emcee-autocorrelation.png" style="width: 640px;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Mean autocorrelation across walkers. A short-chain estimate of its integrated
-time is exploratory; interacting walkers are not independent chains for R-hat.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id4">
-<a class="reference internal image-reference" href="_images/emcee-posterior.png"><img alt="Marginal and pairwise emcee posterior distributions, with generating values and central 68 percent intervals." src="_images/emcee-posterior.png" style="width: 100%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Marginal and pairwise posterior distributions. Gray bands show central 68%
-intervals; black lines mark medians. A mock-data posterior need not peak at the
-generating value.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="numpyro" for="sd-tab-item-1">
-JAX / NumPyro</label><div class="sd-tab-content docutils">
-<p>Run the complete example in double precision:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JEANSPY_JAX_PLATFORM</span><span class="o">=</span>cpu<span class="w"> </span><span class="nv">JEANSPY_JAX_ENABLE_X64</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
-python<span class="w"> </span>examples/docs_quickstart_numpyro.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/jeanspy-numpyro-example
-</pre></div>
-</div>
-<p><strong>Construct the model.</strong> JAX components receive physical parameters explicitly.
-Import the components from <code class="docutils literal notranslate"><span class="pre">jeanspy.model_numpyro</span></code> and the likelihood and
-sampler from <code class="docutils literal notranslate"><span class="pre">jeanspy.sampler_numpyro</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">#</a></h1><p class="notebook-download"><a href="_static/notebooks/quickstart.ipynb" download>Download this notebook (.ipynb)</a> · Read the saved outputs here, or run the cells in Jupyter.</p>
+<p>Define a spherical galaxy, inspect its predicted line-of-sight dispersion,
+generate mock velocities, and infer five parameters with <strong>JAX and NumPyro NUTS</strong>.
+The <a class="reference internal" href="tutorials/index.html"><span class="std std-doc">tutorials</span></a>
+explain the choices and add storage, restart and alternative backends.</p>
+<p>Follow the <a class="reference internal" href="installation.html"><span class="std std-doc">installation guide</span></a> with the <code class="docutils literal notranslate"><span class="pre">numpyro_cpu</span></code> and
+<code class="docutils literal notranslate"><span class="pre">plotting</span></code> extras. Run the following cells in order in a fresh Python process
+or notebook kernel. Use <strong>Restart Kernel and Run All Cells</strong> to reproduce the complete example.</p>
+<section id="define-the-model">
+<h2>1. Define the model<a class="headerlink" href="#define-the-model" title="Link to this heading">#</a></h2>
+<p>The three components are a Plummer stellar tracer, a generalized NFW dark-matter
+halo (<code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code>) and constant spherical anisotropy.
+We infer the inner density slope <code class="docutils literal notranslate"><span class="pre">g</span></code> along with the halo radius and density
+scales, anisotropy and systemic velocity. The mock has <code class="docutils literal notranslate"><span class="pre">g=1</span></code> (standard NFW). JAX components receive physical parameters
+on each call. Lengths are in <strong>pc</strong>, velocities in <strong>km/s</strong>, and mass densities
+in <strong>solar masses per pc³</strong>. The normalized tracer contributes no gravitational
+mass. Set the JAX environment before importing it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_PLATFORM"</span><span class="p">,</span> <span class="s2">"cpu"</span><span class="p">)</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_ENABLE_X64"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">)</span>
 
-<span class="c1"># Import JeansPy before JAX so its precision/device settings take effect.</span>
+<span class="c1"># The example uses no progress widgets; ignore only their optional-import warning.</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"IProgress not found.*"</span><span class="p">)</span>
+
+<span class="c1"># Import JeansPy before JAX so its runtime settings take effect.</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">NumPyroSampler</span><span class="p">,</span> <span class="n">ParameterSpec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">ParameterSpec</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span><span class="p">,</span> <span class="n">init_to_value</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_data</span><span class="p">,</span> <span class="n">plot_posterior</span>
-<span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"R_pc"</span><span class="p">,</span> <span class="s2">"vlos_kms"</span><span class="p">,</span> <span class="s2">"e_vlos_kms"</span><span class="p">))</span>
-
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
     <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(),</span>
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
 <span class="p">})</span>
-<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">4.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
-<span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+               <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Define priors and run NUTS.</strong> <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> associates sampling coordinates
-with their physical parameters. <code class="docutils literal notranslate"><span class="pre">NumPyroSampler</span></code> saves a checkpoint and a
-backend-native ArviZ chunk. A fresh sampler instance resumes without repeating
-warmup, after checking that the analysis and environment match the stored state.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">physical_parameters</span><span class="p">(</span><span class="n">sampled</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="o">**</span><span class="n">sampled</span><span class="p">}</span>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">fixed</span></code> holds the tracer scale, <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code> and the untruncated halo
+cutoff (<code class="docutils literal notranslate"><span class="pre">r_t_pc=np.inf</span></code>);
+<code class="docutils literal notranslate"><span class="pre">truth</span></code> adds the parameters used to generate data. <code class="docutils literal notranslate"><span class="pre">options</span></code> chooses the
+numerical resolution. The <a class="reference internal" href="tutorials/backends.html"><span class="std std-doc">backend tutorial</span></a> explains
+the JAX interface and compilation.</p>
+</section>
+<section id="plot-the-prediction-and-generate-mock-data">
+<h2>2. Plot the prediction and generate mock data<a class="headerlink" href="#plot-the-prediction-and-generate-mock-data" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">sigmalos2</span></code> returns the intrinsic LOS <strong>variance</strong>, in (km/s)². Its square root
+is the dispersion. A measured velocity additionally has measurement variance
+<code class="docutils literal notranslate"><span class="pre">e_vlos_kms**2</span></code>. Here we generate 32 stars with Gaussian LOS velocities at
+projected Plummer radii and a systemic velocity of zero.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">R_pc</span> <span class="o">=</span> <span class="mf">200.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">u</span><span class="p">))</span>  <span class="c1"># Projected Plummer radii.</span>
+<span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span>
+<span class="n">variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
+<span class="n">vlos_kms</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">R_pc</span><span class="o">=</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="o">=</span><span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="n">e_vlos_kms</span><span class="p">)</span>
 
+<span class="n">R_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">3000.</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_grid</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
+<span class="n">prediction</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">R_grid</span><span class="p">,</span> <span class="n">sigma_kms</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"Projected radius [pc]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">"$\sigma_</span><span class="si">{los}</span><span class="s2">$ [km/s]"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">e_vlos_kms</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"."</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">"log"</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Projected radius [pc]"</span><span class="p">,</span>
+            <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Observed LOS velocity [km/s]"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="Predicted LOS dispersion and 32 mock velocities with measurement errors." src="_images/23b4c81ca44fb916690cfb46f9e4eb3485ce13fc8ec97e23044fc54943648ff2.png" />
+</div>
+</div>
+<p>In an interactive notebook the figure is displayed immediately; the plots are saved with this notebook for reading without a kernel.
+These mock velocities follow the Gaussian likelihood used below; they are
+not samples from a full phase-space distribution function.</p>
+</section>
+<section id="run-mcmc">
+<h2>3. Run MCMC<a class="headerlink" href="#run-mcmc" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">JeansLikelihoodModel</span></code> to combine the Jeans prediction and measurement
+errors in a Gaussian velocity likelihood. <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> names each sampling
+coordinate and its prior. <code class="docutils literal notranslate"><span class="pre">pow10</span></code> converts a sampled base-10 logarithm into
+the positive physical scale passed to the model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">physical_parameters</span><span class="p">(</span><span class="n">sampled</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="o">**</span><span class="n">sampled</span><span class="p">}</span>
 
 <span class="n">likelihood</span> <span class="o">=</span> <span class="n">JeansLikelihoodModel</span><span class="p">(</span>
     <span class="n">model</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">2.4</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
-     <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">.3</span><span class="p">),</span>
+    <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
+     <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
                          <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
-     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.5</span><span class="p">)),</span>
-     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">))],</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))],</span>
     <span class="n">parameter_postprocess</span><span class="o">=</span><span class="n">physical_parameters</span><span class="p">,</span>
     <span class="n">sigmalos2_kwargs</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
 <span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">build_mcmc</span><span class="p">(</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">):</span>
-    <span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span>
-                  <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
-                      <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
-                      <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
-    <span class="k">return</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="n">num_samples</span><span class="p">,</span>
-                <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">):</span>
-    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-    <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"observations.csv"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
-               <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
-    <span class="n">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
-    <span class="c1"># checkpoint-start</span>
-    <span class="k">with</span> <span class="n">NumPyroSampler</span><span class="p">(</span><span class="n">build_mcmc</span><span class="p">(</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">),</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
-                         <span class="n">storage_backend</span><span class="o">=</span><span class="s2">"h5netcdf"</span><span class="p">,</span> <span class="n">async_writes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">first_sampler</span><span class="p">:</span>
-        <span class="n">first</span> <span class="o">=</span> <span class="n">first_sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">original</span> <span class="o">=</span> <span class="n">first_sampler</span><span class="o">.</span><span class="n">load_samples</span><span class="p">()[</span><span class="s2">"posterior"</span><span class="p">]</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"First checkpoint saved:"</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">checkpoint_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">())</span>
-    <span class="c1"># A fresh sampler object restores the state and skips the completed warmup.</span>
-    <span class="k">with</span> <span class="n">NumPyroSampler</span><span class="p">(</span><span class="n">build_mcmc</span><span class="p">(</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">),</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
-                         <span class="n">storage_backend</span><span class="o">=</span><span class="s2">"h5netcdf"</span><span class="p">,</span> <span class="n">async_writes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">resumed_sampler</span><span class="p">:</span>
-        <span class="n">resumed</span> <span class="o">=</span> <span class="n">resumed_sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">idata</span> <span class="o">=</span> <span class="n">resumed_sampler</span><span class="o">.</span><span class="n">load_samples</span><span class="p">(</span><span class="n">combine</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">posterior</span> <span class="o">=</span> <span class="n">idata</span><span class="p">[</span><span class="s2">"posterior"</span><span class="p">]</span><span class="o">.</span><span class="n">ds</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Resumed from checkpoint:"</span><span class="p">,</span> <span class="n">resumed</span><span class="o">.</span><span class="n">resumed</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Stored chunks:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">resumed_sampler</span><span class="o">.</span><span class="n">list_chunk_paths</span><span class="p">()))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Stored samples per parameter:"</span><span class="p">,</span> <span class="n">posterior</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">original</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_samples</span><span class="p">],</span>
-                                          <span class="n">original</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-        <span class="c1"># checkpoint-end</span>
-        <span class="c1"># diagnostics-start</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Divergences:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">idata</span><span class="p">[</span><span class="s2">"sample_stats"</span><span class="p">][</span><span class="s2">"diverging"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
-        <span class="n">chain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">posterior</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">plot_posterior</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">)</span>
-        <span class="c1"># diagnostics-end</span>
-        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">chain</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">idata</span>
 </pre></div>
 </div>
-<p><strong>Execution result.</strong> Two chains run sequentially, each with 200 warmup steps
-and 256 posterior draws. Resuming adds another 256 draws per chain. The ArviZ
-summary and divergences below are calculated from the combined saved chunks.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>First checkpoint saved: True
-Resumed from checkpoint: True
-Stored chunks: 2
-Stored samples per parameter: (2, 512)
-                     mean    sd eti89_lb eti89_ub  ess_bulk  ess_tail r_hat mcse_mean mcse_sd
-log10_rs_pc          2.94  0.18      2.6      3.2       412       326  1.01     0.009  0.0055
-log10_rhos_Msunpc3  -1.33  0.25     -1.7    -0.86       408       369  1.00     0.013  0.0097
-beta_ani             0.13  0.27    -0.38     0.47       639       443  1.00      0.01  0.0059
-vmem_kms             -0.6  1.42     -2.8      1.7       626       452  1.00     0.057   0.038
+</div>
+</div>
+<p>The priors are uniform in the named coordinates: log halo radius, log halo
+density, inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code>, anisotropy and systemic velocity. The halo priors
+span about 32–10,000 pc in scale radius, 0.001–10 solar masses per pc³ in
+density scale, and <code class="docutils literal notranslate"><span class="pre">g=0</span></code> (a finite-density core) through <code class="docutils literal notranslate"><span class="pre">g=2</span></code> (a steep cusp).
+They are illustrative choices
+for this mock dataset. Run two independent chains sequentially on the CPU;
+each has 200 warmup steps and 256 posterior draws. The first run also compiles
+the JAX calculation and may take longer than subsequent evaluations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span>
+              <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
+                  <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
+                  <span class="s2">"g"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
+<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+            <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspect-the-result">
+<h2>4. Inspect the result<a class="headerlink" href="#inspect-the-result" title="Link to this heading">#</a></h2>
+<p>Print the posterior summary, central 68% intervals and divergence count, then
+plot the two chains separately. <code class="docutils literal notranslate"><span class="pre">get_samples(group_by_chain=True)</span></code> retains
+the <code class="docutils literal notranslate"><span class="pre">(chain,</span> <span class="pre">draw)</span></code> axes; warmup is already excluded.</p>
+<p>The 16%, 50% and 84% lines are marginal quantiles; the NumPyro summary
+table above them uses its own default interval.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">print_summary</span><span class="p">(</span><span class="n">exclude_deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">posterior</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">(</span><span class="n">group_by_chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Each value: (chain, draw).</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">]),</span> <span class="p">[</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">"16%, 50%, 84%:"</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Divergences:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">mcmc</span><span class="o">.</span><span class="n">get_extra_fields</span><span class="p">()[</span><span class="s2">"diverging"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+
+<span class="n">traces</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">chain_index</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">])):</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span>
+                     <span class="n">ls</span><span class="o">=</span><span class="p">[</span><span class="s2">"-"</span><span class="p">,</span> <span class="s2">"--"</span><span class="p">][</span><span class="n">chain_index</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Chain </span><span class="si">{</span><span class="n">chain_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Posterior draw (warmup excluded)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                          mean       std    median      5.0%     95.0%     n_eff     r_hat
+            beta_ani      0.26      0.42      0.38     -0.38      0.74    240.94      1.01
+                   g      0.83      0.47      0.81      0.00      1.46    168.39      1.01
+  log10_rhos_Msunpc3     -1.57      0.83     -1.66     -2.99     -0.44    157.65      1.01
+         log10_rs_pc      3.21      0.53      3.26      2.49      3.99    182.52      1.00
+            vmem_kms     -0.35      1.55     -0.38     -2.81      2.24    432.42      1.00
+
+Number of divergences: 0
+log10_rs_pc 16%, 50%, 84%: [2.64120599 3.25927649 3.77525493]
+log10_rhos_Msunpc3 16%, 50%, 84%: [-2.39459069 -1.65517657 -0.71662544]
+g 16%, 50%, 84%: [0.29710162 0.80858003 1.31702316]
+beta_ani 16%, 50%, 84%: [-0.21152182  0.37810021  0.65304241]
+vmem_kms 16%, 50%, 84%: [-1.77938956 -0.37797063  1.17765941]
 Divergences: 0
 </pre></div>
 </div>
-<figure class="align-default" id="id5">
-<a class="reference internal image-reference" href="_images/numpyro-trace.png"><img alt="Posterior histograms and two stored NumPyro chain traces for four sampled parameters." src="_images/numpyro-trace.png" style="width: 100%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Posterior histograms and the two independent chain traces. Dashed red lines mark
-the generating values.</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id6">
-<a class="reference internal image-reference" href="_images/numpyro-autocorrelation.png"><img alt="Autocorrelation versus lag for each of the four NumPyro sampling coordinates." src="_images/numpyro-autocorrelation.png" style="width: 640px;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Mean autocorrelation across the two chains.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id7">
-<a class="reference internal image-reference" href="_images/numpyro-posterior.png"><img alt="Marginal and pairwise NumPyro posterior distributions, with generating values and central 68 percent intervals." src="_images/numpyro-posterior.png" style="width: 100%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Marginal and pairwise posterior distributions, with the same conventions as the
-emcee panels.</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
+<img alt="Separate posterior traces for two NumPyro chains and four sampling coordinates." src="_images/dfdb7e27b754198aa57c5221365d3877702c86a45a694456c187a1bdb1f4944f.png" />
 </div>
 </div>
-<p>These are short tutorial runs. Inspect chain mixing, effective sample sizes,
-R-hat for independent chains and divergences, and extend the analysis as needed.
-Good sampler diagnostics do not establish the physical adequacy of a Jeans
-model or the calibration of its intervals.</p>
-</section>
-<section id="plotting-and-saved-files">
-<h2>Plotting and saved files<a class="headerlink" href="#plotting-and-saved-files" title="Link to this heading">#</a></h2>
-<p>The figures use the posterior draws loaded from disk. The shared plotting
-function also makes the dimensional convention explicit:</p>
-<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
-<summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-text">Plotting code</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Plot the actual observations and stored posterior draws in the Quickstart."""</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">emcee.autocorr</span><span class="w"> </span><span class="kn">import</span> <span class="n">function_1d</span>
+<section id="compare-posterior-profiles-with-the-true-and-map-models">
+<h3>Compare posterior profiles with the true and MAP models<a class="headerlink" href="#compare-posterior-profiles-with-the-true-and-map-models" title="Link to this heading">#</a></h3>
+<p>First find a numerical <strong>maximum a posteriori (MAP)</strong> point. Here MAP refers
+to density in the sampled coordinates
+<code class="docutils literal notranslate"><span class="pre">(log10_rs_pc,</span> <span class="pre">log10_rhos_Msunpc3,</span> <span class="pre">g,</span> <span class="pre">beta_ani,</span> <span class="pre">vmem_kms)</span></code> with the priors above.
+MAP depends on coordinates: maximizing density in linear radius/density is
+a different problem. <code class="docutils literal notranslate"><span class="pre">log_density</span></code> evaluates the same likelihood and priors;
+the unconstrained NUTS potential energy includes transformation Jacobians and
+must not be used directly for this definition.</p>
+<p>Bounded optimization starts from several posterior draws. The best successful
+result is a numerical MAP candidate, not a proof of the global maximum. Its
+reported objective should improve on the best saved draw. Inspect any prior
+boundary reported below; a boundary mode can be strongly prior-dependent.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_density</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
 
+<span class="c1"># Each row stays a joint posterior draw in the original sampling coordinates.</span>
+<span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">])</span>
+<span class="n">bounds</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)]</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Save the mock velocity observations, including measurement errors."""</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"R_pc"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">"vlos_kms"</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">"e_vlos_kms"</span><span class="p">],</span>
-                <span class="n">fmt</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">".6"</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">"log"</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Projected radius [pc]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"LOS velocity [km/s]"</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"observations.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_posterior</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">sampled</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">theta</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">log_density</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="p">(),</span> <span class="n">data</span><span class="p">,</span> <span class="n">sampled</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
+<span class="n">value_and_grad</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">value_and_grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">theta</span><span class="p">:</span> <span class="o">-</span><span class="n">log_posterior</span><span class="p">(</span><span class="n">theta</span><span class="p">)))</span>
 
-<span class="c1"># plots-start</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">truth</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
-    <span class="c1"># chain is (chain or walker, draw, parameter), after discarding warmup.</span>
-    <span class="c1"># emcee walkers interact; these panels do not treat them as independent chains.</span>
-    <span class="n">flat</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">1.8</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)),</span>
-                             <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">flat</span><span class="p">[:,</span> <span class="n">k</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">)</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#bb4430"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chain</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.45</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">.6</span><span class="p">)</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#bb4430"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Posterior value"</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Stored draw after warmup"</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"trace.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">value</span><span class="p">,</span> <span class="n">gradient</span> <span class="o">=</span> <span class="n">value_and_grad</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
-    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
-                             <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
-    <span class="n">shown</span> <span class="o">=</span> <span class="n">flat</span><span class="p">[::</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span><span class="o">//</span><span class="mi">1500</span><span class="p">)]</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">name_j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
-            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">flat</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">)</span>
-                <span class="n">low</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">flat</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="p">[</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">])</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">)</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">median</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">shown</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">shown</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">)</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#bb4430"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#bb4430"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">name_j</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">name_i</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"posterior.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
-
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
-        <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">function_1d</span><span class="p">(</span><span class="n">c</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">acf</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">acf</span><span class="p">))],</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"Lag [stored draws]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Mean autocorrelation"</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="s2">"small"</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"autocorrelation.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
-<span class="c1"># plots-end</span>
+<span class="c1"># Start at the best saved draw and at draws spread across both chains.</span>
+<span class="n">logp_draws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">log_posterior</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">flat</span><span class="p">)))</span>
+<span class="n">starts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logp_draws</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)])</span>
+<span class="n">fits</span> <span class="o">=</span> <span class="p">[</span><span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">flat</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">jac</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"L-BFGS-B"</span><span class="p">,</span>
+                 <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">"maxiter"</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">"ftol"</span><span class="p">:</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="s2">"gtol"</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">})</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">]</span>
+<span class="n">successful</span> <span class="o">=</span> <span class="p">[</span><span class="n">fit</span> <span class="k">for</span> <span class="n">fit</span> <span class="ow">in</span> <span class="n">fits</span> <span class="k">if</span> <span class="n">fit</span><span class="o">.</span><span class="n">success</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fun</span><span class="p">)]</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">successful</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"MAP optimization did not converge; inspect the optimizer results."</span><span class="p">)</span>
+<span class="n">best_fit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">successful</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">fit</span><span class="p">:</span> <span class="n">fit</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+<span class="n">map_theta</span> <span class="o">=</span> <span class="n">best_fit</span><span class="o">.</span><span class="n">x</span>
+<span class="k">assert</span> <span class="o">-</span><span class="n">best_fit</span><span class="o">.</span><span class="n">fun</span> <span class="o">&gt;=</span> <span class="n">logp_draws</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="mf">1e-6</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Converged MAP searches:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">successful</span><span class="p">),</span> <span class="s2">"/"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fits</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Numerical MAP:"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">map_theta</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"MAP log posterior:"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="o">-</span><span class="n">best_fit</span><span class="o">.</span><span class="n">fun</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Best saved-draw log posterior:"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">logp_draws</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">at_bound</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">map_theta</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"MAP coordinates at a prior bound:"</span><span class="p">,</span> <span class="n">at_bound</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</details><p>Each output directory contains <code class="docutils literal notranslate"><span class="pre">observations.csv</span></code>, the three posterior figures
-and the mock-observation figure. The emcee directory contains <code class="docutils literal notranslate"><span class="pre">chain.h5</span></code>;
-the NumPyro directory contains <code class="docutils literal notranslate"><span class="pre">metadata.json</span></code>, <code class="docutils literal notranslate"><span class="pre">last_state.pkl</span></code> and two
-<code class="docutils literal notranslate"><span class="pre">chunks/*.nc</span></code> stores. See <a class="reference internal" href="guides/inference.html"><span class="std std-doc">inference and storage</span></a> for longer
-analyses and <a class="reference internal" href="guides/axisymmetric.html"><span class="std std-doc">axisymmetric models</span></a> for flattened systems.</p>
-<p>The <a class="reference download internal" download="" href="_downloads/8ddf92071c38960be7887272071735f6/execution.json"><span class="xref download myst">execution metadata</span></a> records package
-versions, source hashes and output hashes. To regenerate the displayed results
-from a checkout, run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">scripts/run_quickstart.py</span></code> in the locked docs
-environment. Ordinary documentation builds reuse these recorded outputs; the
-metadata identifies the source and environment used to produce them. Both
-workflows run again on a published GitHub release or a manual Documentation
-workflow run with <code class="docutils literal notranslate"><span class="pre">run_mcmc=true</span></code>.</p>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Converged MAP searches: 6 / 6
+Numerical MAP: {'log10_rs_pc': 4.0, 'log10_rhos_Msunpc3': -2.1904, 'g': 0.6041, 'beta_ani': 0.75, 'vmem_kms': -0.2776}
+MAP log posterior: -116.8054
+Best saved-draw log posterior: -116.9309
+MAP coordinates at a prior bound: ['log10_rs_pc', 'beta_ani']
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now propagate <strong>every joint posterior draw</strong> through the forward model.
+The shading gives central 68% and 95% <strong>pointwise credible intervals</strong>;
+the blue line is the pointwise median. These bands describe uncertainty in
+the intrinsic dispersion and halo density, not the scatter of new observed
+velocities and not a simultaneous interval for the entire curve. The orange
+dashed MAP curve is one joint model, so it need not follow the median curve.
+Black dotted curves show the mock’s true model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">profile_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">3000.</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">physical_from_theta</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">log_rs</span><span class="p">,</span> <span class="n">log_rho</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">theta</span>
+    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="s2">"rs_pc"</span><span class="p">:</span> <span class="mf">10.</span><span class="o">**</span><span class="n">log_rs</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">:</span> <span class="mf">10.</span><span class="o">**</span><span class="n">log_rho</span><span class="p">,</span>
+            <span class="s2">"g"</span><span class="p">:</span> <span class="n">g</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="n">beta</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="n">mean</span><span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">profiles</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">physical_from_theta</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">profile_grid</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
+    <span class="n">density</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">"DMModel"</span><span class="p">]</span><span class="o">.</span><span class="n">mass_density_3d</span><span class="p">(</span><span class="n">profile_grid</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">sigma</span><span class="p">,</span> <span class="n">density</span><span class="p">])</span>
+
+<span class="c1"># lax.map evaluates every joint draw without materializing a huge mass grid.</span>
+<span class="n">profile_draws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">lax</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">profiles</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">flat</span><span class="p">)))</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">profile_draws</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">profile_draws</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">profile_draws</span><span class="p">,</span> <span class="p">[</span><span class="mf">.025</span><span class="p">,</span> <span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">,</span> <span class="mf">.975</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">true_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rs_pc"</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rhos_Msunpc3"</span><span class="p">]),</span>
+                       <span class="n">truth</span><span class="p">[</span><span class="s2">"g"</span><span class="p">],</span> <span class="n">truth</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">],</span> <span class="mf">0.</span><span class="p">])</span>
+<span class="n">true_profiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profiles</span><span class="p">(</span><span class="n">true_theta</span><span class="p">))</span>
+<span class="n">map_profiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profiles</span><span class="p">(</span><span class="n">map_theta</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+    <span class="n">low95</span><span class="p">,</span> <span class="n">low68</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">high68</span><span class="p">,</span> <span class="n">high95</span> <span class="o">=</span> <span class="n">bands</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">profile_grid</span><span class="p">,</span> <span class="n">low95</span><span class="p">,</span> <span class="n">high95</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.12</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">"95% pointwise interval"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">profile_grid</span><span class="p">,</span> <span class="n">low68</span><span class="p">,</span> <span class="n">high68</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.3</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">"68% pointwise interval"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile_grid</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Posterior median"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile_grid</span><span class="p">,</span> <span class="n">map_profiles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#b65c00"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">"MAP (numerical)"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile_grid</span><span class="p">,</span> <span class="n">true_profiles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"True"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"Projected radius R [pc]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">"$\sigma_{\rm los}$ [km/s]"</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"LOS dispersion posterior"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"3-D radius r [pc]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">"$\rho_{\rm DM}$ [$M_\odot$/pc$^3$]"</span><span class="p">,</span>
+            <span class="n">yscale</span><span class="o">=</span><span class="s2">"log"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"DM density posterior"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/071bf5c43ef1d448f0805bd52b89375b9c587c42f0ac39118312b3975f216229.png" src="_images/071bf5c43ef1d448f0805bd52b89375b9c587c42f0ac39118312b3975f216229.png" />
+</div>
+</div>
+<p>Inspect mixing, effective sample size, R-hat and divergences before interpreting
+the intervals. These short chains demonstrate the workflow; a run that finishes
+does not establish convergence or interval calibration. The
+<a class="reference internal" href="tutorials/inference.html"><span class="std std-doc">MCMC tutorial</span></a> explains convergence diagnostics, NUTS divergences and corner contours.</p>
+<p>Continue with <a class="reference internal" href="tutorials/units.html"><span class="std std-doc">units and basic conventions</span></a>, or go directly
+to <a class="reference internal" href="tutorials/storage.html"><span class="std std-doc">saving and resuming results</span></a>. For individual signatures
+and options, use the <a class="reference internal" href="api/index.html"><span class="std std-doc">API reference</span></a>.</p>
+</section>
 </section>
 </section>
 
@@ -985,11 +837,11 @@ workflow run with <code class="docutils literal notranslate"><span class="pre">r
       </div>
     </a>
     <a class="right-next"
-       href="theory.html"
+       href="tutorials/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Theory and numerical methods</p>
+        <p class="prev-next-title">Tutorials</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1012,16 +864,20 @@ workflow run with <code class="docutils literal notranslate"><span class="pre">r
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-and-mock-observations">Model and mock observations</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-and-inspect-the-posterior">Sample and inspect the posterior</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-and-saved-files">Plotting and saved files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-model">1. Define the model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-the-prediction-and-generate-mock-data">2. Plot the prediction and generate mock data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-mcmc">3. Run MCMC</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-the-result">4. Inspect the result</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-posterior-profiles-with-the-true-and-map-models">Compare posterior profiles with the true and MAP models</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="_sources/quickstart.md.txt">
+    <a href="_sources/quickstart.ipynb.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

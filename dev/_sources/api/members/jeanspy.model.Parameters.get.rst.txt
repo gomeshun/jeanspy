@@ -1,0 +1,9 @@
+get
+===
+
+``jeanspy.model.Parameters.get``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. automethod:: jeanspy.model.Parameters.get
+   :no-index:

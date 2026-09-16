@@ -1,0 +1,9 @@
+p_names_lnprob
+==============
+
+``jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob
+   :no-index:

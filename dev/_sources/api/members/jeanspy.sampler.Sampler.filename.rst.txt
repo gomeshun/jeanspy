@@ -1,0 +1,9 @@
+filename
+========
+
+``jeanspy.sampler.Sampler.filename``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. autoattribute:: jeanspy.sampler.Sampler.filename
+   :no-index:

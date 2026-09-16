@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.Exp3dModel.update``
+
+Class and construction: :doc:`Exp3dModel <../generated/jeanspy.model.Exp3dModel>`.
+
+.. automethod:: jeanspy.model.Exp3dModel.update
+   :no-index:

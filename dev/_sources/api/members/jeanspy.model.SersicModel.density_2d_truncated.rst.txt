@@ -1,0 +1,9 @@
+density_2d_truncated
+====================
+
+``jeanspy.model.SersicModel.density_2d_truncated``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.density_2d_truncated
+   :no-index:

@@ -30,8 +30,9 @@
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -605,7 +606,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"_data"</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Parameters.update">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Parameters.html#jeanspy.model.Parameters.update">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Parameters.update.html#jeanspy.model.Parameters.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="s2">"Parameters"</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -627,7 +628,7 @@
 
 
 <div class="viewcode-block" id="Parameters.to_series">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Parameters.html#jeanspy.model.Parameters.to_series">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Parameters.to_series.html#jeanspy.model.Parameters.to_series">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Convert parameter storage to a pandas Series.</span>
 
@@ -652,7 +653,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Parameters.copy">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Parameters.html#jeanspy.model.Parameters.copy">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Parameters.copy.html#jeanspy.model.Parameters.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Parameters"</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Make a shallow parameter copy.</span>
 
@@ -766,7 +767,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">submodels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Model.sampling_identity">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Model.html#jeanspy.model.Model.sampling_identity">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Model.sampling_identity.html#jeanspy.model.Model.sampling_identity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampling_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampled_names</span><span class="o">=</span><span class="p">()):</span>
 <span class="w">        </span><span class="sd">"""Configuration and fixed parameters, excluding changing MCMC coordinates."""</span>
         <span class="n">state</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -831,7 +832,7 @@
         <span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="Model.is_required_param_names">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Model.html#jeanspy.model.Model.is_required_param_names">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Model.is_required_param_names.html#jeanspy.model.Model.is_required_param_names">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_required_param_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_names_candidates</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Test a sequence of names against this component's required parameters.</span>
 
@@ -842,7 +843,7 @@
 
 
 <div class="viewcode-block" id="Model.update">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.Model.html#jeanspy.model.Model.update">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.Model.update.html#jeanspy.model.Model.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"all"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Replace named parameters in the owning components.</span>
 

@@ -1,0 +1,9 @@
+resolved_deterministic_name
+===========================
+
+``jeanspy.sampler_numpyro.ParameterSpec.resolved_deterministic_name``
+
+Class and construction: :doc:`ParameterSpec <../generated/jeanspy.sampler_numpyro.ParameterSpec>`.
+
+.. autoattribute:: jeanspy.sampler_numpyro.ParameterSpec.resolved_deterministic_name
+   :no-index:

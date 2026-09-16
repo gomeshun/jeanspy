@@ -1,0 +1,7 @@
+Model members
+=============
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_numpyro.Model.sampling_identity

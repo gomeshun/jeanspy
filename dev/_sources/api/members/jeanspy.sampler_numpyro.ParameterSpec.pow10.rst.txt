@@ -1,0 +1,9 @@
+pow10
+=====
+
+``jeanspy.sampler_numpyro.ParameterSpec.pow10``
+
+Class and construction: :doc:`ParameterSpec <../generated/jeanspy.sampler_numpyro.ParameterSpec>`.
+
+.. automethod:: jeanspy.sampler_numpyro.ParameterSpec.pow10
+   :no-index:

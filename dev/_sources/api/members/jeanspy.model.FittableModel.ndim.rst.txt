@@ -1,0 +1,9 @@
+ndim
+====
+
+``jeanspy.model.FittableModel.ndim``
+
+Class and construction: :doc:`FittableModel <../generated/jeanspy.model.FittableModel>`.
+
+.. autoattribute:: jeanspy.model.FittableModel.ndim
+   :no-index:

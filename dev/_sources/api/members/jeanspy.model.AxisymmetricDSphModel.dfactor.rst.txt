@@ -1,0 +1,9 @@
+dfactor
+=======
+
+``jeanspy.model.AxisymmetricDSphModel.dfactor``
+
+Class and construction: :doc:`AxisymmetricDSphModel <../generated/jeanspy.model.AxisymmetricDSphModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphModel.dfactor
+   :no-index:

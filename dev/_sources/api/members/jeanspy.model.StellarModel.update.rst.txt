@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.StellarModel.update``
+
+Class and construction: :doc:`StellarModel <../generated/jeanspy.model.StellarModel>`.
+
+.. automethod:: jeanspy.model.StellarModel.update
+   :no-index:

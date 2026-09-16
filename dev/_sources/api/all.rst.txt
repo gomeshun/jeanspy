@@ -1,0 +1,778 @@
+Alphabetical API dictionary
+===========================
+
+Every public export and its public methods/properties are listed below,
+including inherited members and alternative import spellings. Aliases
+link to the same canonical description. Private implementation modules
+and names beginning with an underscore are excluded, except the callable
+likelihood interface ``__call__``. Constructor fields and shared physical
+conventions are described on each class page.
+
+.. contents:: Initial letter
+   :local:
+   :depth: 1
+
+
+_
+-
+
+* :doc:`jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.__call__ <members/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.__call__>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.JeansLikelihoodModel.__call__ <members/jeanspy.sampler_numpyro.JeansLikelihoodModel.__call__>` — method / property.
+
+A
+-
+
+* :doc:`jeanspy.axisymmetric.InvalidAxisymmetricModelError.add_note <members/jeanspy.axisymmetric.InvalidAxisymmetricModelError.add_note>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel <generated/jeanspy.model.AnisotropyModel>` — export.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricKinematicData.as_kwargs <members/jeanspy.model.AxisymmetricKinematicData.as_kwargs>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricKinematicData.as_kwargs <members/jeanspy.model.AxisymmetricKinematicData.as_kwargs>` — method / property.
+* :doc:`jeanspy.model.DMModel.assert_roi_is_enough_small <members/jeanspy.model.DMModel.assert_roi_is_enough_small>` — method / property.
+* :doc:`jeanspy.model.NFWModel.assert_roi_is_enough_small <members/jeanspy.model.NFWModel.assert_roi_is_enough_small>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.assert_roi_is_enough_small <members/jeanspy.model.ZhaoModel.assert_roi_is_enough_small>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricAnisotropyModel <generated/jeanspy.model.AxisymmetricAnisotropyModel>` — alias.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricAnisotropyModel <generated/jeanspy.model.AxisymmetricAnisotropyModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricAnisotropyModel <generated/jeanspy.model.AxisymmetricAnisotropyModel>` — export.
+* :doc:`jeanspy.model_numpyro.AxisymmetricAnisotropyModel <generated/jeanspy.model.AxisymmetricAnisotropyModel>` — alias.
+* :doc:`jeanspy.axisymmetric.AxisymmetricConstantAnisotropyModel <generated/jeanspy.model.AxisymmetricConstantAnisotropyModel>` — alias.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricConstantAnisotropyModel <generated/jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricConstantAnisotropyModel <generated/jeanspy.model.AxisymmetricConstantAnisotropyModel>` — export.
+* :doc:`jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel <generated/jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDMModel <generated/jeanspy.model.AxisymmetricDMModel>` — alias.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDMModel <generated/jeanspy.model.AxisymmetricDMModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricDMModel <generated/jeanspy.model.AxisymmetricDMModel>` — export.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDMModel <generated/jeanspy.model.AxisymmetricDMModel>` — alias.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel <generated/jeanspy.model.AxisymmetricDSphEstimationModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel <generated/jeanspy.model.AxisymmetricDSphEstimationModel>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel <generated/jeanspy.model.AxisymmetricDSphModel>` — alias.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel <generated/jeanspy.model_numpyro.AxisymmetricDSphModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricDSphModel <generated/jeanspy.model.AxisymmetricDSphModel>` — export.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel <generated/jeanspy.model_numpyro.AxisymmetricDSphModel>` — export.
+* :doc:`jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel <generated/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel>` — export.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricKinematicData <generated/jeanspy.model.AxisymmetricKinematicData>` — alias.
+* :doc:`jeanspy.model.AxisymmetricKinematicData <generated/jeanspy.model.AxisymmetricKinematicData>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricPlummerModel <generated/jeanspy.model.AxisymmetricPlummerModel>` — alias.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricPlummerModel <generated/jeanspy.model_numpyro.AxisymmetricPlummerModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricPlummerModel <generated/jeanspy.model.AxisymmetricPlummerModel>` — export.
+* :doc:`jeanspy.model_numpyro.AxisymmetricPlummerModel <generated/jeanspy.model_numpyro.AxisymmetricPlummerModel>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricStellarModel <generated/jeanspy.model.AxisymmetricStellarModel>` — alias.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricStellarModel <generated/jeanspy.model.AxisymmetricStellarModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricStellarModel <generated/jeanspy.model.AxisymmetricStellarModel>` — export.
+* :doc:`jeanspy.model_numpyro.AxisymmetricStellarModel <generated/jeanspy.model.AxisymmetricStellarModel>` — alias.
+* :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel <generated/jeanspy.model.AxisymmetricZhaoModel>` — alias.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricZhaoModel <generated/jeanspy.model_numpyro.AxisymmetricZhaoModel>` — alias.
+* :doc:`jeanspy.model.AxisymmetricZhaoModel <generated/jeanspy.model.AxisymmetricZhaoModel>` — export.
+* :doc:`jeanspy.model_numpyro.AxisymmetricZhaoModel <generated/jeanspy.model_numpyro.AxisymmetricZhaoModel>` — export.
+
+B
+-
+
+* :doc:`jeanspy.model.SersicModel.b <members/jeanspy.model.SersicModel.b>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.b <members/jeanspy.model.SersicModel.b>` — method / property.
+* :doc:`jeanspy.model.SersicModel.b_approx <members/jeanspy.model.SersicModel.b_approx>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.b_approx <members/jeanspy.model.SersicModel.b_approx>` — method / property.
+* :doc:`jeanspy.model.SersicModel.b_CB <members/jeanspy.model.SersicModel.b_CB>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.b_CB <members/jeanspy.model.SersicModel.b_CB>` — method / property.
+* :doc:`jeanspy.baes_eta2.baes_eta2_kernel_appell_reference <generated/jeanspy.baes_eta2.baes_eta2_kernel_appell_reference>` — export.
+* :doc:`jeanspy.baes_eta2.baes_eta2_kernel_jax <generated/jeanspy.baes_eta2.baes_eta2_kernel_jax>` — export.
+* :doc:`jeanspy.model.BaesAnisotropyModel <generated/jeanspy.model.BaesAnisotropyModel>` — export.
+* :doc:`jeanspy.model_numpyro.BaesAnisotropyModel <generated/jeanspy.model_numpyro.BaesAnisotropyModel>` — export.
+* :doc:`jeanspy.baes_eta2.BaesEta2AnisotropyModel <generated/jeanspy.baes_eta2.BaesEta2AnisotropyModel>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricAnisotropyModel.beta <members/jeanspy.model.AxisymmetricAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricConstantAnisotropyModel.beta <members/jeanspy.model.AxisymmetricConstantAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricAnisotropyModel.beta <members/jeanspy.model.AxisymmetricAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricConstantAnisotropyModel.beta <members/jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.baes_eta2.BaesEta2AnisotropyModel.beta <members/jeanspy.baes_eta2.BaesEta2AnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel.beta <members/jeanspy.model.AnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricAnisotropyModel.beta <members/jeanspy.model.AxisymmetricAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricConstantAnisotropyModel.beta <members/jeanspy.model.AxisymmetricConstantAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.beta <members/jeanspy.model.BaesAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.beta <members/jeanspy.model.ConstantAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.beta <members/jeanspy.model.OsipkovMerrittModel.beta>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricAnisotropyModel.beta <members/jeanspy.model.AxisymmetricAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.beta <members/jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model_numpyro.BaesAnisotropyModel.beta <members/jeanspy.model_numpyro.BaesAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model_numpyro.ConstantAnisotropyModel.beta <members/jeanspy.model_numpyro.ConstantAnisotropyModel.beta>` — method / property.
+* :doc:`jeanspy.model_numpyro.OsipkovMerrittModel.beta <members/jeanspy.model_numpyro.OsipkovMerrittModel.beta>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.blobs_dtype <members/jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype <members/jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype>` — method / property.
+* :doc:`jeanspy.model.FittableModel.blobs_dtype <members/jeanspy.model.FittableModel.blobs_dtype>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.blobs_dtype <members/jeanspy.model.SimpleDSphEstimationModel.blobs_dtype>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.ParameterSpec.build_distribution <members/jeanspy.sampler_numpyro.ParameterSpec.build_distribution>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.burn_in <members/jeanspy.sampler.Sampler.burn_in>` — method / property.
+
+C
+-
+
+* :doc:`jeanspy.axisymmetric_factors.C_D <generated/jeanspy.axisymmetric_factors.C_D>` — export.
+* :doc:`jeanspy.axisymmetric_factors.C_J <generated/jeanspy.axisymmetric_factors.C_J>` — export.
+* :doc:`jeanspy.model.C_J <generated/jeanspy.model.C_J>` — export.
+* :doc:`jeanspy.model.Exp2dModel.cdf_R <members/jeanspy.model.Exp2dModel.cdf_R>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.cdf_R <members/jeanspy.model.Exp3dModel.cdf_R>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.cdf_R <members/jeanspy.model.PlummerModel.cdf_R>` — method / property.
+* :doc:`jeanspy.model.SersicModel.cdf_R <members/jeanspy.model.SersicModel.cdf_R>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.cdf_R <members/jeanspy.model.Uniform2dModel.cdf_R>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.cdf_R <members/jeanspy.model.SersicModel.cdf_R>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.check_parameter_conversion <members/jeanspy.sampler.Sampler.check_parameter_conversion>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.checkpoint_path <members/jeanspy.sampler_numpyro.NumPyroSampler.checkpoint_path>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.chunk_suffix <members/jeanspy.sampler_numpyro.NumPyroSampler.chunk_suffix>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.chunks_dir <members/jeanspy.sampler_numpyro.NumPyroSampler.chunks_dir>` — method / property.
+* :doc:`jeanspy.model.DotDict.clear <members/jeanspy.model.DotDict.clear>` — method / property.
+* :doc:`jeanspy.model.Parameters.clear <members/jeanspy.model.Parameters.clear>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.clear_resume_state <members/jeanspy.sampler_numpyro.NumPyroSampler.clear_resume_state>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.close <members/jeanspy.sampler_numpyro.NumPyroSampler.close>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.combine_trees <members/jeanspy.sampler_numpyro.NumPyroSampler.combine_trees>` — method / property.
+* :doc:`jeanspy.model_numpyro.configure_runtime <generated/jeanspy.model_numpyro.configure_runtime>` — export.
+* :doc:`jeanspy.model.ConstantAnisotropyModel <generated/jeanspy.model.ConstantAnisotropyModel>` — export.
+* :doc:`jeanspy.model_numpyro.ConstantAnisotropyModel <generated/jeanspy.model_numpyro.ConstantAnisotropyModel>` — export.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.convert_params <members/jeanspy.model.AxisymmetricDSphEstimationModel.convert_params>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.convert_params <members/jeanspy.model.AxisymmetricDSphEstimationModel.convert_params>` — method / property.
+* :doc:`jeanspy.model.FittableModel.convert_params <members/jeanspy.model.FittableModel.convert_params>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.convert_params <members/jeanspy.model.SimpleDSphEstimationModel.convert_params>` — method / property.
+* :doc:`jeanspy.model.DotDict.copy <members/jeanspy.model.DotDict.copy>` — method / property.
+* :doc:`jeanspy.model.Parameters.copy <members/jeanspy.model.Parameters.copy>` — method / property.
+
+D
+-
+
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.data <members/jeanspy.model.AxisymmetricDSphEstimationModel.data>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.data <members/jeanspy.model.AxisymmetricDSphEstimationModel.data>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.data <members/jeanspy.model.SimpleDSphEstimationModel.data>` — method / property.
+* :doc:`jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD <generated/jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricPlummerModel.density <members/jeanspy.model.AxisymmetricPlummerModel.density>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel.density <members/jeanspy.model.AxisymmetricZhaoModel.density>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricPlummerModel.density <members/jeanspy.model.AxisymmetricPlummerModel.density>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricZhaoModel.density <members/jeanspy.model.AxisymmetricZhaoModel.density>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.density <members/jeanspy.model.Exp2dModel.density>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.density <members/jeanspy.model.Exp3dModel.density>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.density <members/jeanspy.model.PlummerModel.density>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density <members/jeanspy.model.SersicModel.density>` — method / property.
+* :doc:`jeanspy.model.StellarModel.density <members/jeanspy.model.StellarModel.density>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.density <members/jeanspy.model.Uniform2dModel.density>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density <members/jeanspy.model.SersicModel.density>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.density_2d <members/jeanspy.model.Exp2dModel.density_2d>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.density_2d <members/jeanspy.model.Exp3dModel.density_2d>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.density_2d <members/jeanspy.model.PlummerModel.density_2d>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_2d <members/jeanspy.model.SersicModel.density_2d>` — method / property.
+* :doc:`jeanspy.model.StellarModel.density_2d <members/jeanspy.model.StellarModel.density_2d>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.density_2d <members/jeanspy.model.Uniform2dModel.density_2d>` — method / property.
+* :doc:`jeanspy.model_numpyro.PlummerModel.density_2d <members/jeanspy.model_numpyro.PlummerModel.density_2d>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_2d <members/jeanspy.model.SersicModel.density_2d>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.density_2d_normalized_re <members/jeanspy.model.PlummerModel.density_2d_normalized_re>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_2d_normalized_re <members/jeanspy.model.SersicModel.density_2d_normalized_re>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_2d_normalized_re <members/jeanspy.model.SersicModel.density_2d_normalized_re>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.density_2d_truncated <members/jeanspy.model.Exp2dModel.density_2d_truncated>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.density_2d_truncated <members/jeanspy.model.Exp3dModel.density_2d_truncated>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.density_2d_truncated <members/jeanspy.model.PlummerModel.density_2d_truncated>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_2d_truncated <members/jeanspy.model.SersicModel.density_2d_truncated>` — method / property.
+* :doc:`jeanspy.model.StellarModel.density_2d_truncated <members/jeanspy.model.StellarModel.density_2d_truncated>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.density_2d_truncated <members/jeanspy.model.Uniform2dModel.density_2d_truncated>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_2d_truncated <members/jeanspy.model.SersicModel.density_2d_truncated>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.density_3d <members/jeanspy.model.AxisymmetricDSphModel.density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricPlummerModel.density_3d <members/jeanspy.model.AxisymmetricPlummerModel.density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricStellarModel.density_3d <members/jeanspy.model.AxisymmetricStellarModel.density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.density_3d <members/jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricPlummerModel.density_3d <members/jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricStellarModel.density_3d <members/jeanspy.model.AxisymmetricStellarModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.density_3d <members/jeanspy.model.AxisymmetricDSphModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricPlummerModel.density_3d <members/jeanspy.model.AxisymmetricPlummerModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricStellarModel.density_3d <members/jeanspy.model.AxisymmetricStellarModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.density_3d <members/jeanspy.model.Exp2dModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.density_3d <members/jeanspy.model.Exp3dModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.density_3d <members/jeanspy.model.PlummerModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_3d <members/jeanspy.model.SersicModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.StellarModel.density_3d <members/jeanspy.model.StellarModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.density_3d <members/jeanspy.model.Uniform2dModel.density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d <members/jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d <members/jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricStellarModel.density_3d <members/jeanspy.model.AxisymmetricStellarModel.density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.PlummerModel.density_3d <members/jeanspy.model_numpyro.PlummerModel.density_3d>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_3d <members/jeanspy.model.SersicModel.density_3d>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_3d_auto <members/jeanspy.model.SersicModel.density_3d_auto>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_3d_auto <members/jeanspy.model.SersicModel.density_3d_auto>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_3d_LGM <members/jeanspy.model.SersicModel.density_3d_LGM>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_3d_LGM <members/jeanspy.model.SersicModel.density_3d_LGM>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_3d_numerical <members/jeanspy.model.SersicModel.density_3d_numerical>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_3d_numerical <members/jeanspy.model.SersicModel.density_3d_numerical>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_3d_VM20 <members/jeanspy.model.SersicModel.density_3d_VM20>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_3d_VM20 <members/jeanspy.model.SersicModel.density_3d_VM20>` — method / property.
+* :doc:`jeanspy.model.SersicModel.density_3d_VM20bis <members/jeanspy.model.SersicModel.density_3d_VM20bis>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.density_3d_VM20bis <members/jeanspy.model.SersicModel.density_3d_VM20bis>` — method / property.
+* :doc:`jeanspy.dequad.dequad <generated/jeanspy.dequad.dequad>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.dfactor <members/jeanspy.model.AxisymmetricDSphModel.dfactor>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel.dfactor <members/jeanspy.model.AxisymmetricZhaoModel.dfactor>` — method / property.
+* :doc:`jeanspy.axisymmetric_factors.dfactor <generated/jeanspy.axisymmetric_factors.dfactor>` — export.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.dfactor <members/jeanspy.model.AxisymmetricDSphModel.dfactor>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricZhaoModel.dfactor <members/jeanspy.model.AxisymmetricZhaoModel.dfactor>` — method / property.
+* :doc:`jeanspy.model.DMModel <generated/jeanspy.model.DMModel>` — export.
+* :doc:`jeanspy.model.DotDict <generated/jeanspy.model.DotDict>` — export.
+* :doc:`jeanspy.model.DSphModel <generated/jeanspy.model.DSphModel>` — export.
+* :doc:`jeanspy.model_numpyro.DSphModel <generated/jeanspy.model_numpyro.DSphModel>` — export.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.dtype <members/jeanspy.model.SimpleDSphEstimationModel.dtype>` — method / property.
+
+E
+-
+
+* :doc:`jeanspy.axisymmetric.AxisymmetricDMModel.enclosed_mass <members/jeanspy.model.AxisymmetricDMModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.enclosed_mass <members/jeanspy.model.AxisymmetricDSphModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel.enclosed_mass <members/jeanspy.model.AxisymmetricZhaoModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDMModel.enclosed_mass <members/jeanspy.model.AxisymmetricDMModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.enclosed_mass <members/jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricZhaoModel.enclosed_mass <members/jeanspy.model_numpyro.AxisymmetricZhaoModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDMModel.enclosed_mass <members/jeanspy.model.AxisymmetricDMModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.enclosed_mass <members/jeanspy.model.AxisymmetricDSphModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricZhaoModel.enclosed_mass <members/jeanspy.model.AxisymmetricZhaoModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model.DMModel.enclosed_mass <members/jeanspy.model.DMModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model.NFWModel.enclosed_mass <members/jeanspy.model.NFWModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.enclosed_mass <members/jeanspy.model.ZhaoModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDMModel.enclosed_mass <members/jeanspy.model.AxisymmetricDMModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass <members/jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricZhaoModel.enclosed_mass <members/jeanspy.model_numpyro.AxisymmetricZhaoModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.enclosed_mass <members/jeanspy.model_numpyro.NFWModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.enclosed_mass <members/jeanspy.model_numpyro.ZhaoModel.enclosed_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.enclosed_mass_analytic <members/jeanspy.model_numpyro.NFWModel.enclosed_mass_analytic>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.enclosed_mass_analytic <members/jeanspy.model_numpyro.ZhaoModel.enclosed_mass_analytic>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc <members/jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.enclosed_mass_numeric <members/jeanspy.model_numpyro.NFWModel.enclosed_mass_numeric>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric <members/jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric>` — method / property.
+* :doc:`jeanspy.model.NFWModel.enclosure_mass <members/jeanspy.model.NFWModel.enclosure_mass>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.enclosure_mass <members/jeanspy.model.ZhaoModel.enclosure_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.enclosure_mass <members/jeanspy.model_numpyro.NFWModel.enclosure_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.enclosure_mass <members/jeanspy.model_numpyro.ZhaoModel.enclosure_mass>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.ParameterSpec.exp <members/jeanspy.sampler_numpyro.ParameterSpec.exp>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel <generated/jeanspy.model.Exp2dModel>` — export.
+* :doc:`jeanspy.model.Exp3dModel <generated/jeanspy.model.Exp3dModel>` — export.
+* :doc:`jeanspy.model.FlatPriorModel.extract_value_by_name <members/jeanspy.model.FlatPriorModel.extract_value_by_name>` — method / property.
+
+F
+-
+
+* :doc:`jeanspy.baes_eta2.BaesEta2AnisotropyModel.f <members/jeanspy.baes_eta2.BaesEta2AnisotropyModel.f>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel.f <members/jeanspy.model.AnisotropyModel.f>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.f <members/jeanspy.model.BaesAnisotropyModel.f>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.f <members/jeanspy.model.ConstantAnisotropyModel.f>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.f <members/jeanspy.model.OsipkovMerrittModel.f>` — method / property.
+* :doc:`jeanspy.model_numpyro.BaesAnisotropyModel.f <members/jeanspy.model_numpyro.BaesAnisotropyModel.f>` — method / property.
+* :doc:`jeanspy.model_numpyro.ConstantAnisotropyModel.f <members/jeanspy.model_numpyro.ConstantAnisotropyModel.f>` — method / property.
+* :doc:`jeanspy.model_numpyro.OsipkovMerrittModel.f <members/jeanspy.model_numpyro.OsipkovMerrittModel.f>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.filename <members/jeanspy.sampler.Sampler.filename>` — method / property.
+* :doc:`jeanspy.model.FittableModel <generated/jeanspy.model.FittableModel>` — export.
+* :doc:`jeanspy.model.FlatPriorModel <generated/jeanspy.model.FlatPriorModel>` — export.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.flush <members/jeanspy.sampler_numpyro.NumPyroSampler.flush>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricKinematicData.from_data <members/jeanspy.model.AxisymmetricKinematicData.from_data>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricKinematicData.from_data <members/jeanspy.model.AxisymmetricKinematicData.from_data>` — method / property.
+* :doc:`jeanspy.model.DotDict.fromkeys <members/jeanspy.model.DotDict.fromkeys>` — method / property.
+
+G
+-
+
+* :doc:`jeanspy.hyp2f1_jax.GaussLegendre01 <generated/jeanspy.hyp2f1_jax.GaussLegendre01>` — export.
+* :doc:`jeanspy.model.FlatPriorModel.generate_default_config_file <members/jeanspy.model.FlatPriorModel.generate_default_config_file>` — method / property.
+* :doc:`jeanspy.dequad.generate_x_w <generated/jeanspy.dequad.generate_x_w>` — export.
+* :doc:`jeanspy.model.DotDict.get <members/jeanspy.model.DotDict.get>` — method / property.
+* :doc:`jeanspy.model.Parameters.get <members/jeanspy.model.Parameters.get>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.get_blobs <members/jeanspy.sampler.Sampler.get_blobs>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.get_chain <members/jeanspy.sampler.Sampler.get_chain>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.get_dataframe <members/jeanspy.sampler.Sampler.get_dataframe>` — method / property.
+* :doc:`jeanspy.model.get_default_estimation_model <generated/jeanspy.model.get_default_estimation_model>` — export.
+* :doc:`jeanspy.model.FlatPriorModel.get_index <members/jeanspy.model.FlatPriorModel.get_index>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.get_last_sample <members/jeanspy.sampler.Sampler.get_last_sample>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.get_log_prob <members/jeanspy.sampler.Sampler.get_log_prob>` — method / property.
+* :doc:`jeanspy.model_numpyro.get_runtime_config <generated/jeanspy.model_numpyro.get_runtime_config>` — export.
+* :doc:`jeanspy.model.GMsun_m3s2 <generated/jeanspy.model.GMsun_m3s2>` — export.
+
+H
+-
+
+* :doc:`jeanspy.model.Exp2dModel.half_light_radius <members/jeanspy.model.Exp2dModel.half_light_radius>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.half_light_radius <members/jeanspy.model.Exp3dModel.half_light_radius>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.half_light_radius <members/jeanspy.model.PlummerModel.half_light_radius>` — method / property.
+* :doc:`jeanspy.model.SersicModel.half_light_radius <members/jeanspy.model.SersicModel.half_light_radius>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.half_light_radius <members/jeanspy.model.SersicModel.half_light_radius>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.has_analytic_enclosed_mass <members/jeanspy.model_numpyro.NFWModel.has_analytic_enclosed_mass>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.has_analytic_enclosed_mass <members/jeanspy.model_numpyro.ZhaoModel.has_analytic_enclosed_mass>` — method / property.
+* :doc:`jeanspy.dequad.hashable <generated/jeanspy.dequad.hashable>` — export.
+* :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_3half <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half>` — export.
+* :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic>` — export.
+* :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad>` — export.
+* :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series>` — export.
+* :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_d_series <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_d_series>` — export.
+
+I
+-
+
+* :doc:`jeanspy.model.Parameters.index <members/jeanspy.model.Parameters.index>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.integrand_kernel <members/jeanspy.model.BaesAnisotropyModel.integrand_kernel>` — method / property.
+* :doc:`jeanspy.model.DSphModel.integrand_sigmalos2 <members/jeanspy.model.DSphModel.integrand_sigmalos2>` — method / property.
+* :doc:`jeanspy.axisymmetric.intrinsic_axis_ratio <generated/jeanspy.axisymmetric.intrinsic_axis_ratio>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.intrinsic_moments <members/jeanspy.model.AxisymmetricDSphModel.intrinsic_moments>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.intrinsic_moments <members/jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.intrinsic_moments <members/jeanspy.model.AxisymmetricDSphModel.intrinsic_moments>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments <members/jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments>` — method / property.
+* :doc:`jeanspy.axisymmetric.InvalidAxisymmetricModelError <generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError>` — export.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.inverse_temparature <members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature <members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature>` — method / property.
+* :doc:`jeanspy.model.FittableModel.inverse_temparature <members/jeanspy.model.FittableModel.inverse_temparature>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.inverse_temparature <members/jeanspy.model.SimpleDSphEstimationModel.inverse_temparature>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel.is_required_param_names <members/jeanspy.model.AnisotropyModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.is_required_param_names <members/jeanspy.model.BaesAnisotropyModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.is_required_param_names <members/jeanspy.model.ConstantAnisotropyModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.DMModel.is_required_param_names <members/jeanspy.model.DMModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.DSphModel.is_required_param_names <members/jeanspy.model.DSphModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.is_required_param_names <members/jeanspy.model.Exp2dModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.is_required_param_names <members/jeanspy.model.Exp3dModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.FittableModel.is_required_param_names <members/jeanspy.model.FittableModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.is_required_param_names <members/jeanspy.model.FlatPriorModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.Model.is_required_param_names <members/jeanspy.model.Model.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.NFWModel.is_required_param_names <members/jeanspy.model.NFWModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.is_required_param_names <members/jeanspy.model.OsipkovMerrittModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.is_required_param_names <members/jeanspy.model.PhotometryPriorModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.is_required_param_names <members/jeanspy.model.PlummerModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.SersicModel.is_required_param_names <members/jeanspy.model.SersicModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.is_required_param_names <members/jeanspy.model.SimpleDSphEstimationModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.StellarModel.is_required_param_names <members/jeanspy.model.StellarModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.is_required_param_names <members/jeanspy.model.Uniform2dModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.is_required_param_names <members/jeanspy.model.ZhaoModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.is_required_param_names <members/jeanspy.model.SersicModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.DotDict.items <members/jeanspy.model.DotDict.items>` — method / property.
+* :doc:`jeanspy.model.Parameters.items <members/jeanspy.model.Parameters.items>` — method / property.
+
+J
+-
+
+* :doc:`jeanspy.sampler_numpyro.JeansLikelihoodModel <generated/jeanspy.sampler_numpyro.JeansLikelihoodModel>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.jfactor <members/jeanspy.model.AxisymmetricDSphModel.jfactor>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel.jfactor <members/jeanspy.model.AxisymmetricZhaoModel.jfactor>` — method / property.
+* :doc:`jeanspy.axisymmetric_factors.jfactor <generated/jeanspy.axisymmetric_factors.jfactor>` — export.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.jfactor <members/jeanspy.model.AxisymmetricDSphModel.jfactor>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricZhaoModel.jfactor <members/jeanspy.model.AxisymmetricZhaoModel.jfactor>` — method / property.
+* :doc:`jeanspy.model.NFWModel.jfactor_evans2016 <members/jeanspy.model.NFWModel.jfactor_evans2016>` — method / property.
+* :doc:`jeanspy.model.DMModel.jfactor_ullio2016 <members/jeanspy.model.DMModel.jfactor_ullio2016>` — method / property.
+* :doc:`jeanspy.model.NFWModel.jfactor_ullio2016 <members/jeanspy.model.NFWModel.jfactor_ullio2016>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.jfactor_ullio2016 <members/jeanspy.model.ZhaoModel.jfactor_ullio2016>` — method / property.
+* :doc:`jeanspy.model.DMModel.jfactor_ullio2016_simple <members/jeanspy.model.DMModel.jfactor_ullio2016_simple>` — method / property.
+* :doc:`jeanspy.model.NFWModel.jfactor_ullio2016_simple <members/jeanspy.model.NFWModel.jfactor_ullio2016_simple>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.jfactor_ullio2016_simple <members/jeanspy.model.ZhaoModel.jfactor_ullio2016_simple>` — method / property.
+
+K
+-
+
+* :doc:`jeanspy.baes_eta2.BaesEta2AnisotropyModel.kernel <members/jeanspy.baes_eta2.BaesEta2AnisotropyModel.kernel>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel.kernel <members/jeanspy.model.AnisotropyModel.kernel>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.kernel <members/jeanspy.model.BaesAnisotropyModel.kernel>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.kernel <members/jeanspy.model.ConstantAnisotropyModel.kernel>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.kernel <members/jeanspy.model.OsipkovMerrittModel.kernel>` — method / property.
+* :doc:`jeanspy.model_numpyro.BaesAnisotropyModel.kernel <members/jeanspy.model_numpyro.BaesAnisotropyModel.kernel>` — method / property.
+* :doc:`jeanspy.model_numpyro.ConstantAnisotropyModel.kernel <members/jeanspy.model_numpyro.ConstantAnisotropyModel.kernel>` — method / property.
+* :doc:`jeanspy.model_numpyro.OsipkovMerrittModel.kernel <members/jeanspy.model_numpyro.OsipkovMerrittModel.kernel>` — method / property.
+* :doc:`jeanspy.model.DotDict.keys <members/jeanspy.model.DotDict.keys>` — method / property.
+* :doc:`jeanspy.model.Parameters.keys <members/jeanspy.model.Parameters.keys>` — method / property.
+
+L
+-
+
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths <members/jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnlikelihood <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood>` — method / property.
+* :doc:`jeanspy.model.FittableModel.lnlikelihood <members/jeanspy.model.FittableModel.lnlikelihood>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnlikelihood <members/jeanspy.model.SimpleDSphEstimationModel.lnlikelihood>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnlikelihoods <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods>` — method / property.
+* :doc:`jeanspy.model.FittableModel.lnlikelihoods <members/jeanspy.model.FittableModel.lnlikelihoods>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnlikelihoods <members/jeanspy.model.SimpleDSphEstimationModel.lnlikelihoods>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnposterior <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior>` — method / property.
+* :doc:`jeanspy.model.FittableModel.lnposterior <members/jeanspy.model.FittableModel.lnposterior>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnposterior <members/jeanspy.model.SimpleDSphEstimationModel.lnposterior>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnposterior_wbic <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic>` — method / property.
+* :doc:`jeanspy.model.FittableModel.lnposterior_wbic <members/jeanspy.model.FittableModel.lnposterior_wbic>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic <members/jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnpriors <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors>` — method / property.
+* :doc:`jeanspy.model.FittableModel.lnpriors <members/jeanspy.model.FittableModel.lnpriors>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnpriors <members/jeanspy.model.SimpleDSphEstimationModel.lnpriors>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.load_checkpoint <members/jeanspy.sampler_numpyro.NumPyroSampler.load_checkpoint>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.load_config <members/jeanspy.model.FlatPriorModel.load_config>` — method / property.
+* :doc:`jeanspy.model.FittableModel.load_data <members/jeanspy.model.FittableModel.load_data>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.load_data <members/jeanspy.model.SimpleDSphEstimationModel.load_data>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.load_samples <members/jeanspy.sampler_numpyro.NumPyroSampler.load_samples>` — method / property.
+* :doc:`jeanspy.model_numpyro.PlummerModel.log_prob_R <members/jeanspy.model_numpyro.PlummerModel.log_prob_R>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.logdensity_2d <members/jeanspy.model.Exp2dModel.logdensity_2d>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.logdensity_2d <members/jeanspy.model.PlummerModel.logdensity_2d>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.lower <members/jeanspy.model.FlatPriorModel.lower>` — method / property.
+
+M
+-
+
+* :doc:`jeanspy.axisymmetric.AxisymmetricDMModel.mass_density_3d <members/jeanspy.model.AxisymmetricDMModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.mass_density_3d <members/jeanspy.model.AxisymmetricDSphModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel.mass_density_3d <members/jeanspy.model.AxisymmetricZhaoModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDMModel.mass_density_3d <members/jeanspy.model.AxisymmetricDMModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.mass_density_3d <members/jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricZhaoModel.mass_density_3d <members/jeanspy.model_numpyro.AxisymmetricZhaoModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDMModel.mass_density_3d <members/jeanspy.model.AxisymmetricDMModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.mass_density_3d <members/jeanspy.model.AxisymmetricDSphModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricZhaoModel.mass_density_3d <members/jeanspy.model.AxisymmetricZhaoModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model.DMModel.mass_density_3d <members/jeanspy.model.DMModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model.NFWModel.mass_density_3d <members/jeanspy.model.NFWModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.mass_density_3d <members/jeanspy.model.ZhaoModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDMModel.mass_density_3d <members/jeanspy.model.AxisymmetricDMModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d <members/jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricZhaoModel.mass_density_3d <members/jeanspy.model_numpyro.AxisymmetricZhaoModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.mass_density_3d <members/jeanspy.model_numpyro.NFWModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.mass_density_3d <members/jeanspy.model_numpyro.ZhaoModel.mass_density_3d>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.mean_density_2d <members/jeanspy.model.Exp2dModel.mean_density_2d>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.mean_density_2d <members/jeanspy.model.Exp3dModel.mean_density_2d>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.mean_density_2d <members/jeanspy.model.PlummerModel.mean_density_2d>` — method / property.
+* :doc:`jeanspy.model.SersicModel.mean_density_2d <members/jeanspy.model.SersicModel.mean_density_2d>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.mean_density_2d <members/jeanspy.model.SersicModel.mean_density_2d>` — method / property.
+* :doc:`jeanspy.dequad.memorize <generated/jeanspy.dequad.memorize>` — export.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.metadata_path <members/jeanspy.sampler_numpyro.NumPyroSampler.metadata_path>` — method / property.
+* :doc:`jeanspy.model.Model <generated/jeanspy.model.Model>` — export.
+* :doc:`jeanspy.model_numpyro.Model <generated/jeanspy.model_numpyro.Model>` — export.
+
+N
+-
+
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.n_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.n_data>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.n_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.n_data>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.n_data <members/jeanspy.model.SimpleDSphEstimationModel.n_data>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.ndim <members/jeanspy.model.AxisymmetricDSphEstimationModel.ndim>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.ndim <members/jeanspy.model.AxisymmetricDSphEstimationModel.ndim>` — method / property.
+* :doc:`jeanspy.model.FittableModel.ndim <members/jeanspy.model.FittableModel.ndim>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.ndim <members/jeanspy.model.SimpleDSphEstimationModel.ndim>` — method / property.
+* :doc:`jeanspy.model.NFWModel <generated/jeanspy.model.NFWModel>` — export.
+* :doc:`jeanspy.model_numpyro.NFWModel <generated/jeanspy.model_numpyro.NFWModel>` — export.
+* :doc:`jeanspy.model.SersicModel.norm <members/jeanspy.model.SersicModel.norm>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.norm <members/jeanspy.model.SersicModel.norm>` — method / property.
+* :doc:`jeanspy.model.SersicModel.norm_3d <members/jeanspy.model.SersicModel.norm_3d>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.norm_3d <members/jeanspy.model.SersicModel.norm_3d>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler <generated/jeanspy.sampler_numpyro.NumPyroSampler>` — export.
+
+O
+-
+
+* :doc:`jeanspy.model.OsipkovMerrittModel <generated/jeanspy.model.OsipkovMerrittModel>` — export.
+* :doc:`jeanspy.model_numpyro.OsipkovMerrittModel <generated/jeanspy.model_numpyro.OsipkovMerrittModel>` — export.
+
+P
+-
+
+* :doc:`jeanspy.model.SersicModel.p_LGM <members/jeanspy.model.SersicModel.p_LGM>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.p_LGM <members/jeanspy.model.SersicModel.p_LGM>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.p_names_lnprob <members/jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob <members/jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob <members/jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob>` — method / property.
+* :doc:`jeanspy.model.Parameters <generated/jeanspy.model.Parameters>` — export.
+* :doc:`jeanspy.sampler_numpyro.ParameterSpec <generated/jeanspy.sampler_numpyro.ParameterSpec>` — export.
+* :doc:`jeanspy.model.AnisotropyModel.params_all <members/jeanspy.model.AnisotropyModel.params_all>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.params_all <members/jeanspy.model.BaesAnisotropyModel.params_all>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.params_all <members/jeanspy.model.ConstantAnisotropyModel.params_all>` — method / property.
+* :doc:`jeanspy.model.DMModel.params_all <members/jeanspy.model.DMModel.params_all>` — method / property.
+* :doc:`jeanspy.model.DSphModel.params_all <members/jeanspy.model.DSphModel.params_all>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.params_all <members/jeanspy.model.Exp2dModel.params_all>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.params_all <members/jeanspy.model.Exp3dModel.params_all>` — method / property.
+* :doc:`jeanspy.model.FittableModel.params_all <members/jeanspy.model.FittableModel.params_all>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.params_all <members/jeanspy.model.FlatPriorModel.params_all>` — method / property.
+* :doc:`jeanspy.model.Model.params_all <members/jeanspy.model.Model.params_all>` — method / property.
+* :doc:`jeanspy.model.NFWModel.params_all <members/jeanspy.model.NFWModel.params_all>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.params_all <members/jeanspy.model.OsipkovMerrittModel.params_all>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.params_all <members/jeanspy.model.PhotometryPriorModel.params_all>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.params_all <members/jeanspy.model.PlummerModel.params_all>` — method / property.
+* :doc:`jeanspy.model.SersicModel.params_all <members/jeanspy.model.SersicModel.params_all>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.params_all <members/jeanspy.model.SimpleDSphEstimationModel.params_all>` — method / property.
+* :doc:`jeanspy.model.StellarModel.params_all <members/jeanspy.model.StellarModel.params_all>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.params_all <members/jeanspy.model.Uniform2dModel.params_all>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.params_all <members/jeanspy.model.ZhaoModel.params_all>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.params_all <members/jeanspy.model.SersicModel.params_all>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel.params_all_with_model_name <members/jeanspy.model.AnisotropyModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.params_all_with_model_name <members/jeanspy.model.BaesAnisotropyModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.params_all_with_model_name <members/jeanspy.model.ConstantAnisotropyModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.DMModel.params_all_with_model_name <members/jeanspy.model.DMModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.DSphModel.params_all_with_model_name <members/jeanspy.model.DSphModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.params_all_with_model_name <members/jeanspy.model.Exp2dModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.params_all_with_model_name <members/jeanspy.model.Exp3dModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.FittableModel.params_all_with_model_name <members/jeanspy.model.FittableModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.params_all_with_model_name <members/jeanspy.model.FlatPriorModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.Model.params_all_with_model_name <members/jeanspy.model.Model.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.NFWModel.params_all_with_model_name <members/jeanspy.model.NFWModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.params_all_with_model_name <members/jeanspy.model.OsipkovMerrittModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.params_all_with_model_name <members/jeanspy.model.PhotometryPriorModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.params_all_with_model_name <members/jeanspy.model.PlummerModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.SersicModel.params_all_with_model_name <members/jeanspy.model.SersicModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name <members/jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.StellarModel.params_all_with_model_name <members/jeanspy.model.StellarModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.params_all_with_model_name <members/jeanspy.model.Uniform2dModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.params_all_with_model_name <members/jeanspy.model.ZhaoModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.params_all_with_model_name <members/jeanspy.model.SersicModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.pending_write_count <members/jeanspy.sampler_numpyro.NumPyroSampler.pending_write_count>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel <generated/jeanspy.model.PhotometryPriorModel>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.physical_params <members/jeanspy.model.AxisymmetricDSphModel.physical_params>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.physical_params <members/jeanspy.model.AxisymmetricDSphModel.physical_params>` — method / property.
+* :doc:`jeanspy.model.PlummerModel <generated/jeanspy.model.PlummerModel>` — export.
+* :doc:`jeanspy.model_numpyro.PlummerModel <generated/jeanspy.model_numpyro.PlummerModel>` — export.
+* :doc:`jeanspy.model.DotDict.pop <members/jeanspy.model.DotDict.pop>` — method / property.
+* :doc:`jeanspy.model.Parameters.pop <members/jeanspy.model.Parameters.pop>` — method / property.
+* :doc:`jeanspy.model.DotDict.popitem <members/jeanspy.model.DotDict.popitem>` — method / property.
+* :doc:`jeanspy.model.Parameters.popitem <members/jeanspy.model.Parameters.popitem>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDMModel.potential_gradient <members/jeanspy.model.AxisymmetricDMModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.potential_gradient <members/jeanspy.model.AxisymmetricDSphModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel.potential_gradient <members/jeanspy.model.AxisymmetricZhaoModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDMModel.potential_gradient <members/jeanspy.model.AxisymmetricDMModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.potential_gradient <members/jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricZhaoModel.potential_gradient <members/jeanspy.model_numpyro.AxisymmetricZhaoModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDMModel.potential_gradient <members/jeanspy.model.AxisymmetricDMModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.potential_gradient <members/jeanspy.model.AxisymmetricDSphModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricZhaoModel.potential_gradient <members/jeanspy.model.AxisymmetricZhaoModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDMModel.potential_gradient <members/jeanspy.model.AxisymmetricDMModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient <members/jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricZhaoModel.potential_gradient <members/jeanspy.model_numpyro.AxisymmetricZhaoModel.potential_gradient>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.ParameterSpec.pow10 <members/jeanspy.sampler_numpyro.ParameterSpec.pow10>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.prior_names <members/jeanspy.model.AxisymmetricDSphEstimationModel.prior_names>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.prior_names <members/jeanspy.model.AxisymmetricDSphEstimationModel.prior_names>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricPlummerModel.projected_axis_ratio <members/jeanspy.model.AxisymmetricPlummerModel.projected_axis_ratio>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricPlummerModel.projected_axis_ratio <members/jeanspy.model.AxisymmetricPlummerModel.projected_axis_ratio>` — method / property.
+
+R
+-
+
+* :doc:`jeanspy.model.Exp2dModel.R_exp_pc <members/jeanspy.model.Exp2dModel.R_exp_pc>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricPlummerModel.radial_derivative <members/jeanspy.model.AxisymmetricPlummerModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricStellarModel.radial_derivative <members/jeanspy.model.AxisymmetricStellarModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricPlummerModel.radial_derivative <members/jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricStellarModel.radial_derivative <members/jeanspy.model.AxisymmetricStellarModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricPlummerModel.radial_derivative <members/jeanspy.model.AxisymmetricPlummerModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricStellarModel.radial_derivative <members/jeanspy.model.AxisymmetricStellarModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative <members/jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricStellarModel.radial_derivative <members/jeanspy.model.AxisymmetricStellarModel.radial_derivative>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.ParameterSpec.records_deterministic <members/jeanspy.sampler_numpyro.ParameterSpec.records_deterministic>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.release_shared_memory <members/jeanspy.model.SimpleDSphEstimationModel.release_shared_memory>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel.required_param_names_combined <members/jeanspy.model.AnisotropyModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.required_param_names_combined <members/jeanspy.model.BaesAnisotropyModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.required_param_names_combined <members/jeanspy.model.ConstantAnisotropyModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.DMModel.required_param_names_combined <members/jeanspy.model.DMModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.DSphModel.required_param_names_combined <members/jeanspy.model.DSphModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.required_param_names_combined <members/jeanspy.model.Exp2dModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.required_param_names_combined <members/jeanspy.model.Exp3dModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.FittableModel.required_param_names_combined <members/jeanspy.model.FittableModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.required_param_names_combined <members/jeanspy.model.FlatPriorModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.Model.required_param_names_combined <members/jeanspy.model.Model.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.NFWModel.required_param_names_combined <members/jeanspy.model.NFWModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.required_param_names_combined <members/jeanspy.model.OsipkovMerrittModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.required_param_names_combined <members/jeanspy.model.PhotometryPriorModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.required_param_names_combined <members/jeanspy.model.PlummerModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.SersicModel.required_param_names_combined <members/jeanspy.model.SersicModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined <members/jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.StellarModel.required_param_names_combined <members/jeanspy.model.StellarModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.required_param_names_combined <members/jeanspy.model.Uniform2dModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.required_param_names_combined <members/jeanspy.model.ZhaoModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.required_param_names_combined <members/jeanspy.model.SersicModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.reset_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.reset_data>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.reset_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.reset_data>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.reset_data <members/jeanspy.model.SimpleDSphEstimationModel.reset_data>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.reset_pool <members/jeanspy.sampler.Sampler.reset_pool>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.reset_prior <members/jeanspy.model.PhotometryPriorModel.reset_prior>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.resolve_params <members/jeanspy.model_numpyro.NFWModel.resolve_params>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.resolve_params <members/jeanspy.model_numpyro.ZhaoModel.resolve_params>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.ParameterSpec.resolved_deterministic_name <members/jeanspy.sampler_numpyro.ParameterSpec.resolved_deterministic_name>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.run <members/jeanspy.sampler_numpyro.NumPyroSampler.run>` — method / property.
+* :doc:`jeanspy.sampler.Sampler.run_mcmc <members/jeanspy.sampler.Sampler.run_mcmc>` — method / property.
+
+S
+-
+
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.sample <members/jeanspy.model.AxisymmetricDSphEstimationModel.sample>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.sample <members/jeanspy.model.AxisymmetricDSphEstimationModel.sample>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.sample <members/jeanspy.model.FlatPriorModel.sample>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.sample <members/jeanspy.model.PhotometryPriorModel.sample>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.sample <members/jeanspy.model.SimpleDSphEstimationModel.sample>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.ParameterSpec.sample <members/jeanspy.sampler_numpyro.ParameterSpec.sample>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.sample_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.sample_data>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.sample_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.sample_data>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.sample_data <members/jeanspy.model.SimpleDSphEstimationModel.sample_data>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters <members/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters <members/jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters>` — method / property.
+* :doc:`jeanspy.model_numpyro.PlummerModel.sample_R <members/jeanspy.model_numpyro.PlummerModel.sample_R>` — method / property.
+* :doc:`jeanspy.sampler.Sampler <generated/jeanspy.sampler.Sampler>` — export.
+* :doc:`jeanspy.sampler_numpyro.SamplerRunResult <generated/jeanspy.sampler_numpyro.SamplerRunResult>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.sampling_identity <members/jeanspy.model.AxisymmetricDSphModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.sampling_identity <members/jeanspy.model.AxisymmetricDSphEstimationModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.sampling_identity <members/jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.baes_eta2.BaesEta2AnisotropyModel.sampling_identity <members/jeanspy.baes_eta2.BaesEta2AnisotropyModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.AnisotropyModel.sampling_identity <members/jeanspy.model.AnisotropyModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.sampling_identity <members/jeanspy.model.AxisymmetricDSphEstimationModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.sampling_identity <members/jeanspy.model.AxisymmetricDSphModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.sampling_identity <members/jeanspy.model.BaesAnisotropyModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.sampling_identity <members/jeanspy.model.ConstantAnisotropyModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.DMModel.sampling_identity <members/jeanspy.model.DMModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.DSphModel.sampling_identity <members/jeanspy.model.DSphModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.sampling_identity <members/jeanspy.model.Exp2dModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.sampling_identity <members/jeanspy.model.Exp3dModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.FittableModel.sampling_identity <members/jeanspy.model.FittableModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.sampling_identity <members/jeanspy.model.FlatPriorModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.Model.sampling_identity <members/jeanspy.model.Model.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.NFWModel.sampling_identity <members/jeanspy.model.NFWModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.sampling_identity <members/jeanspy.model.OsipkovMerrittModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.sampling_identity <members/jeanspy.model.PhotometryPriorModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.sampling_identity <members/jeanspy.model.PlummerModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.SersicModel.sampling_identity <members/jeanspy.model.SersicModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.sampling_identity <members/jeanspy.model.SimpleDSphEstimationModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.StellarModel.sampling_identity <members/jeanspy.model.StellarModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.sampling_identity <members/jeanspy.model.Uniform2dModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.sampling_identity <members/jeanspy.model.ZhaoModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity <members/jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.BaesAnisotropyModel.sampling_identity <members/jeanspy.model_numpyro.BaesAnisotropyModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.ConstantAnisotropyModel.sampling_identity <members/jeanspy.model_numpyro.ConstantAnisotropyModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.DSphModel.sampling_identity <members/jeanspy.model_numpyro.DSphModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.Model.sampling_identity <members/jeanspy.model_numpyro.Model.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.NFWModel.sampling_identity <members/jeanspy.model_numpyro.NFWModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.OsipkovMerrittModel.sampling_identity <members/jeanspy.model_numpyro.OsipkovMerrittModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.PlummerModel.sampling_identity <members/jeanspy.model_numpyro.PlummerModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.sampling_identity <members/jeanspy.model_numpyro.ZhaoModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sampling_identity <members/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.sampling_identity <members/jeanspy.model.SersicModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.save_checkpoint <members/jeanspy.sampler_numpyro.NumPyroSampler.save_checkpoint>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.save_samples_chunk <members/jeanspy.sampler_numpyro.NumPyroSampler.save_samples_chunk>` — method / property.
+* :doc:`jeanspy.model.SersicModel <generated/jeanspy.model.SersicModel>` — export.
+* :doc:`jeanspy.sersic.SersicModel <generated/jeanspy.model.SersicModel>` — alias.
+* :doc:`jeanspy.sampler.Sampler.set_wrapper_function <members/jeanspy.sampler.Sampler.set_wrapper_function>` — method / property.
+* :doc:`jeanspy.model.DotDict.setdefault <members/jeanspy.model.DotDict.setdefault>` — method / property.
+* :doc:`jeanspy.model.Parameters.setdefault <members/jeanspy.model.Parameters.setdefault>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename <members/jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename>` — method / property.
+* :doc:`jeanspy.model.DSphModel.sigmalos <members/jeanspy.model.DSphModel.sigmalos>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.sigmalos2 <members/jeanspy.model.AxisymmetricDSphModel.sigmalos2>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.sigmalos2 <members/jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.sigmalos2 <members/jeanspy.model.AxisymmetricDSphModel.sigmalos2>` — method / property.
+* :doc:`jeanspy.model.DSphModel.sigmalos2 <members/jeanspy.model.DSphModel.sigmalos2>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2 <members/jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2>` — method / property.
+* :doc:`jeanspy.model_numpyro.DSphModel.sigmalos2 <members/jeanspy.model_numpyro.DSphModel.sigmalos2>` — method / property.
+* :doc:`jeanspy.model_numpyro.DSphModel.sigmalos2_abel <members/jeanspy.model_numpyro.DSphModel.sigmalos2_abel>` — method / property.
+* :doc:`jeanspy.model.DSphModel.sigmalos2_dequad <members/jeanspy.model.DSphModel.sigmalos2_dequad>` — method / property.
+* :doc:`jeanspy.model_numpyro.DSphModel.sigmalos2_kernel <members/jeanspy.model_numpyro.DSphModel.sigmalos2_kernel>` — method / property.
+* :doc:`jeanspy.model.DSphModel.sigmalos_dequad <members/jeanspy.model.DSphModel.sigmalos_dequad>` — method / property.
+* :doc:`jeanspy.model.DSphModel.sigmar2 <members/jeanspy.model.DSphModel.sigmar2>` — method / property.
+* :doc:`jeanspy.model.DSphModel.sigmat2 <members/jeanspy.model.DSphModel.sigmat2>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel <generated/jeanspy.model.SimpleDSphEstimationModel>` — export.
+* :doc:`jeanspy.model.StellarModel <generated/jeanspy.model.StellarModel>` — export.
+* :doc:`jeanspy.sampler_numpyro.StorageBackend <generated/jeanspy.sampler_numpyro.StorageBackend>` — export.
+* :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.surface_density <members/jeanspy.model.AxisymmetricDSphModel.surface_density>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricPlummerModel.surface_density <members/jeanspy.model.AxisymmetricPlummerModel.surface_density>` — method / property.
+* :doc:`jeanspy.axisymmetric.AxisymmetricStellarModel.surface_density <members/jeanspy.model.AxisymmetricStellarModel.surface_density>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricDSphModel.surface_density <members/jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricPlummerModel.surface_density <members/jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density>` — method / property.
+* :doc:`jeanspy.axisymmetric_numpyro.AxisymmetricStellarModel.surface_density <members/jeanspy.model.AxisymmetricStellarModel.surface_density>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphModel.surface_density <members/jeanspy.model.AxisymmetricDSphModel.surface_density>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricPlummerModel.surface_density <members/jeanspy.model.AxisymmetricPlummerModel.surface_density>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricStellarModel.surface_density <members/jeanspy.model.AxisymmetricStellarModel.surface_density>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density <members/jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density <members/jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density>` — method / property.
+* :doc:`jeanspy.model_numpyro.AxisymmetricStellarModel.surface_density <members/jeanspy.model.AxisymmetricStellarModel.surface_density>` — method / property.
+
+T
+-
+
+* :doc:`jeanspy.hyp2f1_jax.TanhSinh01 <generated/jeanspy.hyp2f1_jax.TanhSinh01>` — export.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.to_datatree <members/jeanspy.sampler_numpyro.NumPyroSampler.to_datatree>` — method / property.
+* :doc:`jeanspy.model.Parameters.to_series <members/jeanspy.model.Parameters.to_series>` — method / property.
+
+U
+-
+
+* :doc:`jeanspy.model.Uniform2dModel <generated/jeanspy.model.Uniform2dModel>` — export.
+* :doc:`jeanspy.model.AnisotropyModel.update <members/jeanspy.model.AnisotropyModel.update>` — method / property.
+* :doc:`jeanspy.model.BaesAnisotropyModel.update <members/jeanspy.model.BaesAnisotropyModel.update>` — method / property.
+* :doc:`jeanspy.model.ConstantAnisotropyModel.update <members/jeanspy.model.ConstantAnisotropyModel.update>` — method / property.
+* :doc:`jeanspy.model.DMModel.update <members/jeanspy.model.DMModel.update>` — method / property.
+* :doc:`jeanspy.model.DSphModel.update <members/jeanspy.model.DSphModel.update>` — method / property.
+* :doc:`jeanspy.model.DotDict.update <members/jeanspy.model.DotDict.update>` — method / property.
+* :doc:`jeanspy.model.Exp2dModel.update <members/jeanspy.model.Exp2dModel.update>` — method / property.
+* :doc:`jeanspy.model.Exp3dModel.update <members/jeanspy.model.Exp3dModel.update>` — method / property.
+* :doc:`jeanspy.model.FittableModel.update <members/jeanspy.model.FittableModel.update>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.update <members/jeanspy.model.FlatPriorModel.update>` — method / property.
+* :doc:`jeanspy.model.Model.update <members/jeanspy.model.Model.update>` — method / property.
+* :doc:`jeanspy.model.NFWModel.update <members/jeanspy.model.NFWModel.update>` — method / property.
+* :doc:`jeanspy.model.OsipkovMerrittModel.update <members/jeanspy.model.OsipkovMerrittModel.update>` — method / property.
+* :doc:`jeanspy.model.Parameters.update <members/jeanspy.model.Parameters.update>` — method / property.
+* :doc:`jeanspy.model.PhotometryPriorModel.update <members/jeanspy.model.PhotometryPriorModel.update>` — method / property.
+* :doc:`jeanspy.model.PlummerModel.update <members/jeanspy.model.PlummerModel.update>` — method / property.
+* :doc:`jeanspy.model.SersicModel.update <members/jeanspy.model.SersicModel.update>` — method / property.
+* :doc:`jeanspy.model.SimpleDSphEstimationModel.update <members/jeanspy.model.SimpleDSphEstimationModel.update>` — method / property.
+* :doc:`jeanspy.model.StellarModel.update <members/jeanspy.model.StellarModel.update>` — method / property.
+* :doc:`jeanspy.model.Uniform2dModel.update <members/jeanspy.model.Uniform2dModel.update>` — method / property.
+* :doc:`jeanspy.model.ZhaoModel.update <members/jeanspy.model.ZhaoModel.update>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.update <members/jeanspy.model.SersicModel.update>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.upper <members/jeanspy.model.FlatPriorModel.upper>` — method / property.
+* :doc:`jeanspy.sampler_numpyro.NumPyroSampler.uses_directory_stores <members/jeanspy.sampler_numpyro.NumPyroSampler.uses_directory_stores>` — method / property.
+
+V
+-
+
+* :doc:`jeanspy.model_numpyro.NFWModel.valid_mass_domain <members/jeanspy.model_numpyro.NFWModel.valid_mass_domain>` — method / property.
+* :doc:`jeanspy.model_numpyro.ZhaoModel.valid_mass_domain <members/jeanspy.model_numpyro.ZhaoModel.valid_mass_domain>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.validate_config <members/jeanspy.model.FlatPriorModel.validate_config>` — method / property.
+* :doc:`jeanspy.model.DotDict.values <members/jeanspy.model.DotDict.values>` — method / property.
+* :doc:`jeanspy.model.Parameters.values <members/jeanspy.model.Parameters.values>` — method / property.
+
+W
+-
+
+* :doc:`jeanspy.axisymmetric.InvalidAxisymmetricModelError.with_traceback <members/jeanspy.axisymmetric.InvalidAxisymmetricModelError.with_traceback>` — method / property.
+
+Z
+-
+
+* :doc:`jeanspy.model.ZhaoModel <generated/jeanspy.model.ZhaoModel>` — export.
+* :doc:`jeanspy.model_numpyro.ZhaoModel <generated/jeanspy.model_numpyro.ZhaoModel>` — export.
+
+.. toctree::
+   :hidden:
+
+   jeanspy.model.AnisotropyModel.members
+   jeanspy.model.BaesAnisotropyModel.members
+   jeanspy.model.ConstantAnisotropyModel.members
+   jeanspy.model.DMModel.members
+   jeanspy.model.DSphModel.members
+   jeanspy.model.DotDict.members
+   jeanspy.model.Exp2dModel.members
+   jeanspy.model.Exp3dModel.members
+   jeanspy.model.FittableModel.members
+   jeanspy.model.FlatPriorModel.members
+   jeanspy.model.Model.members
+   jeanspy.model.NFWModel.members
+   jeanspy.model.OsipkovMerrittModel.members
+   jeanspy.model.Parameters.members
+   jeanspy.model.PhotometryPriorModel.members
+   jeanspy.model.PlummerModel.members
+   jeanspy.model.SersicModel.members
+   jeanspy.model.SimpleDSphEstimationModel.members
+   jeanspy.model.StellarModel.members
+   jeanspy.model.Uniform2dModel.members
+   jeanspy.model.ZhaoModel.members
+   jeanspy.model.AxisymmetricDSphModel.members
+   jeanspy.model.AxisymmetricDSphEstimationModel.members
+   jeanspy.model.AxisymmetricKinematicData.members
+   jeanspy.model.AxisymmetricPlummerModel.members
+   jeanspy.model.AxisymmetricZhaoModel.members
+   jeanspy.model.AxisymmetricConstantAnisotropyModel.members
+   jeanspy.model.AxisymmetricStellarModel.members
+   jeanspy.model.AxisymmetricDMModel.members
+   jeanspy.model.AxisymmetricAnisotropyModel.members
+   jeanspy.axisymmetric.InvalidAxisymmetricModelError.members
+   jeanspy.model_numpyro.AxisymmetricDSphModel.members
+   jeanspy.model_numpyro.Model.members
+   jeanspy.model_numpyro.PlummerModel.members
+   jeanspy.model_numpyro.ZhaoModel.members
+   jeanspy.model_numpyro.NFWModel.members
+   jeanspy.model_numpyro.ConstantAnisotropyModel.members
+   jeanspy.model_numpyro.BaesAnisotropyModel.members
+   jeanspy.model_numpyro.OsipkovMerrittModel.members
+   jeanspy.model_numpyro.DSphModel.members
+   jeanspy.model_numpyro.AxisymmetricPlummerModel.members
+   jeanspy.model_numpyro.AxisymmetricZhaoModel.members
+   jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.members
+   jeanspy.sampler.Sampler.members
+   jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.members
+   jeanspy.sampler_numpyro.JeansLikelihoodModel.members
+   jeanspy.sampler_numpyro.NumPyroSampler.members
+   jeanspy.sampler_numpyro.ParameterSpec.members
+   jeanspy.baes_eta2.BaesEta2AnisotropyModel.members

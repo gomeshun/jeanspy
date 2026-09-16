@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.FlatPriorModel.update``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.update
+   :no-index:

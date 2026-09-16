@@ -1,0 +1,9 @@
+b_approx
+========
+
+``jeanspy.model.SersicModel.b_approx``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. autoattribute:: jeanspy.model.SersicModel.b_approx
+   :no-index:

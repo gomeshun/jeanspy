@@ -1,5 +1,7 @@
-﻿jeanspy.dequad.memorize
-=======================
+﻿memorize
+========
+
+``jeanspy.dequad.memorize``
 
 .. currentmodule:: jeanspy.dequad
 

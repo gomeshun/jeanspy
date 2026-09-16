@@ -1,0 +1,9 @@
+mass_density_3d
+===============
+
+``jeanspy.model_numpyro.NFWModel.mass_density_3d``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model_numpyro.NFWModel>`.
+
+.. automethod:: jeanspy.model_numpyro.NFWModel.mass_density_3d
+   :no-index:

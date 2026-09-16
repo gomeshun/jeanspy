@@ -1,0 +1,9 @@
+sigmar2
+=======
+
+``jeanspy.model.DSphModel.sigmar2``
+
+Class and construction: :doc:`DSphModel <../generated/jeanspy.model.DSphModel>`.
+
+.. automethod:: jeanspy.model.DSphModel.sigmar2
+   :no-index:

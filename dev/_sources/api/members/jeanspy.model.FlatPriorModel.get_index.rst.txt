@@ -1,0 +1,9 @@
+get_index
+=========
+
+``jeanspy.model.FlatPriorModel.get_index``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.get_index
+   :no-index:

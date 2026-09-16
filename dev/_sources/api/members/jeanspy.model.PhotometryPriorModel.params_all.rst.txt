@@ -1,0 +1,9 @@
+params_all
+==========
+
+``jeanspy.model.PhotometryPriorModel.params_all``
+
+Class and construction: :doc:`PhotometryPriorModel <../generated/jeanspy.model.PhotometryPriorModel>`.
+
+.. autoattribute:: jeanspy.model.PhotometryPriorModel.params_all
+   :no-index:

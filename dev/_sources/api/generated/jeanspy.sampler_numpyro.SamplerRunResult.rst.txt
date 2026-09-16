@@ -1,5 +1,9 @@
-﻿jeanspy.sampler\_numpyro.SamplerRunResult
-=========================================
+﻿SamplerRunResult
+================
+
+``jeanspy.sampler_numpyro.SamplerRunResult``
+
+
 
 .. currentmodule:: jeanspy.sampler_numpyro
 

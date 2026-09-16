@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.DotDict.update``
+
+Class and construction: :doc:`DotDict <../generated/jeanspy.model.DotDict>`.
+
+.. automethod:: jeanspy.model.DotDict.update
+   :no-index:

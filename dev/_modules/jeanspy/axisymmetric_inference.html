@@ -30,8 +30,9 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -568,7 +569,7 @@
             <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisymmetricKinematicData.from_data">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricKinematicData.html#jeanspy.model.AxisymmetricKinematicData.from_data">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricKinematicData.from_data.html#jeanspy.model.AxisymmetricKinematicData.from_data">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Copy a DataFrame, mapping, or another kinematic data object."""</span>
@@ -584,7 +585,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricKinematicData.as_kwargs">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricKinematicData.html#jeanspy.model.AxisymmetricKinematicData.as_kwargs">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricKinematicData.as_kwargs.html#jeanspy.model.AxisymmetricKinematicData.as_kwargs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">as_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return detached arrays for a NumPyro model or sampler call."""</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
@@ -710,7 +711,7 @@
         <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_data</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.reset_data">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.reset_data">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.reset_data.html#jeanspy.model.AxisymmetricDSphEstimationModel.reset_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Validate a replacement completely before changing any observations."""</span>
         <span class="n">replacement</span> <span class="o">=</span> <span class="n">AxisymmetricKinematicData</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -740,7 +741,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Photometry prior needs a finite location and positive finite scale"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.convert_params">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.convert_params">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.convert_params.html#jeanspy.model.AxisymmetricDSphEstimationModel.convert_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Map sampling coordinates to physical parameters.</span>
 
@@ -784,7 +785,7 @@
         <span class="k">return</span> <span class="n">norm</span><span class="o">.</span><span class="n">logpdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">vlos_kms</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.lnlikelihoods">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnlikelihoods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Return one log likelihood per star, including measurement errors.</span>
 
@@ -799,7 +800,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.lnlikelihood">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnlikelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -823,7 +824,7 @@
         <span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.lnpriors">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnpriors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -847,7 +848,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">lnl</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">priors</span><span class="p">),</span> <span class="n">lnl</span><span class="p">,</span> <span class="o">*</span><span class="n">priors</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.lnposterior">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnposterior</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -863,7 +864,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.lnposterior_wbic">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnposterior_wbic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -879,7 +880,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.sample">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.sample">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.sample.html#jeanspy.model.AxisymmetricDSphEstimationModel.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Draw feasible starting points from the priors, with bounded rejection.</span>
 
@@ -914,7 +915,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.sample_data">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.sample_data">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.sample_data.html#jeanspy.model.AxisymmetricDSphEstimationModel.sample_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Generate velocities conditional on the stored positions and errors."""</span>
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_params</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -924,7 +925,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.sampling_identity">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.sampling_identity">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model.AxisymmetricDSphEstimationModel.sampling_identity.html#jeanspy.model.AxisymmetricDSphEstimationModel.sampling_identity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampling_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return host metadata describing the complete sampling target.</span>
 

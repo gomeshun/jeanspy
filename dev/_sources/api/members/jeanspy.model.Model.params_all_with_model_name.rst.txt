@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.Model.params_all_with_model_name``
+
+Class and construction: :doc:`Model <../generated/jeanspy.model.Model>`.
+
+.. autoattribute:: jeanspy.model.Model.params_all_with_model_name
+   :no-index:

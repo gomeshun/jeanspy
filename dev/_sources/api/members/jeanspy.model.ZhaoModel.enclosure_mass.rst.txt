@@ -1,0 +1,9 @@
+enclosure_mass
+==============
+
+``jeanspy.model.ZhaoModel.enclosure_mass``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. automethod:: jeanspy.model.ZhaoModel.enclosure_mass
+   :no-index:

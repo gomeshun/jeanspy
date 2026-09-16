@@ -1,0 +1,9 @@
+lower
+=====
+
+``jeanspy.model.FlatPriorModel.lower``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. autoattribute:: jeanspy.model.FlatPriorModel.lower
+   :no-index:

@@ -1,0 +1,9 @@
+extract_value_by_name
+=====================
+
+``jeanspy.model.FlatPriorModel.extract_value_by_name``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.extract_value_by_name
+   :no-index:

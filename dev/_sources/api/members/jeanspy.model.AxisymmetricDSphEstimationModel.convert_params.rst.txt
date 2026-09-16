@@ -1,0 +1,9 @@
+convert_params
+==============
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.convert_params``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphEstimationModel.convert_params
+   :no-index:

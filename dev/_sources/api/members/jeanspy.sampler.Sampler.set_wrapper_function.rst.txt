@@ -1,0 +1,9 @@
+set_wrapper_function
+====================
+
+``jeanspy.sampler.Sampler.set_wrapper_function``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.set_wrapper_function
+   :no-index:

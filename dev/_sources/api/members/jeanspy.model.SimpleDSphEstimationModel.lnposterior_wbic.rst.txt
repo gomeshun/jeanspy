@@ -1,0 +1,9 @@
+lnposterior_wbic
+================
+
+``jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic
+   :no-index:

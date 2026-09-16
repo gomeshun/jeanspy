@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.PhotometryPriorModel.sampling_identity``
+
+Class and construction: :doc:`PhotometryPriorModel <../generated/jeanspy.model.PhotometryPriorModel>`.
+
+.. automethod:: jeanspy.model.PhotometryPriorModel.sampling_identity
+   :no-index:

@@ -1,0 +1,9 @@
+required_param_names_combined
+=============================
+
+``jeanspy.model.OsipkovMerrittModel.required_param_names_combined``
+
+Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model.OsipkovMerrittModel>`.
+
+.. autoattribute:: jeanspy.model.OsipkovMerrittModel.required_param_names_combined
+   :no-index:

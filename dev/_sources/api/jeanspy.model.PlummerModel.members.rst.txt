@@ -1,0 +1,21 @@
+PlummerModel members
+====================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.PlummerModel.cdf_R
+   members/jeanspy.model.PlummerModel.density
+   members/jeanspy.model.PlummerModel.density_2d
+   members/jeanspy.model.PlummerModel.density_2d_normalized_re
+   members/jeanspy.model.PlummerModel.density_2d_truncated
+   members/jeanspy.model.PlummerModel.density_3d
+   members/jeanspy.model.PlummerModel.half_light_radius
+   members/jeanspy.model.PlummerModel.is_required_param_names
+   members/jeanspy.model.PlummerModel.logdensity_2d
+   members/jeanspy.model.PlummerModel.mean_density_2d
+   members/jeanspy.model.PlummerModel.params_all
+   members/jeanspy.model.PlummerModel.params_all_with_model_name
+   members/jeanspy.model.PlummerModel.required_param_names_combined
+   members/jeanspy.model.PlummerModel.sampling_identity
+   members/jeanspy.model.PlummerModel.update

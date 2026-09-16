@@ -1,0 +1,9 @@
+reset_data
+==========
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.reset_data``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphEstimationModel.reset_data
+   :no-index:

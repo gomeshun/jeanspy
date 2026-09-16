@@ -1,0 +1,9 @@
+kernel
+======
+
+``jeanspy.baes_eta2.BaesEta2AnisotropyModel.kernel``
+
+Class and construction: :doc:`BaesEta2AnisotropyModel <../generated/jeanspy.baes_eta2.BaesEta2AnisotropyModel>`.
+
+.. automethod:: jeanspy.baes_eta2.BaesEta2AnisotropyModel.kernel
+   :no-index:

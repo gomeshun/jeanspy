@@ -1,0 +1,9 @@
+save_checkpoint
+===============
+
+``jeanspy.sampler_numpyro.NumPyroSampler.save_checkpoint``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.save_checkpoint
+   :no-index:

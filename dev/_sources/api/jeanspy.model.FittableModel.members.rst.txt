@@ -1,0 +1,22 @@
+FittableModel members
+=====================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.FittableModel.blobs_dtype
+   members/jeanspy.model.FittableModel.convert_params
+   members/jeanspy.model.FittableModel.inverse_temparature
+   members/jeanspy.model.FittableModel.is_required_param_names
+   members/jeanspy.model.FittableModel.lnlikelihood
+   members/jeanspy.model.FittableModel.lnlikelihoods
+   members/jeanspy.model.FittableModel.lnposterior
+   members/jeanspy.model.FittableModel.lnposterior_wbic
+   members/jeanspy.model.FittableModel.lnpriors
+   members/jeanspy.model.FittableModel.load_data
+   members/jeanspy.model.FittableModel.ndim
+   members/jeanspy.model.FittableModel.params_all
+   members/jeanspy.model.FittableModel.params_all_with_model_name
+   members/jeanspy.model.FittableModel.required_param_names_combined
+   members/jeanspy.model.FittableModel.sampling_identity
+   members/jeanspy.model.FittableModel.update

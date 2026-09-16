@@ -1,5 +1,9 @@
-﻿jeanspy.hyp2f1\_jax.TanhSinh01
-==============================
+﻿TanhSinh01
+==========
+
+``jeanspy.hyp2f1_jax.TanhSinh01``
+
+
 
 .. currentmodule:: jeanspy.hyp2f1_jax
 

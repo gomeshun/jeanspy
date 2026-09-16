@@ -1,0 +1,1174 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>5. Run MCMC and inspect the posterior &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=09cbd2f8" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/inference';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/tutorials/inference.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Save and resume results" href="storage.html" />
+    <link rel="prev" title="4. Predict observables and generate mocks" href="predictions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-16"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="units.html">1. Units and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends.html">2. Choose a backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">3. Define and extend a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predictions.html">4. Predict observables and generate mocks</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">5. Run MCMC and inspect the posterior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">6. Save and resume results</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="spherical.html">Spherical analysis with saved posteriors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="axisymmetric.html">Axisymmetric synthetic analysis</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">5. Run MCMC and inspect the posterior</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="run-mcmc-and-inspect-the-posterior">
+<h1>5. Run MCMC and inspect the posterior<a class="headerlink" href="#run-mcmc-and-inspect-the-posterior" title="Link to this heading">#</a></h1><p class="notebook-download"><a href="../_static/notebooks/tutorials/inference.ipynb" download>Download this notebook (.ipynb)</a> · Read the saved outputs here, or run the cells in Jupyter.</p>
+<p>This notebook recreates the model and mock <code class="docutils literal notranslate"><span class="pre">data</span></code> from the
+<a class="reference internal" href="../quickstart.html"><span class="std std-doc">Quickstart</span></a>, so it can be run independently.
+The forward solver predicts a variance. Inference additionally requires a
+likelihood, sampling coordinates, priors and a sampling algorithm.</p>
+<p>This notebook is self-contained. Install JeansPy with the <code class="docutils literal notranslate"><span class="pre">numpyro_cpu</span></code> and
+<code class="docutils literal notranslate"><span class="pre">plotting</span></code> extras as described in the installation guide, then select that
+environment as your Jupyter kernel and run cells from top to bottom.
+Saved outputs are an example run; timings and short-chain results can vary.</p>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
+<p>Run this setup in a fresh kernel. It defines all objects used below.</p>
+<p>The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code>
+and an untruncated cutoff. Its inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code> is sampled in the
+inference examples; <code class="docutils literal notranslate"><span class="pre">truth[&quot;g&quot;]=1</span></code> generates standard-NFW mocks.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_PLATFORM"</span><span class="p">,</span> <span class="s2">"cpu"</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_ENABLE_X64"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">)</span>
+
+<span class="c1"># The example uses no progress widgets; ignore only their optional-import warning.</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"IProgress not found.*"</span><span class="p">)</span>
+
+<span class="c1"># Import JeansPy before JAX so its runtime settings take effect.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">ParameterSpec</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span><span class="p">,</span> <span class="n">init_to_value</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(),</span>
+    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
+<span class="p">})</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+               <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">R_pc</span> <span class="o">=</span> <span class="mf">200.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">u</span><span class="p">))</span>  <span class="c1"># Projected Plummer radii.</span>
+<span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span>
+<span class="n">variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
+<span class="n">vlos_kms</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">R_pc</span><span class="o">=</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="o">=</span><span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="n">e_vlos_kms</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="specify-the-likelihood">
+<h2>Specify the likelihood<a class="headerlink" href="#specify-the-likelihood" title="Link to this heading">#</a></h2>
+<p>For independent Gaussian velocity errors, the likelihood used here is</p>
+<div class="math notranslate nohighlight">
+\[
+\log L(\theta)=-\frac12\sum_i\left[
+\log(2\pi s_i^2)+\frac{(v_i-v_{\rm mem})^2}{s_i^2}\right],
+\qquad s_i^2=\sigma_{\rm los}^2(R_i;\theta)+\epsilon_i^2.
+\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">JeansLikelihoodModel</span></code> implements this conditional velocity model for the
+JAX spherical solver. The tracer scale, <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code> and the untruncated cutoff are fixed;
+the inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code> is inferred. Thus the fit explores a generalized NFW
+family without marginalizing the tracer scale or outer slope. Membership,
+binaries and non-Gaussian velocity structure are not modeled here.</p>
+</section>
+<section id="choose-sampling-coordinates-and-priors">
+<h2>Choose sampling coordinates and priors<a class="headerlink" href="#choose-sampling-coordinates-and-priors" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Sampled coordinate</p></th>
+<th class="head"><p>Prior</p></th>
+<th class="head"><p>Physical parameter supplied to the solver</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log10_rs_pc</span></code></p></td>
+<td><p>Uniform(1.5, 4)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rs_pc</span> <span class="pre">=</span> <span class="pre">10**log10_rs_pc</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">log10_rhos_Msunpc3</span></code></p></td>
+<td><p>Uniform(-3, 1)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span> <span class="pre">=</span> <span class="pre">10**log10_rhos_Msunpc3</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">g</span></code></p></td>
+<td><p>Uniform(0, 2)</p></td>
+<td><p>Inner halo density slope</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">beta_ani</span></code></p></td>
+<td><p>Uniform(-1, 0.75)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">beta_ani</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vmem_kms</span></code></p></td>
+<td><p>Uniform(-50, 50)</p></td>
+<td><p>Mean LOS velocity in km/s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Uniformity in a logarithm gives a log-uniform prior on the physical scale,
+not a uniform prior on that scale. <code class="docutils literal notranslate"><span class="pre">ParameterSpec.pow10</span></code> samples the named
+logarithmic coordinate and transforms it for prediction. Do not add a
+Jacobian as though the distribution had instead been specified on the
+physical scale. Choose bounds for your scientific problem before fitting.</p>
+<p>These independent priors span about 32–10,000 pc in <code class="docutils literal notranslate"><span class="pre">rs_pc</span></code> and
+0.001–10 solar masses per pc³ in <code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span></code>. The <code class="docutils literal notranslate"><span class="pre">g</span></code> prior includes
+cores and cusps; the mock uses <code class="docutils literal notranslate"><span class="pre">g=1</span></code>. With only 32 stars, radius, density,
+inner slope and anisotropy can remain degenerate. Inspect posterior
+sensitivity to the prior bounds rather than assuming the data constrain
+all five parameters. The broad anisotropy prior is a Jeans-moment
+example, not a guarantee of a nonnegative phase-space distribution.</p>
+<p><code class="docutils literal notranslate"><span class="pre">dm_mass_method=&quot;numeric&quot;</span></code> keeps the Zhao enclosed mass differentiable
+with respect to <code class="docutils literal notranslate"><span class="pre">g</span></code>. Its resolution <code class="docutils literal notranslate"><span class="pre">dm_mass_n_steps</span></code> is separate from
+the LOS and anisotropy-kernel grids <code class="docutils literal notranslate"><span class="pre">n_u</span></code> and <code class="docutils literal notranslate"><span class="pre">n_kernel</span></code>. Refine all
+three on representative prior and posterior points before a scientific
+analysis; the NFW analytic mass path alone cannot fit an inner slope.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">physical_parameters</span><span class="p">(</span><span class="n">sampled</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="o">**</span><span class="n">sampled</span><span class="p">}</span>
+
+<span class="n">likelihood</span> <span class="o">=</span> <span class="n">JeansLikelihoodModel</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
+     <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
+                         <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))],</span>
+    <span class="n">parameter_postprocess</span><span class="o">=</span><span class="n">physical_parameters</span><span class="p">,</span>
+    <span class="n">sigmalos2_kwargs</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">parameter_postprocess</span></code> assembles the spherical physical dictionary. Fixed
+and sampled names must not overlap. The axisymmetric likelihood instead
+also accepts <code class="docutils literal notranslate"><span class="pre">fixed_params</span></code>; read the selected constructor’s signature.</p>
+</section>
+<section id="run-numpyro-nuts">
+<h2>Run NumPyro NUTS<a class="headerlink" href="#run-numpyro-nuts" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">max_tree_depth</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span> <span class="n">max_tree_depth</span><span class="o">=</span><span class="n">max_tree_depth</span><span class="p">,</span>
+              <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
+                  <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
+                  <span class="s2">"g"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
+<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+            <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span>
+         <span class="n">extra_fields</span><span class="o">=</span><span class="p">(</span><span class="s2">"diverging"</span><span class="p">,</span> <span class="s2">"energy"</span><span class="p">,</span> <span class="s2">"num_steps"</span><span class="p">,</span> <span class="s2">"accept_prob"</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">num_warmup</span></code> controls adaptation and <code class="docutils literal notranslate"><span class="pre">num_samples</span></code> is the number of saved
+post-warmup draws <strong>per chain</strong>. Sequential chains let this example run on
+one CPU device. The initial values are near the generating model because
+this is a mock example; real data require admissible initial values without
+knowing the answer. Use different initial regions when investigating mixing
+or multimodality.</p>
+</section>
+<section id="read-the-result-without-losing-chain-structure">
+<h2>Read the result without losing chain structure<a class="headerlink" href="#read-the-result-without-losing-chain-structure" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">print_summary</span><span class="p">(</span><span class="n">exclude_deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">posterior</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">(</span><span class="n">group_by_chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Each value: (chain, draw).</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">]),</span> <span class="p">[</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">"16%, 50%, 84%:"</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Divergences:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">mcmc</span><span class="o">.</span><span class="n">get_extra_fields</span><span class="p">()[</span><span class="s2">"diverging"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+
+<span class="n">traces</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">chain_index</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">])):</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span>
+                     <span class="n">ls</span><span class="o">=</span><span class="p">[</span><span class="s2">"-"</span><span class="p">,</span> <span class="s2">"--"</span><span class="p">][</span><span class="n">chain_index</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Chain </span><span class="si">{</span><span class="n">chain_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Posterior draw (warmup excluded)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                          mean       std    median      5.0%     95.0%     n_eff     r_hat
+            beta_ani      0.26      0.42      0.38     -0.38      0.74    240.94      1.01
+                   g      0.83      0.47      0.81      0.00      1.46    168.39      1.01
+  log10_rhos_Msunpc3     -1.57      0.83     -1.66     -2.99     -0.44    157.65      1.01
+         log10_rs_pc      3.21      0.53      3.26      2.49      3.99    182.52      1.00
+            vmem_kms     -0.35      1.55     -0.38     -2.81      2.24    432.42      1.00
+
+Number of divergences: 0
+log10_rs_pc 16%, 50%, 84%: [2.64120599 3.25927649 3.77525493]
+log10_rhos_Msunpc3 16%, 50%, 84%: [-2.39459069 -1.65517657 -0.71662544]
+g 16%, 50%, 84%: [0.29710162 0.80858003 1.31702316]
+beta_ani 16%, 50%, 84%: [-0.21152182  0.37810021  0.65304241]
+vmem_kms 16%, 50%, 84%: [-1.77938956 -0.37797063  1.17765941]
+Divergences: 0
+</pre></div>
+</div>
+<img alt="Separate posterior traces for two NumPyro chains and four sampling coordinates." src="../_images/dfdb7e27b754198aa57c5221365d3877702c86a45a694456c187a1bdb1f4944f.png" />
+</div>
+</div>
+</section>
+<section id="check-convergence-and-monte-carlo-precision">
+<h2>Check convergence and Monte Carlo precision<a class="headerlink" href="#check-convergence-and-monte-carlo-precision" title="Link to this heading">#</a></h2>
+<p>Keep <code class="docutils literal notranslate"><span class="pre">(chain,</span> <span class="pre">draw)</span></code> axes for diagnostics. Here ArviZ computes <strong>rank-normalized
+split R-hat</strong>, bulk ESS, tail ESS for the 5%/95% quantiles, and the Monte Carlo
+standard error (MCSE) of the mean. These are more informative than simply
+counting draws. The earlier NumPyro text summary uses its own diagnostic
+implementation; its rounded R-hat values need not equal this table.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Diagnostic</p></th>
+<th class="head"><p>What to inspect</p></th>
+<th class="head"><p>If it is poor</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Trace / R-hat</p></td>
+<td><p>Overlapping, stationary chains; R-hat near 1 (aim below 1.01)</p></td>
+<td><p>Check separated modes and initial regions; improve parameterization/adaptation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bulk / tail ESS</p></td>
+<td><p>Sufficient effective draws for central / tail summaries</p></td>
+<td><p>Increase draws after resolving sampling problems; examine slow correlations</p></td>
+</tr>
+<tr class="row-even"><td><p>MCSE</p></td>
+<td><p>Simulation error small compared with the precision you need</p></td>
+<td><p>Run longer when the sampler is otherwise reliable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For a final analysis, use at least four independently initialized chains;
+the two short chains here keep the walkthrough small. A useful initial ESS
+target is at least 100 effective draws per chain, then assess MCSE for the
+actual reported quantities. See the <a class="reference external" href="https://mc-stan.org/learn-stan/diagnostics-warnings.html">Stan diagnostic guidance</a>
+and <a class="reference external" href="https://python.arviz.org/projects/stats/en/latest/api/generated/arviz_stats.rhat.html">ArviZ R-hat definition</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+    <span class="n">draws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>  <span class="c1"># Do not flatten chains here.</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">parameter</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">r_hat</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">rhat</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"rank"</span><span class="p">)),</span>
+                     <span class="n">ess_bulk</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">ess</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"bulk"</span><span class="p">)),</span>
+                     <span class="n">ess_tail</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">ess</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"tail"</span><span class="p">,</span> <span class="n">prob</span><span class="o">=</span><span class="p">(</span><span class="mf">.05</span><span class="p">,</span> <span class="mf">.95</span><span class="p">))),</span>
+                     <span class="n">mcse_mean</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">mcse</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"mean"</span><span class="p">)),</span>
+                     <span class="n">posterior_sd</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">))))</span>
+<span class="n">diagnostics</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"parameter"</span><span class="p">)</span>
+<span class="n">diagnostics</span><span class="p">[</span><span class="s2">"mcse_mean / sd"</span><span class="p">]</span> <span class="o">=</span> <span class="n">diagnostics</span><span class="o">.</span><span class="n">mcse_mean</span> <span class="o">/</span> <span class="n">diagnostics</span><span class="o">.</span><span class="n">posterior_sd</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">diagnostics</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Nonfinite diagnostics (investigate):"</span><span class="p">,</span>
+      <span class="n">diagnostics</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">diagnostics</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"R-hat &gt;= 1.01:"</span><span class="p">,</span> <span class="n">diagnostics</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">diagnostics</span><span class="o">.</span><span class="n">r_hat</span> <span class="o">&gt;=</span> <span class="mf">1.01</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Bulk ESS &lt; 100 per chain:"</span><span class="p">,</span>
+      <span class="n">diagnostics</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">diagnostics</span><span class="o">.</span><span class="n">ess_bulk</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="o">*</span><span class="n">mcmc</span><span class="o">.</span><span class="n">num_chains</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Tail ESS &lt; 100 per chain:"</span><span class="p">,</span>
+      <span class="n">diagnostics</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">diagnostics</span><span class="o">.</span><span class="n">ess_tail</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="o">*</span><span class="n">mcmc</span><span class="o">.</span><span class="n">num_chains</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                     r_hat  ess_bulk  ess_tail  mcse_mean  posterior_sd  mcse_mean / sd
+parameter                                                                              
+log10_rs_pc         1.0054  150.0313  109.4618     0.0393        0.5273          0.0744
+log10_rhos_Msunpc3  1.0180  127.3284   88.8019     0.0660        0.8265          0.0799
+g                   1.0103  176.6550  221.2711     0.0361        0.4696          0.0768
+beta_ani            1.0056  235.8798  194.5926     0.0271        0.4190          0.0648
+vmem_kms            1.0030  459.4640  288.3247     0.0743        1.5465          0.0481
+Nonfinite diagnostics (investigate): []
+R-hat &gt;= 1.01: ['log10_rhos_Msunpc3', 'g']
+Bulk ESS &lt; 100 per chain: ['log10_rs_pc', 'log10_rhos_Msunpc3', 'g']
+Tail ESS &lt; 100 per chain: ['log10_rs_pc', 'log10_rhos_Msunpc3', 'beta_ani']
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspect-nuts-divergences-energy-and-trajectory-length">
+<h2>Inspect NUTS divergences, energy and trajectory length<a class="headerlink" href="#inspect-nuts-divergences-energy-and-trajectory-length" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">extra_fields</span></code> argument above records the diagnostics along with sampling;
+NumPyro otherwise does not save all of them. A divergence flags an inaccurate
+Hamiltonian trajectory and possible sampling bias. Check <strong>post-warmup</strong> counts
+per chain and their locations in parameter space, even when R-hat looks good.</p>
+<p>BFMI uses <strong>total Hamiltonian energy</strong>, not just potential energy. Values below
+about 0.3 merit investigation. The tree-depth count below follows NumPyro’s
+documented relation to <code class="docutils literal notranslate"><span class="pre">num_steps</span></code>. Reaching the configured depth is an
+efficiency warning; it is distinct from a divergence. The mean acceptance
+probability is useful context but cannot certify convergence. See
+<a class="reference external" href="https://num.pyro.ai/en/latest/mcmc.html">NumPyro’s MCMC fields</a> and the
+<a class="reference external" href="https://python.arviz.org/projects/stats/en/latest/api/generated/arviz_stats.bfmi.html">ArviZ BFMI definition</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span>
+         <span class="n">mcmc</span><span class="o">.</span><span class="n">get_extra_fields</span><span class="p">(</span><span class="n">group_by_chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="n">diverging</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="s2">"diverging"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">tree_depth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">"num_steps"</span><span class="p">],</span> <span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">bfmi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">bfmi</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">"energy"</span><span class="p">]))</span>
+<span class="n">nuts_diagnostics</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"divergences"</span><span class="p">:</span> <span class="n">diverging</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">"divergence_fraction"</span><span class="p">:</span> <span class="n">diverging</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">"BFMI"</span><span class="p">:</span> <span class="n">bfmi</span><span class="p">,</span>
+    <span class="s2">"at_max_tree_depth"</span><span class="p">:</span> <span class="p">(</span><span class="n">tree_depth</span> <span class="o">&gt;=</span> <span class="n">max_tree_depth</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">"mean_accept_prob"</span><span class="p">:</span> <span class="n">stats</span><span class="p">[</span><span class="s2">"accept_prob"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">mcmc</span><span class="o">.</span><span class="n">num_chains</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"chain"</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nuts_diagnostics</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"All diagnostics exclude warmup."</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mcmc</span><span class="o">.</span><span class="n">num_chains</span><span class="p">):</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Chain </span><span class="si">{</span><span class="n">chain</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">"energy"</span><span class="p">][</span><span class="n">chain</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.75</span><span class="p">,</span>
+                 <span class="n">ls</span><span class="o">=</span><span class="p">[</span><span class="s2">"-"</span><span class="p">,</span> <span class="s2">"--"</span><span class="p">][</span><span class="n">chain</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tree_depth</span><span class="p">[</span><span class="n">chain</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.75</span><span class="p">,</span>
+                 <span class="n">ls</span><span class="o">=</span><span class="p">[</span><span class="s2">"-"</span><span class="p">,</span> <span class="s2">"--"</span><span class="p">][</span><span class="n">chain</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s2">"Total Hamiltonian energy"</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Post-warmup draw"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">max_tree_depth</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Configured maximum"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s2">"NUTS tree depth"</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Post-warmup draw"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>       divergences  divergence_fraction    BFMI  at_max_tree_depth  mean_accept_prob
+chain                                                                               
+1                0                  0.0  0.8661                  0            0.9299
+2                0                  0.0  0.8393                  0            0.9314
+All diagnostics exclude warmup.
+</pre></div>
+</div>
+<img alt="../_images/572a8fcfa2709fb94e24315f89afc72302a132d1107bacc8146b7239cf0c6339.png" src="../_images/572a8fcfa2709fb94e24315f89afc72302a132d1107bacc8146b7239cf0c6339.png" />
+</div>
+</div>
+</section>
+<section id="locate-correlations-and-divergences-in-a-corner-plot">
+<h2>Locate correlations and divergences in a corner plot<a class="headerlink" href="#locate-correlations-and-divergences-in-a-corner-plot" title="Link to this heading">#</a></h2>
+<p>The lower triangle shows approximate <strong>68% and 95% enclosed-probability
+contours of each 2-D marginal</strong>, estimated from smoothed histograms. They are
+not the default Gaussian-radius “1/2 sigma” levels and not a joint region in
+all five dimensions. Diagonal dashed lines show 16%, 50% and 84% marginal
+quantiles; black lines mark the true parameters. See the
+<a class="reference external" href="https://corner.readthedocs.io/en/latest/pages/sigmas/">corner explanation of probability levels</a>.</p>
+<p>Flatten only for this plot, keeping the divergence mask in the same chain/draw
+order. Red crosses mark flagged post-warmup draws if any exist. If the count is
+zero, no red crosses are drawn; this is not a demonstration of a failed run.
+Do not discard divergent draws to make the plot look better. Their reported
+locations help diagnose geometry but do not trace the entire failed trajectory.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
+
+<span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">])</span>
+<span class="n">divergent_flat</span> <span class="o">=</span> <span class="n">diverging</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">true_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rs_pc"</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rhos_Msunpc3"</span><span class="p">]),</span>
+               <span class="n">truth</span><span class="p">[</span><span class="s2">"g"</span><span class="p">],</span> <span class="n">truth</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">],</span> <span class="mf">0.</span><span class="p">]</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">corner</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">truths</span><span class="o">=</span><span class="n">true_values</span><span class="p">,</span> <span class="n">truth_color</span><span class="o">=</span><span class="s2">"#242424"</span><span class="p">,</span>
+                    <span class="n">levels</span><span class="o">=</span><span class="p">(</span><span class="mf">.68</span><span class="p">,</span> <span class="mf">.95</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
+                    <span class="n">quantiles</span><span class="o">=</span><span class="p">(</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span>
+                    <span class="n">plot_density</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_contours</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">label_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"fontsize"</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">divergent_flat</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">flat</span><span class="p">[</span><span class="n">divergent_flat</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">flat</span><span class="p">[</span><span class="n">divergent_flat</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span>
+                               <span class="n">marker</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#b64635"</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"68</span><span class="si">% a</span><span class="s2">nd 95% 2-D posterior contours"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">handles</span> <span class="o">=</span> <span class="p">[</span><span class="n">Line2D</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#242424"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"True"</span><span class="p">)]</span>
+<span class="k">if</span> <span class="n">divergent_flat</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+    <span class="n">handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Line2D</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#b64635"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Divergent draw"</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"upper right"</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">.95</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Flagged draws in the corner plot:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">divergent_flat</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Flagged draws in the corner plot: 0
+</pre></div>
+</div>
+<img alt="../_images/dd9d638c8d3c6329df04766ac4a4e558ba524611f7149c301c7433b03032afbd.png" src="../_images/dd9d638c8d3c6329df04766ac4a4e558ba524611f7149c301c7433b03032afbd.png" />
+</div>
+</div>
+</section>
+<section id="decide-what-to-change-before-trusting-the-posterior">
+<h2>Decide what to change before trusting the posterior<a class="headerlink" href="#decide-what-to-change-before-trusting-the-posterior" title="Link to this heading">#</a></h2>
+<p><strong>Reading the recorded run:</strong> both chains have zero divergences and no
+depth-limit hits, and their BFMI values exceed 0.3. Nevertheless,
+<code class="docutils literal notranslate"><span class="pre">log10_rhos_Msunpc3</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code> have rank-normalized R-hat above 1.01,
+and several ESS values fall below the stated target. These short-run
+summaries and contours illustrate the workflow; they are not ready
+for final inference merely because the divergence count is zero.</p>
+<p>If divergences occur, inspect their parameter-space pattern and verify finite,
+stable gradients and refined Jeans quadrature. A rerun with
+<code class="docutils literal notranslate"><span class="pre">target_accept_prob=0.9</span></code> or <code class="docutils literal notranslate"><span class="pre">0.95</span></code> reduces step sizes, but difficult geometry
+may require reparameterization. For this radius/density degeneracy, adapting
+a dense mass matrix (<code class="docutils literal notranslate"><span class="pre">dense_mass=True</span></code>) is another option to investigate.
+See NumPyro’s <a class="reference external" href="https://num.pyro.ai/en/latest/tutorials/bad_posterior_geometry.html">posterior geometry tutorial</a>.
+Record the change and compare diagnostics in a fresh run; changing a prior
+changes the inferential question and should have scientific justification.</p>
+<p>For poor mixing without divergences, try more warmup, dispersed independent
+initializations and longer chains. Look for separate modes; blindly increasing
+<code class="docutils literal notranslate"><span class="pre">max_tree_depth</span></code> or dropping samples does not address the cause. Review low
+BFMI and frequent depth limits together with the geometry and energy traces.</p>
+<p>Nonfinite diagnostics are unresolved, not a pass. Use the printed warnings
+from this short run as a worked example, not a pass/fail
+certificate. Inspect diagnostics for derived profiles too when they are the
+quantities to be reported. Good sampler diagnostics do not establish physical
+model adequacy or interval calibration; posterior predictive checks and, for
+calibration, repeated simulated datasets answer different questions.</p>
+<p>The <a class="reference internal" href="../quickstart.html#compare-posterior-profiles-with-the-true-and-map-models"><span class="std std-ref">Quickstart profile plots</span></a>
+propagate complete joint draws to dispersion and DM density. Their numerical
+MAP curve uses the posterior density in the named sampling coordinates;
+the pointwise posterior median generally is not the prediction at a single
+median parameter vector.</p>
+</section>
+<section id="use-numpy-scipy-with-emcee">
+<h2>Use NumPy/SciPy with emcee<a class="headerlink" href="#use-numpy-scipy-with-emcee" title="Link to this heading">#</a></h2>
+<p>For the classical backend, define the same physical model with stored
+parameters and a log posterior that updates them at each call. This example
+uses the same five sampling coordinates and Gaussian likelihood:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">),</span>
+    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
+                         <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span>
+<span class="p">})</span>
+<span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample halo radius, density, inner slope, anisotropy and systemic velocity.</span>
+<span class="c1"># These illustrative priors are uniform in the named coordinates.</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.</span><span class="p">])</span>
+<span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">,</span> <span class="mf">50.</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">log_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">lower</span> <span class="o">&lt;</span> <span class="n">theta</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">theta</span> <span class="o">&lt;</span> <span class="n">upper</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">log_rs</span><span class="p">,</span> <span class="n">log_rho</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">theta</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rs</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rho</span><span class="p">,</span>
+                 <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">variance</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">vlos_kms</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">variance</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Run the complete file from the checkout to include its imports, common mock
+data and output handling:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/docs_quickstart_emcee.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/jeanspy-emcee-example
+</pre></div>
+</div>
+<p>Use a new output directory. The returned emcee chain has dimensions
+<code class="docutils literal notranslate"><span class="pre">(step,</span> <span class="pre">walker,</span> <span class="pre">parameter)</span></code>; interacting walkers are not independent chains
+for R-hat. The JeansPy <a class="reference external" href="https://gomeshun.github.io/jeanspy/dev/api/all.html"><code class="docutils literal notranslate"><span class="pre">jeanspy.sampler.Sampler</span></code></a> wrapper adds HDF5
+storage and identity checks for supported estimation models. The direct
+<code class="docutils literal notranslate"><span class="pre">emcee.EnsembleSampler</span></code> route above lets you supply your own log posterior.
+For process pools, use a picklable callable and guard process creation with
+<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code>; the local functions in the minimal Quickstart
+are not a multiprocessing example.</p>
+<p>Next: <a class="reference internal" href="storage.html"><span class="std std-doc">save and resume results</span></a>.</p>
+</section>
+<section id="check-the-classical-sampling-interface">
+<h2>Check the classical sampling interface<a class="headerlink" href="#check-the-classical-sampling-interface" title="Link to this heading">#</a></h2>
+<p>This short run exercises the emcee call on the same data. It does not establish convergence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">initial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+<span class="n">walkers</span> <span class="o">=</span> <span class="n">initial</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)))</span> <span class="o">*</span> <span class="p">[</span><span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.5</span><span class="p">]</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">log_probability</span><span class="p">)</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">walkers</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"(step, walker, parameter):"</span><span class="p">,</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">get_log_prob</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(step, walker, parameter): (32, 16, 5)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="predictions.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">4. Predict observables and generate mocks</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="storage.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">6. Save and resume results</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#specify-the-likelihood">Specify the likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-sampling-coordinates-and-priors">Choose sampling coordinates and priors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-numpyro-nuts">Run NumPyro NUTS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-result-without-losing-chain-structure">Read the result without losing chain structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-convergence-and-monte-carlo-precision">Check convergence and Monte Carlo precision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-nuts-divergences-energy-and-trajectory-length">Inspect NUTS divergences, energy and trajectory length</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#locate-correlations-and-divergences-in-a-corner-plot">Locate correlations and divergences in a corner plot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decide-what-to-change-before-trusting-the-posterior">Decide what to change before trusting the posterior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-numpy-scipy-with-emcee">Use NumPy/SciPy with emcee</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-classical-sampling-interface">Check the classical sampling interface</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/inference.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

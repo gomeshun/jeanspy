@@ -1,0 +1,9 @@
+kernel
+======
+
+``jeanspy.model.OsipkovMerrittModel.kernel``
+
+Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model.OsipkovMerrittModel>`.
+
+.. automethod:: jeanspy.model.OsipkovMerrittModel.kernel
+   :no-index:

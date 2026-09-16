@@ -1,0 +1,8 @@
+InvalidAxisymmetricModelError members
+=====================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.axisymmetric.InvalidAxisymmetricModelError.add_note
+   members/jeanspy.axisymmetric.InvalidAxisymmetricModelError.with_traceback

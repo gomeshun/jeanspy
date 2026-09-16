@@ -1,0 +1,9 @@
+mean_density_2d
+===============
+
+``jeanspy.model.Exp2dModel.mean_density_2d``
+
+Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
+
+.. automethod:: jeanspy.model.Exp2dModel.mean_density_2d
+   :no-index:

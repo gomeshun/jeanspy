@@ -1,0 +1,9 @@
+logdensity_2d
+=============
+
+``jeanspy.model.PlummerModel.logdensity_2d``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model.PlummerModel>`.
+
+.. automethod:: jeanspy.model.PlummerModel.logdensity_2d
+   :no-index:

@@ -1,0 +1,9 @@
+check_parameter_conversion
+==========================
+
+``jeanspy.sampler.Sampler.check_parameter_conversion``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.check_parameter_conversion
+   :no-index:

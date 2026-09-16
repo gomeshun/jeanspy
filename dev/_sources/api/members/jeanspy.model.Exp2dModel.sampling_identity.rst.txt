@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.Exp2dModel.sampling_identity``
+
+Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
+
+.. automethod:: jeanspy.model.Exp2dModel.sampling_identity
+   :no-index:

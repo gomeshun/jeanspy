@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sampling_identity``
+
+Class and construction: :doc:`AxisymmetricJeansLikelihoodModel <../generated/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel>`.
+
+.. automethod:: jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sampling_identity
+   :no-index:

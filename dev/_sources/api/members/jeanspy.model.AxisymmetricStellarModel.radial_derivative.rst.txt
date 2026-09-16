@@ -1,0 +1,9 @@
+radial_derivative
+=================
+
+``jeanspy.model.AxisymmetricStellarModel.radial_derivative``
+
+Class and construction: :doc:`AxisymmetricStellarModel <../generated/jeanspy.model.AxisymmetricStellarModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricStellarModel.radial_derivative
+   :no-index:

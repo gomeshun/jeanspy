@@ -1,0 +1,9 @@
+values
+======
+
+``jeanspy.model.DotDict.values``
+
+Class and construction: :doc:`DotDict <../generated/jeanspy.model.DotDict>`.
+
+.. automethod:: jeanspy.model.DotDict.values
+   :no-index:

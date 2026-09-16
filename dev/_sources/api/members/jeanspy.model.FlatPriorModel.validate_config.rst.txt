@@ -1,0 +1,9 @@
+validate_config
+===============
+
+``jeanspy.model.FlatPriorModel.validate_config``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.validate_config
+   :no-index:

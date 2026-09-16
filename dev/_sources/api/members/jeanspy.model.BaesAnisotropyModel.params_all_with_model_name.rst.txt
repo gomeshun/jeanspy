@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.BaesAnisotropyModel.params_all_with_model_name``
+
+Class and construction: :doc:`BaesAnisotropyModel <../generated/jeanspy.model.BaesAnisotropyModel>`.
+
+.. autoattribute:: jeanspy.model.BaesAnisotropyModel.params_all_with_model_name
+   :no-index:

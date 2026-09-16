@@ -1,0 +1,9 @@
+norm
+====
+
+``jeanspy.model.SersicModel.norm``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. autoattribute:: jeanspy.model.SersicModel.norm
+   :no-index:

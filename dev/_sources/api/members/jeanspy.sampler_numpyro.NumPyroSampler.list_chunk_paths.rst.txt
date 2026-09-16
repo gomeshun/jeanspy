@@ -1,0 +1,9 @@
+list_chunk_paths
+================
+
+``jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths
+   :no-index:

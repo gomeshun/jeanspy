@@ -30,8 +30,9 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -550,7 +551,7 @@
         <span class="k">return</span> <span class="o">-</span><span class="mi">5</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_unnormalized_density</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">R</span><span class="o">*</span><span class="n">R</span><span class="o">+</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s2">"q"</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisymmetricPlummerModel.density_3d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricPlummerModel.html#jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d.html#jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return unit-normalized pc^-3 density at broadcast cylindrical coordinates."""</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">component_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">"stellar"</span><span class="p">,</span> <span class="n">jnp</span><span class="p">)</span>
@@ -560,7 +561,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricPlummerModel.radial_derivative">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricPlummerModel.html#jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative.html#jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">radial_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return dnu/dR in pc^-4; invalid dynamic coordinates yield NaN."""</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">component_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">"stellar"</span><span class="p">,</span> <span class="n">jnp</span><span class="p">)</span>
@@ -570,7 +571,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricPlummerModel.surface_density">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricPlummerModel.html#jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density.html#jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">surface_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return projected normalized pc^-2 density; x is the line of nodes."""</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">component_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">"stellar"</span><span class="p">,</span> <span class="n">jnp</span><span class="p">)</span>
@@ -626,7 +627,7 @@
         <span class="k">return</span> <span class="n">gR</span><span class="p">,</span> <span class="n">gz</span><span class="p">,</span> <span class="n">dgz</span>
 
 <div class="viewcode-block" id="AxisymmetricZhaoModel.potential_gradient">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricZhaoModel.html#jeanspy.model_numpyro.AxisymmetricZhaoModel.potential_gradient">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricZhaoModel.potential_gradient.html#jeanspy.model_numpyro.AxisymmetricZhaoModel.potential_gradient">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">potential_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">n_force</span><span class="o">=</span><span class="mi">96</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return (dPhi/dR,dPhi/dz) in (km/s)^2/pc; n_force is static under JIT."""</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">component_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">"halo"</span><span class="p">,</span> <span class="n">jnp</span><span class="p">)</span>
@@ -637,7 +638,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricZhaoModel.mass_density_3d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricZhaoModel.html#jeanspy.model_numpyro.AxisymmetricZhaoModel.mass_density_3d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricZhaoModel.mass_density_3d.html#jeanspy.model_numpyro.AxisymmetricZhaoModel.mass_density_3d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return halo density in Msun/pc^3 with the broadcast coordinate shape."""</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">component_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">"halo"</span><span class="p">,</span> <span class="n">jnp</span><span class="p">)</span>
@@ -652,7 +653,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricZhaoModel.enclosed_mass">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricZhaoModel.html#jeanspy.model_numpyro.AxisymmetricZhaoModel.enclosed_mass">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricZhaoModel.enclosed_mass.html#jeanspy.model_numpyro.AxisymmetricZhaoModel.enclosed_mass">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return mass in Msun inside spheroidal radius m_pc; n_steps is static."""</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">component_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">"halo"</span><span class="p">,</span> <span class="n">jnp</span><span class="p">)</span>
@@ -678,7 +679,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="AxisymmetricConstantAnisotropyModel.beta">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.html#jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.beta">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.beta.html#jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return beta_z at broadcast cylindrical coordinates in pc."""</span>
         <span class="n">p</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">component_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">"anisotropy"</span><span class="p">,</span> <span class="n">jnp</span><span class="p">)</span>
@@ -757,7 +758,7 @@
             <span class="n">_rule</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.sampling_identity">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity.html#jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampling_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return the three fixed quadrature orders used to identify a sampling target.</span>
 
@@ -797,7 +798,7 @@
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">vr2</span><span class="p">,</span> <span class="n">vz2</span><span class="p">,</span> <span class="n">vp2</span><span class="p">])</span>
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.intrinsic_moments">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments.html#jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments">[docs]</a>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">intrinsic_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the intrinsic Jeans second moments.</span>
@@ -820,7 +821,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.potential_gradient">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient.html#jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient">[docs]</a>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">potential_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate derivatives of the gravitational potential.</span>
@@ -840,7 +841,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.surface_density">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density.html#jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density">[docs]</a>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">surface_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the projected spheroidal Plummer tracer.</span>
@@ -858,7 +859,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.density_3d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d.html#jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d">[docs]</a>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Unit-normalized stellar density in pc^-3."""</span>
@@ -867,7 +868,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.mass_density_3d">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d.html#jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d">[docs]</a>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mass_density_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_pc</span><span class="p">,</span> <span class="n">z_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Halo density, including the optional ellipsoidal cutoff."""</span>
@@ -876,7 +877,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.enclosed_mass">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass.html#jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass">[docs]</a>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">static_argnames</span><span class="o">=</span><span class="p">(</span><span class="s2">"n_steps"</span><span class="p">,))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">enclosed_mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Mass in Msun inside the spheroid m &lt;= m_pc (with truncation).</span>
@@ -894,7 +895,7 @@
 
 
 <div class="viewcode-block" id="AxisymmetricDSphModel.sigmalos2">
-<a class="viewcode-back" href="../../api/generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html#jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2">[docs]</a>
+<a class="viewcode-back" href="../../api/members/jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2.html#jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2">[docs]</a>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sigmalos2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_pc</span><span class="p">,</span> <span class="n">y_pc</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Project a cylindrically aligned second moment.</span>

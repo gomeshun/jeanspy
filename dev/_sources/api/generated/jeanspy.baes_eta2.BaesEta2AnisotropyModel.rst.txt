@@ -1,5 +1,13 @@
-﻿jeanspy.baes\_eta2.BaesEta2AnisotropyModel
-==========================================
+﻿BaesEta2AnisotropyModel
+=======================
+
+``jeanspy.baes_eta2.BaesEta2AnisotropyModel``
+
+
+See :doc:`methods and properties <../jeanspy.baes_eta2.BaesEta2AnisotropyModel.members>` for individual
+lookup pages, or the :doc:`alphabetical API dictionary <../all>` to search
+all classes. The full class contract and existing member anchors are retained below.
+
 
 .. currentmodule:: jeanspy.baes_eta2
 

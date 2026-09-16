@@ -1,0 +1,9 @@
+required_param_names_combined
+=============================
+
+``jeanspy.model.FlatPriorModel.required_param_names_combined``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. autoattribute:: jeanspy.model.FlatPriorModel.required_param_names_combined
+   :no-index:

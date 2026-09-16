@@ -1,0 +1,23 @@
+NumPyroSampler members
+======================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.sampler_numpyro.NumPyroSampler.checkpoint_path
+   members/jeanspy.sampler_numpyro.NumPyroSampler.chunk_suffix
+   members/jeanspy.sampler_numpyro.NumPyroSampler.chunks_dir
+   members/jeanspy.sampler_numpyro.NumPyroSampler.clear_resume_state
+   members/jeanspy.sampler_numpyro.NumPyroSampler.close
+   members/jeanspy.sampler_numpyro.NumPyroSampler.combine_trees
+   members/jeanspy.sampler_numpyro.NumPyroSampler.flush
+   members/jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths
+   members/jeanspy.sampler_numpyro.NumPyroSampler.load_checkpoint
+   members/jeanspy.sampler_numpyro.NumPyroSampler.load_samples
+   members/jeanspy.sampler_numpyro.NumPyroSampler.metadata_path
+   members/jeanspy.sampler_numpyro.NumPyroSampler.pending_write_count
+   members/jeanspy.sampler_numpyro.NumPyroSampler.run
+   members/jeanspy.sampler_numpyro.NumPyroSampler.save_checkpoint
+   members/jeanspy.sampler_numpyro.NumPyroSampler.save_samples_chunk
+   members/jeanspy.sampler_numpyro.NumPyroSampler.to_datatree
+   members/jeanspy.sampler_numpyro.NumPyroSampler.uses_directory_stores

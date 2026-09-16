@@ -1,0 +1,1319 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mass_density_3d &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jeanspy.css?v=09cbd2f8" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/members/jeanspy.model_numpyro.ZhaoModel.mass_density_3d';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/api/members/jeanspy.model_numpyro.ZhaoModel.mass_density_3d.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="resolve_params" href="jeanspy.model_numpyro.ZhaoModel.resolve_params.html" />
+    <link rel="prev" title="has_analytic_enclosed_mass" href="jeanspy.model_numpyro.ZhaoModel.has_analytic_enclosed_mass.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="dev" />
+    <meta name="docbuild:last-update" content="2026-09-16"/>
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core.html">Core utilities</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.C_J.html">jeanspy.model.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.DotDict.html">DotDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.GMsun_m3s2.html">jeanspy.model.GMsun_m3s2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.Model.html">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.Parameters.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.Model.html">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.configure_runtime.html">configure_runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.get_runtime_config.html">get_runtime_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.axisymmetric_factors.C_J.html">jeanspy.axisymmetric_factors.C_J</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.axisymmetric_factors.C_D.html">jeanspy.axisymmetric_factors.C_D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.hyp2f1_jax.GaussLegendre01.html">GaussLegendre01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.hyp2f1_jax.TanhSinh01.html">TanhSinh01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.hyp2f1_jax.hyp2f1_1b_d_series.html">hyp2f1_1b_d_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series.html">hyp2f1_1b_3half_series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad.html">hyp2f1_1b_3half_quad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html">hyp2f1_1b_3half_asymptotic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html">hyp2f1_1b_3half</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.dequad.hashable.html">hashable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.dequad.memorize.html">memorize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.dequad.generate_x_w.html">generate_x_w</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.dequad.dequad.html">dequad</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../spherical.html">Spherical models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AnisotropyModel.html">AnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.BaesAnisotropyModel.html">BaesAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.ConstantAnisotropyModel.html">ConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.DMModel.html">DMModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.DSphModel.html">DSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.Exp2dModel.html">Exp2dModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.Exp3dModel.html">Exp3dModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.NFWModel.html">NFWModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.OsipkovMerrittModel.html">OsipkovMerrittModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.PlummerModel.html">PlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.SersicModel.html">SersicModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.StellarModel.html">StellarModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.Uniform2dModel.html">Uniform2dModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.ZhaoModel.html">ZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.PlummerModel.html">PlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.ZhaoModel.html">ZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.NFWModel.html">NFWModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.ConstantAnisotropyModel.html">ConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.BaesAnisotropyModel.html">BaesAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.OsipkovMerrittModel.html">OsipkovMerrittModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.DSphModel.html">DSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.baes_eta2.BaesEta2AnisotropyModel.html">BaesEta2AnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html">jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.baes_eta2.baes_eta2_kernel_appell_reference.html">baes_eta2_kernel_appell_reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.baes_eta2.baes_eta2_kernel_jax.html">baes_eta2_kernel_jax</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../axisymmetric-models.html">Axisymmetric models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricDSphModel.html">AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricPlummerModel.html">AxisymmetricPlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricZhaoModel.html">AxisymmetricZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricConstantAnisotropyModel.html">AxisymmetricConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricStellarModel.html">AxisymmetricStellarModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricDMModel.html">AxisymmetricDMModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricAnisotropyModel.html">AxisymmetricAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.axisymmetric.intrinsic_axis_ratio.html">intrinsic_axis_ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html">AxisymmetricDSphModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.AxisymmetricPlummerModel.html">AxisymmetricPlummerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.AxisymmetricZhaoModel.html">AxisymmetricZhaoModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.html">AxisymmetricConstantAnisotropyModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.axisymmetric_factors.jfactor.html">jfactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.axisymmetric_factors.dfactor.html">dfactor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../inference.html">Statistical inference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.FittableModel.html">FittableModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.FlatPriorModel.html">FlatPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.PhotometryPriorModel.html">PhotometryPriorModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.SimpleDSphEstimationModel.html">SimpleDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.get_default_estimation_model.html">get_default_estimation_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricDSphEstimationModel.html">AxisymmetricDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.model.AxisymmetricKinematicData.html">AxisymmetricKinematicData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.sampler.Sampler.html">Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.html">AxisymmetricJeansLikelihoodModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.sampler_numpyro.JeansLikelihoodModel.html">JeansLikelihoodModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.sampler_numpyro.NumPyroSampler.html">NumPyroSampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.sampler_numpyro.ParameterSpec.html">ParameterSpec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.sampler_numpyro.SamplerRunResult.html">SamplerRunResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/jeanspy.sampler_numpyro.StorageBackend.html">jeanspy.sampler_numpyro.StorageBackend</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../all.html">Alphabetical API dictionary</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AnisotropyModel.members.html">AnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AnisotropyModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.BaesAnisotropyModel.members.html">BaesAnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.integrand_kernel.html">integrand_kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.BaesAnisotropyModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.ConstantAnisotropyModel.members.html">ConstantAnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ConstantAnisotropyModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.DMModel.members.html">DMModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.assert_roi_is_enough_small.html">assert_roi_is_enough_small</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.jfactor_ullio2016.html">jfactor_ullio2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.jfactor_ullio2016_simple.html">jfactor_ullio2016_simple</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DMModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.DSphModel.members.html">DSphModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.integrand_sigmalos2.html">integrand_sigmalos2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.sigmalos.html">sigmalos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.sigmalos2.html">sigmalos2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.sigmalos2_dequad.html">sigmalos2_dequad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.sigmalos_dequad.html">sigmalos_dequad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.sigmar2.html">sigmar2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.sigmat2.html">sigmat2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DSphModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.DotDict.members.html">DotDict members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.clear.html">clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.copy.html">copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.fromkeys.html">fromkeys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.get.html">get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.items.html">items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.keys.html">keys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.pop.html">pop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.popitem.html">popitem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.setdefault.html">setdefault</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.update.html">update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.DotDict.values.html">values</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.Exp2dModel.members.html">Exp2dModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.R_exp_pc.html">R_exp_pc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.cdf_R.html">cdf_R</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.density_2d.html">density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.density_2d_truncated.html">density_2d_truncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.half_light_radius.html">half_light_radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.logdensity_2d.html">logdensity_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.mean_density_2d.html">mean_density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp2dModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.Exp3dModel.members.html">Exp3dModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.cdf_R.html">cdf_R</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.density_2d.html">density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.density_2d_truncated.html">density_2d_truncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.half_light_radius.html">half_light_radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.mean_density_2d.html">mean_density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Exp3dModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.FittableModel.members.html">FittableModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.blobs_dtype.html">blobs_dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.convert_params.html">convert_params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.inverse_temparature.html">inverse_temparature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.lnlikelihood.html">lnlikelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.lnlikelihoods.html">lnlikelihoods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.lnposterior.html">lnposterior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.lnposterior_wbic.html">lnposterior_wbic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.lnpriors.html">lnpriors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.load_data.html">load_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.ndim.html">ndim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FittableModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.FlatPriorModel.members.html">FlatPriorModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.extract_value_by_name.html">extract_value_by_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.generate_default_config_file.html">generate_default_config_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.get_index.html">get_index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.load_config.html">load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.sample.html">sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.update.html">update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.FlatPriorModel.validate_config.html">validate_config</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.Model.members.html">Model members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Model.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Model.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Model.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Model.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Model.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Model.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.NFWModel.members.html">NFWModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.assert_roi_is_enough_small.html">assert_roi_is_enough_small</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.enclosure_mass.html">enclosure_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.jfactor_evans2016.html">jfactor_evans2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.jfactor_ullio2016.html">jfactor_ullio2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.jfactor_ullio2016_simple.html">jfactor_ullio2016_simple</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.NFWModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.OsipkovMerrittModel.members.html">OsipkovMerrittModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.OsipkovMerrittModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.Parameters.members.html">Parameters members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.clear.html">clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.copy.html">copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.get.html">get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.items.html">items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.keys.html">keys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.pop.html">pop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.popitem.html">popitem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.setdefault.html">setdefault</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.to_series.html">to_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.update.html">update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Parameters.values.html">values</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.PhotometryPriorModel.members.html">PhotometryPriorModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.reset_prior.html">reset_prior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.sample.html">sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.PlummerModel.members.html">PlummerModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.cdf_R.html">cdf_R</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.density_2d.html">density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.density_2d_normalized_re.html">density_2d_normalized_re</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.density_2d_truncated.html">density_2d_truncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.half_light_radius.html">half_light_radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.logdensity_2d.html">logdensity_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.mean_density_2d.html">mean_density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.PlummerModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.SersicModel.members.html">SersicModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.b.html">b</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.b_CB.html">b_CB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.b_approx.html">b_approx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.cdf_R.html">cdf_R</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_2d.html">density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_2d_normalized_re.html">density_2d_normalized_re</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_2d_truncated.html">density_2d_truncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_3d_LGM.html">density_3d_LGM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_3d_VM20.html">density_3d_VM20</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_3d_VM20bis.html">density_3d_VM20bis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_3d_auto.html">density_3d_auto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.density_3d_numerical.html">density_3d_numerical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.half_light_radius.html">half_light_radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.mean_density_2d.html">mean_density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.norm.html">norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.norm_3d.html">norm_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.p_LGM.html">p_LGM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SersicModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.SimpleDSphEstimationModel.members.html">SimpleDSphEstimationModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.blobs_dtype.html">blobs_dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.convert_params.html">convert_params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.data.html">data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.dtype.html">dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.inverse_temparature.html">inverse_temparature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.lnlikelihood.html">lnlikelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.lnlikelihoods.html">lnlikelihoods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.lnposterior.html">lnposterior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic.html">lnposterior_wbic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.lnpriors.html">lnpriors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.load_data.html">load_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.n_data.html">n_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.ndim.html">ndim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob.html">p_names_lnprob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.release_shared_memory.html">release_shared_memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.reset_data.html">reset_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.sample.html">sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.sample_data.html">sample_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename.html">shared_memory_basename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.StellarModel.members.html">StellarModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.density_2d.html">density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.density_2d_truncated.html">density_2d_truncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.StellarModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.Uniform2dModel.members.html">Uniform2dModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.cdf_R.html">cdf_R</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.density_2d.html">density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.density_2d_truncated.html">density_2d_truncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.Uniform2dModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.ZhaoModel.members.html">ZhaoModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.assert_roi_is_enough_small.html">assert_roi_is_enough_small</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.enclosure_mass.html">enclosure_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.jfactor_ullio2016.html">jfactor_ullio2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.jfactor_ullio2016_simple.html">jfactor_ullio2016_simple</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.ZhaoModel.update.html">update</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricDSphModel.members.html">AxisymmetricDSphModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.dfactor.html">dfactor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.intrinsic_moments.html">intrinsic_moments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.jfactor.html">jfactor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.physical_params.html">physical_params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.potential_gradient.html">potential_gradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.sigmalos2.html">sigmalos2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphModel.surface_density.html">surface_density</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricDSphEstimationModel.members.html">AxisymmetricDSphEstimationModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype.html">blobs_dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.convert_params.html">convert_params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.data.html">data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature.html">inverse_temparature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood.html">lnlikelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods.html">lnlikelihoods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior.html">lnposterior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic.html">lnposterior_wbic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors.html">lnpriors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.n_data.html">n_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.ndim.html">ndim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob.html">p_names_lnprob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.prior_names.html">prior_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.reset_data.html">reset_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.sample.html">sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.sample_data.html">sample_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricKinematicData.members.html">AxisymmetricKinematicData members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.as_kwargs.html">as_kwargs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.from_data.html">from_data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricPlummerModel.members.html">AxisymmetricPlummerModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricPlummerModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricPlummerModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricPlummerModel.projected_axis_ratio.html">projected_axis_ratio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricPlummerModel.radial_derivative.html">radial_derivative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricPlummerModel.surface_density.html">surface_density</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricZhaoModel.members.html">AxisymmetricZhaoModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.density.html">density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.dfactor.html">dfactor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.jfactor.html">jfactor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricZhaoModel.potential_gradient.html">potential_gradient</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricConstantAnisotropyModel.members.html">AxisymmetricConstantAnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricConstantAnisotropyModel.beta.html">beta</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricStellarModel.members.html">AxisymmetricStellarModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricStellarModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricStellarModel.radial_derivative.html">radial_derivative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricStellarModel.surface_density.html">surface_density</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricDMModel.members.html">AxisymmetricDMModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDMModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDMModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricDMModel.potential_gradient.html">potential_gradient</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.AxisymmetricAnisotropyModel.members.html">AxisymmetricAnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model.AxisymmetricAnisotropyModel.beta.html">beta</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.axisymmetric.InvalidAxisymmetricModelError.members.html">InvalidAxisymmetricModelError members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.add_note.html">add_note</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.with_traceback.html">with_traceback</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.AxisymmetricDSphModel.members.html">AxisymmetricDSphModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.intrinsic_moments.html">intrinsic_moments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.potential_gradient.html">potential_gradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.sigmalos2.html">sigmalos2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.surface_density.html">surface_density</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.Model.members.html">Model members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.Model.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.PlummerModel.members.html">PlummerModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.density_2d.html">density_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.log_prob_R.html">log_prob_R</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.sample_R.html">sample_R</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.PlummerModel.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../jeanspy.model_numpyro.ZhaoModel.members.html">ZhaoModel members</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.enclosed_mass_analytic.html">enclosed_mass_analytic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc.html">enclosed_mass_betainc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.enclosed_mass_numeric.html">enclosed_mass_numeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.enclosure_mass.html">enclosure_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.has_analytic_enclosed_mass.html">has_analytic_enclosed_mass</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.resolve_params.html">resolve_params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ZhaoModel.valid_mass_domain.html">valid_mass_domain</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.NFWModel.members.html">NFWModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.enclosed_mass_analytic.html">enclosed_mass_analytic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.enclosed_mass_numeric.html">enclosed_mass_numeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.enclosure_mass.html">enclosure_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.has_analytic_enclosed_mass.html">has_analytic_enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.resolve_params.html">resolve_params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.NFWModel.valid_mass_domain.html">valid_mass_domain</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.ConstantAnisotropyModel.members.html">ConstantAnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ConstantAnisotropyModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ConstantAnisotropyModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ConstantAnisotropyModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.ConstantAnisotropyModel.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.BaesAnisotropyModel.members.html">BaesAnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.BaesAnisotropyModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.BaesAnisotropyModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.BaesAnisotropyModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.BaesAnisotropyModel.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.OsipkovMerrittModel.members.html">OsipkovMerrittModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.OsipkovMerrittModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.OsipkovMerrittModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.OsipkovMerrittModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.OsipkovMerrittModel.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.DSphModel.members.html">DSphModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.DSphModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.DSphModel.sigmalos2.html">sigmalos2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.DSphModel.sigmalos2_abel.html">sigmalos2_abel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.DSphModel.sigmalos2_kernel.html">sigmalos2_kernel</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.AxisymmetricPlummerModel.members.html">AxisymmetricPlummerModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d.html">density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative.html">radial_derivative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density.html">surface_density</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.AxisymmetricZhaoModel.members.html">AxisymmetricZhaoModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricZhaoModel.enclosed_mass.html">enclosed_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricZhaoModel.mass_density_3d.html">mass_density_3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricZhaoModel.potential_gradient.html">potential_gradient</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.members.html">AxisymmetricConstantAnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel.beta.html">beta</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.sampler.Sampler.members.html">Sampler members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.burn_in.html">burn_in</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.check_parameter_conversion.html">check_parameter_conversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.filename.html">filename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.get_blobs.html">get_blobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.get_chain.html">get_chain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.get_dataframe.html">get_dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.get_last_sample.html">get_last_sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.get_log_prob.html">get_log_prob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.reset_pool.html">reset_pool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.run_mcmc.html">run_mcmc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler.Sampler.set_wrapper_function.html">set_wrapper_function</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.members.html">AxisymmetricJeansLikelihoodModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.__call__.html">__call__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters.html">sample_parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.sampler_numpyro.JeansLikelihoodModel.members.html">JeansLikelihoodModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.JeansLikelihoodModel.__call__.html">__call__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters.html">sample_parameters</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.sampler_numpyro.NumPyroSampler.members.html">NumPyroSampler members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.checkpoint_path.html">checkpoint_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.chunk_suffix.html">chunk_suffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.chunks_dir.html">chunks_dir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.clear_resume_state.html">clear_resume_state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.close.html">close</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.combine_trees.html">combine_trees</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.flush.html">flush</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths.html">list_chunk_paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.load_checkpoint.html">load_checkpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.load_samples.html">load_samples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.metadata_path.html">metadata_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.pending_write_count.html">pending_write_count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.run.html">run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.save_checkpoint.html">save_checkpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.save_samples_chunk.html">save_samples_chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.to_datatree.html">to_datatree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.NumPyroSampler.uses_directory_stores.html">uses_directory_stores</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.sampler_numpyro.ParameterSpec.members.html">ParameterSpec members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.ParameterSpec.build_distribution.html">build_distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.ParameterSpec.exp.html">exp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.ParameterSpec.pow10.html">pow10</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.ParameterSpec.records_deterministic.html">records_deterministic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.ParameterSpec.resolved_deterministic_name.html">resolved_deterministic_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.sampler_numpyro.ParameterSpec.sample.html">sample</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.baes_eta2.BaesEta2AnisotropyModel.members.html">BaesEta2AnisotropyModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.baes_eta2.BaesEta2AnisotropyModel.beta.html">beta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.baes_eta2.BaesEta2AnisotropyModel.f.html">f</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.baes_eta2.BaesEta2AnisotropyModel.kernel.html">kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jeanspy.baes_eta2.BaesEta2AnisotropyModel.sampling_identity.html">sampling_identity</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../modules.html">Import modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model.html">NumPy/SciPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric.html">Axisymmetric components and NumPy forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_inference.html">Axisymmetric observations and classical inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_numpyro.html">JAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_numpyro.html">JAX axisymmetric forward model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../axisymmetric_factors.html">Finite-cone NumPy J and D factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sampler.html">Classical emcee sampling and HDF5 storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sampler_numpyro.html">NumPyro likelihoods, sampling and storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sersic.html">Spherical Sersic tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../baes_eta2.html">Specialized Baes anisotropy kernels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hyp2f1_jax.html">JAX hypergeometric numerical helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dequad.html">Double-exponential integration helpers</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../all.html" class="nav-link">Alphabetical API dictionary</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../jeanspy.model_numpyro.ZhaoModel.members.html" class="nav-link">ZhaoModel members</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mass_density_3d</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mass-density-3d">
+<h1>mass_density_3d<a class="headerlink" href="#mass-density-3d" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">jeanspy.model_numpyro.ZhaoModel.mass_density_3d</span></code></p>
+<p>Class and construction: <a class="reference internal" href="../generated/jeanspy.model_numpyro.ZhaoModel.html"><span class="doc">ZhaoModel</span></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jeanspy.model_numpyro.ZhaoModel.mass_density_3d">
+<span class="sig-prename descclassname"><span class="pre">ZhaoModel.</span></span><span class="sig-name descname"><span class="pre">mass_density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_pc</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/model_numpyro.html#ZhaoModel.mass_density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model_numpyro.ZhaoModel.mass_density_3d" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate functional spherical halo density.</p>
+<p class="rubric">Notes</p>
+<p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">r_pc</span></code> is scalar/array in pc; params is a physical
+scalar dictionary.</p>
+<p><strong>Returns and shape.</strong> Untruncated density in Msun/pc^3 with radius shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_pc</strong> (<a class="reference external" href="https://docs.jax.dev/en/latest/_autosummary/jax.Array.html#jax.Array" title="(in JAX)"><em>jax.Array</em></a>)</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.14)"><em>Mapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.jax.dev/en/latest/_autosummary/jax.Array.html#jax.Array" title="(in JAX)">jax.Array</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="jeanspy.model_numpyro.ZhaoModel.has_analytic_enclosed_mass.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">has_analytic_enclosed_mass</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="jeanspy.model_numpyro.ZhaoModel.resolve_params.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">resolve_params</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/api/members/jeanspy.model_numpyro.ZhaoModel.mass_density_3d.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -31,8 +31,9 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -57,7 +58,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API reference" href="../api/index.html" />
-    <link rel="prev" title="Spherical synthetic analysis" href="spherical.html" />
+    <link rel="prev" title="Spherical analysis with saved posteriors" href="spherical.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
@@ -157,23 +158,9 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -192,6 +179,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../citing.html">
     Citing JeansPy and its dependencies
@@ -337,23 +338,9 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -361,6 +348,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -455,8 +456,16 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="spherical.html">Spherical synthetic analysis</a></li>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="units.html">1. Units and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends.html">2. Choose a backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">3. Define and extend a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predictions.html">4. Predict observables and generate mocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">5. Run MCMC and inspect the posterior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">6. Save and resume results</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="spherical.html">Spherical analysis with saved posteriors</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Axisymmetric synthetic analysis</a></li>
 </ul>
 </div>
@@ -499,7 +508,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Analysis tutorials</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
     
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Axisymmetric synthetic analysis</span></li>
   </ul>
@@ -525,12 +534,32 @@ inclination and systemic velocity, and computes finite-cone J/D factors from
 a deterministic subset of saved posterior draws. Priors are explicit in
 <code class="docutils literal notranslate"><span class="pre">log10_rhos_Msunpc3</span></code>, <code class="docutils literal notranslate"><span class="pre">log10_rs_pc</span></code>, <code class="docutils literal notranslate"><span class="pre">bfunc_beta_z</span></code>, <code class="docutils literal notranslate"><span class="pre">cos_inclination</span></code> and
 <code class="docutils literal notranslate"><span class="pre">vmem_kms</span></code>.</p>
+<p>Apply the <a class="reference internal" href="index.html"><span class="std std-doc">six tutorial steps</span></a> to a flattened system. Unlike the
+spherical Quickstart, this complete script also handles projected flattening,
+inclination and posterior J/D-factor calculation.</p>
+<section id="define-the-geometry-and-observations">
+<h2>1. Define the geometry and observations<a class="headerlink" href="#define-the-geometry-and-observations" title="Link to this heading">#</a></h2>
+<p>The tracer is an oblate Plummer component, and the halo is a spheroidal Zhao
+profile. The example fixes the projected tracer axis ratio and converts it
+to an intrinsic ratio for each inclination. Positions are signed <code class="docutils literal notranslate"><span class="pre">x_pc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">y_pc</span></code> coordinates in pc. The velocity likelihood conditions on those
+positions; it does not infer the spatial selection function.</p>
+</section>
+<section id="choose-priors-and-run-a-backend">
+<h2>2. Choose priors and run a backend<a class="headerlink" href="#choose-priors-and-run-a-backend" title="Link to this heading">#</a></h2>
+<p>The prior table explicitly distinguishes logarithmic scales, transformed
+cylindrical anisotropy and cosine inclination. A uniform prior in cosine
+inclination is not uniform in inclination. The two commands below use the
+same physical configuration and mock-data recipe.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/axisymmetric_inference.py<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--backend<span class="w"> </span>classical<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/axisymmetric-emcee
 <span class="nv">JEANSPY_JAX_ENABLE_X64</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>python<span class="w"> </span>examples/axisymmetric_inference.py<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--backend<span class="w"> </span>numpyro<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/axisymmetric-nuts
 </pre></div>
 </div>
+</section>
+<section id="save-resume-and-inspect">
+<h2>3. Save, resume and inspect<a class="headerlink" href="#save-resume-and-inspect" title="Link to this heading">#</a></h2>
 <p>Repeat the same command to resume. Keep the same warmup setting when resuming
 the classical example so that its export discards the original warmup steps.
 Outputs include <code class="docutils literal notranslate"><span class="pre">observations.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">prior.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">posterior.csv</span></code>,
@@ -538,6 +567,13 @@ Outputs include <code class="docutils literal notranslate"><span class="pre">obs
 <p>Default settings use eight stars and short chains. They exercise the complete
 storage path; the summary explicitly records that convergence and calibration
 are unestablished.</p>
+<p>Inspect the saved chain as described in the <a class="reference internal" href="inference.html"><span class="std std-doc">MCMC tutorial</span></a>
+before interpreting derived factors. The J/D factors are NumPy postprocessing
+of a deterministic subset of posterior draws, not differentiable outputs
+of the NUTS model. Their cone aperture and distance are part of the analysis.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Complete executable script</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Reproducible axisymmetric inference, restart and posterior J/D example.</span>
 
 <span class="sd">The defaults deliberately run short chains on eight synthetic stars to exercise</span>
@@ -703,6 +739,8 @@ are unestablished.</p>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+</details></section>
 </section>
 
 
@@ -721,7 +759,7 @@ are unestablished.</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Spherical synthetic analysis</p>
+        <p class="prev-next-title">Spherical analysis with saved posteriors</p>
       </div>
     </a>
     <a class="right-next"
@@ -743,6 +781,20 @@ are unestablished.</p>
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-geometry-and-observations">1. Define the geometry and observations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-priors-and-run-a-backend">2. Choose priors and run a backend</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-resume-and-inspect">3. Save, resume and inspect</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

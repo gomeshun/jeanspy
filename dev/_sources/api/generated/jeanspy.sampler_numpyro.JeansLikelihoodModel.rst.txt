@@ -1,5 +1,13 @@
-﻿jeanspy.sampler\_numpyro.JeansLikelihoodModel
-=============================================
+﻿JeansLikelihoodModel
+====================
+
+``jeanspy.sampler_numpyro.JeansLikelihoodModel``
+
+
+See :doc:`methods and properties <../jeanspy.sampler_numpyro.JeansLikelihoodModel.members>` for individual
+lookup pages, or the :doc:`alphabetical API dictionary <../all>` to search
+all classes. The full class contract and existing member anchors are retained below.
+
 
 .. currentmodule:: jeanspy.sampler_numpyro
 

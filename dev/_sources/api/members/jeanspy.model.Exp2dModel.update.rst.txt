@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.Exp2dModel.update``
+
+Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
+
+.. automethod:: jeanspy.model.Exp2dModel.update
+   :no-index:

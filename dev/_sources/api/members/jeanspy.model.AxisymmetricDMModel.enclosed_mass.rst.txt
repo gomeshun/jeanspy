@@ -1,0 +1,9 @@
+enclosed_mass
+=============
+
+``jeanspy.model.AxisymmetricDMModel.enclosed_mass``
+
+Class and construction: :doc:`AxisymmetricDMModel <../generated/jeanspy.model.AxisymmetricDMModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDMModel.enclosed_mass
+   :no-index:

@@ -30,8 +30,9 @@
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=b635b406" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jeanspy.css?v=09cbd2f8" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
@@ -155,22 +156,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -189,6 +176,20 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../../citing.html">
     Citing JeansPy and its dependencies
@@ -333,22 +334,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../theory.html">
-    Theory and numerical methods
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../guides/index.html">
-    Feature guides
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Analysis tutorials
+    Tutorials
   </a>
 </li>
 
@@ -356,6 +343,20 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
     API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../theory.html">
+    Theory and numerical methods
   </a>
 </li>
 
@@ -559,7 +560,7 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"FittableModel must have the prior_names attribute."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FittableModel.convert_params">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.convert_params">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FittableModel.convert_params.html#jeanspy.model.FittableModel.convert_params">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Map a sampling-coordinate vector p to named physical parameters.</span>
@@ -571,7 +572,7 @@
 
 
 <div class="viewcode-block" id="FittableModel.load_data">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.load_data">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FittableModel.load_data.html#jeanspy.model.FittableModel.load_data">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Load observations in a concrete estimation model.</span>
@@ -595,7 +596,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="FittableModel.lnlikelihoods">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnlikelihoods">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FittableModel.lnlikelihoods.html#jeanspy.model.FittableModel.lnlikelihoods">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnlikelihoods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -616,7 +617,7 @@
         <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="FittableModel.lnlikelihood">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnlikelihood">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FittableModel.lnlikelihood.html#jeanspy.model.FittableModel.lnlikelihood">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnlikelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -637,7 +638,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="FittableModel.lnpriors">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnpriors">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FittableModel.lnpriors.html#jeanspy.model.FittableModel.lnpriors">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnpriors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -664,7 +665,7 @@
         <span class="k">return</span> <span class="p">[(</span><span class="s2">"lnl"</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="o">*</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior_names</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="FittableModel.lnposterior">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnposterior">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FittableModel.lnposterior.html#jeanspy.model.FittableModel.lnposterior">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnposterior</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -702,7 +703,7 @@
 
 
 <div class="viewcode-block" id="FittableModel.lnposterior_wbic">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnposterior_wbic">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FittableModel.lnposterior_wbic.html#jeanspy.model.FittableModel.lnposterior_wbic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lnposterior_wbic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Evaluate the explicit kinematic inference target.</span>
 
@@ -776,7 +777,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlatPriorModel.load_config">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.load_config">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FlatPriorModel.load_config.html#jeanspy.model.FlatPriorModel.load_config">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Load and copy uniform-prior bounds from a DataFrame or CSV path.</span>
 
@@ -800,7 +801,7 @@
 
 
 <div class="viewcode-block" id="FlatPriorModel.validate_config">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.validate_config">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FlatPriorModel.validate_config.html#jeanspy.model.FlatPriorModel.validate_config">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_config</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Validate a DataFrame of explicit finite uniform-prior bounds.</span>
@@ -839,7 +840,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"upper"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlatPriorModel.get_index">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.get_index">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FlatPriorModel.get_index.html#jeanspy.model.FlatPriorModel.get_index">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return the index of the named parameter in the validated prior table.</span>
 
@@ -849,7 +850,7 @@
 
 
 <div class="viewcode-block" id="FlatPriorModel.extract_value_by_name">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.extract_value_by_name">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FlatPriorModel.extract_value_by_name.html#jeanspy.model.FlatPriorModel.extract_value_by_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extract_value_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Extract one named sampling coordinate from a vector of shape (ndim,).</span>
 
@@ -862,7 +863,7 @@
 
 
 <div class="viewcode-block" id="FlatPriorModel.sample">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.sample">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FlatPriorModel.sample.html#jeanspy.model.FlatPriorModel.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Draw from the finite sampling-coordinate bounds.</span>
 
@@ -894,7 +895,7 @@
         <span class="k">return</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">lower</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">p</span> <span class="o">&lt;=</span> <span class="n">upper</span><span class="p">))</span> <span class="k">else</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
 
 <div class="viewcode-block" id="FlatPriorModel.generate_default_config_file">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.generate_default_config_file">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.FlatPriorModel.generate_default_config_file.html#jeanspy.model.FlatPriorModel.generate_default_config_file">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_default_config_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Write a template; unspecified bounds deliberately cannot be sampled."""</span>
@@ -944,7 +945,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_prior</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PhotometryPriorModel.reset_prior">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PhotometryPriorModel.html#jeanspy.model.PhotometryPriorModel.reset_prior">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PhotometryPriorModel.reset_prior.html#jeanspy.model.PhotometryPriorModel.reset_prior">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_prior</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Replace the Gaussian prior on log10 half-light radius in pc.</span>
 
@@ -961,7 +962,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lnprior_func</span><span class="p">(</span><span class="n">log10_re_pc</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PhotometryPriorModel.sample">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PhotometryPriorModel.html#jeanspy.model.PhotometryPriorModel.sample">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PhotometryPriorModel.sample.html#jeanspy.model.PhotometryPriorModel.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Draw a log-radius prior value.</span>
 
@@ -977,7 +978,7 @@
 
 
 <div class="viewcode-block" id="PhotometryPriorModel.sampling_identity">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.PhotometryPriorModel.html#jeanspy.model.PhotometryPriorModel.sampling_identity">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.PhotometryPriorModel.sampling_identity.html#jeanspy.model.PhotometryPriorModel.sampling_identity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampling_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampled_names</span><span class="o">=</span><span class="p">()):</span>
 <span class="w">        </span><span class="sd">"""Return the Gaussian photometric-prior location and scale in log10(pc).</span>
 
@@ -1084,7 +1085,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_prior_schema</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.sampling_identity">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.sampling_identity">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.SimpleDSphEstimationModel.sampling_identity.html#jeanspy.model.SimpleDSphEstimationModel.sampling_identity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampling_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Describe the persisted target using observations, priors and parameter order.</span>
 
@@ -1130,7 +1131,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.convert_params">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.convert_params">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.SimpleDSphEstimationModel.convert_params.html#jeanspy.model.SimpleDSphEstimationModel.convert_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""Map sampling coordinates to physical parameters.</span>
 
@@ -1165,7 +1166,7 @@
 
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.load_data">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.load_data">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.SimpleDSphEstimationModel.load_data.html#jeanspy.model.SimpleDSphEstimationModel.load_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Load explicitly supplied observed kinematic data."""</span>
         <span class="c1"># Reject schema mistakes before allocating shared observation buffers.</span>
@@ -1180,7 +1181,7 @@
 
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.reset_data">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.reset_data">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.SimpleDSphEstimationModel.reset_data.html#jeanspy.model.SimpleDSphEstimationModel.reset_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Replace observations while sampler workers are idle.</span>
 
@@ -1336,7 +1337,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"shared memory '</span><span class="si">%s</span><span class="s2">' is already released."</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.release_shared_memory">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.release_shared_memory">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.SimpleDSphEstimationModel.release_shared_memory.html#jeanspy.model.SimpleDSphEstimationModel.release_shared_memory">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">release_shared_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Close and release this model's three shared observation buffers.</span>
 
@@ -1367,7 +1368,7 @@
         <span class="p">]</span>
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.sample">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.sample">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.SimpleDSphEstimationModel.sample.html#jeanspy.model.SimpleDSphEstimationModel.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Draw sampling-coordinate vectors from the specified joint prior.</span>
 
@@ -1392,7 +1393,7 @@
 
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.sample_data">
-<a class="viewcode-back" href="../../../api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.sample_data">[docs]</a>
+<a class="viewcode-back" href="../../../api/members/jeanspy.model.SimpleDSphEstimationModel.sample_data.html#jeanspy.model.SimpleDSphEstimationModel.sample_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Draw conditional Gaussian LOS velocities at the stored positions.</span>
 

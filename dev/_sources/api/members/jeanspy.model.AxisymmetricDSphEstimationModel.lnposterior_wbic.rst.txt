@@ -1,0 +1,9 @@
+lnposterior_wbic
+================
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic
+   :no-index:

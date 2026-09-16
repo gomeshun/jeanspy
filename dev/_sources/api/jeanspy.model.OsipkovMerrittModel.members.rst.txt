@@ -1,0 +1,15 @@
+OsipkovMerrittModel members
+===========================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.OsipkovMerrittModel.beta
+   members/jeanspy.model.OsipkovMerrittModel.f
+   members/jeanspy.model.OsipkovMerrittModel.is_required_param_names
+   members/jeanspy.model.OsipkovMerrittModel.kernel
+   members/jeanspy.model.OsipkovMerrittModel.params_all
+   members/jeanspy.model.OsipkovMerrittModel.params_all_with_model_name
+   members/jeanspy.model.OsipkovMerrittModel.required_param_names_combined
+   members/jeanspy.model.OsipkovMerrittModel.sampling_identity
+   members/jeanspy.model.OsipkovMerrittModel.update

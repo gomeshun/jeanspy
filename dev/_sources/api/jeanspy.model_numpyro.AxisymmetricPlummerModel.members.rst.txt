@@ -1,0 +1,9 @@
+AxisymmetricPlummerModel members
+================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_numpyro.AxisymmetricPlummerModel.density_3d
+   members/jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative
+   members/jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density

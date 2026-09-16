@@ -1,0 +1,9 @@
+b
+=
+
+``jeanspy.model.SersicModel.b``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. autoattribute:: jeanspy.model.SersicModel.b
+   :no-index:

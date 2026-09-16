@@ -1,0 +1,9 @@
+lnposterior_wbic
+================
+
+``jeanspy.model.FittableModel.lnposterior_wbic``
+
+Class and construction: :doc:`FittableModel <../generated/jeanspy.model.FittableModel>`.
+
+.. automethod:: jeanspy.model.FittableModel.lnposterior_wbic
+   :no-index:

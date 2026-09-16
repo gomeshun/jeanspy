@@ -1,0 +1,9 @@
+load_data
+=========
+
+``jeanspy.model.SimpleDSphEstimationModel.load_data``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SimpleDSphEstimationModel.load_data
+   :no-index:

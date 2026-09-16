@@ -1,0 +1,17 @@
+Sampler members
+===============
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.sampler.Sampler.burn_in
+   members/jeanspy.sampler.Sampler.check_parameter_conversion
+   members/jeanspy.sampler.Sampler.filename
+   members/jeanspy.sampler.Sampler.get_blobs
+   members/jeanspy.sampler.Sampler.get_chain
+   members/jeanspy.sampler.Sampler.get_dataframe
+   members/jeanspy.sampler.Sampler.get_last_sample
+   members/jeanspy.sampler.Sampler.get_log_prob
+   members/jeanspy.sampler.Sampler.reset_pool
+   members/jeanspy.sampler.Sampler.run_mcmc
+   members/jeanspy.sampler.Sampler.set_wrapper_function

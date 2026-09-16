@@ -1,0 +1,9 @@
+mass_density_3d
+===============
+
+``jeanspy.model.AxisymmetricZhaoModel.mass_density_3d``
+
+Class and construction: :doc:`AxisymmetricZhaoModel <../generated/jeanspy.model.AxisymmetricZhaoModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricZhaoModel.mass_density_3d
+   :no-index:

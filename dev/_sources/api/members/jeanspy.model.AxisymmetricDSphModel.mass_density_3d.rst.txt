@@ -1,0 +1,9 @@
+mass_density_3d
+===============
+
+``jeanspy.model.AxisymmetricDSphModel.mass_density_3d``
+
+Class and construction: :doc:`AxisymmetricDSphModel <../generated/jeanspy.model.AxisymmetricDSphModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphModel.mass_density_3d
+   :no-index:

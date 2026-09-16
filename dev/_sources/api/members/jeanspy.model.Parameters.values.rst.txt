@@ -1,0 +1,9 @@
+values
+======
+
+``jeanspy.model.Parameters.values``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. autoattribute:: jeanspy.model.Parameters.values
+   :no-index:

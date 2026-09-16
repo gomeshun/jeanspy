@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.AnisotropyModel.update``
+
+Class and construction: :doc:`AnisotropyModel <../generated/jeanspy.model.AnisotropyModel>`.
+
+.. automethod:: jeanspy.model.AnisotropyModel.update
+   :no-index:

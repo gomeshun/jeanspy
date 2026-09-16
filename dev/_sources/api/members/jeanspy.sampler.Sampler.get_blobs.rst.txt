@@ -1,0 +1,9 @@
+get_blobs
+=========
+
+``jeanspy.sampler.Sampler.get_blobs``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.get_blobs
+   :no-index:

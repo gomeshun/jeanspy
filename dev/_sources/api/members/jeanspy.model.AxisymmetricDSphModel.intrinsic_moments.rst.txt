@@ -1,0 +1,9 @@
+intrinsic_moments
+=================
+
+``jeanspy.model.AxisymmetricDSphModel.intrinsic_moments``
+
+Class and construction: :doc:`AxisymmetricDSphModel <../generated/jeanspy.model.AxisymmetricDSphModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphModel.intrinsic_moments
+   :no-index:

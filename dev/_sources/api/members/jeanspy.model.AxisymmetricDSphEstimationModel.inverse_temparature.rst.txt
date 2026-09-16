@@ -1,0 +1,9 @@
+inverse_temparature
+===================
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature
+   :no-index:

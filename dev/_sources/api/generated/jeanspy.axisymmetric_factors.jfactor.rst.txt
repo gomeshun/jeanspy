@@ -1,5 +1,7 @@
-﻿jeanspy.axisymmetric\_factors.jfactor
-=====================================
+﻿jfactor
+=======
+
+``jeanspy.axisymmetric_factors.jfactor``
 
 .. currentmodule:: jeanspy.axisymmetric_factors
 

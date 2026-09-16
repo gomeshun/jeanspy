@@ -1,0 +1,9 @@
+lnpriors
+========
+
+``jeanspy.model.SimpleDSphEstimationModel.lnpriors``
+
+Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SimpleDSphEstimationModel.lnpriors
+   :no-index:

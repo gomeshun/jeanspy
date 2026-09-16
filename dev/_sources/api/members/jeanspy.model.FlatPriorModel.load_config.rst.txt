@@ -1,0 +1,9 @@
+load_config
+===========
+
+``jeanspy.model.FlatPriorModel.load_config``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.load_config
+   :no-index:

@@ -1,0 +1,9 @@
+assert_roi_is_enough_small
+==========================
+
+``jeanspy.model.ZhaoModel.assert_roi_is_enough_small``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. automethod:: jeanspy.model.ZhaoModel.assert_roi_is_enough_small
+   :no-index:

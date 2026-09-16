@@ -1,0 +1,9 @@
+enclosed_mass_numeric
+=====================
+
+``jeanspy.model_numpyro.NFWModel.enclosed_mass_numeric``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model_numpyro.NFWModel>`.
+
+.. automethod:: jeanspy.model_numpyro.NFWModel.enclosed_mass_numeric
+   :no-index:
