@@ -25,7 +25,7 @@ floor is introduced. Angular and radial factor quadrature counts are
 independent of the Jeans solver's node counts. Refine them for the actual
 cutoff/cone intersection.
 
-The spherical limit of `ZhaoHalo` also supplies a D-factor calculation for a
+The spherical limit of `AxisymmetricZhaoModel` also supplies a D-factor calculation for a
 spherical halo; there is no separate classical spherical `DMModel.dfactor` API.
 
 ```{literalinclude} ../../../examples/docs_factors.py

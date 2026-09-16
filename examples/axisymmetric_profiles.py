@@ -7,23 +7,27 @@ import argparse
 from dataclasses import replace
 
 import numpy as np
-from jeanspy.axisymmetric import AxisymmetricJeans, PlummerTracer, ZhaoHalo
+from jeanspy.axisymmetric import AxisymmetricDSphModel, AxisymmetricPlummerModel, AxisymmetricZhaoModel, AxisymmetricConstantAnisotropyModel
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", help="Optional plot filename")
     args = parser.parse_args()
-    model = AxisymmetricJeans(
-        PlummerTracer(a_pc=300, q=.65),
-        ZhaoHalo(rho_s=.1, r_s=500, Q=.7, alpha=2, beta=3, gamma=1),
-        beta_z=-.2, inclination=np.deg2rad(70),
+    model = AxisymmetricDSphModel(
+        submodels={
+            "StellarModel": AxisymmetricPlummerModel(re_pc=300, q=.65),
+            "DMModel": AxisymmetricZhaoModel(rs_pc=500, rhos_Msunpc3=.1,
+                                              Q=.7, alpha=2, beta=3, gamma=1),
+            "AnisotropyModel": AxisymmetricConstantAnisotropyModel(beta_z=-.2),
+        },
+        inclination=np.deg2rad(70),
     )
     radius = np.geomspace(10, 1500, 16)
-    major = np.sqrt(model.los_second_moment(radius, 0))
-    minor = np.sqrt(model.los_second_moment(0, radius))
+    major = np.sqrt(model.sigmalos2(radius, 0))
+    minor = np.sqrt(model.sigmalos2(0, radius))
     fine = replace(model, n_force=128, n_vertical=128, n_los=128)
-    checks = fine.los_second_moment(radius[[0, 7, -1]], 0)
+    checks = fine.sigmalos2(radius[[0, 7, -1]], 0)
     relative = np.max(np.abs(major[[0, 7, -1]]**2/checks - 1))
     print(f"Maximum 96/128-node relative second-moment difference: {relative:.3g}")
     print("radius_pc,major_sigma_kms,minor_sigma_kms")

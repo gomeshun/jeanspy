@@ -18,7 +18,7 @@ from ._zhao import enclosed_mass as _zhao_mass
 from ._axisymmetric_components import component_models
 
 G = 1.32712440018e20 / parsec * 1e-6
-__all__ = ["AxisymmetricJeans", "PlummerTracer", "ZhaoHalo", "intrinsic_axis_ratio",
+__all__ = ["intrinsic_axis_ratio",
            "InvalidAxisymmetricModelError", "AxisymmetricStellarModel",
            "AxisymmetricPlummerModel", "AxisymmetricDMModel", "AxisymmetricZhaoModel",
            "AxisymmetricAnisotropyModel", "AxisymmetricConstantAnisotropyModel"]
@@ -221,12 +221,6 @@ class AxisymmetricPlummerModel(AxisymmetricStellarModel):
             np.pi * self.re_pc**2 * qp
         )
 
-
-    @property
-    def a_pc(self):
-        """Equatorial scale in pc (compatibility spelling of re_pc)."""
-        return self.re_pc
-
     def density_3d(self, R_pc, z_pc):
         """Return unit-normalized tracer density in pc^-3 at coordinates in pc."""
         return self.density(R_pc, z_pc)
@@ -357,44 +351,9 @@ class AxisymmetricZhaoModel(AxisymmetricDMModel):
         return dfactor(self, dist_pc, roi_deg, inclination=inclination, **quadrature)
 
 
-    @property
-    def rho_s(self):
-        """Density scale in Msun/pc^3 (compatibility spelling)."""
-        return self.rhos_Msunpc3
-
-    @property
-    def r_s(self):
-        """Scale radius in pc (compatibility spelling)."""
-        return self.rs_pc
-
     def mass_density_3d(self, R_pc, z_pc):
         """Return halo density in Msun/pc^3, zero outside the cutoff."""
         return self.density(R_pc, z_pc)
-
-
-class PlummerTracer(AxisymmetricPlummerModel):
-    """Legacy constructor using a_pc in pc; prefer AxisymmetricPlummerModel.
-
-    re_pc is accepted for dataclasses.replace; explicit a_pc takes precedence.
-    """
-
-    def __init__(self, a_pc=None, q=1., *, re_pc=None):
-        super().__init__(re_pc=re_pc if a_pc is None else a_pc, q=q)
-
-
-class ZhaoHalo(AxisymmetricZhaoModel):
-    """Legacy constructor using rho_s and r_s; prefer AxisymmetricZhaoModel.
-
-    Canonical parameter names are accepted for dataclasses.replace; explicit
-    legacy arguments take precedence over the inherited field values.
-    """
-
-    def __init__(self, rho_s=None, r_s=None, Q=1., alpha=1., beta=3., gamma=1.,
-                 r_t_pc=np.inf, *, rs_pc=None, rhos_Msunpc3=None):
-        super().__init__(rs_pc=rs_pc if r_s is None else r_s,
-                         rhos_Msunpc3=rhos_Msunpc3 if rho_s is None else rho_s,
-                         Q=Q, alpha=alpha,
-                         beta=beta, gamma=gamma, r_t_pc=r_t_pc)
 
 
 @dataclass(frozen=True)
@@ -417,7 +376,7 @@ class AxisymmetricConstantAnisotropyModel(AxisymmetricAnisotropyModel):
 
 
 @dataclass(frozen=True)
-class AxisymmetricJeans:
+class _AxisymmetricJeans:
     r"""Aligned constant-beta_z Jeans solver with integration to infinity.
 
     Fixed Gauss-Legendre orders must be checked for convergence for each
@@ -426,7 +385,7 @@ class AxisymmetricJeans:
 
     Notes
     -----
-    **Inputs and units.** tracer is PlummerTracer; halo is ZhaoHalo;
+    **Inputs and units.** tracer is AxisymmetricPlummerModel; halo is AxisymmetricZhaoModel;
     ``beta_z < 1``; inclination in [0,pi/2] radians; ``n_force``, ``n_vertical``
     and ``n_los`` are integer quadrature orders >=16. Intrinsic R>=0 and signed
     z, or signed sky x/y, are finite and broadcast to one shape (pc).
@@ -479,7 +438,7 @@ class AxisymmetricJeans:
         R, z = _coordinates(R, z)
         z = np.abs(z)
         t, w = _rule(self.n_vertical)
-        scale = np.sqrt(self.tracer.a_pc**2 + R*R + (z/self.tracer.q)**2) * self.tracer.q
+        scale = np.sqrt(self.tracer.re_pc**2 + R*R + (z/self.tracer.q)**2) * self.tracer.q
         zz = z[..., None] + scale[..., None] * t / (1-t)
         RR = R[..., None]
         nu = self.tracer.density(RR, zz)
@@ -495,7 +454,7 @@ class AxisymmetricJeans:
         P, dP = self._pressure(R, z)
         nu = self.tracer.density(R, z)
         # R*dPhi/dR vanishes on the axis, even for a central cusp.
-        safe_z = np.where((R == 0) & (z == 0), self.tracer.a_pc, z)
+        safe_z = np.where((R == 0) & (z == 0), self.tracer.re_pc, z)
         gR = self.halo.potential_gradient(R, safe_z, self.n_force)[0]
         vz2 = P / nu
         beta_z = (self.beta_z if self.anisotropy is None
@@ -525,7 +484,7 @@ class AxisymmetricJeans:
             # Center the quadrature at the maximum LOS tracer density.
             center = -yy*si*ci*(1-1/self.tracer.q**2)/A
             qp = self.tracer.projected_axis_ratio(self.inclination)
-            scale = np.sqrt(self.tracer.a_pc**2 + xx*xx + (yy/qp)**2)/np.sqrt(A)
+            scale = np.sqrt(self.tracer.re_pc**2 + xx*xx + (yy/qp)**2)/np.sqrt(A)
             offset = scale*t/(1-t)
             ell = center + np.concatenate([-offset, offset])
             weight = np.tile(scale*w/(1-t)**2, 2)
@@ -572,7 +531,7 @@ class AxisymmetricDSphModel:
     moments and forces are tuples of matching arrays.
 
     **Validity.** Cylindrical alignment with constant ``beta_z``; same physical
-    restrictions as AxisymmetricJeans. Scalar sky inputs yield scalars; centers
+    restrictions as the cylindrical Jeans solver. Scalar sky inputs yield scalars; centers
     are allowed for projected moments.
 
     **Errors.** Invalid schema/values raise ValueError; nonphysical moments
@@ -644,7 +603,7 @@ class AxisymmetricDSphModel:
             raise InvalidAxisymmetricModelError(
                 "Invalid axisymmetric physical parameters or inclination/flattening")
         p = {k: float(v) for k, v in p.items()}
-        return AxisymmetricJeans(
+        return _AxisymmetricJeans(
             stellar_type(re_pc=p["re_pc"], q=p["q"]),
             halo_type(rs_pc=p["rs_pc"], rhos_Msunpc3=p["rhos_Msunpc3"], Q=p["Q"],
                       alpha=p["alpha"], beta=p["beta"], gamma=p["gamma"], r_t_pc=p["r_t_pc"]),
@@ -758,7 +717,7 @@ class AxisymmetricDSphModel:
         **Returns and shape.** Python float in GeV cm^-2.
 
         **Validity.** Require explicit finite ``r_t_pc``, observer distance >
-        ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<2 under the ZhaoHalo
+        ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<2 under the AxisymmetricZhaoModel
         constructor domain. ``n_phi`` uses a periodic rule; refine all orders.
         """
         model = self._model(params)

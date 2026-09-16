@@ -105,7 +105,7 @@ def worker(output):
         os.environ.setdefault("MPLCONFIGDIR", "/tmp/jeanspy-jam9-mpl")
         os.environ.setdefault("MPLBACKEND", "Agg")
         import numpy as np
-        from jeanspy.axisymmetric import G, PlummerTracer
+        from jeanspy.axisymmetric import G, AxisymmetricPlummerModel
         from jampy.axi.jam_axi_intr import jam_axi_intr
         protocol = json.loads((ROOT / "validation/release/jam9_protocol.json").read_text())
         report["jampy_version"] = version("jampy")
@@ -113,7 +113,7 @@ def worker(output):
             raise ValueError("Use the frozen JAM version")
         a, mass = protocol["physical"]["a_pc"], protocol["physical"]["mass_Msun"]
         R, z = [np.asarray(protocol["intrinsic_coordinates_pc"][key]) for key in ("R", "z")]
-        tracer = PlummerTracer(a, 1.)
+        tracer = AxisymmetricPlummerModel(a, 1.)
         def potential(R, z):
             return -G * mass / np.sqrt(a*a + R*R + z*z)
         def dpotential(R, z):

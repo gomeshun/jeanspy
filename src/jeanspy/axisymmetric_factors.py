@@ -61,10 +61,10 @@ def _factor(halo, dist_pc, roi_deg, inclination, power, n_mu, n_phi, n_radial):
         denominator = transverse*ct-los*st
         cone_radius = dist_pc*st/np.where(denominator > 0, denominator, 1.)
         mmax = np.where(denominator > 0, np.minimum(cone_radius, halo.r_t_pc), halo.r_t_pc)
-        xmax = mmax/halo.r_s
+        xmax = mmax/halo.rs_pc
         logc = np.log(np.minimum(xmax, 1.))[:, None]
         logx = logc+4/exponent*logu
-        radius = halo.r_s*np.exp(logx)
+        radius = halo.rs_pc*np.exp(logx)
         distance_weight = 1+2*(radius/dist_pc)*los[:, None]+(radius/dist_pc)**2*norm2
         shape = np.exp(-profile_power*np.logaddexp(0., halo.alpha*logx))
         # Cusp regularization cancels all singular powers analytically. In
@@ -74,12 +74,12 @@ def _factor(halo, dist_pc, roi_deg, inclination, power, n_mu, n_phi, n_radial):
 
         length = np.log(np.maximum(xmax, 1.))
         logx = length[:, None]*u
-        radius = halo.r_s*np.exp(logx)
+        radius = halo.rs_pc*np.exp(logx)
         distance_weight = 1+2*(radius/dist_pc)*los[:, None]+(radius/dist_pc)**2*norm2
         shape = np.exp(exponent*logx-profile_power*np.logaddexp(0., halo.alpha*logx))
         outer = length*np.sum(w*shape/distance_weight, axis=-1)
         total += wm*2*np.pi/n_phi*np.sum(inner+outer)
-    return float(halo.Q*halo.rho_s**power*halo.r_s**3/dist_pc**2*total)
+    return float(halo.Q*halo.rhos_Msunpc3**power*halo.rs_pc**3/dist_pc**2*total)
 
 
 def jfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
@@ -88,7 +88,7 @@ def jfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
 
     Notes
     -----
-    **Inputs and units.** halo is ZhaoHalo; ``dist_pc`` is scalar observer
+    **Inputs and units.** halo is AxisymmetricZhaoModel; ``dist_pc`` is scalar observer
     distance (pc); ``roi_deg`` is scalar cone half-angle; inclination is
     radians; ``n_mu``/``n_phi``/``n_radial`` are integers >=16.
 
@@ -118,7 +118,7 @@ def dfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
 
     Notes
     -----
-    **Inputs and units.** halo is ZhaoHalo; ``dist_pc`` is scalar observer
+    **Inputs and units.** halo is AxisymmetricZhaoModel; ``dist_pc`` is scalar observer
     distance (pc); ``roi_deg`` is scalar cone half-angle; inclination is
     radians; ``n_mu``/``n_phi``/``n_radial`` are integers >=16.
 
@@ -126,7 +126,7 @@ def dfactor(halo, dist_pc, roi_deg, *, inclination=np.pi/2,
     gives zero.
 
     **Validity.** Require explicit finite ``r_t_pc``, observer distance >
-    ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<2 under the ZhaoHalo
+    ``r_t_pc``\*max(1,Q), ``0 <= roi_deg < 90`` and gamma<2 under the AxisymmetricZhaoModel
     constructor domain. ``n_phi`` uses a periodic rule; refine all orders.
 
     **Errors.** Invalid geometry/domain/order raises ValueError; wrong halo type

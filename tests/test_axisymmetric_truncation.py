@@ -2,12 +2,12 @@
 import numpy as np
 import pytest
 
-from jeanspy.axisymmetric import AxisymmetricDSphModel, ZhaoHalo, G
+from jeanspy.axisymmetric import AxisymmetricDSphModel, AxisymmetricZhaoModel, G
 
 
 @pytest.mark.parametrize("Q", [.45, 1., 1.7])
 def test_truncated_force_derivative_and_poisson(Q):
-    halo = ZhaoHalo(.1, 500., Q=Q, r_t_pc=600.)
+    halo = AxisymmetricZhaoModel(500., .1, Q=Q, r_t_pc=600.)
     for R, z in [(100., 40.), (850., 900.)]:
         h = .01
         gr, gz, mixed = halo._gradients(R, z, 128)
@@ -19,7 +19,7 @@ def test_truncated_force_derivative_and_poisson(Q):
 
 
 def test_spherical_force_mass_and_boundary_continuity():
-    halo = ZhaoHalo(.1, 500., r_t_pc=600.)
+    halo = AxisymmetricZhaoModel(500., .1, r_t_pc=600.)
     r = np.array([1., 100., 600., 700., 10000.])
     x = np.minimum(r, 600.)/500.
     mass = 4*np.pi*.1*500**3*(np.log1p(x)-x/(1+x))
@@ -45,7 +45,7 @@ def test_truncated_spherical_jeans_limit():
 
 
 def test_mass_scales_with_ellipsoid_volume():
-    spherical = ZhaoHalo(.1, 500., r_t_pc=600.)
-    oblate = ZhaoHalo(.1, 500., Q=.6, r_t_pc=600.)
+    spherical = AxisymmetricZhaoModel(500., .1, r_t_pc=600.)
+    oblate = AxisymmetricZhaoModel(500., .1, Q=.6, r_t_pc=600.)
     np.testing.assert_allclose(oblate.enclosed_mass([10., 600., 800.]),
                                .6*spherical.enclosed_mass([10., 600., 800.]))
