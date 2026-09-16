@@ -30,7 +30,7 @@ def check(directory: Path) -> list[dict]:
                for p in (ROOT / base).rglob("*" + suffix)}
     # Mirror the intended documentation source payload in MANIFEST.in. Build
     # output and the regenerated API tree must not affect an archive check.
-    docs_suffixes = {".md", ".rst", ".py", ".css", ".json", ".bib", ".svg", ".png", ".pdf"}
+    docs_suffixes = {".md", ".rst", ".ipynb", ".py", ".css", ".json", ".bib", ".svg", ".png", ".pdf"}
     support.update({p.relative_to(ROOT).as_posix(): p
                     for p in (ROOT / "docs").rglob("*")
                     if p.is_file() and p.suffix in docs_suffixes

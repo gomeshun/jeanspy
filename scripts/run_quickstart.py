@@ -68,7 +68,7 @@ def main(build_directory):
     metadata = {
         "python": platform.python_version(),
         "packages": {name: importlib.metadata.version(name) for name in
-                     ("numpy", "scipy", "emcee", "jax", "numpyro", "arviz", "matplotlib")},
+                     ("numpy", "scipy", "emcee", "jax", "numpyro", "arviz", "matplotlib", "corner")},
         "environment": {k: environment[k] for k in
                         ("JEANSPY_JAX_PLATFORM", "JEANSPY_JAX_ENABLE_X64")},
         "source_sha256": hashes,

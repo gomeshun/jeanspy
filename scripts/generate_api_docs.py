@@ -63,7 +63,9 @@ def documentable_members(cls):
     """Require source descriptions for the package's public method definitions."""
     members = []
     for name, member in inspect.getmembers(cls):
-        if name.startswith("_") or not (
+        if (name.startswith("_") and not (
+            name == "__call__" and "LikelihoodModel" in cls.__name__
+        )) or not (
             callable(member) or isinstance(member, (property, cached_property))
         ):
             continue
@@ -81,6 +83,51 @@ def documentable_members(cls):
             if not original.__doc__ or not original.__doc__.strip():
                 raise ValueError(f"Missing source method docstring: {cls.__name__}.{name}")
     return members
+
+
+def member_page(destination, path, cls, name):
+    """Give each method/property a lookup page without duplicating Python IDs.
+
+    The indexed definitions and existing fragment URLs remain on the class
+    page. Dedicated lookup pages repeat the authoritative docstring and link
+    back to that class for construction and shared parameter conventions.
+    """
+    member = inspect.getattr_static(cls, name)
+    directive = "autoattribute" if isinstance(member, (property, cached_property)) else "automethod"
+    label = name
+    fullname = f"{path}.{name}"
+    page = [label, "=" * len(label), "", f"``{fullname}``", "",
+            f"Class and construction: :doc:`{cls.__name__} <../generated/{path}>`.", "",
+            f".. {directive}:: {fullname}", "   :no-index:", ""]
+    (destination / "members" / f"{fullname}.rst").write_text("\n".join(page))
+
+
+def write_dictionary(destination, inventory):
+    """List every exported spelling and each class member alphabetically."""
+    entries = []
+    for item in inventory:
+        path, canonical = item["path"], item["canonical"]
+        entries.append((path.rsplit(".", 1)[-1], path, f"generated/{canonical}",
+                        "alias" if path != canonical else "export"))
+        for name in item["methods"]:
+            entries.append((name, f"{path}.{name}", f"members/{canonical}.{name}",
+                            "method / property"))
+    page = ["Alphabetical API dictionary", "===========================", "",
+            "Every public export and its public methods/properties are listed below,",
+            "including inherited members and alternative import spellings. Aliases",
+            "link to the same canonical description. Private implementation modules",
+            "and names beginning with an underscore are excluded, except the callable",
+            "likelihood interface ``__call__``. Constructor fields and shared physical",
+            "conventions are described on each class page.", "",
+            ".. contents:: Initial letter", "   :local:", "   :depth: 1", ""]
+    letter = None
+    for name, path, target, kind in sorted(entries, key=lambda x: (x[0].lower(), x[1])):
+        initial = name[0].upper()
+        if initial != letter:
+            letter = initial
+            page += ["", letter, "-" * len(letter), ""]
+        page += [f"* :doc:`{path} <{target}>` — {kind}."]
+    (destination / "all.rst").write_text("\n".join(page) + "\n")
 
 
 
@@ -103,26 +150,36 @@ def category_for(path):
     return "spherical"
 
 def main():
+    public_modules = {path.stem for path in (ROOT / "src/jeanspy").glob("*.py")
+                      if not path.stem.startswith("_")}
+    if public_modules != set(MODULES):
+        raise ValueError(f"Update the public module inventory: {public_modules ^ set(MODULES)}")
     destination = SOURCE / "api"
     if destination.exists():
         shutil.rmtree(destination)
     destination.mkdir()
     (destination / "generated").mkdir(exist_ok=True)
+    (destination / "members").mkdir(exist_ok=True)
     groups = {"core": ("Core utilities", []),
               "spherical": ("Spherical models", []),
               "axisymmetric-models": ("Axisymmetric models", []),
               "inference": ("Statistical inference", [])}
     index = ["# API reference", "",
-             "Choose a category, then the NumPy/SciPy or JAX implementation.", "",
+             "Look up an API independently of the tutorials. Each public class,",
+             "function and constant has its own entry; methods and properties also",
+             "have individual lookup pages with their source documentation.", "",
+             "**Find a name:** [Alphabetical API dictionary](all) (including class",
+             "members and aliases), [import modules](modules), or the site search.", "",
+             "**Browse by purpose:** choose a category and implementation below.", "",
              "| Category | Contents |", "| --- | --- |",
              "| [Core utilities](core) | Units, parameter containers, runtime settings and numerical helpers |",
              "| [Spherical models](spherical) | Stellar profiles, dark-matter halos, anisotropy and Jeans solvers |",
              "| [Axisymmetric models](axisymmetric-models) | Flattened components, projection, Jeans solvers and J/D factors |",
              "| [Statistical inference](inference) | Observations, priors, likelihoods, MCMC and storage |", "",
              "See also the [units and shape contract](../guides/contracts.md) and",
-             "[Quickstart](../quickstart.md). [Browse by import module](modules).", "",
+             "[Quickstart](../quickstart.ipynb). [Browse by import module](modules).", "",
              "```{toctree}", ":hidden:", ":maxdepth: 2", "",
-             *groups, "modules", "```", ""]
+             *groups, "all", "modules", "```", ""]
     inventory = []
     seen = {}
     for short, title in MODULES.items():
@@ -154,6 +211,15 @@ def main():
                                   documented_methods=documented_methods))
             if path == canonical:
                 unique.append(path)
+                if methods:
+                    for member in methods:
+                        member_page(destination, path, obj, member)
+                    # A hidden tree makes individual methods discoverable without
+                    # filling the primary category navigation with hundreds of links.
+                    member_index = [f"{name} members", "=" * (len(name) + 8), "",
+                                    ".. toctree::", "   :maxdepth: 1", "",
+                                    *[f"   members/{path}.{n}" for n in methods], ""]
+                    (destination / f"{path}.members.rst").write_text("\n".join(member_index))
             else:
                 aliases.append((path, canonical))
         if unique:
@@ -179,6 +245,12 @@ def main():
         "Import modules\n==============\n\n.. toctree::\n   :maxdepth: 1\n\n" +
         "".join(f"   {short}\n" for short in MODULES))
     (destination / "index.md").write_text("\n".join(index))
+    write_dictionary(destination, inventory)
+    member_trees = [item["path"] + ".members" for item in inventory
+                    if item["path"] == item["canonical"] and item["methods"]]
+    with (destination / "all.rst").open("a") as stream:
+        stream.write("\n.. toctree::\n   :hidden:\n\n" +
+                     "".join(f"   {path}\n" for path in member_trees))
     (ROOT / "docs" / "api_inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
 
     # Reuse the authoritative existing guides, adapting only renderer syntax

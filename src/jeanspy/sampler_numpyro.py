@@ -433,6 +433,17 @@ class JeansLikelihoodModel:
         return params[self.velocity_mean]
 
     def __call__(self, R_pc: Any, vlos_kms: Any, e_vlos_kms: Any) -> None:
+        """Sample parameters and register the spherical velocity likelihood.
+
+        ``R_pc`` (pc), ``vlos_kms`` and nonnegative ``e_vlos_kms`` (km/s)
+        must be matching, nonempty 1-D arrays. Radii must be positive.
+        This NumPyro model returns None; it creates parameter, validity-factor
+        and observed-velocity sites. Invalid dynamic data or forward variances
+        contribute minus infinity, while incompatible shapes raise ValueError.
+        Valid variances are clipped to ``sigma2_bounds`` before measurement
+        errors are added in quadrature. Run through a NumPyro inference or
+        handler context; supported all-JAX forward paths supply gradients.
+        """
         R, velocity, error = (jnp.asarray(v) for v in (R_pc, vlos_kms, e_vlos_kms))
         if (R.ndim != 1 or R.size == 0 or velocity.shape != R.shape
                 or error.shape != R.shape):
@@ -556,6 +567,18 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
         return dict(vars(self))
 
     def __call__(self, x_pc, y_pc, vlos_kms, e_vlos_kms):
+        """Sample parameters and register the axisymmetric velocity likelihood.
+
+        Signed sky coordinates ``x_pc``, ``y_pc`` (pc), velocities and
+        nonnegative errors (km/s) must be matching, nonempty 1-D arrays.
+        The projected center is allowed. This NumPyro model returns None and
+        creates parameter, validity-factor and observed-velocity sites.
+        Nonfinite data or variances outside ``sigma2_bounds`` contribute minus
+        infinity; incompatible array shapes raise ValueError. Measurement
+        errors are added in quadrature to admissible intrinsic variances.
+        Run through a NumPyro inference or handler context; gradients apply
+        within the differentiable, physically admissible model domain.
+        """
         x, y, velocity, error = (jnp.asarray(v, dtype=float)
                                 for v in (x_pc, y_pc, vlos_kms, e_vlos_kms))
         if (x.ndim != 1 or x.size == 0

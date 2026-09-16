@@ -129,12 +129,14 @@ The importable package lives in `src/jeanspy`; its three Sersic coefficient
 tables live in `src/jeanspy/data` and are accessed through `importlib.resources`.
 The wheel contains this runtime package and distribution metadata. The source
 distribution additionally includes the test fixtures, executable examples,
-output-free notebooks, validation reference and support scripts needed by the
+output-free notebooks under `notebooks/`, executed documentation notebooks
+under `docs/source/`, validation reference and support scripts needed by the
 tests. `MANIFEST.in` makes these source-test dependencies explicit.
 
 After a clean build, run `python scripts/check_distribution_contents.py dist`.
 It checks required files byte-for-byte against the source, including all
-runtime modules and data, and rejects generated chains and notebook outputs.
+runtime modules and data, and rejects generated chains and untracked runtime
+artifacts. The documented notebook outputs are intentional source content.
 The release workflow also runs this check before installing the artifacts.
 
 The `benchmark` extra retains JamPy 8.x for the existing cylindrical-quadrature
@@ -177,11 +179,29 @@ release validation enables this option in both base and NumPyro jobs and runs
 the standalone inference/restart examples. Deterministic likelihood, gradient,
 configuration, and identity checks remain in ordinary CI.
 
-Documentation push/PR builds reuse the tracked Quickstart figures and execution
-metadata. Inference examples and Quickstart regeneration run on a published
+Documentation push/PR builds validate saved notebook code/output identities and
+execute the four lightweight tutorial notebooks in fresh kernels. MCMC notebooks
+retain their saved outputs in ordinary builds. Inference examples and MCMC
+notebook regeneration run on a published
 GitHub release, or a manual Documentation run with `run_mcmc=true`. These
 short-chain checks exercise execution and persistence, not scientific calibration.
 CI pins uv to 0.12.15, avoiding the latest-version manifest lookup during setup.
+
+The seven documentation notebooks are the editable sources for Quickstart and
+the six tutorial chapters. MyST-NB renders them with execution disabled during
+Sphinx builds, and the site supplies a matching `.ipynb` download for each page.
+To validate or refresh them locally in the locked documentation environment:
+
+```bash
+python scripts/run_doc_notebooks.py --check
+python scripts/run_doc_notebooks.py
+python scripts/run_doc_notebooks.py --include-mcmc --write
+```
+
+The last command explicitly runs MCMC and saves cell outputs, package versions
+and hashes of the cell code, lockfile and JeansPy source. Inspect the resulting
+figures and short-chain diagnostics before committing refreshed outputs.
+
 CUDA extras are resolution-checked below; these runners do not validate GPU
 execution or GPU performance. Record a separate GPU smoke result when changing
 JAX numerical or sampler code.

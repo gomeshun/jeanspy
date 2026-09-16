@@ -2,3 +2,7 @@
 .bd-main .bd-content .bd-article-container { max-width: 66rem; }
 table { font-size: .92rem; }
 .bd-article-container h1 { letter-spacing: -.02em; }
+.bd-article-container h1, .bd-article-container h2,
+.bd-sidebar-primary a, .bd-sidebar-secondary a { overflow-wrap: anywhere; }
+.bd-main, .bd-content, .bd-article-container { min-width: 0; }
+.cell_output img { max-width: 100%; height: auto; }

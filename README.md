@@ -329,6 +329,7 @@ and perform distribution-function and coverage checks for the scientific use.
 
 The recommended starting point is:
 
+- Start with the [NumPyro Quickstart notebook](docs/source/quickstart.ipynb) or the [six-step tutorial series](https://gomeshun.github.io/jeanspy/dev/tutorials/). These standalone notebooks contain saved figures and outputs, appear directly in the documentation, and can be downloaded from each page.
 - [`demo_model_full.ipynb`](notebooks/demo_model_full.ipynb): a top-to-bottom Getting Started tutorial for the classical API, including stellar/DM/anisotropy components, `DSphModel`, line-of-sight velocity dispersion, J-factors, and Sérsic deprojection. It requires the `plotting` extra.
 
 For gradient-based inference and checkpointed NumPyro sampling, continue with:
@@ -353,7 +354,9 @@ uv sync --extra numpyro_cpu --extra benchmark
 uv run python scripts/benchmark_jeans_codes.py --quick --n-stars 4000 --engines jeanspy --mock-source jeanspy
 ```
 
-Notebook runtime outputs are intentionally not committed. The sampler writes
+The older notebooks under `notebooks/` are stored without cell outputs; the
+documentation notebooks under `docs/source/` retain reviewed outputs for the
+website. Generated chain and checkpoint files are not committed. The sampler writes
 its checkpoint and chunk stores below the ignored `notebooks/_demo_outputs/`
 directory. The canonical Getting Started notebook is also executed cell-by-cell in CI so API changes cannot silently leave the public example broken.
 

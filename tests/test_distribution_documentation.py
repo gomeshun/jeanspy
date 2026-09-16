@@ -14,6 +14,7 @@ spec.loader.exec_module(module)
 
 
 @pytest.mark.parametrize("missing", ["docs/source/conf.py", "docs/source/references.bib",
+                                     "docs/source/quickstart.ipynb",
                                      "docs/source/_templates/autosummary/class.rst",
                                      "docs/source/_static/validation/figure.svg",
                                      "validation/release/los_benchmark_protocol.json",
