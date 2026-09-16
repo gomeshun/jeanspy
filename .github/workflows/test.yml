@@ -8,7 +8,7 @@ on:
   workflow_call:
     inputs:
       release_validation:
-        description: Run opt-in MCMC tests with both locked and freshly resolved dependencies
+        description: Run MCMC tests and examples with locked, fresh, and lowest dependencies
         type: boolean
         default: false
 
@@ -40,6 +40,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
+          version: "0.12.15"
           enable-cache: false
 
       - name: Install locked base package
@@ -68,6 +69,8 @@ jobs:
           uv pip check
 
       - name: Run base numerical and inference tests
+        env:
+          PYTEST_ADDOPTS: ${{ inputs.release_validation && '--run-mcmc' || '' }}
         run: >-
           uv run --no-sync python -m pytest -q
           tests/test_import.py tests/test_jfactor_ullio2016.py
@@ -106,6 +109,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
+          version: "0.12.15"
           enable-cache: false
 
       - name: Install locked CPU development environment
@@ -157,10 +161,11 @@ jobs:
         run: .venv/bin/python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
 
       - name: Run classical inference and restart example
+        if: inputs.release_validation
         run: .venv/bin/python scripts/example_classical_inference.py --output-dir "$RUNNER_TEMP/classical-example"
 
       - name: Run axisymmetric inference and restart examples
-        if: matrix.python-version == '3.12' && matrix.dependencies == 'locked'
+        if: inputs.release_validation && matrix.python-version == '3.12' && matrix.dependencies == 'locked'
         env:
           JEANSPY_JAX_ENABLE_X64: 'true'
         run: |

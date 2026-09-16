@@ -99,6 +99,7 @@ def test_jeans_likelihood_model_records_transformed_parameters():
     assert model_trace["vlos"]["is_observed"] is True
 
 
+@pytest.mark.mcmc
 @pytest.mark.parametrize(
     ("storage_backend", "expected_suffix"),
     [("zarr", ".zarr"), ("h5netcdf", ".nc"), ("netcdf4", ".nc")],

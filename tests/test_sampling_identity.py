@@ -35,7 +35,9 @@ def snapshot(path):
     return {p.relative_to(path): p.read_bytes() for p in Path(path).rglob('*') if p.is_file()}
 
 
-@pytest.mark.parametrize('has_previous_run', [False, True])
+@pytest.mark.parametrize('has_previous_run', [
+    False, pytest.param(True, marks=pytest.mark.mcmc),
+])
 def test_numpyro_missing_metadata_stops_before_sampling(tmp_path, monkeypatch, has_previous_run):
     with NumPyroSampler(make_mcmc(), output_dir=tmp_path, async_writes=False) as sampler:
         if has_previous_run:
@@ -59,6 +61,7 @@ def test_numpyro_missing_metadata_stops_before_sampling(tmp_path, monkeypatch, h
             assert sampler.mcmc.last_state is last_state
 
 
+@pytest.mark.mcmc
 def test_numpyro_prior_and_data_mismatch_preserves_output(tmp_path):
     observed = jnp.array([0., .1])
     with NumPyroSampler(make_mcmc(), output_dir=tmp_path, async_writes=False) as first:
@@ -88,6 +91,7 @@ def test_numpyro_prior_and_data_mismatch_preserves_output(tmp_path):
         assert result.resumed
 
 
+@pytest.mark.mcmc
 def test_numpyro_legacy_output_cannot_be_silently_adopted(tmp_path):
     with NumPyroSampler(make_mcmc(), output_dir=tmp_path, async_writes=False) as first:
         first.run(jax.random.PRNGKey(0), save_samples=False)
@@ -101,6 +105,7 @@ def test_numpyro_legacy_output_cannot_be_silently_adopted(tmp_path):
     assert snapshot(tmp_path) == before
 
 
+@pytest.mark.mcmc
 def test_numpyro_unverified_external_state_cannot_be_resumed(tmp_path):
     raw = make_mcmc()
     raw.run(jax.random.PRNGKey(0))
@@ -148,6 +153,7 @@ def initial(n):
     return np.linspace(-.4, .4, n).reshape(n, 1) if n is not None else np.array([0.])
 
 
+@pytest.mark.mcmc
 def test_emcee_changed_target_rejected_on_reopen_and_in_memory(tmp_path):
     original = ToyModel()
     prefix = str(tmp_path) + '/'
@@ -182,6 +188,7 @@ def test_classical_identity_tracks_data_prior_and_not_sampled_coordinates(classi
     assert fingerprint(model) != before
 
 
+@pytest.mark.mcmc
 def test_emcee_burn_in_continues_final_ensemble_without_reweighting(tmp_path, monkeypatch):
     sampler = Sampler(ToyModel(), initial, nwalkers=6, prefix=str(tmp_path)+'/')
     def forbidden(*args, **kwargs):

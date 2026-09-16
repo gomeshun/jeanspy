@@ -116,6 +116,7 @@ def test_invalid_component_configuration_fails_early(parts, exception):
         classical.AxisymmetricDSphModel(submodels=parts)
 
 
+@pytest.mark.mcmc
 def test_bound_components_supply_inference_defaults_and_restart_identity(tmp_path):
     forward = model()
     observations = dict(x_pc=[100., -100.], y_pc=[50., 80.],

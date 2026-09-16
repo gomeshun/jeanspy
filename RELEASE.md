@@ -147,17 +147,19 @@ JamPy version is a base/runtime dependency of JeansPy.
 The `tests` job calls `./.github/workflows/test.yml` from the **same commit**
 as the caller. It does not check out `main` or trust the CI status of an older
 commit. `publish.needs` includes both `build` and `tests`, so a failed,
-cancelled or skipped dependency prevents publishing. No tag is needed to
-exercise validation: PRs changing either workflow, `pyproject.toml`, `uv.lock`,
-the README, this guide or the artifact validator run the release gate with
-publishing skipped.
+cancelled or skipped dependency prevents publishing. Ordinary PRs run the
+artifact build checks here and the standard Test workflow, without duplicating
+the full release matrix. Version-tag pushes run the full matrix before PyPI
+publication. To run that matrix before tagging, manually dispatch the
+`Publish release to PyPI` workflow on the desired branch; manual runs never
+publish, even when dispatched on a tag.
 
 The test definitions are shared with ordinary CI:
 
 | Trigger | Dependency resolution | Python | MCMC |
 | --- | --- | --- | --- |
-| Ordinary push / PR | locked and lowest compatible direct runtime requirements | 3.12, 3.13 | opt-in tests skipped |
-| Release-related PR / version tag | locked, fresh, and lowest compatible direct runtime requirements | 3.12, 3.13 | `pytest --run-mcmc`, all tests required |
+| Ordinary push / PR | locked and lowest compatible direct runtime requirements | 3.12, 3.13 | all chain-generating tests and examples skipped |
+| Version tag / manual release validation | locked, fresh, and lowest compatible direct runtime requirements | 3.12, 3.13 | `pytest --run-mcmc`, all tests required |
 
 Base numerical/inference and optional-dependency isolation checks run on Linux,
 Windows, and macOS (locked and lowest, and additionally fresh for release validation).
@@ -169,7 +171,17 @@ storage, because dependency metadata alone cannot detect a NumPy binary ABI
 mismatch. Fresh installations use `uv pip install` into a new venv;
 subsequent commands use that interpreter directly so `uv run` cannot silently
 restore locked dependencies. Resolved versions are uploaded for auditing.
-The existing numerical stress checks and examples run in the same matrix.
+Numerical stress checks remain enabled in ordinary CI. Chain-generating emcee
+and NumPyro tests share the `mcmc` marker and run only with `--run-mcmc`;
+release validation enables this option in both base and NumPyro jobs and runs
+the standalone inference/restart examples. Deterministic likelihood, gradient,
+configuration, and identity checks remain in ordinary CI.
+
+Documentation push/PR builds reuse the tracked Quickstart figures and execution
+metadata. Inference examples and Quickstart regeneration run on a published
+GitHub release, or a manual Documentation run with `run_mcmc=true`. These
+short-chain checks exercise execution and persistence, not scientific calibration.
+CI pins uv to 0.12.15, avoiding the latest-version manifest lookup during setup.
 CUDA extras are resolution-checked below; these runners do not validate GPU
 execution or GPU performance. Record a separate GPU smoke result when changing
 JAX numerical or sampler code.

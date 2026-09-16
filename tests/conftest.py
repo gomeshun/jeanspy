@@ -19,14 +19,14 @@ def pytest_addoption(parser):
         "--run-mcmc",
         action="store_true",
         default=False,
-        help="run slow NumPyro MCMC execution tests",
+        help="run emcee and NumPyro MCMC execution tests",
     )
 
 
 def pytest_configure(config):
     config.addinivalue_line(
         "markers",
-        "mcmc: slow NumPyro MCMC execution tests; run explicitly with --run-mcmc",
+        "mcmc: emcee and NumPyro MCMC execution tests; run explicitly with --run-mcmc",
     )
 
 
