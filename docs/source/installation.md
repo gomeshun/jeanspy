@@ -68,7 +68,7 @@ JEANSPY_JAX_PLATFORM=cpu JEANSPY_JAX_ENABLE_X64=true python your_analysis.py
 
 Keep `uv.lock`, the command, source commit and runtime configuration with the
 analysis. Restart identity also checks dependency and backend changes; see
-[storage](guides/inference.md).
+[storage](tutorials/storage.ipynb).
 
 ## Run the notebooks
 

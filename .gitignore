@@ -144,5 +144,4 @@ benchmarks/jeans_comparison/artifacts/
 docs/_build/
 docs/source/api/
 docs/api_inventory.json
-docs/source/guides/axisymmetric.md
 docs/source/guides/ullio-geometry.md

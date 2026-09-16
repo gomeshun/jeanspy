@@ -17,6 +17,8 @@ profile. The example fixes the projected tracer axis ratio and converts it
 to an intrinsic ratio for each inclination. Positions are signed `x_pc`,
 `y_pc` coordinates in pc. The velocity likelihood conditions on those
 positions; it does not infer the spatial selection function.
+The [geometry reference](../guides/axisymmetric.md#units-geometry-and-physical-parameters)
+defines inclination, deprojection and the physical parameter domains.
 
 ## 2. Choose priors and run a backend
 
@@ -47,9 +49,23 @@ Inspect the saved chain as described in the [MCMC tutorial](inference.ipynb)
 before interpreting derived factors. The J/D factors are NumPy postprocessing
 of a deterministic subset of posterior draws, not differentiable outputs
 of the NUTS model. Their cone aperture and distance are part of the analysis.
+See the [J/D-factor guide](../guides/factors.md#axisymmetric-finite-cone-factors)
+for cutoff, cusp and quadrature requirements.
 
 ````{dropdown} Complete executable script
 ```{literalinclude} ../../../examples/axisymmetric_inference.py
 :language: python
 ```
 ````
+
+## Forward predictions and gradients
+
+For a smaller calculation before running inference, this example evaluates
+an axisymmetric JAX prediction and its derivative with respect to the halo
+density scale. It checks the derivative against the known linear scaling.
+Follow the [backend tutorial](backends.ipynb) for runtime configuration and
+the [numerical accuracy guide](../guides/numerics.md) for refinement checks.
+
+```{literalinclude} ../../../examples/docs_jax.py
+:language: python
+```
