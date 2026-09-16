@@ -49,16 +49,33 @@ P(R,z)=\int_{|z|}^\infty\nu(R,z')\Phi_z(R,z')\,dz',\qquad
 \overline{v_\phi^2}=\frac{P+R\,\partial_RP}{(1-\beta_z)\nu}+R\Phi_R.
 ```
 
-Force, vertical-pressure and LOS integrals use fixed Gauss–Legendre rules.
-Rational maps cover infinite vertical and LOS ranges. The halo may have a
-finite spheroidal cutoff; differentiation of the force integral then includes
-the moving integration endpoint. The [axisymmetric guide](guides/axisymmetric.md)
-details the force equations and parameter domains.
-
 Neither finite positive moments at observed positions nor successful MCMC
 prove that a positive distribution function exists everywhere. Rotation,
-tilted velocity ellipsoids, triaxiality, stellar self-gravity, PSF convolution
+tilted velocity ellipsoids, spatially varying cylindrical anisotropy,
+Satoh decomposition, triaxiality, stellar self-gravity, PSF convolution
 and spatial-bin averaging are outside the current axisymmetric model.
+
+### Spheroidal force and finite cutoff
+
+The homoeoidal force has `D(t)²=1+(Q²-1)t²`,
+`m(t)²=t²*(R²+z²/D(t)²)`, and
+
+$$
+\Phi_R=4\pi GQR\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)}\,dt,
+\qquad
+\Phi_z=4\pi GQz\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)^3}\,dt.
+$$
+
+Without a cutoff, t_max=1. Outside a finite halo, m(t_max)=r_t.
+The analytic radial derivative includes the moving endpoint contribution
+`integrand(t_max)*dt_max/dR`; omitting it would give incorrect azimuthal
+moments outside the cutoff. The pressure boundary condition is P -> 0 at
+infinity, and stellar tracers continue outside the finite halo.
+
+The [axisymmetric geometry guide](guides/axisymmetric.md) defines the
+parameter domains and observer coordinates. See
+[numerical accuracy](guides/numerics.md#axisymmetric-quadrature) for quadrature
+settings and refinement.
 
 ## Likelihood and interpretation
 

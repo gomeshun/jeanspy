@@ -1,5 +1,9 @@
 # Units, shapes and model contracts
 
+Use this page as a cross-backend reference. The
+[units tutorial](../tutorials/units.ipynb) walks through preparing observations;
+the [model tutorial](../tutorials/models.ipynb) demonstrates parameter updates.
+
 | Quantity | Unit / meaning |
 | --- | --- |
 | `R_pc`, `r_pc`, `x_pc`, `y_pc`, `re_pc`, `rs_pc`, `r_t_pc` | pc |
