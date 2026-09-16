@@ -1,30 +1,19 @@
 # Axisymmetric Jeans modeling and inference
 
-JeansPy solves the stationary, cylindrically aligned Jeans equations with
-constant meridional anisotropy. The general anisotropic closure follows
-Cappellari (2008), while the spheroidal dwarf-galaxy models follow
-Hayashi & Chiba (2012, 2015) and Hayashi et al. (2016). See
-[References](https://gomeshun.github.io/jeanspy/dev/references.html#references-jeans-equations-and-axisymmetric-dynamics)
-for the foundational equations, earlier axisymmetric models and applications.
-Stellar and halo axes coincide, mixed velocity moments vanish, and
-`beta_z = 1 - <vz²>/<vR²>` is constant.
+Use this guide for geometry, physical parameter domains and the differences
+from spherical models. For a complete executable workflow, follow the
+[axisymmetric synthetic analysis](../tutorials/axisymmetric.md). The
+[axisymmetric API reference](../api/axisymmetric-models.rst) documents
+constructors and individual methods; [Theory](../theory.md#axisymmetric-jeans-equations)
+gives the dynamical assumptions and equations.
+For factor integrals and numerical settings, see the
+[J/D-factor guide](factors.md#axisymmetric-finite-cone-factors) and
+[quadrature reference](numerics.md#axisymmetric-quadrature).
 
-| Capability | NumPy/SciPy | JAX/NumPyro |
-| --- | --- | --- |
-| Flattened Plummer tracer and oblate/prolate Zhao halo | Yes | Yes |
-| Intrinsic moments, projected moments, densities, enclosed spheroidal mass | Yes | Yes, JIT and parameter autodiff |
-| Optional finite spheroidal halo cutoff | Yes | Yes |
-| Signed sky coordinates, inclination and photometric deprojection | Yes | Yes |
-| Explicit priors and unbinned velocity likelihood | `AxisymmetricDSphEstimationModel` | `AxisymmetricJeansLikelihoodModel` and `ParameterSpec` |
-| Posterior sampling and persisted restart checks | Existing `Sampler` / emcee | Existing `NumPyroSampler` / NUTS |
-| J/D factors from posterior draws | Finite-cone quadrature | Postprocess draws with the same NumPy factor API |
-
-The existing spherical classes retain their names and parameter meanings.
-Cylindrical `beta_z` is **not** spherical `beta_ani`. In particular, the
-spherical/isotropic comparison needs `q = Q = 1` and `beta_z = 0` together.
-Spatially varying cylindrical anisotropy, arbitrary ellipsoid tilt, rotation
-or Satoh decomposition, triaxiality, stellar self-gravity and PSF/bin averaging
-are not implemented. The tracer family is Plummer; the halo family is Zhao.
+The supported components are a flattened Plummer tracer, an oblate or prolate
+Zhao halo and constant cylindrical anisotropy. Cylindrical `beta_z` is distinct
+from spherical `beta_ani`; the common spherical/isotropic limit requires
+`q = Q = 1` and `beta_z = 0` together.
 
 ## Units, geometry and physical parameters
 
@@ -72,43 +61,18 @@ saturates outside r_t. The Hayashi 2015 halo uses `alpha=2, beta=3` and
 
 ## Forward APIs
 
-As with spherical models, select a stellar profile, a dark-matter halo and an
-anisotropy model. The NumPy/SciPy components store their physical parameters:
+Both implementations compose `AxisymmetricPlummerModel`,
+`AxisymmetricZhaoModel` and `AxisymmetricConstantAnisotropyModel` inside
+`AxisymmetricDSphModel`. Choose the imports and parameter interface below:
 
-```python
-import numpy as np
-from jeanspy.model import (
-    AxisymmetricDSphModel, AxisymmetricPlummerModel,
-    AxisymmetricZhaoModel, AxisymmetricConstantAnisotropyModel,
-)
-from jeanspy.axisymmetric import intrinsic_axis_ratio
+| Implementation | Import module | Physical parameters |
+| --- | --- | --- |
+| NumPy/SciPy | `jeanspy.model` | Stored in immutable components; optional per-call `params` overrides |
+| JAX | `jeanspy.model_numpyro` | Passed explicitly at evaluation time |
 
-inclination = np.deg2rad(70)
-model = AxisymmetricDSphModel(
-    submodels={
-        "StellarModel": AxisymmetricPlummerModel(
-            re_pc=300., q=intrinsic_axis_ratio(.8, inclination)),
-        "DMModel": AxisymmetricZhaoModel(
-            rs_pc=500., rhos_Msunpc3=.1, Q=.7,
-            alpha=2., beta=3., gamma=.8, r_t_pc=3000.),
-        "AnisotropyModel": AxisymmetricConstantAnisotropyModel(beta_z=-.3),
-    },
-    inclination=inclination, n_force=96, n_vertical=96, n_los=96,
-)
-radius = np.array([0., 100., 300., 900.])
-major_sigma = np.sqrt(model.sigmalos2(radius, 0.))
-minor_sigma = np.sqrt(model.sigmalos2(0., radius))
-vR2, vz2, vphi2 = model.intrinsic_moments(100., 50.)
-gR, gz = model.potential_gradient(100., 50.)
-tracer_density = model["StellarModel"].density_3d(100., 50.)
-halo_density = model["DMModel"].mass_density_3d(100., 50.)
-```
-
-`AxisymmetricStellarModel`, `AxisymmetricDMModel` and
-`AxisymmetricAnisotropyModel` define the component interfaces. The current
-solver supports the Plummer, Zhao and constant-anisotropy families shown above.
-Their parameters use the same units as the spherical components. The Zhao
-exponents retain the names `alpha`, `beta`, `gamma` in this axisymmetric API.
+The component interfaces are `AxisymmetricStellarModel`, `AxisymmetricDMModel`
+and `AxisymmetricAnisotropyModel`. Zhao exponents retain the names
+`alpha`, `beta`, `gamma` in this geometry.
 
 The force method returns the **potential gradient**, opposite to gravitational
 acceleration. Exact cusp-origin force evaluation is undefined in this API;
@@ -127,38 +91,11 @@ intrinsic `q` and applies the same deprojection rule.
 NumPy raises `InvalidAxisymmetricModelError` (a `ValueError`) for inadmissible
 physical parameters or negative/nonfinite intrinsic moments.
 
-JAX uses the same component hierarchy, with physical parameters passed at
-evaluation time, as in the spherical JAX API:
-
-```python
-# Configure JEANSPY_JAX_ENABLE_X64=true before starting Python for float64.
-from jeanspy.model_numpyro import (
-    AxisymmetricDSphModel as JaxAxisymmetricModel,
-    AxisymmetricPlummerModel as JaxPlummerModel,
-    AxisymmetricZhaoModel as JaxZhaoModel,
-    AxisymmetricConstantAnisotropyModel as JaxAnisotropyModel,
-)
-import jax
-
-jax_model = JaxAxisymmetricModel(
-    submodels={
-        "StellarModel": JaxPlummerModel(),
-        "DMModel": JaxZhaoModel(),
-        "AnisotropyModel": JaxAnisotropyModel(),
-    }, n_force=48, n_vertical=48, n_los=48,
-)
-params = model.physical_params
-value = jax_model.sigmalos2(100., 50., params=params)
-derivative = jax.grad(lambda rho: jax_model.sigmalos2(
-    100., 50., params={**params, "rhos_Msunpc3": rho}))(.1)
-tracer_density = jax_model["StellarModel"].density_3d(
-    100., 50., params={"re_pc": 300., "q": .7})
-```
-
-It uses JAX operations throughout, with no SciPy callbacks. Invalid dynamic
+JAX uses JAX operations throughout, with no SciPy callbacks. Invalid dynamic
 proposals give NaN forward outputs and are rejected by the likelihood.
 Coordinate and schema shape errors raise immediately. Arrays broadcast and
-scalar coordinates produce scalar outputs in both backends.
+scalar coordinates produce scalar outputs in both backends. For JIT setup,
+runtime precision and gradient checks, use the [backend tutorial](../tutorials/backends.ipynb).
 
 ## Inference and restart
 
@@ -169,12 +106,11 @@ DataFrame or mapping is accepted by the classical model. The explicit
 arrays with `as_kwargs()` for NumPyro calls. `reset_data` validates replacements
 before mutation; user-provided priors are never derived from velocities.
 
-The unbinned likelihood is
-
-$$
-\log L_i = \log\mathcal N\!\left(v_i\mid v_{\rm mem},
- \sqrt{\sigma_{\rm los}^2(x_i,y_i)+e_i^2}\right).
-$$
+The [likelihood equation](../theory.md#likelihood-and-interpretation) and
+[MCMC tutorial](../tutorials/inference.ipynb) explain the statistical model.
+The classical wrapper is
+{class}`~jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel`;
+NumPyro uses {class}`~jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel`.
 
 The classical prior table names the **sampling coordinates**, in sampler
 order. Prefixes `log10_` and `bfunc_` mean `10**x` and `1-10**x`, respectively.
@@ -184,22 +120,6 @@ range; use bounds compatible with photometry, or allow the deprojection
 constraint to reject inadmissible proposals. No implicit transformation
 Jacobian is added: the prior is defined in the named sampling coordinate.
 
-```python
-import pandas as pd
-from jeanspy.axisymmetric_inference import AxisymmetricDSphEstimationModel
-from jeanspy.sampler import Sampler
-
-prior = pd.DataFrame({"lower": [-1.5, -30.], "upper": [-.5, 30.]},
-                     index=["log10_rhos_Msunpc3", "vmem_kms"])
-fixed = {name: value for name, value in params.items() if name != "rhos_Msunpc3"}
-data = dict(x_pc=[30., -100., 300.], y_pc=[20., 70., -50.],
-            vlos_kms=[1., -3., 5.], e_vlos_kms=[2., 2., 1.])
-# Stored components supply values for physical parameters not sampled here.
-fit = AxisymmetricDSphEstimationModel(data, prior, dsph_model=model)
-sampler = Sampler(fit, fit.sample, nwalkers=6, prefix="axisymmetric_")
-# sampler.run_mcmc(iterations=100, loops=1)
-```
-
 An optional `PhotometryPriorModel` multiplies the prior on `log10_re_pc`;
 initial points then use the appropriately truncated Gaussian. `fit.sample`
 accepts an RNG/seed and bounded rejection to return feasible initial points.
@@ -208,29 +128,6 @@ Impossible support raises an error rather than changing the priors.
 `lnposterior_wbic`, and `sample_data` are available. WBIC needs at least two
 stars. Classical data are process-local and pickleable; shared-memory buffers
 specific to the spherical implementation are not used.
-
-NumPyro uses the existing `ParameterSpec` and sampler:
-
-```python
-import jax.numpy as jnp
-import numpyro.distributions as dist
-from numpyro.infer import MCMC, NUTS
-from jeanspy.sampler_numpyro import (
-    AxisymmetricJeansLikelihoodModel, NumPyroSampler, ParameterSpec,
-)
-
-likelihood = AxisymmetricJeansLikelihoodModel(
-    jax_model,
-    [ParameterSpec.pow10("log10_rho", dist.Uniform(-1.5, -.5),
-                          param_name="rhos_Msunpc3"),
-     ParameterSpec("vmem_kms", dist.Normal(0., 30.))],
-    fixed_params=fixed,
-)
-mcmc = MCMC(NUTS(likelihood), num_warmup=100, num_samples=100,
-            num_chains=1, progress_bar=False)
-# with NumPyroSampler(mcmc, output_dir="axisymmetric_nuts") as sampler:
-#     sampler.run(jax.random.PRNGKey(52), **data)
-```
 
 `ParameterSpec` supports general priors/transforms and deterministic physical
 sites. Sampled and fixed physical names must be disjoint; optional
@@ -251,96 +148,9 @@ Both inference paths reject inadmissible Jeans moments with log probability
 minus infinity. This is not a proof of a positive distribution function or of
 moment positivity at unobserved positions.
 
-Persisted analysis identity includes sky coordinates **in both axes**, velocity
-errors, priors and transformations, parameter order, fixed physical parameters,
-quadrature settings, source/dependency versions, and (for JAX) backend and
-precision. A different analysis is rejected before appending samples. Restore
-the original analysis or use a new output location. A missing NumPyro
-`metadata.json` never gets silently regenerated for an existing chain.
-
-The complete executable example samples scale radius, density, anisotropy,
-inclination and systemic velocity, writes posterior draws and J/D factors,
-and resumes when repeated with the same arguments:
-
-```bash
-python examples/axisymmetric_inference.py --backend classical --output-dir /tmp/axisym-emcee
-JEANSPY_JAX_ENABLE_X64=true python examples/axisymmetric_inference.py \
-    --backend numpyro --output-dir /tmp/axisym-nuts
-```
-
-Defaults use eight synthetic stars and short chains to exercise the workflow;
-convergence, coverage and scientific calibration are not established by this
-example. Increase warmup/draw counts and check diagnostics for an actual fit.
-Use the same warmup setting when resuming the classical example, since its
-stored warmup steps are explicitly discarded from the exported posterior.
-
-## J and D factors
-
-```python
-J = model.jfactor(80000., .5, params=params)  # GeV^2 cm^-5
-D = model.dfactor(80000., .5, params=params)  # GeV cm^-2
-```
-
-`roi_deg` is a **circular cone half-angle in degrees**, in [0,90). A finite
-`r_t_pc` must be supplied. The observer must lie outside a sphere enclosing the
-halo: `dist_pc > r_t_pc * max(1,Q)`. J needs `gamma < 1.5`; an integrated central
-aperture with a steeper annihilation cusp diverges and raises. No central core
-or artificial radius floor regularizes this divergence. D is finite over the
-supported density-slope domain.
-
-The implementation evaluates the exact observer integral
-
-$$
-F_p=\int_{\rm cone}\rho^p\,ds\,d\Omega
-   =\int_{\rm halo\cap cone}\frac{\rho^p}{s^2}\,d^3r,
-\qquad p=2\ (J),\quad p=1\ (D).
-$$
-
-Spheroidal volume coordinates have `d³r = Q m² dm dmu dphi`. For a unit
-spheroidal direction with LOS component L and sky-plane length B, the cone
-bounds m by `m*(B*cos(theta)-L*sin(theta)) <= dist_pc*sin(theta)` and the
-observer distance is `s² = dist_pc² + 2*dist_pc*m*L + m²*|e|²`.
-This retains finite-distance geometry and contributions from outer shells
-projected into the aperture. It does not replace the aperture by a sphere.
-
-Radial quadrature is cusp-regularized analytically and split at rs; angles use
-Gauss–Legendre and periodic azimuth quadrature. Expose accuracy with `n_mu`,
-`n_phi`, `n_radial` (defaults 96,96,128). The cone/cutoff intersection can
-require angular refinement. These settings are independent of the three Jeans
-quadrature orders. J/D evaluation is a NumPy postprocessing operation for
-chains from either backend, as in the spherical workflow.
-
-## Numerical equations
-
-Writing `P = nu*vz2`, the aligned Jeans equations are
-
-$$
-P(R,z)=\int_{|z|}^\infty \nu(R,z')\Phi_z(R,z')\,dz',\qquad
-v_R^2=\frac{P}{(1-\beta_z)\nu},\qquad
-\overline{v_\phi^2}=\frac{P+R P_R}{(1-\beta_z)\nu}+R\Phi_R.
-$$
-
-The homoeoidal force has `D(t)²=1+(Q²-1)t²`,
-`m(t)²=t²*(R²+z²/D(t)²)`, and
-
-$$
-\Phi_R=4\pi GQR\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)}\,dt,
-\qquad
-\Phi_z=4\pi GQz\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)^3}\,dt.
-$$
-
-Without a cutoff, t_max=1. Outside a finite halo, m(t_max)=r_t.
-The analytic radial derivative includes the moving endpoint contribution
-`integrand(t_max)*dt_max/dR`; omitting it would give incorrect azimuthal
-moments outside the cutoff. The pressure boundary condition is P -> 0 at
-infinity, and stellar tracers continue outside the finite halo.
-
-Vertical and LOS integrals use fixed Gauss–Legendre nodes with rational
-infinity maps. LOS quadrature is centered at maximum tracer density. Defaults
-are 96 nodes per integral; numerical settings must be refined for the actual
-parameter regime, especially sharp truncation, extreme scale ratios/cusps,
-flattening and outer positions. There is no global adaptive accuracy guarantee.
-Cost grows approximately as `N_stars*n_force*n_vertical*n_los`. NumPy processes
-one sky position at a time; JAX uses `lax.map` and rematerialization to bound
-intermediate memory during parameter differentiation.
-
+The [save/resume tutorial](../tutorials/storage.ipynb) describes persisted
+analysis identity. For this geometry it includes sky coordinates **in both
+axes**, priors and transformations, parameter order, fixed physical values and
+quadrature settings, in addition to the shared source/dependency and JAX
+runtime checks. Follow the [worked analysis](../tutorials/axisymmetric.md#3-save-resume-and-inspect)
+for executable restart commands and output files.

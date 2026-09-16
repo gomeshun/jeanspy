@@ -60,7 +60,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Ullio &amp; Valli J-factor geometry in JeansPy" href="ullio-geometry.html" />
-    <link rel="prev" title="Inference, diagnostics and restart" href="inference.html" />
+    <link rel="prev" title="Axisymmetric Jeans modeling and inference" href="axisymmetric.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
@@ -462,8 +462,6 @@
 <li class="toctree-l1"><a class="reference internal" href="contracts.html">Units, shapes and model contracts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="profiles.html">Tracers, halos and anisotropy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="axisymmetric.html">Axisymmetric Jeans modeling and inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jax.html">JAX, precision and gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference, diagnostics and restart</a></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">J and D factors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
@@ -538,20 +536,16 @@ D=\int_{\Delta\Omega}\int\rho\,ds\,d\Omega.\]</div>
 <p>These are NumPy postprocessing operations. Use physical posterior draws from
 either sampler; keep the same distance, aperture, cutoff and density convention
 when comparing results. The returned units are GeV² cm⁻⁵ and GeV cm⁻².</p>
+<section id="spherical-apertures">
+<h2>Spherical apertures<a class="headerlink" href="#spherical-apertures" title="Link to this heading">#</a></h2>
 <p>The spherical <code class="docutils literal notranslate"><span class="pre">DMModel.jfactor_ullio2016</span></code> method includes outer halo shells
 projected into a finite cone. Its <code class="docutils literal notranslate"><span class="pre">simple</span></code> variant uses a spherical-aperture
 approximation. The two are different integrals. The
 <a class="reference internal" href="ullio-geometry.html"><span class="std std-doc">geometry derivation</span></a> follows
 <a class="reference external" href="https://arxiv.org/abs/1603.07721">Ullio &amp; Valli (2016)</a>.</p>
-<p>Axisymmetric <code class="docutils literal notranslate"><span class="pre">jfactor</span></code> and <code class="docutils literal notranslate"><span class="pre">dfactor</span></code> require finite <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> and an observer
-outside a sphere enclosing the halo: <code class="docutils literal notranslate"><span class="pre">dist_pc</span> <span class="pre">&gt;</span> <span class="pre">r_t_pc</span> <span class="pre">*</span> <span class="pre">max(1,</span> <span class="pre">Q)</span></code>.
-The circular aperture half-angle lies in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">90)</span></code> degrees. J requires
-<code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">&lt;</span> <span class="pre">1.5</span></code>; a steeper central cusp diverges, and no artificial core or radius
-floor is introduced. Angular and radial factor quadrature counts are
-independent of the Jeans solver’s node counts. Refine them for the actual
-cutoff/cone intersection.</p>
-<p>The spherical limit of <code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel</span></code> also supplies a D-factor calculation for a
-spherical halo; there is no separate classical spherical <code class="docutils literal notranslate"><span class="pre">DMModel.dfactor</span></code> API.</p>
+<p>The spherical limit of <code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel</span></code> also supplies a D-factor
+calculation for a spherical halo; there is no separate classical spherical
+<code class="docutils literal notranslate"><span class="pre">DMModel.dfactor</span></code> API.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Finite-cone factors for spherical and flattened halos."""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">NFWModel</span>
@@ -570,6 +564,35 @@ spherical halo; there is no separate classical spherical <code class="docutils l
 <span class="nb">print</span><span class="p">(</span><span class="s2">"log10 J, log10 D:"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">J_GeV2_cm_minus5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">D_GeV_cm_minus2</span><span class="p">))</span>
 </pre></div>
 </div>
+</section>
+<section id="axisymmetric-finite-cone-factors">
+<h2>Axisymmetric finite-cone factors<a class="headerlink" href="#axisymmetric-finite-cone-factors" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">roi_deg</span></code> is a <strong>circular cone half-angle in degrees</strong>, in [0,90). A finite
+<code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> must be supplied. The observer must lie outside a sphere enclosing the
+halo: <code class="docutils literal notranslate"><span class="pre">dist_pc</span> <span class="pre">&gt;</span> <span class="pre">r_t_pc</span> <span class="pre">*</span> <span class="pre">max(1,Q)</span></code>. J needs <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">&lt;</span> <span class="pre">1.5</span></code>; an integrated central
+aperture with a steeper annihilation cusp diverges and raises. No central core
+or artificial radius floor regularizes this divergence. D is finite over the
+supported density-slope domain. See the <a class="reference internal" href="axisymmetric.html"><span class="std std-doc">axisymmetric guide</span></a>
+for the physical parameters and viewing geometry.</p>
+<p>The implementation evaluates the exact observer integral</p>
+<div class="math notranslate nohighlight">
+\[
+F_p=\int_{\rm cone}\rho^p\,ds\,d\Omega
+   =\int_{\rm halo\cap cone}\frac{\rho^p}{s^2}\,d^3r,
+\qquad p=2\ (J),\quad p=1\ (D).
+\]</div>
+<p>Spheroidal volume coordinates have <code class="docutils literal notranslate"><span class="pre">d³r</span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">m²</span> <span class="pre">dm</span> <span class="pre">dmu</span> <span class="pre">dphi</span></code>. For a unit
+spheroidal direction with LOS component L and sky-plane length B, the cone
+bounds m by <code class="docutils literal notranslate"><span class="pre">m*(B*cos(theta)-L*sin(theta))</span> <span class="pre">&lt;=</span> <span class="pre">dist_pc*sin(theta)</span></code> and the
+observer distance is <code class="docutils literal notranslate"><span class="pre">s²</span> <span class="pre">=</span> <span class="pre">dist_pc²</span> <span class="pre">+</span> <span class="pre">2*dist_pc*m*L</span> <span class="pre">+</span> <span class="pre">m²*|e|²</span></code>.
+This retains finite-distance geometry and contributions from outer shells
+projected into the aperture. It does not replace the aperture by a sphere.</p>
+<p>Radial quadrature is cusp-regularized analytically and split at rs; angles use
+Gauss–Legendre and periodic azimuth quadrature. Expose accuracy with <code class="docutils literal notranslate"><span class="pre">n_mu</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_phi</span></code>, <code class="docutils literal notranslate"><span class="pre">n_radial</span></code> (defaults 96,96,128). The cone/cutoff intersection can
+require angular refinement. These settings are independent of the three Jeans
+quadrature orders. J/D evaluation is a NumPy postprocessing operation for
+chains from either backend, as in the spherical workflow.</p>
 <p>For a flattened halo the factor depends on viewing inclination:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">flattened</span> <span class="o">=</span> <span class="n">AxisymmetricZhaoModel</span><span class="p">(</span><span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">4.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">5000.</span><span class="p">)</span>
 <span class="n">J_flat</span> <span class="o">=</span> <span class="n">jfactor</span><span class="p">(</span><span class="n">flattened</span><span class="p">,</span> <span class="n">distance_pc</span><span class="p">,</span> <span class="n">aperture_deg</span><span class="p">,</span> <span class="n">inclination</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
@@ -583,6 +606,7 @@ spherical halo; there is no separate classical spherical <code class="docutils l
 <div class="toctree-wrapper compound">
 </div>
 </section>
+</section>
 
 
                 </article>
@@ -595,12 +619,12 @@ spherical halo; there is no separate classical spherical <code class="docutils l
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="inference.html"
+       href="axisymmetric.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Inference, diagnostics and restart</p>
+        <p class="prev-next-title">Axisymmetric Jeans modeling and inference</p>
       </div>
     </a>
     <a class="right-next"
@@ -622,6 +646,19 @@ spherical halo; there is no separate classical spherical <code class="docutils l
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spherical-apertures">Spherical apertures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#axisymmetric-finite-cone-factors">Axisymmetric finite-cone factors</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

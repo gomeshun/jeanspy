@@ -460,8 +460,6 @@
 <li class="toctree-l1"><a class="reference internal" href="contracts.html">Units, shapes and model contracts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="profiles.html">Tracers, halos and anisotropy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="axisymmetric.html">Axisymmetric Jeans modeling and inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jax.html">JAX, precision and gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference, diagnostics and restart</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="factors.html">J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
@@ -526,19 +524,40 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="topic-guides">
 <h1>Topic guides<a class="headerlink" href="#topic-guides" title="Link to this heading">#</a></h1>
-<p>These pages collect detailed conventions and specialist topics. For a guided
-learning path, start with the <a class="reference internal" href="../tutorials/index.html"><span class="std std-doc">tutorials</span></a>; for a single
-call’s arguments and return values, use the <a class="reference internal" href="../api/index.html"><span class="std std-doc">API reference</span></a>.</p>
+<p>Use these references when choosing a model or checking a calculation’s
+conventions and limits. Each guide covers a specific topic:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Guide</p></th>
+<th class="head"><p>What to look up</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="contracts.html"><span class="std std-doc">Model contracts</span></a></p></td>
+<td><p>Units, array shapes, parameter mutation and error behavior across backends</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="profiles.html"><span class="std std-doc">Profile conventions</span></a></p></td>
+<td><p>Tracer scale definitions, Sersic deprojection domains and halo cutoffs</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="axisymmetric.html"><span class="std std-doc">Axisymmetric geometry</span></a></p></td>
+<td><p>Coordinates, flattening, inclination and geometry-specific inference constraints</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="factors.html"><span class="std std-doc">J and D factors</span></a></p></td>
+<td><p>Aperture definitions, finite-cone integrals and cusp restrictions</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="numerics.html"><span class="std std-doc">Numerical accuracy</span></a></p></td>
+<td><p>Quadrature refinement, gradient checks and specialized kernel limits</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For setup and executable workflows, follow the <a class="reference internal" href="../tutorials/index.html"><span class="std std-doc">tutorials</span></a>,
+including <a class="reference internal" href="../tutorials/backends.html"><span class="std std-doc">JAX and backends</span></a>,
+<a class="reference internal" href="../tutorials/inference.html"><span class="std std-doc">MCMC and diagnostics</span></a>, and
+<a class="reference internal" href="../tutorials/storage.html"><span class="std std-doc">saving and resuming</span></a>.
+<a class="reference internal" href="../theory.html"><span class="std std-doc">Theory</span></a> collects the Jeans and likelihood equations;
+the <a class="reference internal" href="../api/index.html"><span class="std std-doc">API reference</span></a> documents individual calls.</p>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="contracts.html">Units, shapes and model contracts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="profiles.html">Tracers, halos and anisotropy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="axisymmetric.html">Axisymmetric Jeans modeling and inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jax.html">JAX, precision and gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference, diagnostics and restart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="factors.html">J and D factors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical accuracy</a></li>
-</ul>
 </div>
 </section>
 

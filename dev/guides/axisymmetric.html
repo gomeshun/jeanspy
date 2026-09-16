@@ -59,7 +59,7 @@
     <link rel="canonical" href="https://gomeshun.github.io/jeanspy/dev/guides/axisymmetric.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="JAX, precision and gradients" href="jax.html" />
+    <link rel="next" title="J and D factors" href="factors.html" />
     <link rel="prev" title="Tracers, halos and anisotropy" href="profiles.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -462,8 +462,6 @@
 <li class="toctree-l1"><a class="reference internal" href="contracts.html">Units, shapes and model contracts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="profiles.html">Tracers, halos and anisotropy</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Axisymmetric Jeans modeling and inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jax.html">JAX, precision and gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference, diagnostics and restart</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="factors.html">J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
@@ -531,59 +529,19 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="axisymmetric-jeans-modeling-and-inference">
 <h1>Axisymmetric Jeans modeling and inference<a class="headerlink" href="#axisymmetric-jeans-modeling-and-inference" title="Link to this heading">#</a></h1>
-<p>JeansPy solves the stationary, cylindrically aligned Jeans equations with
-constant meridional anisotropy. The general anisotropic closure follows
-Cappellari (2008), while the spheroidal dwarf-galaxy models follow
-Hayashi &amp; Chiba (2012, 2015) and Hayashi et al. (2016). See
-<a class="reference external" href="https://gomeshun.github.io/jeanspy/dev/references.html#references-jeans-equations-and-axisymmetric-dynamics">References</a>
-for the foundational equations, earlier axisymmetric models and applications.
-Stellar and halo axes coincide, mixed velocity moments vanish, and
-<code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">&lt;vz²&gt;/&lt;vR²&gt;</span></code> is constant.</p>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Capability</p></th>
-<th class="head"><p>NumPy/SciPy</p></th>
-<th class="head"><p>JAX/NumPyro</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Flattened Plummer tracer and oblate/prolate Zhao halo</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-odd"><td><p>Intrinsic moments, projected moments, densities, enclosed spheroidal mass</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes, JIT and parameter autodiff</p></td>
-</tr>
-<tr class="row-even"><td><p>Optional finite spheroidal halo cutoff</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-odd"><td><p>Signed sky coordinates, inclination and photometric deprojection</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-even"><td><p>Explicit priors and unbinned velocity likelihood</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphEstimationModel</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">AxisymmetricJeansLikelihoodModel</span></code> and <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Posterior sampling and persisted restart checks</p></td>
-<td><p>Existing <code class="docutils literal notranslate"><span class="pre">Sampler</span></code> / emcee</p></td>
-<td><p>Existing <code class="docutils literal notranslate"><span class="pre">NumPyroSampler</span></code> / NUTS</p></td>
-</tr>
-<tr class="row-even"><td><p>J/D factors from posterior draws</p></td>
-<td><p>Finite-cone quadrature</p></td>
-<td><p>Postprocess draws with the same NumPy factor API</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>The existing spherical classes retain their names and parameter meanings.
-Cylindrical <code class="docutils literal notranslate"><span class="pre">beta_z</span></code> is <strong>not</strong> spherical <code class="docutils literal notranslate"><span class="pre">beta_ani</span></code>. In particular, the
-spherical/isotropic comparison needs <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">0</span></code> together.
-Spatially varying cylindrical anisotropy, arbitrary ellipsoid tilt, rotation
-or Satoh decomposition, triaxiality, stellar self-gravity and PSF/bin averaging
-are not implemented. The tracer family is Plummer; the halo family is Zhao.</p>
+<p>Use this guide for geometry, physical parameter domains and the differences
+from spherical models. For a complete executable workflow, follow the
+<a class="reference internal" href="../tutorials/axisymmetric.html"><span class="std std-doc">axisymmetric synthetic analysis</span></a>. The
+<a class="reference internal" href="../api/axisymmetric-models.html"><span class="std std-doc">axisymmetric API reference</span></a> documents
+constructors and individual methods; <a class="reference internal" href="../theory.html#axisymmetric-jeans-equations"><span class="std std-ref">Theory</span></a>
+gives the dynamical assumptions and equations.
+For factor integrals and numerical settings, see the
+<a class="reference internal" href="factors.html#axisymmetric-finite-cone-factors"><span class="std std-ref">J/D-factor guide</span></a> and
+<a class="reference internal" href="numerics.html#axisymmetric-quadrature"><span class="std std-ref">quadrature reference</span></a>.</p>
+<p>The supported components are a flattened Plummer tracer, an oblate or prolate
+Zhao halo and constant cylindrical anisotropy. Cylindrical <code class="docutils literal notranslate"><span class="pre">beta_z</span></code> is distinct
+from spherical <code class="docutils literal notranslate"><span class="pre">beta_ani</span></code>; the common spherical/isotropic limit requires
+<code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">0</span></code> together.</p>
 <section id="units-geometry-and-physical-parameters">
 <h2>Units, geometry and physical parameters<a class="headerlink" href="#units-geometry-and-physical-parameters" title="Link to this heading">#</a></h2>
 <p>Distances are pc, masses Msun, velocities km/s. <code class="docutils literal notranslate"><span class="pre">inclination</span></code> is in <strong>radians</strong>:
@@ -654,41 +612,31 @@ saturates outside r_t. The Hayashi 2015 halo uses <code class="docutils literal 
 </section>
 <section id="forward-apis">
 <h2>Forward APIs<a class="headerlink" href="#forward-apis" title="Link to this heading">#</a></h2>
-<p>As with spherical models, select a stellar profile, a dark-matter halo and an
-anisotropy model. The NumPy/SciPy components store their physical parameters:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AxisymmetricDSphModel</span><span class="p">,</span> <span class="n">AxisymmetricPlummerModel</span><span class="p">,</span>
-    <span class="n">AxisymmetricZhaoModel</span><span class="p">,</span> <span class="n">AxisymmetricConstantAnisotropyModel</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">intrinsic_axis_ratio</span>
-
-<span class="n">inclination</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">AxisymmetricDSphModel</span><span class="p">(</span>
-    <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">AxisymmetricPlummerModel</span><span class="p">(</span>
-            <span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">intrinsic_axis_ratio</span><span class="p">(</span><span class="mf">.8</span><span class="p">,</span> <span class="n">inclination</span><span class="p">)),</span>
-        <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">AxisymmetricZhaoModel</span><span class="p">(</span>
-            <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">.8</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">3000.</span><span class="p">),</span>
-        <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">AxisymmetricConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_z</span><span class="o">=-</span><span class="mf">.3</span><span class="p">),</span>
-    <span class="p">},</span>
-    <span class="n">inclination</span><span class="o">=</span><span class="n">inclination</span><span class="p">,</span> <span class="n">n_force</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">,</span> <span class="mf">900.</span><span class="p">])</span>
-<span class="n">major_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
-<span class="n">minor_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
-<span class="n">vR2</span><span class="p">,</span> <span class="n">vz2</span><span class="p">,</span> <span class="n">vphi2</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">intrinsic_moments</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
-<span class="n">gR</span><span class="p">,</span> <span class="n">gz</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">potential_gradient</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
-<span class="n">tracer_density</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">"StellarModel"</span><span class="p">]</span><span class="o">.</span><span class="n">density_3d</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
-<span class="n">halo_density</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">"DMModel"</span><span class="p">]</span><span class="o">.</span><span class="n">mass_density_3d</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">)</span>
-</pre></div>
+<p>Both implementations compose <code class="docutils literal notranslate"><span class="pre">AxisymmetricPlummerModel</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel</span></code> and <code class="docutils literal notranslate"><span class="pre">AxisymmetricConstantAnisotropyModel</span></code> inside
+<code class="docutils literal notranslate"><span class="pre">AxisymmetricDSphModel</span></code>. Choose the imports and parameter interface below:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Implementation</p></th>
+<th class="head"><p>Import module</p></th>
+<th class="head"><p>Physical parameters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NumPy/SciPy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jeanspy.model</span></code></p></td>
+<td><p>Stored in immutable components; optional per-call <code class="docutils literal notranslate"><span class="pre">params</span></code> overrides</p></td>
+</tr>
+<tr class="row-odd"><td><p>JAX</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jeanspy.model_numpyro</span></code></p></td>
+<td><p>Passed explicitly at evaluation time</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">AxisymmetricStellarModel</span></code>, <code class="docutils literal notranslate"><span class="pre">AxisymmetricDMModel</span></code> and
-<code class="docutils literal notranslate"><span class="pre">AxisymmetricAnisotropyModel</span></code> define the component interfaces. The current
-solver supports the Plummer, Zhao and constant-anisotropy families shown above.
-Their parameters use the same units as the spherical components. The Zhao
-exponents retain the names <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code> in this axisymmetric API.</p>
+<p>The component interfaces are <code class="docutils literal notranslate"><span class="pre">AxisymmetricStellarModel</span></code>, <code class="docutils literal notranslate"><span class="pre">AxisymmetricDMModel</span></code>
+and <code class="docutils literal notranslate"><span class="pre">AxisymmetricAnisotropyModel</span></code>. Zhao exponents retain the names
+<code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code> in this geometry.</p>
 <p>The force method returns the <strong>potential gradient</strong>, opposite to gravitational
 acceleration. Exact cusp-origin force evaluation is undefined in this API;
 cored-origin force, intrinsic central moments and projected central moments
@@ -703,36 +651,11 @@ physical values. Supplying <code class="docutils literal notranslate"><span clas
 intrinsic <code class="docutils literal notranslate"><span class="pre">q</span></code> and applies the same deprojection rule.</p>
 <p>NumPy raises <code class="docutils literal notranslate"><span class="pre">InvalidAxisymmetricModelError</span></code> (a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>) for inadmissible
 physical parameters or negative/nonfinite intrinsic moments.</p>
-<p>JAX uses the same component hierarchy, with physical parameters passed at
-evaluation time, as in the spherical JAX API:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Configure JEANSPY_JAX_ENABLE_X64=true before starting Python for float64.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AxisymmetricDSphModel</span> <span class="k">as</span> <span class="n">JaxAxisymmetricModel</span><span class="p">,</span>
-    <span class="n">AxisymmetricPlummerModel</span> <span class="k">as</span> <span class="n">JaxPlummerModel</span><span class="p">,</span>
-    <span class="n">AxisymmetricZhaoModel</span> <span class="k">as</span> <span class="n">JaxZhaoModel</span><span class="p">,</span>
-    <span class="n">AxisymmetricConstantAnisotropyModel</span> <span class="k">as</span> <span class="n">JaxAnisotropyModel</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
-
-<span class="n">jax_model</span> <span class="o">=</span> <span class="n">JaxAxisymmetricModel</span><span class="p">(</span>
-    <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">JaxPlummerModel</span><span class="p">(),</span>
-        <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">JaxZhaoModel</span><span class="p">(),</span>
-        <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">JaxAnisotropyModel</span><span class="p">(),</span>
-    <span class="p">},</span> <span class="n">n_force</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">n_vertical</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span> <span class="n">n_los</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">physical_params</span>
-<span class="n">value</span> <span class="o">=</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-<span class="n">derivative</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">rho</span><span class="p">:</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span>
-    <span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">:</span> <span class="n">rho</span><span class="p">}))(</span><span class="mf">.1</span><span class="p">)</span>
-<span class="n">tracer_density</span> <span class="o">=</span> <span class="n">jax_model</span><span class="p">[</span><span class="s2">"StellarModel"</span><span class="p">]</span><span class="o">.</span><span class="n">density_3d</span><span class="p">(</span>
-    <span class="mf">100.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"re_pc"</span><span class="p">:</span> <span class="mf">300.</span><span class="p">,</span> <span class="s2">"q"</span><span class="p">:</span> <span class="mf">.7</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>It uses JAX operations throughout, with no SciPy callbacks. Invalid dynamic
+<p>JAX uses JAX operations throughout, with no SciPy callbacks. Invalid dynamic
 proposals give NaN forward outputs and are rejected by the likelihood.
 Coordinate and schema shape errors raise immediately. Arrays broadcast and
-scalar coordinates produce scalar outputs in both backends.</p>
+scalar coordinates produce scalar outputs in both backends. For JIT setup,
+runtime precision and gradient checks, use the <a class="reference internal" href="../tutorials/backends.html"><span class="std std-doc">backend tutorial</span></a>.</p>
 </section>
 <section id="inference-and-restart">
 <h2>Inference and restart<a class="headerlink" href="#inference-and-restart" title="Link to this heading">#</a></h2>
@@ -742,12 +665,11 @@ DataFrame or mapping is accepted by the classical model. The explicit
 <code class="docutils literal notranslate"><span class="pre">AxisymmetricKinematicData</span></code> object copies observations and supplies detached
 arrays with <code class="docutils literal notranslate"><span class="pre">as_kwargs()</span></code> for NumPyro calls. <code class="docutils literal notranslate"><span class="pre">reset_data</span></code> validates replacements
 before mutation; user-provided priors are never derived from velocities.</p>
-<p>The unbinned likelihood is</p>
-<div class="math notranslate nohighlight">
-\[
-\log L_i = \log\mathcal N\!\left(v_i\mid v_{\rm mem},
- \sqrt{\sigma_{\rm los}^2(x_i,y_i)+e_i^2}\right).
-\]</div>
+<p>The <a class="reference internal" href="../theory.html#likelihood-and-interpretation"><span class="std std-ref">likelihood equation</span></a> and
+<a class="reference internal" href="../tutorials/inference.html"><span class="std std-doc">MCMC tutorial</span></a> explain the statistical model.
+The classical wrapper is
+<a class="reference internal" href="../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel" title="jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisymmetricDSphEstimationModel</span></code></a>;
+NumPyro uses <a class="reference internal" href="../api/generated/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.html#jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel" title="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisymmetricJeansLikelihoodModel</span></code></a>.</p>
 <p>The classical prior table names the <strong>sampling coordinates</strong>, in sampler
 order. Prefixes <code class="docutils literal notranslate"><span class="pre">log10_</span></code> and <code class="docutils literal notranslate"><span class="pre">bfunc_</span></code> mean <code class="docutils literal notranslate"><span class="pre">10**x</span></code> and <code class="docutils literal notranslate"><span class="pre">1-10**x</span></code>, respectively.
 <code class="docutils literal notranslate"><span class="pre">cos_inclination</span></code> maps to <code class="docutils literal notranslate"><span class="pre">arccos(x)</span></code> in radians. Uniform bounds on this last
@@ -755,21 +677,6 @@ coordinate give an isotropic orientation prior over the explicitly chosen
 range; use bounds compatible with photometry, or allow the deprojection
 constraint to reject inadmissible proposals. No implicit transformation
 Jacobian is added: the prior is defined in the named sampling coordinate.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.axisymmetric_inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphEstimationModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
-
-<span class="n">prior</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"lower"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.</span><span class="p">],</span> <span class="s2">"upper"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">30.</span><span class="p">]},</span>
-                     <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">])</span>
-<span class="n">fixed</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">}</span>
-<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x_pc</span><span class="o">=</span><span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="o">-</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">],</span> <span class="n">y_pc</span><span class="o">=</span><span class="p">[</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">70.</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.</span><span class="p">],</span>
-            <span class="n">vlos_kms</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
-<span class="c1"># Stored components supply values for physical parameters not sampled here.</span>
-<span class="n">fit</span> <span class="o">=</span> <span class="n">AxisymmetricDSphEstimationModel</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">dsph_model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
-<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">"axisymmetric_"</span><span class="p">)</span>
-<span class="c1"># sampler.run_mcmc(iterations=100, loops=1)</span>
-</pre></div>
-</div>
 <p>An optional <code class="docutils literal notranslate"><span class="pre">PhotometryPriorModel</span></code> multiplies the prior on <code class="docutils literal notranslate"><span class="pre">log10_re_pc</span></code>;
 initial points then use the appropriately truncated Gaussian. <code class="docutils literal notranslate"><span class="pre">fit.sample</span></code>
 accepts an RNG/seed and bounded rejection to return feasible initial points.
@@ -778,27 +685,6 @@ Impossible support raises an error rather than changing the priors.
 <code class="docutils literal notranslate"><span class="pre">lnposterior_wbic</span></code>, and <code class="docutils literal notranslate"><span class="pre">sample_data</span></code> are available. WBIC needs at least two
 stars. Classical data are process-local and pickleable; shared-memory buffers
 specific to the spherical implementation are not used.</p>
-<p>NumPyro uses the existing <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> and sampler:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AxisymmetricJeansLikelihoodModel</span><span class="p">,</span> <span class="n">NumPyroSampler</span><span class="p">,</span> <span class="n">ParameterSpec</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">likelihood</span> <span class="o">=</span> <span class="n">AxisymmetricJeansLikelihoodModel</span><span class="p">(</span>
-    <span class="n">jax_model</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rho"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">.5</span><span class="p">),</span>
-                          <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
-     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">))],</span>
-    <span class="n">fixed_params</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">),</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-            <span class="n">num_chains</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="c1"># with NumPyroSampler(mcmc, output_dir="axisymmetric_nuts") as sampler:</span>
-<span class="c1">#     sampler.run(jax.random.PRNGKey(52), **data)</span>
-</pre></div>
-</div>
 <p><code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> supports general priors/transforms and deterministic physical
 sites. Sampled and fixed physical names must be disjoint; optional
 postprocessing receives their combined dictionary. The NumPyro likelihood
@@ -815,88 +701,12 @@ physical proposals still receive log probability minus infinity.</p>
 <p>Both inference paths reject inadmissible Jeans moments with log probability
 minus infinity. This is not a proof of a positive distribution function or of
 moment positivity at unobserved positions.</p>
-<p>Persisted analysis identity includes sky coordinates <strong>in both axes</strong>, velocity
-errors, priors and transformations, parameter order, fixed physical parameters,
-quadrature settings, source/dependency versions, and (for JAX) backend and
-precision. A different analysis is rejected before appending samples. Restore
-the original analysis or use a new output location. A missing NumPyro
-<code class="docutils literal notranslate"><span class="pre">metadata.json</span></code> never gets silently regenerated for an existing chain.</p>
-<p>The complete executable example samples scale radius, density, anisotropy,
-inclination and systemic velocity, writes posterior draws and J/D factors,
-and resumes when repeated with the same arguments:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/axisymmetric_inference.py<span class="w"> </span>--backend<span class="w"> </span>classical<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/axisym-emcee
-<span class="nv">JEANSPY_JAX_ENABLE_X64</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>python<span class="w"> </span>examples/axisymmetric_inference.py<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--backend<span class="w"> </span>numpyro<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/axisym-nuts
-</pre></div>
-</div>
-<p>Defaults use eight synthetic stars and short chains to exercise the workflow;
-convergence, coverage and scientific calibration are not established by this
-example. Increase warmup/draw counts and check diagnostics for an actual fit.
-Use the same warmup setting when resuming the classical example, since its
-stored warmup steps are explicitly discarded from the exported posterior.</p>
-</section>
-<section id="j-and-d-factors">
-<h2>J and D factors<a class="headerlink" href="#j-and-d-factors" title="Link to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">J</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">jfactor</span><span class="p">(</span><span class="mf">80000.</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>  <span class="c1"># GeV^2 cm^-5</span>
-<span class="n">D</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">dfactor</span><span class="p">(</span><span class="mf">80000.</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>  <span class="c1"># GeV cm^-2</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">roi_deg</span></code> is a <strong>circular cone half-angle in degrees</strong>, in [0,90). A finite
-<code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> must be supplied. The observer must lie outside a sphere enclosing the
-halo: <code class="docutils literal notranslate"><span class="pre">dist_pc</span> <span class="pre">&gt;</span> <span class="pre">r_t_pc</span> <span class="pre">*</span> <span class="pre">max(1,Q)</span></code>. J needs <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">&lt;</span> <span class="pre">1.5</span></code>; an integrated central
-aperture with a steeper annihilation cusp diverges and raises. No central core
-or artificial radius floor regularizes this divergence. D is finite over the
-supported density-slope domain.</p>
-<p>The implementation evaluates the exact observer integral</p>
-<div class="math notranslate nohighlight">
-\[
-F_p=\int_{\rm cone}\rho^p\,ds\,d\Omega
-   =\int_{\rm halo\cap cone}\frac{\rho^p}{s^2}\,d^3r,
-\qquad p=2\ (J),\quad p=1\ (D).
-\]</div>
-<p>Spheroidal volume coordinates have <code class="docutils literal notranslate"><span class="pre">d³r</span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">m²</span> <span class="pre">dm</span> <span class="pre">dmu</span> <span class="pre">dphi</span></code>. For a unit
-spheroidal direction with LOS component L and sky-plane length B, the cone
-bounds m by <code class="docutils literal notranslate"><span class="pre">m*(B*cos(theta)-L*sin(theta))</span> <span class="pre">&lt;=</span> <span class="pre">dist_pc*sin(theta)</span></code> and the
-observer distance is <code class="docutils literal notranslate"><span class="pre">s²</span> <span class="pre">=</span> <span class="pre">dist_pc²</span> <span class="pre">+</span> <span class="pre">2*dist_pc*m*L</span> <span class="pre">+</span> <span class="pre">m²*|e|²</span></code>.
-This retains finite-distance geometry and contributions from outer shells
-projected into the aperture. It does not replace the aperture by a sphere.</p>
-<p>Radial quadrature is cusp-regularized analytically and split at rs; angles use
-Gauss–Legendre and periodic azimuth quadrature. Expose accuracy with <code class="docutils literal notranslate"><span class="pre">n_mu</span></code>,
-<code class="docutils literal notranslate"><span class="pre">n_phi</span></code>, <code class="docutils literal notranslate"><span class="pre">n_radial</span></code> (defaults 96,96,128). The cone/cutoff intersection can
-require angular refinement. These settings are independent of the three Jeans
-quadrature orders. J/D evaluation is a NumPy postprocessing operation for
-chains from either backend, as in the spherical workflow.</p>
-</section>
-<section id="numerical-equations">
-<h2>Numerical equations<a class="headerlink" href="#numerical-equations" title="Link to this heading">#</a></h2>
-<p>Writing <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">=</span> <span class="pre">nu*vz2</span></code>, the aligned Jeans equations are</p>
-<div class="math notranslate nohighlight">
-\[
-P(R,z)=\int_{|z|}^\infty \nu(R,z')\Phi_z(R,z')\,dz',\qquad
-v_R^2=\frac{P}{(1-\beta_z)\nu},\qquad
-\overline{v_\phi^2}=\frac{P+R P_R}{(1-\beta_z)\nu}+R\Phi_R.
-\]</div>
-<p>The homoeoidal force has <code class="docutils literal notranslate"><span class="pre">D(t)²=1+(Q²-1)t²</span></code>,
-<code class="docutils literal notranslate"><span class="pre">m(t)²=t²*(R²+z²/D(t)²)</span></code>, and</p>
-<div class="math notranslate nohighlight">
-\[
-\Phi_R=4\pi GQR\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)}\,dt,
-\qquad
-\Phi_z=4\pi GQz\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)^3}\,dt.
-\]</div>
-<p>Without a cutoff, t_max=1. Outside a finite halo, m(t_max)=r_t.
-The analytic radial derivative includes the moving endpoint contribution
-<code class="docutils literal notranslate"><span class="pre">integrand(t_max)*dt_max/dR</span></code>; omitting it would give incorrect azimuthal
-moments outside the cutoff. The pressure boundary condition is P -&gt; 0 at
-infinity, and stellar tracers continue outside the finite halo.</p>
-<p>Vertical and LOS integrals use fixed Gauss–Legendre nodes with rational
-infinity maps. LOS quadrature is centered at maximum tracer density. Defaults
-are 96 nodes per integral; numerical settings must be refined for the actual
-parameter regime, especially sharp truncation, extreme scale ratios/cusps,
-flattening and outer positions. There is no global adaptive accuracy guarantee.
-Cost grows approximately as <code class="docutils literal notranslate"><span class="pre">N_stars*n_force*n_vertical*n_los</span></code>. NumPy processes
-one sky position at a time; JAX uses <code class="docutils literal notranslate"><span class="pre">lax.map</span></code> and rematerialization to bound
-intermediate memory during parameter differentiation.</p>
+<p>The <a class="reference internal" href="../tutorials/storage.html"><span class="std std-doc">save/resume tutorial</span></a> describes persisted
+analysis identity. For this geometry it includes sky coordinates <strong>in both
+axes</strong>, priors and transformations, parameter order, fixed physical values and
+quadrature settings, in addition to the shared source/dependency and JAX
+runtime checks. Follow the <a class="reference internal" href="../tutorials/axisymmetric.html#save-resume-and-inspect"><span class="std std-ref">worked analysis</span></a>
+for executable restart commands and output files.</p>
 </section>
 </section>
 
@@ -920,11 +730,11 @@ intermediate memory during parameter differentiation.</p>
       </div>
     </a>
     <a class="right-next"
-       href="jax.html"
+       href="factors.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">JAX, precision and gradients</p>
+        <p class="prev-next-title">J and D factors</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -950,8 +760,6 @@ intermediate memory during parameter differentiation.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#units-geometry-and-physical-parameters">Units, geometry and physical parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-apis">Forward APIs</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-and-restart">Inference and restart</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#j-and-d-factors">J and D factors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-equations">Numerical equations</a></li>
 </ul>
   </nav></div>
 

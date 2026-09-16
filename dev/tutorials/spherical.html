@@ -991,7 +991,7 @@ function also makes the dimensional convention explicit:</p>
 </details><p>Each output directory contains <code class="docutils literal notranslate"><span class="pre">observations.csv</span></code>, the three posterior figures
 and the mock-observation figure. The emcee directory contains <code class="docutils literal notranslate"><span class="pre">chain.h5</span></code>;
 the NumPyro directory contains <code class="docutils literal notranslate"><span class="pre">metadata.json</span></code>, <code class="docutils literal notranslate"><span class="pre">last_state.pkl</span></code> and two
-<code class="docutils literal notranslate"><span class="pre">chunks/*.nc</span></code> stores. See <a class="reference internal" href="../guides/inference.html"><span class="std std-doc">inference and storage</span></a> for longer
+<code class="docutils literal notranslate"><span class="pre">chunks/*.nc</span></code> stores. See <a class="reference internal" href="storage.html"><span class="std std-doc">saving and resuming</span></a> for longer
 analyses and <a class="reference internal" href="../guides/axisymmetric.html"><span class="std std-doc">axisymmetric models</span></a> for flattened systems.</p>
 <p>The <a class="reference download internal" download="" href="../_downloads/8ddf92071c38960be7887272071735f6/execution.json"><span class="xref download myst">execution metadata</span></a> records package
 versions, source hashes and output hashes. To regenerate the displayed results
@@ -1000,6 +1000,61 @@ environment. Ordinary documentation builds reuse these recorded outputs; the
 metadata identifies the source and environment used to produce them. Both
 workflows run again on a published GitHub release or a manual Documentation
 workflow run with <code class="docutils literal notranslate"><span class="pre">run_mcmc=true</span></code>.</p>
+</section>
+<section id="classical-estimation-model-wrapper">
+<h2>Classical estimation-model wrapper<a class="headerlink" href="#classical-estimation-model-wrapper" title="Link to this heading">#</a></h2>
+<p>The analysis above supplies its own log posterior to emcee. When using
+JeansPy estimation models, <a class="reference internal" href="../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler" title="jeanspy.sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> adds HDF5
+storage and restart identity checks. Its <code class="docutils literal notranslate"><span class="pre">FlatPriorModel</span></code> uses an ordered
+table with finite <code class="docutils literal notranslate"><span class="pre">lower</span></code> and <code class="docutils literal notranslate"><span class="pre">upper</span></code> bounds. Spherical convenience models
+also use an explicit photometric prior on <code class="docutils literal notranslate"><span class="pre">log10_re_pc</span></code>; a systemic-velocity
+prior is not inferred from the velocities unless the caller explicitly
+requests the data-derived option.</p>
+<p>This separate example writes and resumes six steps in a temporary directory.
+Its autocorrelation estimate may be undefined because the chain is deliberately
+short. The wrapper still computes that diagnostic when early stopping is
+disabled; the example only exercises the storage workflow.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Short classical save/restart workflow; these draws are not converged inference."""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tempfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemporaryDirectory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_default_estimation_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
+
+<span class="c1"># classical-inference-start</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"R_pc"</span><span class="p">:</span> <span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">,</span> <span class="mf">500.</span><span class="p">],</span>
+                     <span class="s2">"vlos_kms"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.</span><span class="p">],</span> <span class="s2">"e_vlos_kms"</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">})</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">"lower"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">.3</span><span class="p">],</span>
+     <span class="s2">"upper"</span><span class="p">:</span> <span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">.3</span><span class="p">]},</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="s2">"log10_re_pc"</span><span class="p">,</span> <span class="s2">"log10_rs_pc"</span><span class="p">,</span>
+           <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"bfunc_beta_ani"</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">get_default_estimation_model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+<span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">initial_state</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Sampler also checks the conversion of one parameter vector.</span>
+        <span class="k">return</span> <span class="n">center</span>
+    <span class="k">return</span> <span class="n">center</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">center</span><span class="p">)))</span>
+
+<span class="c1"># Use a persistent output directory for your own analysis. Here it is temporary.</span>
+<span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">directory</span><span class="p">:</span>
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">directory</span> <span class="o">+</span> <span class="s2">"/"</span><span class="p">)</span>
+    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">enable_convergence_check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">resumed</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">directory</span> <span class="o">+</span> <span class="s2">"/"</span><span class="p">)</span>
+    <span class="n">resumed</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">enable_convergence_check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">resumed</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">chain</span><span class="p">[:</span><span class="mi">4</span><span class="p">],</span> <span class="n">first</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">chain</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">resumed</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+<span class="c1"># Six steps only check this workflow. Do not report parameter estimates from it.</span>
+</pre></div>
+</div>
+<p>Choose the same likelihood and prior measure when comparing samplers. Keep
+raw draws and diagnostics when a stopping criterion fails; convergence and
+calibration need their own checks as discussed in the <a class="reference internal" href="inference.html"><span class="std std-doc">MCMC tutorial</span></a>.</p>
 </section>
 </section>
 
@@ -1053,6 +1108,7 @@ workflow run with <code class="docutils literal notranslate"><span class="pre">r
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-and-mock-observations">Model and mock observations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-and-inspect-the-posterior">Sample and inspect the posterior</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-and-saved-files">Plotting and saved files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classical-estimation-model-wrapper">Classical estimation-model wrapper</a></li>
 </ul>
   </nav></div>
 

@@ -462,8 +462,6 @@
 <li class="toctree-l1"><a class="reference internal" href="contracts.html">Units, shapes and model contracts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="profiles.html">Tracers, halos and anisotropy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="axisymmetric.html">Axisymmetric Jeans modeling and inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jax.html">JAX, precision and gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference, diagnostics and restart</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="factors.html">J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
@@ -534,6 +532,31 @@
 <p>The solvers use fixed quadrature rules without an automatic error estimate.
 Compare increasing node counts and an independent reference when using a new
 parameter domain. See the API reference for each solver’s numerical options.</p>
+<section id="axisymmetric-quadrature">
+<h2>Axisymmetric quadrature<a class="headerlink" href="#axisymmetric-quadrature" title="Link to this heading">#</a></h2>
+<p>Force, vertical-pressure and LOS integrals use fixed Gauss–Legendre rules.
+Rational maps cover infinite vertical and LOS ranges. LOS quadrature is
+centered at maximum tracer density. Defaults
+are 96 nodes per integral; numerical settings must be refined for the actual
+parameter regime, especially sharp truncation, extreme scale ratios/cusps,
+flattening and outer positions. There is no global adaptive accuracy guarantee.
+Cost grows approximately as <code class="docutils literal notranslate"><span class="pre">N_stars*n_force*n_vertical*n_los</span></code>. NumPy processes
+one sky position at a time; JAX uses <code class="docutils literal notranslate"><span class="pre">lax.map</span></code> and rematerialization to bound
+intermediate memory during parameter differentiation.</p>
+<p>The three node counts control the <a class="reference internal" href="../theory.html#axisymmetric-jeans-equations"><span class="std std-ref">force and Jeans integrals</span></a>.
+J/D factors have <a class="reference internal" href="factors.html#axisymmetric-finite-cone-factors"><span class="std std-ref">separate quadrature settings</span></a>.</p>
+</section>
+<section id="precision-and-physical-parameter-gradients">
+<h2>Precision and physical-parameter gradients<a class="headerlink" href="#precision-and-physical-parameter-gradients" title="Link to this heading">#</a></h2>
+<p>Use the <a class="reference internal" href="../tutorials/backends.html"><span class="std std-doc">backend tutorial</span></a> to configure JAX,
+inspect the effective device/precision and measure synchronized execution.
+CPU float64, CPU float32 and actual GPU conditions need separate accuracy
+assessments. Check derivatives against finite differences at several step
+sizes and quadrature orders over the intended parameter domain. The
+<a class="reference internal" href="contracts.html"><span class="std std-doc">model contract</span></a> describes differentiability boundaries.</p>
+</section>
+<section id="specialized-spherical-kernels">
+<h2>Specialized spherical kernels<a class="headerlink" href="#specialized-spherical-kernels" title="Link to this heading">#</a></h2>
 <p>The specialized hypergeometric and fixed-<span class="math notranslate nohighlight">\(\eta=2\)</span> Baes kernels support the
 spherical JAX solver. They are real-valued approximations with restricted
 domains; they do not replace a general complex special-function library.
@@ -558,6 +581,7 @@ The following check uses SciPy and mpmath references in a small regular domain.<
 <p><code class="docutils literal notranslate"><span class="pre">baes_eta2_kernel_jax</span></code> clamps some intermediate arguments and replaces
 nonfinite values. Validate physical parameters separately: a finite low-level
 kernel output does not certify a valid anisotropy model.</p>
+</section>
 </section>
 
 
@@ -598,6 +622,20 @@ kernel output does not certify a valid anisotropy model.</p>
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#axisymmetric-quadrature">Axisymmetric quadrature</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#precision-and-physical-parameter-gradients">Precision and physical-parameter gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#specialized-spherical-kernels">Specialized spherical kernels</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

@@ -462,8 +462,6 @@
 <li class="toctree-l1"><a class="reference internal" href="contracts.html">Units, shapes and model contracts</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Tracers, halos and anisotropy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="axisymmetric.html">Axisymmetric Jeans modeling and inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jax.html">JAX, precision and gradients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference, diagnostics and restart</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="factors.html">J and D factors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="ullio-geometry.html">Ullio &amp; Valli J-factor geometry in JeansPy</a></li>
 </ul>
@@ -531,77 +529,47 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="tracers-halos-and-anisotropy">
 <h1>Tracers, halos and anisotropy<a class="headerlink" href="#tracers-halos-and-anisotropy" title="Link to this heading">#</a></h1>
-<p>Classical spherical components store scalar physical parameters. Update them with
-<code class="docutils literal notranslate"><span class="pre">update</span></code> before evaluating a new model. Densities use plain numbers in pc,
-solar masses and km/s. A normalized stellar density has unit total tracer
-number; it contributes no stellar mass to the gravitational potential.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Classical profiles, anisotropy and explicit units; no plotting dependency."""</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BaesAnisotropyModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
-    <span class="n">Exp2dModel</span><span class="p">,</span> <span class="n">Exp3dModel</span><span class="p">,</span> <span class="n">NFWModel</span><span class="p">,</span> <span class="n">OsipkovMerrittModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span>
-    <span class="n">SersicModel</span><span class="p">,</span> <span class="n">Uniform2dModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">)</span>
-
-<span class="c1"># profiles-start</span>
-<span class="n">r_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">])</span>
-<span class="n">tracers</span> <span class="o">=</span> <span class="p">[</span><span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">),</span> <span class="n">Exp2dModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">),</span>
-           <span class="n">Exp3dModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">),</span> <span class="n">SersicModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mf">1.</span><span class="p">),</span>
-           <span class="n">Uniform2dModel</span><span class="p">(</span><span class="n">Rmax_pc</span><span class="o">=</span><span class="mf">600.</span><span class="p">)]</span>
-<span class="k">for</span> <span class="n">tracer</span> <span class="ow">in</span> <span class="n">tracers</span><span class="p">:</span>
-    <span class="n">surface_pc_minus2</span> <span class="o">=</span> <span class="n">tracer</span><span class="o">.</span><span class="n">density_2d</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">surface_pc_minus2</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">r_pc</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">surface_pc_minus2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="c1"># The uniform projected disk has no implemented three-dimensional density.</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tracer</span><span class="p">,</span> <span class="n">Uniform2dModel</span><span class="p">):</span>
-        <span class="n">density_pc_minus3</span> <span class="o">=</span> <span class="n">tracer</span><span class="o">.</span><span class="n">density_3d</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">density_pc_minus3</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-
-<span class="c1"># Exp3dModel retains a historical exponential SCALE, despite the name re_pc.</span>
-<span class="k">assert</span> <span class="n">tracers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">half_light_radius</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">tracers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
-<span class="n">plummer</span> <span class="o">=</span> <span class="n">tracers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">plummer</span><span class="o">.</span><span class="n">cdf_R</span><span class="p">(</span><span class="n">plummer</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span><span class="p">),</span> <span class="mf">.5</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">plummer</span><span class="o">.</span><span class="n">density_2d_truncated</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">700.</span><span class="p">]),</span> <span class="mf">600.</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
-
-<span class="n">halos</span> <span class="o">=</span> <span class="p">[</span><span class="n">NFWModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">5000.</span><span class="p">),</span>
-         <span class="n">ZhaoModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">5000.</span><span class="p">,</span>
-                   <span class="n">a</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">4.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">.5</span><span class="p">)]</span>
-<span class="k">for</span> <span class="n">halo</span> <span class="ow">in</span> <span class="n">halos</span><span class="p">:</span>
-    <span class="n">rho_Msun_pc_minus3</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">mass_density_3d</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
-    <span class="n">mass_Msun</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">enclosed_mass</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">rho_Msun_pc_minus3</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">mass_Msun</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>This reference covers profile-specific scale, deprojection and cutoff
+conventions. Use the <a class="reference internal" href="../tutorials/models.html"><span class="std std-doc">model tutorial</span></a> to compose or
+extend components and the <a class="reference internal" href="../api/spherical.html"><span class="std std-doc">spherical API catalogue</span></a>
+for available classes in each backend. Shared units and parameter interfaces
+are defined in the <a class="reference internal" href="contracts.html"><span class="std std-doc">model contract</span></a>.</p>
+<section id="tracer-scales-and-three-dimensional-support">
+<h2>Tracer scales and three-dimensional support<a class="headerlink" href="#tracer-scales-and-three-dimensional-support" title="Link to this heading">#</a></h2>
 <p>The classical Plummer, projected exponential and Sersic profiles have
 three-dimensional deprojections. <code class="docutils literal notranslate"><span class="pre">Uniform2dModel</span></code> supplies only a projected
 disk and cannot be passed to a three-dimensional Jeans calculation.
 <code class="docutils literal notranslate"><span class="pre">Exp3dModel</span></code> retains its historical scale convention: <code class="docutils literal notranslate"><span class="pre">re_pc</span></code> is an exponential
 scale length, while <code class="docutils literal notranslate"><span class="pre">Exp2dModel.re_pc</span></code> is the projected half-light radius.</p>
-<p><code class="docutils literal notranslate"><span class="pre">SersicModel.density_3d(...,</span> <span class="pre">method=...)</span></code> selects the deprojection explicitly.
+</section>
+<section id="sersic-deprojection-domains">
+<h2>Sersic deprojection domains<a class="headerlink" href="#sersic-deprojection-domains" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.density_3d" title="jeanspy.model.SersicModel.density_3d"><code class="xref py py-meth docutils literal notranslate"><span class="pre">density_3d()</span></code></a> selects the deprojection explicitly.
 The VM20 approximation is restricted to <span class="math notranslate nohighlight">\(0.5\le n\le10\)</span> and
 <span class="math notranslate nohighlight">\(10^{-3}\le r/r_e\le10^3\)</span>; VM20bis uses <span class="math notranslate nohighlight">\(0.5\le n\le3.4\)</span> and
 <span class="math notranslate nohighlight">\(10^{-4}\le r/r_e\le10^3\)</span>. The default <code class="docutils literal notranslate"><span class="pre">auto</span></code> route selects VM20bis inside
 its domain, the SP04 approximation for <span class="math notranslate nohighlight">\(3.4&lt;n\le10\)</span> over that radius range,
 and numerical Abel integration outside these domains. Explicit approximation
 VM20/VM20bis methods reject unsupported values instead of extrapolating them silently.
-See the API methods for the quadrature controls of <code class="docutils literal notranslate"><span class="pre">numerical</span></code>.</p>
-<p>Spherical anisotropy is <span class="math notranslate nohighlight">\(\beta=1-\sigma_\theta^2/\sigma_r^2\)</span> for one tangential
-component. It is distinct from cylindrical <span class="math notranslate nohighlight">\(\beta_z\)</span> in the axisymmetric
-solver. The restriction <span class="math notranslate nohighlight">\(\beta&lt;1\)</span> alone does not establish the existence of
-a nonnegative distribution function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">anisotropies</span> <span class="o">=</span> <span class="p">[</span><span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=-</span><span class="mf">.2</span><span class="p">),</span>
-                <span class="n">OsipkovMerrittModel</span><span class="p">(</span><span class="n">r_a</span><span class="o">=</span><span class="mf">1000.</span><span class="p">),</span>
-                <span class="n">BaesAnisotropyModel</span><span class="p">(</span><span class="n">beta_0</span><span class="o">=-</span><span class="mf">.2</span><span class="p">,</span> <span class="n">beta_inf</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
-                                    <span class="n">r_a</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">2.</span><span class="p">)]</span>
-<span class="k">for</span> <span class="n">anisotropy</span> <span class="ow">in</span> <span class="n">anisotropies</span><span class="p">:</span>
-    <span class="n">beta</span> <span class="o">=</span> <span class="n">anisotropy</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># beta = 1 - sigma_theta^2/sigma_r^2, for one tangential component.</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">anisotropy</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
-</pre></div>
-</div>
+See that method’s API entry for the quadrature controls of <code class="docutils literal notranslate"><span class="pre">numerical</span></code>.</p>
+</section>
+<section id="anisotropy-families">
+<h2>Anisotropy families<a class="headerlink" href="#anisotropy-families" title="Link to this heading">#</a></h2>
+<p>The spherical implementations include
+<a class="reference internal" href="../api/generated/jeanspy.model.ConstantAnisotropyModel.html#jeanspy.model.ConstantAnisotropyModel" title="jeanspy.model.ConstantAnisotropyModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstantAnisotropyModel</span></code></a>,
+<a class="reference internal" href="../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel" title="jeanspy.model.OsipkovMerrittModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">OsipkovMerrittModel</span></code></a> and
+<a class="reference internal" href="../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel" title="jeanspy.model.BaesAnisotropyModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaesAnisotropyModel</span></code></a>; consult their API entries for
+parameters and supported kernels. The <a class="reference internal" href="../theory.html"><span class="std std-doc">theory page</span></a>
+defines spherical and cylindrical anisotropy. The restriction <span class="math notranslate nohighlight">\(\beta&lt;1\)</span>
+alone does not establish the existence of a nonnegative distribution function.</p>
+</section>
+<section id="halo-cutoff-conventions">
+<h2>Halo cutoff conventions<a class="headerlink" href="#halo-cutoff-conventions" title="Link to this heading">#</a></h2>
 <p>Classical spherical halo density methods evaluate the untruncated profile;
 their enclosed mass and factor calculations apply the configured cutoff.
 The spheroidal <code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.mass_density_3d</span></code> method instead returns zero outside its
 ellipsoidal cutoff. Preserve these conventions when writing a custom integral.</p>
+</section>
 </section>
 
 
@@ -642,6 +610,21 @@ ellipsoidal cutoff. Preserve these conventions when writing a custom integral.</
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracer-scales-and-three-dimensional-support">Tracer scales and three-dimensional support</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sersic-deprojection-domains">Sersic deprojection domains</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anisotropy-families">Anisotropy families</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#halo-cutoff-conventions">Halo cutoff conventions</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

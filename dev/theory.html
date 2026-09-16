@@ -537,15 +537,31 @@ is constant. With <span class="math notranslate nohighlight">\(P=\nu\overline{v_
 \[P(R,z)=\int_{|z|}^\infty\nu(R,z')\Phi_z(R,z')\,dz',\qquad
 \overline{v_R^2}=\frac{P}{(1-\beta_z)\nu},\qquad
 \overline{v_\phi^2}=\frac{P+R\,\partial_RP}{(1-\beta_z)\nu}+R\Phi_R.\]</div>
-<p>Force, vertical-pressure and LOS integrals use fixed Gauss–Legendre rules.
-Rational maps cover infinite vertical and LOS ranges. The halo may have a
-finite spheroidal cutoff; differentiation of the force integral then includes
-the moving integration endpoint. The <a class="reference internal" href="guides/axisymmetric.html"><span class="std std-doc">axisymmetric guide</span></a>
-details the force equations and parameter domains.</p>
 <p>Neither finite positive moments at observed positions nor successful MCMC
 prove that a positive distribution function exists everywhere. Rotation,
-tilted velocity ellipsoids, triaxiality, stellar self-gravity, PSF convolution
+tilted velocity ellipsoids, spatially varying cylindrical anisotropy,
+Satoh decomposition, triaxiality, stellar self-gravity, PSF convolution
 and spatial-bin averaging are outside the current axisymmetric model.</p>
+<section id="spheroidal-force-and-finite-cutoff">
+<h3>Spheroidal force and finite cutoff<a class="headerlink" href="#spheroidal-force-and-finite-cutoff" title="Link to this heading">#</a></h3>
+<p>The homoeoidal force has <code class="docutils literal notranslate"><span class="pre">D(t)²=1+(Q²-1)t²</span></code>,
+<code class="docutils literal notranslate"><span class="pre">m(t)²=t²*(R²+z²/D(t)²)</span></code>, and</p>
+<div class="math notranslate nohighlight">
+\[
+\Phi_R=4\pi GQR\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)}\,dt,
+\qquad
+\Phi_z=4\pi GQz\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)^3}\,dt.
+\]</div>
+<p>Without a cutoff, t_max=1. Outside a finite halo, m(t_max)=r_t.
+The analytic radial derivative includes the moving endpoint contribution
+<code class="docutils literal notranslate"><span class="pre">integrand(t_max)*dt_max/dR</span></code>; omitting it would give incorrect azimuthal
+moments outside the cutoff. The pressure boundary condition is P -&gt; 0 at
+infinity, and stellar tracers continue outside the finite halo.</p>
+<p>The <a class="reference internal" href="guides/axisymmetric.html"><span class="std std-doc">axisymmetric geometry guide</span></a> defines the
+parameter domains and observer coordinates. See
+<a class="reference internal" href="guides/numerics.html#axisymmetric-quadrature"><span class="std std-ref">numerical accuracy</span></a> for quadrature
+settings and refinement.</p>
+</section>
 </section>
 <section id="likelihood-and-interpretation">
 <h2>Likelihood and interpretation<a class="headerlink" href="#likelihood-and-interpretation" title="Link to this heading">#</a></h2>
@@ -612,7 +628,10 @@ is added to redefine it as a uniform physical-radius prior.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spherical-jeans-equations">Spherical Jeans equations</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#axisymmetric-jeans-equations">Axisymmetric Jeans equations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#axisymmetric-jeans-equations">Axisymmetric Jeans equations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spheroidal-force-and-finite-cutoff">Spheroidal force and finite cutoff</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-and-interpretation">Likelihood and interpretation</a></li>
 </ul>
   </nav></div>

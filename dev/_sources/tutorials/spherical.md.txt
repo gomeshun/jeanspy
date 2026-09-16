@@ -220,7 +220,7 @@ function also makes the dimensional convention explicit:
 Each output directory contains `observations.csv`, the three posterior figures
 and the mock-observation figure. The emcee directory contains `chain.h5`;
 the NumPyro directory contains `metadata.json`, `last_state.pkl` and two
-`chunks/*.nc` stores. See [inference and storage](../guides/inference.md) for longer
+`chunks/*.nc` stores. See [saving and resuming](storage.ipynb) for longer
 analyses and [axisymmetric models](../guides/axisymmetric.md) for flattened systems.
 
 The [execution metadata](../_static/quickstart/execution.json) records package
@@ -230,3 +230,27 @@ environment. Ordinary documentation builds reuse these recorded outputs; the
 metadata identifies the source and environment used to produce them. Both
 workflows run again on a published GitHub release or a manual Documentation
 workflow run with `run_mcmc=true`.
+
+## Classical estimation-model wrapper
+
+The analysis above supplies its own log posterior to emcee. When using
+JeansPy estimation models, {class}`~jeanspy.sampler.Sampler` adds HDF5
+storage and restart identity checks. Its `FlatPriorModel` uses an ordered
+table with finite `lower` and `upper` bounds. Spherical convenience models
+also use an explicit photometric prior on `log10_re_pc`; a systemic-velocity
+prior is not inferred from the velocities unless the caller explicitly
+requests the data-derived option.
+
+This separate example writes and resumes six steps in a temporary directory.
+Its autocorrelation estimate may be undefined because the chain is deliberately
+short. The wrapper still computes that diagnostic when early stopping is
+disabled; the example only exercises the storage workflow.
+
+```{literalinclude} ../../../examples/docs_inference.py
+:language: python
+:end-before: classical-inference-end
+```
+
+Choose the same likelihood and prior measure when comparing samplers. Keep
+raw draws and diagnostics when a stopping criterion fails; convergence and
+calibration need their own checks as discussed in the [MCMC tutorial](inference.ipynb).
