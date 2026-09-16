@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from scipy.integrate import quad
 
-from jeanspy.axisymmetric import ZhaoHalo
+from jeanspy.axisymmetric import AxisymmetricZhaoModel
 from jeanspy.axisymmetric_factors import C_J, C_D
 from jeanspy.model import NFWModel
 
@@ -13,7 +13,7 @@ from jeanspy.model import NFWModel
 @pytest.mark.parametrize("roi_deg", [.1, .5, 5.])
 @pytest.mark.parametrize("inclination", [0., .8, np.pi/2])
 def test_spherical_ullio_limit(roi_deg, inclination):
-    halo = ZhaoHalo(.1, 500., r_t_pc=1000.)
+    halo = AxisymmetricZhaoModel(500., .1, r_t_pc=1000.)
     spherical = NFWModel(rhos_Msunpc3=.1, rs_pc=500., r_t_pc=1000.)
     expected = spherical.jfactor_ullio2016(80000., roi_deg)
     value = halo.jfactor(80000., roi_deg, inclination=inclination)
@@ -53,14 +53,14 @@ def _ray_reference(halo, dist, roi, inclination, power):
 @pytest.mark.parametrize("Q,inc", [(.55, .9), (1.4, 1.2)])
 @pytest.mark.parametrize("power,conversion,method", [(2, C_J, "jfactor"), (1, C_D, "dfactor")])
 def test_flattened_factors_against_independent_observer_rays(Q, inc, power, conversion, method):
-    halo = ZhaoHalo(.05, 500., Q=Q, alpha=1.2, beta=3.5, gamma=.8, r_t_pc=3000.)
+    halo = AxisymmetricZhaoModel(500., .05, Q=Q, alpha=1.2, beta=3.5, gamma=.8, r_t_pc=3000.)
     expected = conversion*_ray_reference(halo, 30000., .35, inc, power)
     value = getattr(halo, method)(30000., .35, inclination=inc, n_mu=160, n_phi=160)
     np.testing.assert_allclose(value, expected, rtol=1.5e-3)
 
 
 def test_full_halo_distant_limit_and_exact_distance_correction():
-    halo = ZhaoHalo(.1, 500., Q=.6, alpha=2., beta=5., gamma=0., r_t_pc=1000.)
+    halo = AxisymmetricZhaoModel(500., .1, Q=.6, alpha=2., beta=5., gamma=0., r_t_pc=1000.)
     dist = 1e7
     expected_d = C_D*halo.enclosed_mass(np.inf)/dist**2
     np.testing.assert_allclose(halo.dfactor(dist, 1.), expected_d, rtol=1e-8)
@@ -74,11 +74,11 @@ def test_full_halo_distant_limit_and_exact_distance_correction():
 
 
 def test_slope_integrability_and_density_scaling():
-    halo = ZhaoHalo(.1, 500., Q=.7, gamma=1.49, r_t_pc=1000.)
+    halo = AxisymmetricZhaoModel(500., .1, Q=.7, gamma=1.49, r_t_pc=1000.)
     j = halo.jfactor(80000., 2.)
     assert np.isfinite(j) and j > 0
-    np.testing.assert_allclose(replace(halo, rho_s=.2).jfactor(80000., 2.), 4*j)
-    np.testing.assert_allclose(replace(halo, rho_s=.2).dfactor(80000., 2.), 2*halo.dfactor(80000., 2.))
+    np.testing.assert_allclose(replace(halo, rhos_Msunpc3=.2).jfactor(80000., 2.), 4*j)
+    np.testing.assert_allclose(replace(halo, rhos_Msunpc3=.2).dfactor(80000., 2.), 2*halo.dfactor(80000., 2.))
     with pytest.raises(ValueError, match="diverges"):
         replace(halo, gamma=1.5).jfactor(80000., .5)
     assert np.isfinite(replace(halo, gamma=1.9).dfactor(80000., .5))
@@ -86,8 +86,8 @@ def test_slope_integrability_and_density_scaling():
 
 def test_factor_domains_and_zero_aperture():
     with pytest.raises(ValueError, match="finite ellipsoidal"):
-        ZhaoHalo(.1, 500.).jfactor(80000., .5)
-    halo = ZhaoHalo(.1, 500., Q=1.5, r_t_pc=1000.)
+        AxisymmetricZhaoModel(500., .1).jfactor(80000., .5)
+    halo = AxisymmetricZhaoModel(500., .1, Q=1.5, r_t_pc=1000.)
     for dist, roi in [(1000., .5), (80000., -1.), (80000., 90.), (np.inf, .5)]:
         with pytest.raises(ValueError):
             halo.jfactor(dist, roi)
@@ -95,7 +95,7 @@ def test_factor_domains_and_zero_aperture():
 
 
 def test_aperture_crossing_cutoff_and_angular_refinement():
-    halo = ZhaoHalo(.1, 500., Q=.55, gamma=.8, r_t_pc=3000.)
+    halo = AxisymmetricZhaoModel(500., .1, Q=.55, gamma=.8, r_t_pc=3000.)
     for method in (halo.jfactor, halo.dfactor):
         coarse = method(30000., 4.8, inclination=.9, n_mu=64, n_phi=64)
         fine = method(30000., 4.8, inclination=.9, n_mu=192, n_phi=192)

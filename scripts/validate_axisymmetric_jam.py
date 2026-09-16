@@ -26,7 +26,7 @@ os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir())/"jeanspy-m
 import numpy as np
 from scipy.integrate import quad
 
-from jeanspy.axisymmetric import AxisymmetricDSphModel, PlummerTracer, ZhaoHalo, G
+from jeanspy.axisymmetric import AxisymmetricDSphModel, AxisymmetricPlummerModel, AxisymmetricZhaoModel, G
 
 
 COORDINATES = dict(x_pc=[10., 100., 300., 900., 0., 0., 0., 0., 70., -200.],
@@ -60,9 +60,8 @@ def density_mge(radius, density, count, inner, outer):
 def reference(params, ngauss, *, coefficients=None, diagnostics=False):
     from jampy.axi.jam_axi_proj import jam_axi_proj, integrand_cyl_los, mge_surf
     from jampy.util.quad1d import quad1d
-    tr = PlummerTracer(params["re_pc"], params["q"])
-    halo = ZhaoHalo(params["rhos_Msunpc3"], params["rs_pc"], params["Q"],
-                    params["alpha"], params["beta"], params["gamma"])
+    tr = AxisymmetricPlummerModel(params["re_pc"], params["q"])
+    halo = AxisymmetricZhaoModel(params["rs_pc"], params["rhos_Msunpc3"], params["Q"], params["alpha"], params["beta"], params["gamma"])
     rt = np.geomspace(.03, 3e5, 500)
     rh = np.geomspace(.05, 5e5, 600)
     if coefficients is None:

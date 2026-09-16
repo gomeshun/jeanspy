@@ -85,6 +85,7 @@ def test_classical_inference_uses_public_los_prediction(tmp_path, monkeypatch):
         np.random.set_state(state)
 
 
+@pytest.mark.mcmc
 def test_classical_los_options_and_sampler_work_in_spawn_pool(tmp_path):
     model = _make_model(tmp_path, "dataframe")
     model.update(model.convert_params(_initial_state(None)))
@@ -107,6 +108,7 @@ def test_classical_los_options_and_sampler_work_in_spawn_pool(tmp_path):
         assert np.isfinite(resumed.get_log_prob()).all()
 
 
+@pytest.mark.mcmc
 @pytest.mark.parametrize("config_kind", ["dataframe", "path"])
 def test_classical_inference_runs_resumes_and_resets(tmp_path, config_kind):
     model = _make_model(tmp_path, config_kind)
@@ -128,6 +130,7 @@ def test_classical_inference_runs_resumes_and_resets(tmp_path, config_kind):
     assert np.isfinite(resumed.get_blobs()["lnl"]).all()
 
 
+@pytest.mark.mcmc
 @pytest.mark.parametrize("failure", ["raises", "shape", "nan", "dependent", "posterior"])
 def test_failed_reset_preserves_stored_chain(tmp_path, failure):
     model = _make_model(tmp_path, "dataframe")
@@ -163,6 +166,7 @@ def test_failed_reset_preserves_stored_chain(tmp_path, failure):
     assert sampler.get_chain().shape == (5, 16, 6)
 
 
+@pytest.mark.mcmc
 def test_successful_reset_generates_replacement_once(tmp_path):
     model = _make_model(tmp_path, "dataframe")
     sampler = Sampler(model, _initial_state, nwalkers=16, prefix=f"{tmp_path}/")
@@ -184,6 +188,7 @@ def _data(n=12):
                              e_vlos_kms=np.full(n, 2.)))
 
 
+@pytest.mark.mcmc
 @pytest.mark.parametrize("config_kind", ["dataframe", "path"])
 def test_default_model_samples_finite_posterior_and_restarts(tmp_path, classical_prior_config, config_kind):
     config = classical_prior_config

@@ -1,6 +1,7 @@
 name: Publish release to PyPI
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - ".github/workflows/release.yml"
@@ -28,6 +29,8 @@ on:
 jobs:
   tests:
     name: Release test matrix
+    # Ordinary PRs use Test; full MCMC validation runs only on tags or by request.
+    if: github.event_name != 'pull_request'
     permissions:
       contents: read
     # A local reusable workflow is resolved from the exact caller commit.
@@ -50,6 +53,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
+          version: "0.12.15"
           enable-cache: false
 
       - name: Verify tag matches package version
@@ -149,7 +153,7 @@ jobs:
 
   publish:
     name: Publish to PyPI
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: [build, tests]
     runs-on: ubuntu-latest
     environment:
@@ -161,6 +165,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
+          version: "0.12.15"
           enable-cache: false
 
       - name: Download distributions

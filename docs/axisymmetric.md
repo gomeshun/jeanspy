@@ -427,3 +427,28 @@ galaxy fits or establish coverage/calibration of a real-data inference.
 The [workflow validation record](../validation/axisymmetric_workflow.md)
 collects the integration-test results, persisted example runs and installed
 wheel/source-distribution checks.
+
+## API cleanup and migration
+
+The public composed model is `AxisymmetricDSphModel`, corresponding to the
+spherical `DSphModel`. Its component roles are `StellarModel`, `DMModel`, and
+`AnisotropyModel`. The NumPy model stores immutable physical components; the
+JAX model uses explicit parameter dictionaries. These backend contracts remain
+unchanged.
+
+Removed development APIs:
+
+| Removed API | Current API |
+| --- | --- |
+| `PlummerTracer(a_pc=...)` | `AxisymmetricPlummerModel(re_pc=...)` |
+| `ZhaoHalo(rho_s=..., r_s=...)` | `AxisymmetricZhaoModel(rhos_Msunpc3=..., rs_pc=...)` |
+| Component `a_pc`, `rho_s`, `r_s` properties | `re_pc`, `rhos_Msunpc3`, `rs_pc` |
+| `AxisymmetricJeans(...).los_second_moment(x, y)` | `AxisymmetricDSphModel(submodels=...).sigmalos2(x, y)` |
+
+Use keyword arguments when migrating halo constructors: the canonical positional
+order is radius then density. The nested NumPy Jeans solver is private; use
+`AxisymmetricDSphModel.intrinsic_moments` for intrinsic moments.
+Old pickles containing the removed classes require the original package version;
+this change does not migrate saved sampling targets. Historical benchmark records,
+protocols and retained source archives remain tied to their recorded source hashes.
+The current scripts use the current API and do not reproduce those source hashes.

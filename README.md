@@ -65,11 +65,11 @@ The NumPyro extras also require ArviZ 1.0, xarray 2024.11 or newer, and their
 declared storage backends. ArviZ 1.0 requires Python 3.12 and NumPy 2 or
 newer, which is why Python 3.11 is not in this release's matrix. The
 dependency ranges intentionally use API-compatible lower bounds rather than
-the versions in one development environment. Ordinary CI tests `uv.lock`;
-release-related PRs and tags additionally resolve and test the latest versions
-satisfying these ranges, on both supported Python versions, including opt-in
-MCMC tests. All of these tests and the built-artifact checks must pass before
-publication. The exact resolved versions are retained as CI artifacts;
+the versions in one development environment. Ordinary CI tests locked and
+lowest compatible dependencies without running MCMC chains. Version tags and manual release-validation runs additionally test
+freshly resolved dependencies and enable the full emcee/NumPyro MCMC tests on
+both supported Python versions. All of these tests and the built-artifact checks
+must pass before publication. The exact resolved versions are retained as CI artifacts;
 the CUDA extra is installation-compatible but is not run on the CPU-only CI
 runner.
 

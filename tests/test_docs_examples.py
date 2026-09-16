@@ -9,7 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.mark.parametrize("example", ["docs_spherical.py", "docs_axisymmetric.py", "docs_jax.py",
     "docs_profiles.py", "docs_factors.py", "docs_numerics.py", "docs_jax_spherical.py",
-    "docs_inference.py", "docs_numpyro_inference.py"])
+    pytest.param("docs_inference.py", marks=pytest.mark.mcmc),
+    pytest.param("docs_numpyro_inference.py", marks=pytest.mark.mcmc)])
 def test_documented_example(example):
     if example in {"docs_jax.py", "docs_jax_spherical.py", "docs_numerics.py", "docs_numpyro_inference.py"}:
         pytest.importorskip("jax")

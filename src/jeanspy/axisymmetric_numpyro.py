@@ -195,7 +195,7 @@ class AxisymmetricDSphModel:
     moments and forces are tuples of matching arrays.
 
     **Validity.** Cylindrical alignment with constant ``beta_z``; same physical
-    restrictions as AxisymmetricJeans. Scalar sky inputs yield scalars; centers
+    restrictions as the NumPy axisymmetric solver. Scalar sky inputs yield scalars; centers
     are allowed for projected moments.
 
     **Errors.** Invalid dynamic parameters yield NaN, including under jit.

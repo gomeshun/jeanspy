@@ -6,14 +6,13 @@ import pytest
 from numpy.testing import assert_allclose
 from scipy.integrate import quad
 
-from jeanspy.axisymmetric import AxisymmetricJeans, PlummerTracer, ZhaoHalo, G, intrinsic_axis_ratio
+from jeanspy.axisymmetric import _AxisymmetricJeans, AxisymmetricPlummerModel, AxisymmetricZhaoModel, G, intrinsic_axis_ratio
 
 
 @pytest.fixture
 def plummer():
     a, mass = 300., 1e7
-    return AxisymmetricJeans(PlummerTracer(a), ZhaoHalo(
-        3*mass/(4*np.pi*a**3), a, alpha=2, beta=5, gamma=0))
+    return _AxisymmetricJeans(AxisymmetricPlummerModel(a), AxisymmetricZhaoModel(a, 3*mass/(4*np.pi*a**3), alpha=2, beta=5, gamma=0))
 
 
 @pytest.mark.parametrize("inclination", [0., .7, np.pi/2])
@@ -31,7 +30,7 @@ def test_analytic_spherical_plummer(plummer, inclination):
 @pytest.mark.parametrize("q", [.35, .7, 1., 1.6])
 @pytest.mark.parametrize("inc", [0., .6, np.pi/2])
 def test_tracer_projection(q, inc):
-    tracer = PlummerTracer(300., q)
+    tracer = AxisymmetricPlummerModel(300., q)
     x, y = 120., -240.
     si, ci = np.sin(inc), np.cos(inc)
     value = quad(lambda l: tracer.density(np.hypot(x,y*ci+l*si),-y*si+l*ci),
@@ -41,7 +40,7 @@ def test_tracer_projection(q, inc):
 
 @pytest.mark.parametrize("Q", [.4, 1., 1.5])
 def test_force_poisson_and_parity(Q):
-    halo = ZhaoHalo(.1, 500., Q=Q)
+    halo = AxisymmetricZhaoModel(500., .1, Q=Q)
     R, z, h = 240., 180., .02
     gR, gz = halo.potential_gradient(R,z)
     dR = (halo.potential_gradient(R+h,z)[0]-halo.potential_gradient(R-h,z)[0])/(2*h)
@@ -53,7 +52,7 @@ def test_force_poisson_and_parity(Q):
 
 
 def test_spherical_nfw_force():
-    halo = ZhaoHalo(.1,500.)
+    halo = AxisymmetricZhaoModel(500., .1)
     R, z = np.array([1.,100.,1000.]), np.array([2.,200.,2000.])
     r = np.hypot(R,z)
     x = r/500.
@@ -66,7 +65,7 @@ def test_independent_flattened_faceon(plummer, q):
     # Swap the vertical Jeans and face-on LOS integrals analytically:
     # Sigma <vlos²> = 2 int_0^inf z nu(R,z) dPhi/dz dz.
     # Plummer potential has an exact gradient; reference uses adaptive quad.
-    m = replace(plummer, tracer=PlummerTracer(300,q), inclination=0., beta_z=-.2)
+    m = replace(plummer, tracer=AxisymmetricPlummerModel(300, q), inclination=0., beta_z=-.2)
     for R in [0.,100.,600.]:
         reference = 2*quad(lambda z: z*m.tracer.density(R,z)*G*1e7*z/
                            (300**2+R*R+z*z)**1.5, 0,np.inf,
@@ -75,7 +74,7 @@ def test_independent_flattened_faceon(plummer, q):
 
 
 def test_flattened_jeans_equations_and_derivative():
-    m = AxisymmetricJeans(PlummerTracer(300,.65),ZhaoHalo(.1,500,Q=.7),beta_z=-.2)
+    m = _AxisymmetricJeans(AxisymmetricPlummerModel(300, .65),AxisymmetricZhaoModel(500, .1, Q=.7),beta_z=-.2)
     R,z,h = 220.,170.,.02
     def pressure(r,z):
         return m.tracer.density(r,z)*m.intrinsic_moments(r,z)[1]
@@ -90,7 +89,7 @@ def test_flattened_jeans_equations_and_derivative():
 
 @pytest.mark.parametrize("Q", [.4,1.4])
 def test_flattened_convergence_and_sky_symmetry(Q):
-    m = AxisymmetricJeans(PlummerTracer(300,.65),ZhaoHalo(.1,500,Q=Q),
+    m = _AxisymmetricJeans(AxisymmetricPlummerModel(300, .65),AxisymmetricZhaoModel(500, .1, Q=Q),
                           beta_z=-.3,inclination=.9,n_force=64,n_vertical=64,n_los=64)
     x,y = np.array([0.,30.,300.,1500.]), np.array([0.,120.,-150.,800.])
     values=m.los_second_moment(x,y)
@@ -102,7 +101,7 @@ def test_flattened_convergence_and_sky_symmetry(Q):
 
 def test_geometry_and_domains(plummer):
     q,inc=.6,1.
-    qp=PlummerTracer(300,q).projected_axis_ratio(inc)
+    qp=AxisymmetricPlummerModel(300, q).projected_axis_ratio(inc)
     assert_allclose(intrinsic_axis_ratio(qp,inc),q)
     for qp,inc in [(.5,.1),(1.,0.),(1.1,1.)]:
         with pytest.raises(ValueError): intrinsic_axis_ratio(qp,inc)
@@ -124,7 +123,7 @@ def test_existing_spherical_solver():
                             "AnisotropyModel":ConstantAnisotropyModel()})
     old.update({"re_pc":300.,"rs_pc":500.,"rhos_Msunpc3":.1,
                 "r_t_pc":1e10,"beta_ani":0.,"vmem_kms":0.})
-    new=AxisymmetricJeans(PlummerTracer(300),ZhaoHalo(.1,500))
+    new=_AxisymmetricJeans(AxisymmetricPlummerModel(300),AxisymmetricZhaoModel(500, .1))
     R=np.array([10.,100.,300.,1000.])
     assert_allclose(new.los_second_moment(R,0),old.sigmalos2(R),rtol=3e-4)
 

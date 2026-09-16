@@ -239,7 +239,7 @@ def timing_role(role, protocol, reference, report, persist):
     is_jax = role.startswith("jax")
     if role == "jam":
         from validate_axisymmetric_jam9 import fit_tracer
-        from jeanspy.axisymmetric import PlummerTracer
+        from jeanspy.axisymmetric import AxisymmetricPlummerModel
         from jampy.axi.jam_axi_proj import jam_axi_proj
         report["third_party_source_sha256"] = {
             "jam_axi_proj": digest(inspect.getsourcefile(jam_axi_proj)),
@@ -272,7 +272,7 @@ def timing_role(role, protocol, reference, report, persist):
                             key = (q, tier)
                             p = protocol["physical"]
                             if key not in fits:
-                                tracer = PlummerTracer(p["a_pc"], q)
+                                tracer = AxisymmetricPlummerModel(p["a_pc"], q)
                                 fit_time, fit = measure(lambda: fit_tracer(tracer, setting["ngauss"], protocol["mge_fit"]))
                                 weights, widths, metadata = fit
                                 qp = tracer.projected_axis_ratio(p["inclination_rad"])

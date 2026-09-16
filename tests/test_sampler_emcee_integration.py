@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import pytest
 import pandas as pd
 
 from jeanspy.sampler import Sampler
@@ -39,6 +40,7 @@ def _initial_state(nwalkers):
     return rng.normal(loc=[0.1, -0.1], scale=[0.08, 0.08], size=(nwalkers, 2))
 
 
+@pytest.mark.mcmc
 def test_sampler_runs_and_persists_emcee_chain(tmp_path: Path):
     model = _ToyPosteriorModel()
     sampler = Sampler(

@@ -30,7 +30,7 @@ os.environ.setdefault("MPLCONFIGDIR", "/tmp/jeanspy-jam9-mpl")
 os.environ.setdefault("MPLBACKEND", "Agg")
 
 import numpy as np
-from jeanspy.axisymmetric import AxisymmetricDSphModel, G, PlummerTracer
+from jeanspy.axisymmetric import AxisymmetricDSphModel, G, AxisymmetricPlummerModel
 
 
 def digest(path):
@@ -62,7 +62,7 @@ def fit_tracer(tracer, count, settings):
     import mgefit
     radius = np.geomspace(settings["rmin_pc"], settings["rmax_pc"], settings["samples"])
     density = tracer.density(radius, 0.)
-    amplitude, scale = float(density.max()), tracer.a_pc
+    amplitude, scale = float(density.max()), tracer.re_pc
     result = mgefit.fit_1d(radius/scale, density/amplitude, ngauss=count,
         inner_slope=settings["inner_slope"], outer_slope=settings["outer_slope"],
         quiet=True, plot=False)
@@ -82,7 +82,7 @@ def run_case(q, protocol, case, save):
     from jampy.axi.jam_axi_proj import jam_axi_proj
     p = protocol["physical"]
     a, mass, inc = p["a_pc"], p["mass_Msun"], p["inclination_rad"]
-    tracer = PlummerTracer(a, q)
+    tracer = AxisymmetricPlummerModel(a, q)
     params = dict(re_pc=a, rs_pc=a, rhos_Msunpc3=3*mass/(4*np.pi*a**3),
         q=q, Q=p["halo_Q"], alpha=p["alpha"], beta=p["beta"], gamma=p["gamma"],
         beta_z=p["beta_z"], inclination=inc)

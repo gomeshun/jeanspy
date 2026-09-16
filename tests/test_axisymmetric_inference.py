@@ -122,6 +122,7 @@ def test_sampling_identity_excludes_evaluated_coordinates():
     assert fingerprint(m) != before
 
 
+@pytest.mark.mcmc
 def test_classical_sampler_resume_and_changed_sky_coordinate_rejection(tmp_path):
     m = make_model()
     prefix = str(tmp_path / "axis_")
