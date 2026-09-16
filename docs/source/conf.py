@@ -4,6 +4,8 @@ import os
 import re
 import sys
 import tomllib
+import shutil
+import json
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
@@ -28,7 +30,7 @@ if not re.fullmatch(r"[A-Za-z0-9_./-]+", source_ref):
     raise ValueError("Documentation source reference contains unsupported characters")
 tags.add("development" if version == "dev" else "release")
 extensions = [
-    "myst_parser",
+    "myst_nb",
     "sphinx_design",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -38,7 +40,12 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.viewcode",
 ]
-source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
+source_suffix = {".rst": "restructuredtext", ".md": "myst-nb", ".ipynb": "myst-nb"}
+# Display the reviewed, saved notebook outputs. Execution is explicit, with
+# MCMC reserved for the release/manual workflow just like the script examples.
+nb_execution_mode = "off"
+nb_execution_raise_on_error = True
+nb_merge_streams = True
 # Research records remain in the repository, outside the published site.
 exclude_patterns = [
     "_build", "Thumbs.db", ".DS_Store", "validation/**", "comparison/**",
@@ -48,6 +55,13 @@ templates_path = ["_templates"]
 autosummary_generate = True
 autosummary_imported_members = True
 autosummary_ignore_module_all = False
+inventory_path = ROOT / "docs/api_inventory.json"
+autosummary_context = {
+    "member_lookup_classes": {
+        entry["path"] for entry in json.loads(inventory_path.read_text())
+        if entry["path"] == entry["canonical"] and entry["methods"]
+    } if inventory_path.is_file() else set(),
+}
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 autodoc_typehints_format = "fully-qualified"
@@ -82,7 +96,7 @@ html_theme_options = {
     # default banner incorrectly labels the only preferred entry as stable.
     "show_version_warning_banner": False,
     "navigation_with_keys": False,
-    "header_links_before_dropdown": 6,
+    "header_links_before_dropdown": 4,
     "footer_start": ["copyright"],
 }
 html_context = {
@@ -138,6 +152,15 @@ def preserve_source_alias_anchors(app, doctree):
     Both names point to the same runtime class; add the corresponding anchors.
     """
     from sphinx import addnodes
+    # :no-index: prevents duplicate Python-domain registrations on standalone
+    # member pages, but viewcode still links back to their qualified fragments.
+    # Give these copies local anchors while keeping the class as the domain entry.
+    if app.env.docname.startswith("api/members/"):
+        fullname = app.env.docname.removeprefix("api/members/")
+        for node in doctree.findall(addnodes.desc_signature):
+            if fullname not in node["ids"]:
+                node["ids"].append(fullname)
+            break
     for node in doctree.findall(addnodes.desc_signature):
         for target in list(node.get("ids", [])):
             for facade in ("jeanspy.model", "jeanspy.model_numpyro"):
@@ -160,3 +183,30 @@ def setup(app):
     app.connect("source-read", substitute_build_identity)
     app.connect("doctree-read", qualify_imported_types)
     app.connect("doctree-read", preserve_source_alias_anchors)
+    app.connect("html-page-context", add_notebook_download)
+    app.connect("build-finished", copy_notebook_downloads)
+
+
+PUBLIC_NOTEBOOKS = ("quickstart", "tutorials/units", "tutorials/backends",
+                    "tutorials/models", "tutorials/predictions", "tutorials/inference",
+                    "tutorials/storage")
+
+
+def add_notebook_download(app, pagename, templatename, context, doctree):
+    """Add an HTML download link without Sphinx-only syntax in the notebook."""
+    if pagename not in PUBLIC_NOTEBOOKS:
+        return
+    url = context["pathto"]("_static/notebooks/" + pagename + ".ipynb", 1)
+    link = (f'<p class="notebook-download"><a href="{url}" download>'
+            'Download this notebook (.ipynb)</a> · '
+            'Read the saved outputs here, or run the cells in Jupyter.</p>')
+    context["body"] = context["body"].replace("</h1>", "</h1>" + link, 1)
+
+
+def copy_notebook_downloads(app, exception):
+    if exception is not None or app.builder.format != "html":
+        return
+    for name in PUBLIC_NOTEBOOKS:
+        target = Path(app.outdir) / "_static/notebooks" / (name + ".ipynb")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(Path(app.srcdir) / (name + ".ipynb"), target)

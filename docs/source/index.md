@@ -20,9 +20,18 @@ Documentation version: `@DOCS_VERSION@`. Source reference:
 The [release history](https://github.com/gomeshun/jeanspy/releases) identifies
 published versions and significant changes.
 
-Start with the [installation guide](installation.md) and
-[executable quickstart](quickstart.md). The [model contract](guides/contracts.md)
-defines units, geometry, array shapes and the limits of differentiation.
+Start with the [installation guide](installation.md), then follow the path
+that matches what you need:
+
+| Section | Purpose |
+| --- | --- |
+| [Quickstart](quickstart.ipynb) | Define a model, plot a prediction and mock data, run NumPyro NUTS and inspect the result |
+| [Tutorials](tutorials/index.md) | Learn units, backends, model construction, predictions, MCMC and storage step by step |
+| [API reference](api/index.md) | Look up every public class, function, method and property by name |
+| [Topic guides](guides/index.md) | Consult geometry, profile, numerical and J/D-factor details |
+
+The [model contract](guides/contracts.md) defines units, geometry, array shapes
+and the limits of differentiation.
 
 ```{toctree}
 :hidden:
@@ -30,10 +39,10 @@ defines units, geometry, array shapes and the limits of differentiation.
 
 installation
 quickstart
-theory
-guides/index
 tutorials/index
 api/index
+guides/index
+theory
 citing
 references
 ```

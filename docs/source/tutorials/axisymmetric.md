@@ -6,12 +6,33 @@ a deterministic subset of saved posterior draws. Priors are explicit in
 `log10_rhos_Msunpc3`, `log10_rs_pc`, `bfunc_beta_z`, `cos_inclination` and
 `vmem_kms`.
 
+Apply the [six tutorial steps](index.md) to a flattened system. Unlike the
+spherical Quickstart, this complete script also handles projected flattening,
+inclination and posterior J/D-factor calculation.
+
+## 1. Define the geometry and observations
+
+The tracer is an oblate Plummer component, and the halo is a spheroidal Zhao
+profile. The example fixes the projected tracer axis ratio and converts it
+to an intrinsic ratio for each inclination. Positions are signed `x_pc`,
+`y_pc` coordinates in pc. The velocity likelihood conditions on those
+positions; it does not infer the spatial selection function.
+
+## 2. Choose priors and run a backend
+
+The prior table explicitly distinguishes logarithmic scales, transformed
+cylindrical anisotropy and cosine inclination. A uniform prior in cosine
+inclination is not uniform in inclination. The two commands below use the
+same physical configuration and mock-data recipe.
+
 ```bash
 python examples/axisymmetric_inference.py \
     --backend classical --output-dir /tmp/axisymmetric-emcee
 JEANSPY_JAX_ENABLE_X64=true python examples/axisymmetric_inference.py \
     --backend numpyro --output-dir /tmp/axisymmetric-nuts
 ```
+
+## 3. Save, resume and inspect
 
 Repeat the same command to resume. Keep the same warmup setting when resuming
 the classical example so that its export discards the original warmup steps.
@@ -22,6 +43,13 @@ Default settings use eight stars and short chains. They exercise the complete
 storage path; the summary explicitly records that convergence and calibration
 are unestablished.
 
+Inspect the saved chain as described in the [MCMC tutorial](inference.ipynb)
+before interpreting derived factors. The J/D factors are NumPy postprocessing
+of a deterministic subset of posterior draws, not differentiable outputs
+of the NUTS model. Their cone aperture and distance are part of the analysis.
+
+````{dropdown} Complete executable script
 ```{literalinclude} ../../../examples/axisymmetric_inference.py
 :language: python
 ```
+````

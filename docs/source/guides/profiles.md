@@ -38,5 +38,5 @@ a nonnegative distribution function.
 
 Classical spherical halo density methods evaluate the untruncated profile;
 their enclosed mass and factor calculations apply the configured cutoff.
-The spheroidal `AxisymmetricZhaoModel.density` method instead returns zero outside its
+The spheroidal `AxisymmetricZhaoModel.mass_density_3d` method instead returns zero outside its
 ellipsoidal cutoff. Preserve these conventions when writing a custom integral.

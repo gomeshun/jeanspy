@@ -20,7 +20,8 @@ jobs:
   build:
     name: Build English documentation and execute examples
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Release/manual builds also execute the generalized-NFW MCMC notebooks.
+    timeout-minutes: 60
     env:
       JEANSPY_JAX_PLATFORM: cpu
       JEANSPY_JAX_ENABLE_X64: "true"
@@ -61,7 +62,16 @@ jobs:
           uv run --no-sync python scripts/generate_api_docs.py
           uv run --no-sync python scripts/generate_bibliography.py
       - name: Execute short examples and verify version preservation
-        run: uv run --no-sync python -m pytest -q tests/test_docs_examples.py tests/test_docs_versions.py
+        run: >-
+          uv run --no-sync python -m pytest -q tests/test_docs_examples.py
+          tests/test_docs_versions.py tests/test_documentation_notebooks.py
+      - name: Validate saved notebooks and execute lightweight tutorials
+        run: |
+          uv run --no-sync python scripts/run_doc_notebooks.py --check
+          uv run --no-sync python scripts/run_doc_notebooks.py
+      - name: Execute MCMC notebooks and refresh their displayed outputs
+        if: github.event_name == 'release' || inputs.run_mcmc
+        run: uv run --no-sync python scripts/run_doc_notebooks.py --include-mcmc --write
       - name: Execute both Quickstart workflows and render their stored posteriors
         if: github.event_name == 'release' || inputs.run_mcmc
         run: uv run --no-sync python scripts/run_quickstart.py

@@ -2,6 +2,7 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
+import corner
 from emcee.autocorr import function_1d
 
 
@@ -33,32 +34,13 @@ def plot_posterior(chain, names, truth, output_dir):
     fig.savefig(Path(output_dir) / "trace.png", dpi=150)
     plt.close(fig)
 
-    fig, axes = plt.subplots(len(names), len(names), figsize=(9, 9),
-                             layout="constrained")
-    shown = flat[::max(1, len(flat)//1500)]
-    for i, name_i in enumerate(names):
-        for j, name_j in enumerate(names):
-            ax = axes[i, j]
-            if j > i:
-                ax.set_visible(False)
-                continue
-            if i == j:
-                ax.hist(flat[:, i], bins=30, density=True, color="#23558b", alpha=.8)
-                low, median, high = np.quantile(flat[:, i], [.16, .5, .84])
-                ax.axvspan(low, high, alpha=.2, color="gray")
-                ax.axvline(median, color="black", lw=1)
-            else:
-                ax.scatter(shown[:, j], shown[:, i], s=2, alpha=.12, color="#23558b")
-                ax.axhline(truth[i], color="#bb4430", ls="--", lw=1)
-            ax.axvline(truth[j], color="#bb4430", ls="--", lw=1)
-            if i == len(names)-1:
-                ax.set_xlabel(name_j)
-            else:
-                ax.tick_params(labelbottom=False)
-            if j == 0 and i > 0:
-                ax.set_ylabel(name_i)
-            else:
-                ax.tick_params(labelleft=False)
+    # Explicit enclosed probabilities: the corner defaults use 2-D sigma radii.
+    fig = corner.corner(flat, labels=names, truths=truth, truth_color="#242424",
+                        levels=(.68, .95), bins=24, smooth=1.,
+                        quantiles=(.16, .5, .84), color="#23558b",
+                        plot_density=False, fill_contours=False,
+                        label_kwargs={"fontsize": 10})
+    fig.suptitle("68% and 95% 2-D posterior contours; black lines: true", fontsize=12)
     fig.savefig(Path(output_dir) / "posterior.png", dpi=150)
     plt.close(fig)
 

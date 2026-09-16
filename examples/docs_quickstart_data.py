@@ -3,9 +3,9 @@
 import numpy as np
 from jeanspy.model import DSphModel, PlummerModel, ZhaoModel, ConstantAnisotropyModel
 
-# This example conditions on photometry and halo shape, and fits four parameters.
+# This example fixes photometry and the outer halo shape, and fits five parameters.
 true_params = dict(re_pc=200., rs_pc=500., rhos_Msunpc3=.1,
-                   a=2., b=4., g=.5, r_t_pc=np.inf, beta_ani=0., vmem_kms=0.)
+                   a=1., b=3., g=1., r_t_pc=np.inf, beta_ani=0., vmem_kms=0.)
 truth_model = DSphModel(vmem_kms=true_params["vmem_kms"], submodels={
     "StellarModel": PlummerModel(re_pc=true_params["re_pc"]),
     "DMModel": ZhaoModel(**{k: true_params[k] for k in
