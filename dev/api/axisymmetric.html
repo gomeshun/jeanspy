@@ -61,7 +61,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-14"/>
+    <meta name="docbuild:last-update" content="2026-09-16"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -516,9 +516,6 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.model.AxisymmetricStellarModel.html">jeanspy.model.AxisymmetricStellarModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.model.AxisymmetricDMModel.html">jeanspy.model.AxisymmetricDMModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.model.AxisymmetricAnisotropyModel.html">jeanspy.model.AxisymmetricAnisotropyModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/jeanspy.model_numpyro.AxisymmetricDSphModel.html">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
@@ -630,19 +627,10 @@
 boundaries, and <a class="reference internal" href="../quickstart.html"><span class="doc">Quickstart</span></a> for executable minimal examples.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/jeanspy.axisymmetric.AxisymmetricJeans.html#jeanspy.axisymmetric.AxisymmetricJeans" title="jeanspy.axisymmetric.AxisymmetricJeans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AxisymmetricJeans</span></code></a>(tracer, halo[, beta_z, ...])</p></td>
-<td><p>Aligned constant-beta_z Jeans solver with integration to infinity.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/jeanspy.axisymmetric.PlummerTracer.html#jeanspy.axisymmetric.PlummerTracer" title="jeanspy.axisymmetric.PlummerTracer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PlummerTracer</span></code></a>([a_pc, q, re_pc])</p></td>
-<td><p>Legacy constructor using a_pc in pc; prefer AxisymmetricPlummerModel.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/jeanspy.axisymmetric.ZhaoHalo.html#jeanspy.axisymmetric.ZhaoHalo" title="jeanspy.axisymmetric.ZhaoHalo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZhaoHalo</span></code></a>([rho_s, r_s, Q, alpha, beta, ...])</p></td>
-<td><p>Legacy constructor using rho_s and r_s; prefer AxisymmetricZhaoModel.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/jeanspy.axisymmetric.intrinsic_axis_ratio.html#jeanspy.axisymmetric.intrinsic_axis_ratio" title="jeanspy.axisymmetric.intrinsic_axis_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intrinsic_axis_ratio</span></code></a>(q_projected, inclination)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/jeanspy.axisymmetric.intrinsic_axis_ratio.html#jeanspy.axisymmetric.intrinsic_axis_ratio" title="jeanspy.axisymmetric.intrinsic_axis_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intrinsic_axis_ratio</span></code></a>(q_projected, inclination)</p></td>
 <td><p>Deproject an oblate tracer; face-on photometry is degenerate and rejected.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError.html#jeanspy.axisymmetric.InvalidAxisymmetricModelError" title="jeanspy.axisymmetric.InvalidAxisymmetricModelError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvalidAxisymmetricModelError</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError.html#jeanspy.axisymmetric.InvalidAxisymmetricModelError" title="jeanspy.axisymmetric.InvalidAxisymmetricModelError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvalidAxisymmetricModelError</span></code></a></p></td>
 <td><p>A physical proposal or its numerical Jeans moments are inadmissible.</p></td>
 </tr>
 </tbody>

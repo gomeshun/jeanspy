@@ -61,7 +61,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-14"/>
+    <meta name="docbuild:last-update" content="2026-09-16"/>
   
     
     <script src="_static/searchtools.js"></script>
@@ -958,7 +958,10 @@ analyses and <a class="reference internal" href="guides/axisymmetric.html"><span
 <p>The <a class="reference download internal" download="" href="_downloads/8ddf92071c38960be7887272071735f6/execution.json"><span class="xref download myst">execution metadata</span></a> records package
 versions, source hashes and output hashes. To regenerate the displayed results
 from a checkout, run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">scripts/run_quickstart.py</span></code> in the locked docs
-environment. Documentation CI executes both workflows before building the page.</p>
+environment. Ordinary documentation builds reuse these recorded outputs; the
+metadata identifies the source and environment used to produce them. Both
+workflows run again on a published GitHub release or a manual Documentation
+workflow run with <code class="docutils literal notranslate"><span class="pre">run_mcmc=true</span></code>.</p>
 </section>
 </section>
 

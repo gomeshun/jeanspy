@@ -61,7 +61,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-14"/>
+    <meta name="docbuild:last-update" content="2026-09-16"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -516,9 +516,6 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricStellarModel.html">jeanspy.model.AxisymmetricStellarModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDMModel.html">jeanspy.model.AxisymmetricDMModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricAnisotropyModel.html">jeanspy.model.AxisymmetricAnisotropyModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.html">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
@@ -656,7 +653,7 @@ integers &gt;=16.</p>
 <code class="docutils literal notranslate"><span class="pre">potential_gradient</span></code> is (km/s)^2/pc. Coordinates broadcast; intrinsic
 moments and forces are tuples of matching arrays.</p>
 <p><strong>Validity.</strong> Cylindrical alignment with constant <code class="docutils literal notranslate"><span class="pre">beta_z</span></code>; same physical
-restrictions as AxisymmetricJeans. Scalar sky inputs yield scalars; centers
+restrictions as the cylindrical Jeans solver. Scalar sky inputs yield scalars; centers
 are allowed for projected moments.</p>
 <p><strong>Errors.</strong> Invalid schema/values raise ValueError; nonphysical moments
 raise InvalidAxisymmetricModelError.</p>
@@ -806,7 +803,7 @@ halo, inclination and finite <code class="docutils literal notranslate"><span cl
 independent factor quadratures, all &gt;=16.</p>
 <p><strong>Returns and shape.</strong> Python float in GeV cm^-2.</p>
 <p><strong>Validity.</strong> Require explicit finite <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>, observer distance &gt;
-<code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>*max(1,Q), <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">roi_deg</span> <span class="pre">&lt;</span> <span class="pre">90</span></code> and gamma&lt;2 under the ZhaoHalo
+<code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code>*max(1,Q), <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">roi_deg</span> <span class="pre">&lt;</span> <span class="pre">90</span></code> and gamma&lt;2 under the AxisymmetricZhaoModel
 constructor domain. <code class="docutils literal notranslate"><span class="pre">n_phi</span></code> uses a periodic rule; refine all orders.</p>
 </dd></dl>
 

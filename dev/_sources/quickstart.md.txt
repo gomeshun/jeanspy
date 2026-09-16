@@ -209,4 +209,7 @@ analyses and [axisymmetric models](guides/axisymmetric.md) for flattened systems
 The [execution metadata](_static/quickstart/execution.json) records package
 versions, source hashes and output hashes. To regenerate the displayed results
 from a checkout, run `python scripts/run_quickstart.py` in the locked docs
-environment. Documentation CI executes both workflows before building the page.
+environment. Ordinary documentation builds reuse these recorded outputs; the
+metadata identifies the source and environment used to produce them. Both
+workflows run again on a published GitHub release or a manual Documentation
+workflow run with `run_mcmc=true`.

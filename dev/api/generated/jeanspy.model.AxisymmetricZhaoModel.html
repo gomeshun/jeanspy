@@ -61,7 +61,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-14"/>
+    <meta name="docbuild:last-update" content="2026-09-16"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -516,9 +516,6 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricStellarModel.html">jeanspy.model.AxisymmetricStellarModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDMModel.html">jeanspy.model.AxisymmetricDMModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricAnisotropyModel.html">jeanspy.model.AxisymmetricAnisotropyModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.AxisymmetricJeans.html">jeanspy.axisymmetric.AxisymmetricJeans</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.PlummerTracer.html">jeanspy.axisymmetric.PlummerTracer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.ZhaoHalo.html">jeanspy.axisymmetric.ZhaoHalo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.intrinsic_axis_ratio.html">jeanspy.axisymmetric.intrinsic_axis_ratio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric.InvalidAxisymmetricModelError.html">jeanspy.axisymmetric.InvalidAxisymmetricModelError</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_numpyro.AxisymmetricDSphModel.html">jeanspy.model_numpyro.AxisymmetricDSphModel</a></li>
@@ -737,18 +734,6 @@ a positive central cusp diverges at the origin.</p>
 <dd><p>Finite-cone decay factor in GeV cm^-2; finite r_t_pc required.</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricZhaoModel.rho_s">
-<span id="jeanspy.axisymmetric.AxisymmetricZhaoModel.rho_s"></span><span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rho_s</span></span><a class="headerlink" href="#jeanspy.model.AxisymmetricZhaoModel.rho_s" title="Link to this definition">#</a></dt>
-<dd><p>Density scale in Msun/pc^3 (compatibility spelling).</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jeanspy.model.AxisymmetricZhaoModel.r_s">
-<span id="jeanspy.axisymmetric.AxisymmetricZhaoModel.r_s"></span><span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">r_s</span></span><a class="headerlink" href="#jeanspy.model.AxisymmetricZhaoModel.r_s" title="Link to this definition">#</a></dt>
-<dd><p>Scale radius in pc (compatibility spelling).</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model.AxisymmetricZhaoModel.mass_density_3d">
 <span id="jeanspy.axisymmetric.AxisymmetricZhaoModel.mass_density_3d"></span><span class="sig-name descname"><span class="pre">mass_density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_pc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/axisymmetric.html#AxisymmetricZhaoModel.mass_density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.AxisymmetricZhaoModel.mass_density_3d" title="Link to this definition">#</a></dt>
@@ -819,8 +804,6 @@ a positive central cusp diverges at the origin.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricZhaoModel.potential_gradient"><code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.potential_gradient()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricZhaoModel.jfactor"><code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.jfactor()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricZhaoModel.dfactor"><code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.dfactor()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricZhaoModel.rho_s"><code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.rho_s</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricZhaoModel.r_s"><code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.r_s</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.AxisymmetricZhaoModel.mass_density_3d"><code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.mass_density_3d()</span></code></a></li>
 </ul>
 </li>

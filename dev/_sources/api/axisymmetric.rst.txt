@@ -10,9 +10,6 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
 
 .. autosummary::
 
-   AxisymmetricJeans
-   PlummerTracer
-   ZhaoHalo
    intrinsic_axis_ratio
    InvalidAxisymmetricModelError
 

@@ -58,7 +58,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-14"/>
+    <meta name="docbuild:last-update" content="2026-09-16"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -556,10 +556,10 @@
         <span class="n">denominator</span> <span class="o">=</span> <span class="n">transverse</span><span class="o">*</span><span class="n">ct</span><span class="o">-</span><span class="n">los</span><span class="o">*</span><span class="n">st</span>
         <span class="n">cone_radius</span> <span class="o">=</span> <span class="n">dist_pc</span><span class="o">*</span><span class="n">st</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">denominator</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">denominator</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
         <span class="n">mmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">denominator</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">cone_radius</span><span class="p">,</span> <span class="n">halo</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">),</span> <span class="n">halo</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)</span>
-        <span class="n">xmax</span> <span class="o">=</span> <span class="n">mmax</span><span class="o">/</span><span class="n">halo</span><span class="o">.</span><span class="n">r_s</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="n">mmax</span><span class="o">/</span><span class="n">halo</span><span class="o">.</span><span class="n">rs_pc</span>
         <span class="n">logc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="n">logx</span> <span class="o">=</span> <span class="n">logc</span><span class="o">+</span><span class="mi">4</span><span class="o">/</span><span class="n">exponent</span><span class="o">*</span><span class="n">logu</span>
-        <span class="n">radius</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">r_s</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logx</span><span class="p">)</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">rs_pc</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logx</span><span class="p">)</span>
         <span class="n">distance_weight</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">radius</span><span class="o">/</span><span class="n">dist_pc</span><span class="p">)</span><span class="o">*</span><span class="n">los</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">radius</span><span class="o">/</span><span class="n">dist_pc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">norm2</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">profile_power</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">logaddexp</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">halo</span><span class="o">.</span><span class="n">alpha</span><span class="o">*</span><span class="n">logx</span><span class="p">))</span>
         <span class="c1"># Cusp regularization cancels all singular powers analytically. In</span>
@@ -569,12 +569,12 @@
 
         <span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))</span>
         <span class="n">logx</span> <span class="o">=</span> <span class="n">length</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="n">u</span>
-        <span class="n">radius</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">r_s</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logx</span><span class="p">)</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">rs_pc</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logx</span><span class="p">)</span>
         <span class="n">distance_weight</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">radius</span><span class="o">/</span><span class="n">dist_pc</span><span class="p">)</span><span class="o">*</span><span class="n">los</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">radius</span><span class="o">/</span><span class="n">dist_pc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">norm2</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">exponent</span><span class="o">*</span><span class="n">logx</span><span class="o">-</span><span class="n">profile_power</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">logaddexp</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">halo</span><span class="o">.</span><span class="n">alpha</span><span class="o">*</span><span class="n">logx</span><span class="p">))</span>
         <span class="n">outer</span> <span class="o">=</span> <span class="n">length</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="o">*</span><span class="n">shape</span><span class="o">/</span><span class="n">distance_weight</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">total</span> <span class="o">+=</span> <span class="n">wm</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">n_phi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">inner</span><span class="o">+</span><span class="n">outer</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">halo</span><span class="o">.</span><span class="n">Q</span><span class="o">*</span><span class="n">halo</span><span class="o">.</span><span class="n">rho_s</span><span class="o">**</span><span class="n">power</span><span class="o">*</span><span class="n">halo</span><span class="o">.</span><span class="n">r_s</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">dist_pc</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">total</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">halo</span><span class="o">.</span><span class="n">Q</span><span class="o">*</span><span class="n">halo</span><span class="o">.</span><span class="n">rhos_Msunpc3</span><span class="o">**</span><span class="n">power</span><span class="o">*</span><span class="n">halo</span><span class="o">.</span><span class="n">rs_pc</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">dist_pc</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">total</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="jfactor">
@@ -585,7 +585,7 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    **Inputs and units.** halo is ZhaoHalo; ``dist_pc`` is scalar observer</span>
+<span class="sd">    **Inputs and units.** halo is AxisymmetricZhaoModel; ``dist_pc`` is scalar observer</span>
 <span class="sd">    distance (pc); ``roi_deg`` is scalar cone half-angle; inclination is</span>
 <span class="sd">    radians; ``n_mu``/``n_phi``/``n_radial`` are integers &gt;=16.</span>
 
@@ -618,7 +618,7 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    **Inputs and units.** halo is ZhaoHalo; ``dist_pc`` is scalar observer</span>
+<span class="sd">    **Inputs and units.** halo is AxisymmetricZhaoModel; ``dist_pc`` is scalar observer</span>
 <span class="sd">    distance (pc); ``roi_deg`` is scalar cone half-angle; inclination is</span>
 <span class="sd">    radians; ``n_mu``/``n_phi``/``n_radial`` are integers &gt;=16.</span>
 
@@ -626,7 +626,7 @@
 <span class="sd">    gives zero.</span>
 
 <span class="sd">    **Validity.** Require explicit finite ``r_t_pc``, observer distance &gt;</span>
-<span class="sd">    ``r_t_pc``\*max(1,Q), ``0 &lt;= roi_deg &lt; 90`` and gamma&lt;2 under the ZhaoHalo</span>
+<span class="sd">    ``r_t_pc``\*max(1,Q), ``0 &lt;= roi_deg &lt; 90`` and gamma&lt;2 under the AxisymmetricZhaoModel</span>
 <span class="sd">    constructor domain. ``n_phi`` uses a periodic rule; refine all orders.</span>
 
 <span class="sd">    **Errors.** Invalid geometry/domain/order raises ValueError; wrong halo type</span>

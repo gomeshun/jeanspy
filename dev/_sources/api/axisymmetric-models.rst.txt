@@ -21,9 +21,6 @@ Axisymmetric components and NumPy forward model
 .. autosummary::
    :toctree: generated
 
-   jeanspy.axisymmetric.AxisymmetricJeans
-   jeanspy.axisymmetric.PlummerTracer
-   jeanspy.axisymmetric.ZhaoHalo
    jeanspy.axisymmetric.intrinsic_axis_ratio
    jeanspy.axisymmetric.InvalidAxisymmetricModelError
 
