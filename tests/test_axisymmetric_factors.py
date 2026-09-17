@@ -15,7 +15,7 @@ from jeanspy.model import NFWModel
 def test_spherical_ullio_limit(roi_deg, inclination):
     halo = AxisymmetricZhaoModel(500., .1, r_t_pc=1000.)
     spherical = NFWModel(rhos_Msunpc3=.1, rs_pc=500., r_t_pc=1000.)
-    expected = spherical.jfactor_ullio2016(80000., roi_deg)
+    expected = spherical.jfactor_cone(80000., roi_deg)
     value = halo.jfactor(80000., roi_deg, inclination=inclination)
     np.testing.assert_allclose(value, expected, rtol=7e-4)
 

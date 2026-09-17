@@ -13,9 +13,9 @@ def main() -> None:
     import jax
     import jax.numpy as jnp
 
-    import jeanspy.model_numpyro as mn
+    import jeanspy.model_jax as mn
     from jeanspy.baes_eta2 import BaesEta2AnisotropyModel
-    from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
+    from jeanspy.model_jax import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
 
     if not bool(jax.config.read("jax_enable_x64")):
         raise RuntimeError("This diagnostic requires JAX float64.")
@@ -105,10 +105,10 @@ def main() -> None:
 
         # SciPy/hypergeometric path is an independent constant-beta reference.
         k_ref = jax.block_until_ready(
-            const.kernel(u_probe, R_probe, params=const_params, backend="scipy")
+            const.kernel(u_probe, R_probe, params=const_params, kernel_backend="scipy")
         )
         k_const_jax = jax.block_until_ready(
-            const.kernel(u_probe, R_probe, params=const_params, backend="jax", n_kernel=256)
+            const.kernel(u_probe, R_probe, params=const_params, kernel_backend="jax", n_kernel=256)
         )
         print(f"\nbeta={beta:+.3f}")
         print(f"constant JAX(256) vs SciPy kernel max rel: {max_rel(k_const_jax, k_ref):.3e}")
@@ -118,11 +118,11 @@ def main() -> None:
             const_dsph.sigmalos2(
                 R,
                 params=const_params,
-                backend="kernel",
+                solver="kernel",
                 n_u=4096,
                 n_kernel=256,
                 u_max=projection_u_max,
-                constant_kernel_backend="jax",
+                kernel_backend="jax",
                 dm_mass_method="analytic",
                 jit=True,
             )

@@ -160,19 +160,19 @@ jobs:
       - name: Generate Sérsic visualization
         run: .venv/bin/python scripts/plot_sersic_pr_summary.py artifacts/sersic_deprojection_summary
 
-      - name: Run classical inference and restart example
+      - name: Run NumPy/SciPy inference and restart example
         if: inputs.release_validation
-        run: .venv/bin/python scripts/example_classical_inference.py --output-dir "$RUNNER_TEMP/classical-example"
+        run: .venv/bin/python scripts/example_numpy_inference.py --output-dir "$RUNNER_TEMP/numpy-example"
 
       - name: Run axisymmetric inference and restart examples
         if: inputs.release_validation && matrix.python-version == '3.12' && matrix.dependencies == 'locked'
         env:
           JEANSPY_JAX_ENABLE_X64: 'true'
         run: |
-          for backend in classical numpyro; do
+          for sampler in emcee numpyro; do
             for run in 1 2; do
-              .venv/bin/python examples/axisymmetric_inference.py --backend "$backend" \
-                --output-dir "$RUNNER_TEMP/axisymmetric-$backend" --nodes 16 --warmup 6 --draws 4
+              .venv/bin/python examples/axisymmetric_inference.py --sampler "$sampler" \
+                --output-dir "$RUNNER_TEMP/axisymmetric-$sampler" --nodes 16 --warmup 6 --draws 4
             done
           done
 

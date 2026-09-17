@@ -1,9 +1,9 @@
-"""Classical axisymmetric kinematic inference using :class:`jeanspy.sampler.Sampler`.
+"""NumPy/SciPy axisymmetric kinematic inference using :class:`jeanspy.sampler.Sampler`.
 
-Priors are explicit in named sampling coordinates. ``log10_`` and ``bfunc_``
-have the same meanings as in the spherical estimation model; the additional
-coordinate ``cos_inclination`` maps to an inclination in radians. No prior is
-inferred from observed velocities. The likelihood assumes zero mean streaming.
+Priors live in named sampling coordinates. SamplingParameter specifications
+explicitly map those coordinates to physical parameters; names do not select
+transforms. No prior is inferred from observed velocities. The likelihood
+assumes zero mean streaming.
 """
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm, truncnorm
 
+from .parameters import _validate_parameter_specs, _photometry_coordinate
 from ._axisymmetric_params import resolve_params
 from ._classical.inference import FlatPriorModel, PhotometryPriorModel
 from .axisymmetric import AxisymmetricDSphModel, InvalidAxisymmetricModelError
@@ -49,7 +50,7 @@ class AxisymmetricKinematicData:
     **Differentiation.** No physical-parameter automatic differentiation on this
     API.
 
-    **Examples.** ``examples/docs_inference.py``
+    **Examples.** ``examples/axisymmetric_inference.py``
     """
     x_pc: np.ndarray
     y_pc: np.ndarray
@@ -91,14 +92,8 @@ class AxisymmetricKinematicData:
         return self.x_pc.size
 
 
-def _physical_name(name):
-    if name == "cos_inclination":
-        return "inclination"
-    return name[6:] if name.startswith(("log10_", "bfunc_")) else name
-
-
 class AxisymmetricDSphEstimationModel:
-    r"""Unbinned Gaussian LOS inference with the classical sampler protocol.
+    r"""Unbinned Gaussian LOS inference with the emcee sampler interface.
 
     ``prior`` is a :class:`FlatPriorModel`, a DataFrame, or a CSV with finite
     ``lower``/``upper`` bounds. Its row order defines the sampler coordinates.
@@ -108,7 +103,8 @@ class AxisymmetricDSphEstimationModel:
     one of q and q_projected across the resulting physical schema.
 
     An optional :class:`PhotometryPriorModel` multiplies the flat prior on
-    ``log10_re_pc``. A uniform ``cos_inclination`` coordinate gives an isotropic
+    a coordinate explicitly mapped by ``pow10`` to ``re_pc``. A uniform
+    coordinate mapped by ``arccos`` to ``inclination`` gives an isotropic
     orientation prior restricted to its explicitly supplied bounds. The solver
     also enforces physically admissible deprojection and nonnegative moments.
 
@@ -117,8 +113,9 @@ class AxisymmetricDSphEstimationModel:
     **Inputs and units.** data follows AxisymmetricKinematicData; prior is
     FlatPriorModel or ordered lower/upper DataFrame; ``fixed_params``
     complements sampled names; ``dsph_model`` is a NumPy AxisymmetricDSphModel.
-    p is shape (ndim,) in prior order; ``log10_`` and ``bfunc_`` transforms are
-    explicit.
+    p is shape (ndim,) in prior order. ``parameter_specs`` contains ordered
+    :class:`jeanspy.parameters.SamplingParameter` objects. Without specifications,
+    coordinates map by identity only; names never imply a transformation.
 
     **Returns and shape.** Per-star/summed log likelihoods and prior terms.
     lnposterior returns posterior plus diagnostic blobs; sample(size,rng=...)
@@ -140,18 +137,19 @@ class AxisymmetricDSphEstimationModel:
     **Differentiation.** No physical-parameter automatic differentiation on this
     API.
 
-    **Examples.** ``examples/docs_inference.py``
+    **Examples.** ``examples/axisymmetric_inference.py``
     """
     name = "AxisymmetricDSphEstimationModel"
 
     def __init__(self, data, prior, *, dsph_model=None, fixed_params=None,
-                 photometry_prior=None):
+                 photometry_prior=None, parameter_specs=None):
         self.dsph_model = AxisymmetricDSphModel() if dsph_model is None else dsph_model
         if not isinstance(self.dsph_model, AxisymmetricDSphModel):
-            raise TypeError("dsph_model must be a classical AxisymmetricDSphModel")
+            raise TypeError("dsph_model must be a NumPy/SciPy AxisymmetricDSphModel")
         self.prior = (FlatPriorModel(prior.data) if isinstance(prior, FlatPriorModel)
                       else FlatPriorModel(prior))
-        sampled = {_physical_name(name) for name in self.prior.data.index}
+        self.parameter_specs = _validate_parameter_specs(parameter_specs, self.prior.data.index)
+        sampled = {spec.param_name for spec in self.parameter_specs}
         defaults = self.dsph_model.physical_params
         if "q_projected" in sampled or "q_projected" in (fixed_params or {}):
             defaults.pop("q", None)
@@ -210,7 +208,8 @@ class AxisymmetricDSphEstimationModel:
 
     def _validate_schema(self):
         self.prior.validate_config(self.prior.data)
-        physical = [_physical_name(name) for name in self.p_names_lnprob]
+        self.parameter_specs = _validate_parameter_specs(self.parameter_specs, self.p_names_lnprob)
+        physical = [spec.param_name for spec in self.parameter_specs]
         if len(set(physical)) != len(physical) or set(physical) & self.fixed_params.keys():
             raise ValueError("Sampled physical names must be unique and disjoint from fixed_params")
         # Check structure independently of numerical validity of the prior midpoint.
@@ -224,8 +223,7 @@ class AxisymmetricDSphEstimationModel:
         if self.photometry_prior is not None:
             if not isinstance(self.photometry_prior, PhotometryPriorModel):
                 raise TypeError("photometry_prior must be a PhotometryPriorModel")
-            if "log10_re_pc" not in self.p_names_lnprob:
-                raise ValueError("The photometry prior requires the coordinate log10_re_pc")
+            self._photometry_index = _photometry_coordinate(self.parameter_specs)
             loc, scale = self.photometry_prior.loc, self.photometry_prior.scale
             if not np.isfinite(loc) or not np.isfinite(scale) or scale <= 0:
                 raise ValueError("Photometry prior needs a finite location and positive finite scale")
@@ -235,8 +233,8 @@ class AxisymmetricDSphEstimationModel:
 
         Notes
         -----
-        **Inputs and units.** One parameter vector in exact prior order; ``log10_``
-        and ``bfunc_`` prefixes identify the supported transforms.
+        **Inputs and units.** One parameter vector in exact prior order;
+        ``parameter_specs`` explicitly defines the physical names and transforms.
 
         **Returns and shape.** Named physical parameters with pc, Msun/pc^3, km/s,
         radians and dimensionless quantities as appropriate. The axisymmetric result
@@ -248,14 +246,8 @@ class AxisymmetricDSphEstimationModel:
             raise ValueError(f"Parameters must have shape ({self.ndim},) in prior config order")
         values = dict(self.fixed_params)
         with np.errstate(over="ignore", invalid="ignore"):
-            for name, value in zip(self.p_names_lnprob, p):
-                if name.startswith("log10_"):
-                    value = 10.**value
-                elif name.startswith("bfunc_"):
-                    value = 1 - 10.**value
-                elif name == "cos_inclination":
-                    value = np.arccos(value)
-                values[_physical_name(name)] = value
+            for spec, value in zip(self.parameter_specs, p):
+                values[spec.param_name] = spec.to_physical(value).item()
         return values
 
     def _lnlikelihoods(self, params):
@@ -300,7 +292,7 @@ class AxisymmetricDSphEstimationModel:
         valid = valid and np.isfinite(params["vmem_kms"])
         result = [self.prior._lnprior(p), 0. if valid else -np.inf]
         if self.photometry_prior is not None:
-            value = self.photometry_prior._lnprior(p[self.p_names_lnprob.index("log10_re_pc")])
+            value = self.photometry_prior._lnprior(p[self._photometry_index])
             result.append(float(value) if np.isfinite(value) else -np.inf)
         return result
 
@@ -371,7 +363,7 @@ class AxisymmetricDSphEstimationModel:
                 break
             p = rng.uniform(self.prior.lower, self.prior.upper)
             if self.photometry_prior is not None:
-                k = self.p_names_lnprob.index("log10_re_pc")
+                k = self._photometry_index
                 loc, scale = self.photometry_prior.loc, self.photometry_prior.scale
                 a, b = (self.prior.lower[k]-loc)/scale, (self.prior.upper[k]-loc)/scale
                 p[k] = truncnorm.rvs(a, b, loc=loc, scale=scale, random_state=rng)
@@ -399,4 +391,5 @@ class AxisymmetricDSphEstimationModel:
         """
         return dict(dsph_model=self.dsph_model, data=self._data.as_kwargs(),
                     prior=self.prior.data, fixed_params=self.fixed_params,
-                    photometry_prior=self.photometry_prior, parameter_order=self.p_names_lnprob)
+                    photometry_prior=self.photometry_prior, parameter_order=self.p_names_lnprob,
+                    parameter_specs=self.parameter_specs)

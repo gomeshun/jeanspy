@@ -2,7 +2,7 @@
 
 Run from the repository root after installing JeansPy in editable mode:
 
-    python scripts/validate_jfactor_ullio2016.py
+    python scripts/validate_jfactor_cone.py
 
 The script scans ROI for representative NFW and cored Zhao profiles, compares
 the full finite-ROI geometry with the legacy/simple spherical-aperture
@@ -23,7 +23,7 @@ from jeanspy.model import C_J, NFWModel, ZhaoModel
 def direct_los_jfactor(model, dist_pc, roi_deg):
     """Independent direct dOmega d(LOS) reference calculation.
 
-    The substitutions b=b_max*u^2 and z=b*tan(t) make this stable even for the
+    The substitutions beta=b_max*u^2 and z=b*tan(t) make this stable even for the
     NFW central cusp.
     """
     r_t_pc = float(model.params.r_t_pc)
@@ -78,9 +78,9 @@ def main():
         "Cored Zhao": ZhaoModel(
             rs_pc=r_s_pc,
             rhos_Msunpc3=rho_s,
-            a=1.0,
-            b=3.0,
-            g=0.0,
+            alpha=1.0,
+            beta=3.0,
+            gamma=0.0,
             r_t_pc=r_t_pc,
         ),
     }
@@ -93,8 +93,8 @@ def main():
 
     for name, model in profiles.items():
         for roi_deg in rois:
-            full = model.jfactor_ullio2016(dist_pc, roi_deg)
-            simple = model.jfactor_ullio2016_simple(dist_pc, roi_deg)
+            full = model.jfactor_cone(dist_pc, roi_deg)
+            simple = model.jfactor_spherical_aperture(dist_pc, roi_deg)
             rows.append(
                 {
                     "profile": name,
@@ -106,7 +106,7 @@ def main():
             )
 
         for roi_deg in check_rois:
-            full = model.jfactor_ullio2016(dist_pc, roi_deg)
+            full = model.jfactor_cone(dist_pc, roi_deg)
             direct = direct_los_jfactor(model, dist_pc, roi_deg)
             check_rows.append(
                 {
@@ -120,8 +120,8 @@ def main():
 
     df = pd.DataFrame(rows)
     checks = pd.DataFrame(check_rows)
-    df.to_csv(output_dir / "jfactor_ullio2016_roi_scan.csv", index=False)
-    checks.to_csv(output_dir / "jfactor_ullio2016_direct_check.csv", index=False)
+    df.to_csv(output_dir / "jfactor_cone_roi_scan.csv", index=False)
+    checks.to_csv(output_dir / "jfactor_cone_direct_check.csv", index=False)
 
     plt.rcParams["svg.fonttype"] = "none"
 
@@ -138,7 +138,7 @@ def main():
     ax.set_title("Ullio full geometry vs spherical-aperture approximation")
     ax.legend()
     fig.tight_layout()
-    fig.savefig(output_dir / "jfactor_ullio2016_roi_scan.svg")
+    fig.savefig(output_dir / "jfactor_cone_roi_scan.svg")
     plt.close(fig)
 
     fig, ax = plt.subplots()
@@ -152,7 +152,7 @@ def main():
     ax.set_title("Projected outer-shell contribution")
     ax.legend()
     fig.tight_layout()
-    fig.savefig(output_dir / "jfactor_ullio2016_full_simple_ratio.svg")
+    fig.savefig(output_dir / "jfactor_cone_full_simple_ratio.svg")
     plt.close(fig)
 
     print(checks.to_string(index=False))

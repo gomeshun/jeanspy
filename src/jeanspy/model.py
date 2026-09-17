@@ -1,7 +1,7 @@
-"""Public classical NumPy/SciPy model API.
+"""Public NumPy/SciPy model API.
 
 Implementation details live in :mod:`jeanspy._classical`; this module defines
-the intentionally supported import surface for the stateful classical backend.
+the intentionally supported import surface for the NumPy/SciPy backend.
 """
 
 from ._classical import (
@@ -12,8 +12,7 @@ from ._classical import (
     DMModel,
     DSphModel,
     DotDict,
-    Exp2dModel,
-    Exp3dModel,
+    ProjectedExponentialModel,
     FittableModel,
     FlatPriorModel,
     GMsun_m3s2,
@@ -49,8 +48,7 @@ __all__ = [
     "DMModel",
     "DSphModel",
     "DotDict",
-    "Exp2dModel",
-    "Exp3dModel",
+    "ProjectedExponentialModel",
     "FittableModel",
     "FlatPriorModel",
     "GMsun_m3s2",

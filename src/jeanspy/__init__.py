@@ -26,12 +26,13 @@ __all__ = [
     "axisymmetric_inference",
     "dequad",
     "model",
+    "parameters",
     "sampler",
 ]
 
 _OPTIONAL_MODULES = {
-    "axisymmetric_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
-    "model_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
+    "axisymmetric_jax": ("numpyro_cpu", "numpyro_cuda12"),
+    "model_jax": ("numpyro_cpu", "numpyro_cuda12"),
     "sampler_numpyro": ("numpyro_cpu", "numpyro_cuda12"),
 }
 

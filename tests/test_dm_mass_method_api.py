@@ -11,7 +11,7 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from jeanspy.model_numpyro import (
+from jeanspy.model_jax import (
     ConstantAnisotropyModel,
     DSphModel,
     DMModel,
@@ -36,9 +36,9 @@ def _zhao_params() -> dict[str, float]:
         "re_pc": 220.0,
         "rs_pc": 900.0,
         "rhos_Msunpc3": 8e-3,
-        "a": 1.2,
-        "b": 4.2,
-        "g": 0.6,
+        "alpha": 1.2,
+        "beta": 4.2,
+        "gamma": 0.6,
         "r_t_pc": 8000.0,
         "beta_ani": 0.2,
         "vmem_kms": 0.0,
@@ -80,9 +80,9 @@ def test_nfw_auto_matches_analytic_and_zhao_auto_matches_numeric():
     zhao_params = {
         "rs_pc": 900.0,
         "rhos_Msunpc3": 8e-3,
-        "a": 1.2,
-        "b": 4.2,
-        "g": 0.6,
+        "alpha": 1.2,
+        "beta": 4.2,
+        "gamma": 0.6,
         "r_t_pc": 8000.0,
     }
     np.testing.assert_allclose(
@@ -102,7 +102,7 @@ def test_invalid_dm_mass_method_is_rejected_consistently():
         dsph.sigmalos2(
             R,
             params=params,
-            backend="kernel",
+            solver="kernel",
             jit=False,
             n_u=32,
             u_max=300.0,

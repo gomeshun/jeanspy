@@ -13,9 +13,9 @@ def main() -> None:
     import jax
     import jax.numpy as jnp
 
-    import jeanspy.model_numpyro as mn
+    import jeanspy.model_jax as mn
     from jeanspy.baes_eta2 import BaesEta2AnisotropyModel
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         ConstantAnisotropyModel,
         DSphModel,
         NFWModel,
@@ -80,7 +80,7 @@ def main() -> None:
                     u2d,
                     R2d,
                     params=params,
-                    backend="jax",
+                    kernel_backend="jax",
                     n_kernel=n_kernel,
                 )
             else:
@@ -134,7 +134,7 @@ def main() -> None:
                 u_probe,
                 R_probe,
                 params=const_params,
-                backend="jax",
+                kernel_backend="jax",
                 n_kernel=n_kernel,
             )
         )
@@ -144,7 +144,7 @@ def main() -> None:
             const_dsph.sigmalos2(
                 R,
                 params=const_params,
-                backend="abel",
+                solver="abel",
                 n_r=abel_n_r,
                 u_max=abel_u_max,
                 r_min_factor=0.35,

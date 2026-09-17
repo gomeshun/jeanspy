@@ -30,9 +30,9 @@ import arviz as az
 from tests._kernel_regression_utils import assert_baes_constant_large_u_consistency
 
 from scipy.special import hyp2f1 as scipy_hyp2f1
-import jeanspy.model_numpyro as model_numpyro_mod
+import jeanspy.model_jax as model_jax_mod
 
-from jeanspy.model_numpyro import (
+from jeanspy.model_jax import (
     BaesAnisotropyModel,
     ConstantAnisotropyModel,
     DSphModel,
@@ -152,7 +152,7 @@ class TestModelNumPyro(unittest.TestCase):
         }
 
     def _kernel_from_note_definition(self, model, R_values, u_values, params, n_quad=512):
-        r"""Reference K(u) from the note definition used in model.py/model_numpyro.
+        r"""Reference K(u) from the note definition used in model.py/model_jax.
 
         K(u_s) = f(Ru_s)/u_s * \int_1^{u_s} du [u/sqrt(u^2-1)]
                  * (1 - beta(Ru)/u^2) / f(Ru)
@@ -185,7 +185,7 @@ class TestModelNumPyro(unittest.TestCase):
         1) d ln f / d ln r = 2 beta(r)
         2) kernel K(u) matches numerical reconstruction from beta and f.
         """
-        subclasses = model_numpyro_mod.AnisotropyModel.__subclasses__()
+        subclasses = model_jax_mod.AnisotropyModel.__subclasses__()
         self.assertGreater(len(subclasses), 0)
 
         param_cases = self._anisotropy_param_cases()
@@ -264,7 +264,7 @@ class TestModelNumPyro(unittest.TestCase):
         k_jax = np.asarray(ani.kernel(u, R_dummy, params=params)).reshape(-1)
 
         # SciPy reference (numerically stable form):
-        # derived via the same exact transformation used in model_numpyro.
+        # derived via the same exact transformation used in model_jax.
         u2 = u_np**2
         pref = np.sqrt(1.0 - 1.0 / u2)
         hyp_stable = scipy_hyp2f1(1.0, beta_ani, 1.5, 1.0 - 1.0 / u2)
@@ -342,7 +342,7 @@ class TestModelNumPyro(unittest.TestCase):
 
         for backend in ("scipy", "jax"):
             ani = ConstantAnisotropyModel()
-            k = np.asarray(ani.kernel(u, r_dummy, params={"beta_ani": beta_ani}, backend=backend))
+            k = np.asarray(ani.kernel(u, r_dummy, params={"beta_ani": beta_ani}, kernel_backend=backend))
 
             self.assertTrue(np.isfinite(k).all(), msg=f"non-finite kernel for backend={backend}")
             self.assertGreater(float(k[-1]), float(k[48]), msg=f"non-increasing tail for backend={backend}")
@@ -361,8 +361,8 @@ class TestModelNumPyro(unittest.TestCase):
         r_dummy = jnp.asarray(100.0, dtype=jnp.float32)
 
         for beta_ani in (0.2, 0.5, 0.8, 1.0):
-            k_scipy = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": beta_ani}, backend="scipy"))
-            k_jax = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": beta_ani}, backend="jax"))
+            k_scipy = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": beta_ani}, kernel_backend="scipy"))
+            k_jax = np.asarray(ConstantAnisotropyModel().kernel(u, r_dummy, params={"beta_ani": beta_ani}, kernel_backend="jax"))
 
             self.assertTrue(np.isfinite(k_scipy).all(), msg=f"non-finite scipy kernel at beta={beta_ani}")
             self.assertTrue(np.isfinite(k_jax).all(), msg=f"non-finite jax kernel at beta={beta_ani}")
@@ -443,7 +443,7 @@ class TestModelNumPyro(unittest.TestCase):
             "eta": 1.0,
         }
 
-        with patch("jeanspy.model_numpyro.ConstantAnisotropyModel.kernel", side_effect=RuntimeError("should not be called")):
+        with patch("jeanspy.model_jax.ConstantAnisotropyModel.kernel", side_effect=RuntimeError("should not be called")):
             k_baes = np.asarray(baes.kernel(u, R, params=params_baes, n_kernel=512))
 
         self.assertTrue(np.isfinite(k_baes).all())
@@ -563,18 +563,18 @@ class TestModelNumPyro(unittest.TestCase):
                 "dm_ref_ctor": lambda p: ZhaoModelRef(
                     rs_pc=p["rs_pc"],
                     rhos_Msunpc3=p["rhos_Msunpc3"],
-                    a=p["a"],
-                    b=p["b"],
-                    g=p["g"],
+                    alpha=p["alpha"],
+                    beta=p["beta"],
+                    gamma=p["gamma"],
                     r_t_pc=p["r_t_pc"],
                 ),
                 "params": {
                     "re_pc": 220.0,
                     "rs_pc": 1000.0,
                     "rhos_Msunpc3": 8e-3,
-                    "a": 1.1,
-                    "b": 4.2,
-                    "g": 0.7,
+                    "alpha": 1.1,
+                    "beta": 4.2,
+                    "gamma": 0.7,
                     "r_t_pc": 9000.0,
                     "beta_ani": 0.2,
                     "vmem_kms": 0.0,
@@ -623,7 +623,7 @@ class TestModelNumPyro(unittest.TestCase):
                 self.assertLess(float(np.max(rel)), case["rtol_max"])
 
     def test_sigmalos2_nfw_equals_zhao_nfw_limit(self):
-        """Zhao(a=1,b=3,g=1) should reproduce NFW in sigmalos2."""
+        """Zhao(alpha=1,beta=3,gamma=1) should reproduce NFW in sigmalos2."""
         params_base = {
             "re_pc": 200.0,
             "rs_pc": 1200.0,
@@ -632,7 +632,7 @@ class TestModelNumPyro(unittest.TestCase):
             "beta_ani": 0.2,
             "vmem_kms": 0.0,
         }
-        params_zhao = {**params_base, "a": 1.0, "b": 3.0, "g": 1.0}
+        params_zhao = {**params_base, "alpha": 1.0, "beta": 3.0, "gamma": 1.0}
 
         dsph_nfw = DSphModel(
             submodels={
@@ -679,7 +679,7 @@ class TestModelNumPyro(unittest.TestCase):
         np.testing.assert_allclose(s2_zhao, s2_nfw, rtol=8e-3, atol=1e-8)
 
     def test_sigmalos2_nfw_equals_zhao_nfw_limit_sampled_R(self):
-        """NFW and Zhao(a=1,b=3,g=1) agree on sampled projected radii (snippet parity)."""
+        """NFW and Zhao(alpha=1,beta=3,gamma=1) agree on sampled projected radii (snippet parity)."""
         key = jax.random.PRNGKey(123)
         key, subkey = jax.random.split(key)
 
@@ -691,7 +691,7 @@ class TestModelNumPyro(unittest.TestCase):
             "beta_ani": 0.2,
             "vmem_kms": 0.0,
         }
-        params_zhao = {**params_nfw, "a": 1.0, "b": 3.0, "g": 1.0}
+        params_zhao = {**params_nfw, "alpha": 1.0, "beta": 3.0, "gamma": 1.0}
 
         stellar = PlummerModel()
         nR = 1000
@@ -759,7 +759,7 @@ class TestModelNumPyro(unittest.TestCase):
                     dsph.sigmalos2(
                         R,
                         params=case["params"],
-                        backend="kernel",
+                        solver="kernel",
                         n_u=224,
                         u_max=1600.0,
                         dm_mass_method="analytic",
@@ -770,7 +770,7 @@ class TestModelNumPyro(unittest.TestCase):
                     dsph.sigmalos2(
                         R,
                         params=case["params"],
-                        backend="abel",
+                        solver="abel",
                         n_r=896,
                         u_max=1600.0,
                         r_min_factor=0.35,
@@ -782,7 +782,7 @@ class TestModelNumPyro(unittest.TestCase):
                     dsph.sigmalos2(
                         R,
                         params=case["params"],
-                        backend="auto",
+                        solver="auto",
                         n_u=224,
                         n_r=896,
                         u_max=1600.0,
@@ -834,7 +834,7 @@ class TestModelNumPyro(unittest.TestCase):
                     lambda radii: dsph.sigmalos2(
                         radii,
                         params=case["params"],
-                        backend="kernel",
+                        solver="kernel",
                         n_u=192,
                         u_max=1400.0,
                         dm_mass_method="analytic",
@@ -844,7 +844,7 @@ class TestModelNumPyro(unittest.TestCase):
                     lambda radii: dsph.sigmalos2(
                         radii,
                         params=case["params"],
-                        backend="abel",
+                        solver="abel",
                         n_r=640,
                         u_max=1400.0,
                         r_min_factor=0.35,
@@ -855,7 +855,7 @@ class TestModelNumPyro(unittest.TestCase):
                     lambda radii: dsph.sigmalos2(
                         radii,
                         params=case["params"],
-                        backend="auto",
+                        solver="auto",
                         n_u=192,
                         n_r=640,
                         u_max=1400.0,
@@ -910,9 +910,9 @@ class TestModelNumPyro(unittest.TestCase):
         params = {
             "rs_pc": 900.0,
             "rhos_Msunpc3": 8e-3,
-            "a": 1.2,
-            "b": 4.2,
-            "g": 0.6,
+            "alpha": 1.2,
+            "beta": 4.2,
+            "gamma": 0.6,
             "r_t_pc": 8000.0,
         }
         r = jnp.asarray(np.geomspace(1.0, 6000.0, 64), dtype=jnp.float32)
@@ -937,9 +937,9 @@ class TestModelNumPyro(unittest.TestCase):
             "re_pc": 220.0,
             "rs_pc": 900.0,
             "rhos_Msunpc3": 8e-3,
-            "a": 1.2,
-            "b": 4.2,
-            "g": 0.6,
+            "alpha": 1.2,
+            "beta": 4.2,
+            "gamma": 0.6,
             "r_t_pc": 8000.0,
             "beta_ani": 0.2,
             "vmem_kms": 0.0,
@@ -954,18 +954,18 @@ class TestModelNumPyro(unittest.TestCase):
         )
 
         def objective(a):
-            params_at_a = {**params, "a": a}
+            params_at_a = {**params, "alpha": a}
             sigma2 = dsph.sigmalos2(
                 R,
                 params=params_at_a,
-                backend="kernel",
+                solver="kernel",
                 jit=False,
                 n_u=64,
                 u_max=400.0,
             )
             return jnp.sum(sigma2)
 
-        grad_a = jax.grad(objective)(jnp.asarray(params["a"], dtype=R.dtype))
+        grad_a = jax.grad(objective)(jnp.asarray(params["alpha"], dtype=R.dtype))
         self.assertTrue(np.isfinite(np.asarray(grad_a)).all())
 
     def test_model_submodels_validation(self):
@@ -1198,7 +1198,7 @@ class TestModelNumPyro(unittest.TestCase):
                 params=true,
                 n_u=144,
                 u_max=1200.0,
-                constant_kernel_backend="jax",
+                kernel_backend="jax",
             )
             key, subkey = jax.random.split(key)
             vlos = true["vmem_kms"] + jnp.sqrt(s2_true + err2) * jax.random.normal(subkey, shape=R_pc.shape)
@@ -1234,7 +1234,7 @@ class TestModelNumPyro(unittest.TestCase):
                     params=params,
                     n_u=128,
                     u_max=1200.0,
-                    constant_kernel_backend="jax",
+                    kernel_backend="jax",
                 )
                 s2 = jnp.clip(s2, min=1e-12, max=1e12)
                 scale = jnp.sqrt(s2 + jnp.asarray(e_vlos_kms) ** 2)

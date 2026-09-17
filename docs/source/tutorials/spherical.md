@@ -8,7 +8,7 @@ additional diagnostics.
 Build a **Plummer + generalized NFW + constant anisotropy** model, generate
 mock velocities, run MCMC, resume from disk, and inspect the saved posterior.
 The generalized NFW halo uses `ZhaoModel` with fixed `a=1`, `b=3` and a sampled
-inner slope `g`. The small dataset lets the complete example run on a CPU.
+inner slope `gamma`. The small dataset lets the complete example run on a CPU.
 
 Install the package using the [installation guide](../installation.md). The emcee
 example needs the `plotting` extra; the NumPyro example also needs
@@ -20,7 +20,7 @@ directory for each example.
 Both backends use the same 32 mock stars. Lengths are in pc, velocities in km/s,
 and halo densities in solar masses per cubic parsec. The Plummer tracer weights
 the kinematics and contributes no gravitational mass. The tracer scale, Zhao
-exponents `a=1, b=3` and untruncated halo cutoff are fixed. The mock has `g=1`
+exponents `alpha=1, beta=3` and untruncated halo cutoff are fixed. The mock has `gamma=1`
 (standard NFW), while inference allows the inner slope to vary from 0 to 2.
 
 ```{literalinclude} ../../../examples/docs_quickstart_data.py
@@ -42,7 +42,7 @@ We sample five parameters with the same uniform priors in both backends:
 | --- | ---: | ---: | --- |
 | `log10_rs_pc` | 1.5 | 4.0 | Logarithm of the halo scale radius |
 | `log10_rhos_Msunpc3` | -3.0 | 1.0 | Logarithm of the halo density scale |
-| `g` | 0.0 | 2.0 | Inner halo density slope |
+| `gamma` | 0.0 | 2.0 | Inner halo density slope |
 | `beta_ani` | -1.0 | 0.75 | Constant spherical anisotropy |
 | `vmem_kms` | -50 | 50 | Systemic velocity in km/s |
 
@@ -66,7 +66,7 @@ Run the complete example:
 python examples/docs_quickstart_emcee.py --output-dir /tmp/jeanspy-emcee-example
 ```
 
-**Construct the model.** Classical components store their physical parameters.
+**Construct the model.** NumPy/SciPy components store their physical parameters.
 
 ```{literalinclude} ../../../examples/docs_quickstart_emcee.py
 :language: python
@@ -137,7 +137,7 @@ python examples/docs_quickstart_numpyro.py --output-dir /tmp/jeanspy-numpyro-exa
 ```
 
 **Construct the model.** JAX components receive physical parameters explicitly.
-Import the components from `jeanspy.model_numpyro` and the likelihood and
+Import the components from `jeanspy.model_jax` and the likelihood and
 sampler from `jeanspy.sampler_numpyro`.
 
 ```{literalinclude} ../../../examples/docs_quickstart_numpyro.py
@@ -231,7 +231,10 @@ metadata identifies the source and environment used to produce them. Both
 workflows run again on a published GitHub release or a manual Documentation
 workflow run with `run_mcmc=true`.
 
-## Classical estimation-model wrapper
+<a id="classical-estimation-model-wrapper"></a>
+
+(numpy-scipy-estimation-model-wrapper)=
+## NumPy/SciPy estimation-model wrapper
 
 The analysis above supplies its own log posterior to emcee. When using
 JeansPy estimation models, {class}`~jeanspy.sampler.Sampler` adds HDF5
@@ -248,7 +251,7 @@ disabled; the example only exercises the storage workflow.
 
 ```{literalinclude} ../../../examples/docs_inference.py
 :language: python
-:end-before: classical-inference-end
+:end-before: numpy-inference-end
 ```
 
 Choose the same likelihood and prior measure when comparing samplers. Keep

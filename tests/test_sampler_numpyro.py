@@ -14,7 +14,7 @@ import xarray as xr
 from numpyro.handlers import seed, trace
 from numpyro.infer import MCMC, NUTS
 
-from jeanspy.model_numpyro import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
+from jeanspy.model_jax import ConstantAnisotropyModel, DSphModel, NFWModel, PlummerModel
 from jeanspy.sampler_numpyro import JeansLikelihoodModel, NumPyroSampler, ParameterSpec
 
 

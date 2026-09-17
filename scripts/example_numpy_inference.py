@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Small reproducible classical inference/storage example, not a calibration run.
+"""Small reproducible NumPy/SciPy inference/storage example, not a calibration run.
 
 Run with the base package installed:
-    python scripts/example_classical_inference.py --output-dir /tmp/jeanspy-example
+    python scripts/example_numpy_inference.py --output-dir /tmp/jeanspy-example
 """
 
 import argparse
@@ -26,7 +26,7 @@ def run(output_dir: Path):
         {"lower": [-30., 2., 2.5, -3., 3.5, -.3],
          "upper": [30., 2.6, 3.5, -1., 4.5, .3]},
         index=["vmem_kms", "log10_re_pc", "log10_rs_pc",
-               "log10_rhos_Msunpc3", "log10_r_t_pc", "bfunc_beta_ani"],
+               "log10_rhos_Msunpc3", "log10_r_t_pc", "log10_one_minus_beta_ani"],
     )
     prior_path = output_dir / "prior.csv"
     priors.to_csv(prior_path)

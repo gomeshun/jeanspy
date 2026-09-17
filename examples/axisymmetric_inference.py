@@ -18,6 +18,7 @@ from jeanspy.model import (
     AxisymmetricDSphModel, AxisymmetricPlummerModel,
     AxisymmetricZhaoModel, AxisymmetricConstantAnisotropyModel,
 )
+from jeanspy.parameters import SamplingParameter
 from jeanspy.axisymmetric import intrinsic_axis_ratio
 from jeanspy.axisymmetric_inference import AxisymmetricDSphEstimationModel, AxisymmetricKinematicData
 
@@ -27,11 +28,19 @@ TRUTH = dict(**FIXED, rs_pc=500., rhos_Msunpc3=.1, beta_z=-.3,
              inclination=float(np.arccos(.3)), vmem_kms=0.)
 PRIOR = pd.DataFrame(dict(lower=[-1.3, 2.5, .07, .1, -20.],
                           upper=[-.7, 2.85, .2, .6, 20.]),
-                     index=["log10_rhos_Msunpc3", "log10_rs_pc", "bfunc_beta_z",
+                     index=["log10_rhos_Msunpc3", "log10_rs_pc", "log10_one_minus_beta_z",
                             "cos_inclination", "vmem_kms"])
 
+PARAMETER_SPECS = [
+    SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10"),
+    SamplingParameter("log10_rs_pc", "rs_pc", "pow10"),
+    SamplingParameter("log10_one_minus_beta_z", "beta_z", "one_minus_pow10"),
+    SamplingParameter("cos_inclination", "inclination", "arccos"),
+    SamplingParameter("vmem_kms", "vmem_kms"),
+]
 
-def classical_model(nodes):
+
+def numpy_model(nodes):
     return AxisymmetricDSphModel(
         submodels={
             "StellarModel": AxisymmetricPlummerModel(
@@ -53,12 +62,12 @@ def mock_data(stars, seed):
     azimuth = rng.uniform(0., 2*np.pi, stars)
     x, y = radius*np.cos(azimuth), radius*np.sin(azimuth)*TRUTH["q_projected"]
     error = np.full(stars, 2.)
-    variance = classical_model(96).sigmalos2(x, y)
+    variance = numpy_model(96).sigmalos2(x, y)
     velocity = rng.normal(TRUTH["vmem_kms"], np.sqrt(variance+error**2))
     return AxisymmetricKinematicData(x, y, velocity, error)
 
 
-def run_classical(args, estimation):
+def run_emcee(args, estimation):
     from jeanspy.sampler import Sampler
     generator = partial(estimation.sample, rng=np.random.default_rng(args.seed+1))
     sampler = Sampler(estimation, generator, nwalkers=2*estimation.ndim+2,
@@ -80,7 +89,7 @@ def run_numpyro(args, data):
     import jax.numpy as jnp
     import numpyro.distributions as dist
     from numpyro.infer import MCMC, NUTS, init_to_value
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         AxisymmetricDSphModel as JaxModel,
         AxisymmetricPlummerModel as JaxPlummerModel,
         AxisymmetricZhaoModel as JaxZhaoModel,
@@ -88,18 +97,15 @@ def run_numpyro(args, data):
     )
     from jeanspy.sampler_numpyro import AxisymmetricJeansLikelihoodModel, ParameterSpec, NumPyroSampler
 
-    specifications = []
-    for name, row in PRIOR.iterrows():
-        distribution = dist.Uniform(row.lower, row.upper)
-        if name.startswith("log10_"):
-            spec = ParameterSpec.pow10(name, distribution, param_name=name[6:])
-        elif name.startswith("bfunc_"):
-            spec = ParameterSpec(name, distribution, param_name=name[6:], transform=lambda x: 1-10.**x)
-        elif name == "cos_inclination":
-            spec = ParameterSpec(name, distribution, param_name="inclination", transform=jnp.arccos)
-        else:
-            spec = ParameterSpec(name, distribution)
-        specifications.append(spec)
+    transforms = {"identity": None, "pow10": lambda x: 10.**x,
+                  "one_minus_pow10": lambda x: 1-10.**x, "arccos": jnp.arccos}
+    specifications = [
+        ParameterSpec(spec.sample_name,
+                      dist.Uniform(PRIOR.loc[spec.sample_name, "lower"],
+                                   PRIOR.loc[spec.sample_name, "upper"]),
+                      param_name=spec.param_name, transform=transforms[spec.transform])
+        for spec in PARAMETER_SPECS
+    ]
     forward = JaxModel(
         submodels={"StellarModel": JaxPlummerModel(), "DMModel": JaxZhaoModel(),
                    "AnisotropyModel": JaxAnisotropyModel()},
@@ -107,7 +113,7 @@ def run_numpyro(args, data):
     )
     likelihood = AxisymmetricJeansLikelihoodModel(forward, specifications, fixed_params=FIXED)
     initial = dict(log10_rhos_Msunpc3=-1., log10_rs_pc=float(np.log10(500.)),
-                   bfunc_beta_z=float(np.log10(1.3)), cos_inclination=.3, vmem_kms=0.)
+                   log10_one_minus_beta_z=float(np.log10(1.3)), cos_inclination=.3, vmem_kms=0.)
     kernel = NUTS(likelihood, max_tree_depth=4, init_strategy=init_to_value(values=initial))
     mcmc = MCMC(kernel, num_warmup=args.warmup, num_samples=args.draws,
                 num_chains=1, progress_bar=False)
@@ -123,7 +129,8 @@ def run_numpyro(args, data):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--backend", choices=["classical", "numpyro"], default="classical")
+    parser.add_argument("--sampler", choices=["emcee", "numpyro"], default="emcee",
+                        help="emcee: NumPy/SciPy forward model; numpyro: JAX forward model with NUTS")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--stars", type=int, default=8)
     parser.add_argument("--nodes", type=int, default=24)
@@ -136,9 +143,10 @@ def main():
         parser.error("stars >= 2 and positive warmup/draws are required")
     data = mock_data(args.stars, args.seed)
     estimation = AxisymmetricDSphEstimationModel(data, PRIOR, fixed_params=FIXED,
-                    dsph_model=classical_model(args.nodes))
+                                                parameter_specs=PARAMETER_SPECS,
+                    dsph_model=numpy_model(args.nodes))
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    frame, diagnostics = (run_classical(args, estimation) if args.backend == "classical"
+    frame, diagnostics = (run_emcee(args, estimation) if args.sampler == "emcee"
                            else run_numpyro(args, data))
     frame.to_csv(args.output_dir/"posterior.csv", index=False)
     pd.DataFrame(data.as_kwargs()).to_csv(args.output_dir/"observations.csv", index=False)
@@ -152,7 +160,7 @@ def main():
             J_GeV2_cm_minus5=estimation.dsph_model.jfactor(80000., .5, params=physical),
             D_GeV_cm_minus2=estimation.dsph_model.dfactor(80000., .5, params=physical)))
     pd.DataFrame(derived).to_csv(args.output_dir/"derived_factors.csv", index=False)
-    summary = dict(backend=args.backend, seed=args.seed, stars=args.stars, nodes=args.nodes,
+    summary = dict(sampler=args.sampler, seed=args.seed, stars=args.stars, nodes=args.nodes,
                     truth=TRUTH, diagnostics=diagnostics,
                     note="Short workflow demonstration; convergence and scientific calibration are not established.")
     (args.output_dir/"summary.json").write_text(json.dumps(summary, indent=2)+"\n")

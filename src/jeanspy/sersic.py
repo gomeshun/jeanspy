@@ -1,4 +1,4 @@
-"""Spherical Sérsic profile for the public classical JeansPy model API."""
+"""Spherical Sérsic profile for the public NumPy/SciPy JeansPy model API."""
 
 from __future__ import annotations
 
@@ -32,8 +32,7 @@ class SersicModel(StellarModel):
     **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and
     pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial
     CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface
-    density within R. ``logdensity_2d`` is the natural log of the surface
-    density, not the radial PDF. ``density_2d_normalized_re``, where available,
+    density within R. ``density_2d_normalized_re``
     is the dimensionless ratio Sigma(R)/Sigma(re).
 
     **Validity.** Supply positive finite scales and real nonnegative radii. Use
@@ -252,8 +251,7 @@ class SersicModel(StellarModel):
         -----
         **Inputs and units.** No arguments; reads the stored tracer scales.
 
-        **Returns and shape.** Scalar radius in pc. Exp3dModel returns
-        1.67834699001666\*``re_pc``.
+        **Returns and shape.** Scalar radius in pc, equal to the stored ``re_pc``.
         """
         return self.params.re_pc
 

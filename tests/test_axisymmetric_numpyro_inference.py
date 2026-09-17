@@ -12,7 +12,7 @@ from numpyro.infer import MCMC, NUTS, init_to_value
 from numpyro.infer.util import log_density
 
 from jeanspy.axisymmetric import AxisymmetricDSphModel as ClassicalModel
-from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel
+from jeanspy.axisymmetric_jax import AxisymmetricDSphModel
 from jeanspy.sampler_numpyro import AxisymmetricJeansLikelihoodModel, NumPyroSampler, ParameterSpec
 
 

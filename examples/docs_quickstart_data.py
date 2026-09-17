@@ -5,11 +5,11 @@ from jeanspy.model import DSphModel, PlummerModel, ZhaoModel, ConstantAnisotropy
 
 # This example fixes photometry and the outer halo shape, and fits five parameters.
 true_params = dict(re_pc=200., rs_pc=500., rhos_Msunpc3=.1,
-                   a=1., b=3., g=1., r_t_pc=np.inf, beta_ani=0., vmem_kms=0.)
+                   alpha=1., beta=3., gamma=1., r_t_pc=np.inf, beta_ani=0., vmem_kms=0.)
 truth_model = DSphModel(vmem_kms=true_params["vmem_kms"], submodels={
     "StellarModel": PlummerModel(re_pc=true_params["re_pc"]),
     "DMModel": ZhaoModel(**{k: true_params[k] for k in
-                           ("rs_pc", "rhos_Msunpc3", "a", "b", "g", "r_t_pc")}),
+                           ("rs_pc", "rhos_Msunpc3", "alpha", "beta", "gamma", "r_t_pc")}),
     "AnisotropyModel": ConstantAnisotropyModel(beta_ani=true_params["beta_ani"]),
 })
 rng = np.random.default_rng(123)

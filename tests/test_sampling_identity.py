@@ -14,7 +14,7 @@ import pytest
 
 from jeanspy._sampling_identity import fingerprint
 from jeanspy.model import get_default_estimation_model
-from jeanspy.model_numpyro import DSphModel, PlummerModel, NFWModel, ConstantAnisotropyModel
+from jeanspy.model_jax import DSphModel, PlummerModel, NFWModel, ConstantAnisotropyModel
 from jeanspy.sampler import Sampler
 from jeanspy.sampler_numpyro import NumPyroSampler, JeansLikelihoodModel, ParameterSpec
 

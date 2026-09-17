@@ -1,0 +1,22 @@
+{
+  "html_pages": 603,
+  "visible_classical_hits": [],
+  "preserved_bookmark_anchors": [
+    {
+      "page": "tutorials/inference.html",
+      "id": "check-the-classical-sampling-interface"
+    },
+    {
+      "page": "tutorials/models.html",
+      "id": "use-the-classical-interface"
+    },
+    {
+      "page": "tutorials/spherical.html",
+      "id": "classical-estimation-model-wrapper"
+    },
+    {
+      "page": "tutorials/storage.html",
+      "id": "save-classical-emcee-results"
+    }
+  ]
+}

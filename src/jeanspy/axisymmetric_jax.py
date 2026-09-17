@@ -143,7 +143,7 @@ class AxisymmetricZhaoModel(AxisymmetricDMModel):
         if not r.size:
             raise ValueError("m_pc must be nonempty")
         mass_params = dict(rs_pc=p["rs_pc"], rhos_Msunpc3=p["rhos_Msunpc3"],
-                           a=p["alpha"], b=p["beta"], g=p["gamma"], r_t_pc=p["r_t_pc"])
+                           alpha=p["alpha"], beta=p["beta"], gamma=p["gamma"], r_t_pc=p["r_t_pc"])
         mass = p["Q"]*_zhao_mass(r, mass_params, xp=jnp, n_steps=n_steps)
         return jnp.where(valid, mass, jnp.nan)
 
@@ -182,8 +182,7 @@ class AxisymmetricDSphModel:
     ``rhos_Msunpc3`` (Msun/pc^3), and exactly one of q or ``q_projected``.
     Optional Q, alpha, beta, gamma, ``beta_z`` and inclination (radians) have
     the defaults shown in the axisymmetric guide. ``r_t_pc`` is a positive
-    ellipsoidal cutoff (pc). Use alpha/beta/gamma; spherical a/b/g names are not
-    accepted. Physical parameter dictionaries hold scalar values; radius arrays
+    ellipsoidal cutoff (pc). Use alpha/beta/gamma, matching the spherical Zhao profile. Physical parameter dictionaries hold scalar values; radius arrays
     are broadcast independently. Use vmap to batch parameter dictionaries.
     Constructor node counts ``n_force``/``n_vertical``/``n_los`` are static
     integers >=16.

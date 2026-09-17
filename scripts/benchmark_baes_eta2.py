@@ -51,7 +51,7 @@ def _worker(mode_name: str, *, quick: bool) -> None:
     import jax.numpy as jnp
 
     from jeanspy.baes_eta2 import BaesEta2AnisotropyModel
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         BaesAnisotropyModel,
         DSphModel,
         NFWModel,
@@ -130,7 +130,7 @@ def _worker(mode_name: str, *, quick: bool) -> None:
     sig_generic = lambda: generic_dsph.sigmalos2(
         R,
         params=params_generic,
-        backend="kernel",
+        solver="kernel",
         n_u=n_u,
         n_kernel=n_kernel,
         u_max=1600.0,
@@ -140,7 +140,7 @@ def _worker(mode_name: str, *, quick: bool) -> None:
     sig_eta2 = lambda: eta2_dsph.sigmalos2(
         R,
         params=params_eta2,
-        backend="kernel",
+        solver="kernel",
         n_u=n_u,
         n_kernel=n_kernel,
         u_max=1600.0,
@@ -150,7 +150,7 @@ def _worker(mode_name: str, *, quick: bool) -> None:
     sig_abel = lambda: eta2_dsph.sigmalos2(
         R,
         params=params_eta2,
-        backend="abel",
+        solver="abel",
         n_r=n_r_abel,
         u_max=1600.0,
         r_min_factor=0.35,

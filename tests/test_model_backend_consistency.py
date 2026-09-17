@@ -16,9 +16,9 @@ jax.config.update("jax_enable_x64", True)
 import jax.numpy as jnp
 import numpy as np
 
-import jeanspy.model_numpyro as _model_numpyro_mod
+import jeanspy.model_jax as _model_jax_mod
 
-model_numpyro_mod = importlib.reload(_model_numpyro_mod)
+model_jax_mod = importlib.reload(_model_jax_mod)
 
 from jeanspy.model import (
     BaesAnisotropyModel as BaesClassical,
@@ -30,15 +30,15 @@ from jeanspy.model import (
     ZhaoModel as ZhaoClassical,
 )
 
-GMsun_m3s2 = model_numpyro_mod.GMsun_m3s2
-PARSEC_M = model_numpyro_mod.PARSEC_M
-BaesNumPyro = model_numpyro_mod.BaesAnisotropyModel
-ConstantNumPyro = model_numpyro_mod.ConstantAnisotropyModel
-DSphNumPyro = model_numpyro_mod.DSphModel
-NFWNumPyro = model_numpyro_mod.NFWModel
-OsipkovMerrittNumPyro = model_numpyro_mod.OsipkovMerrittModel
-PlummerNumPyro = model_numpyro_mod.PlummerModel
-ZhaoNumPyro = model_numpyro_mod.ZhaoModel
+GMsun_m3s2 = model_jax_mod.GMsun_m3s2
+PARSEC_M = model_jax_mod.PARSEC_M
+BaesNumPyro = model_jax_mod.BaesAnisotropyModel
+ConstantNumPyro = model_jax_mod.ConstantAnisotropyModel
+DSphNumPyro = model_jax_mod.DSphModel
+NFWNumPyro = model_jax_mod.NFWModel
+OsipkovMerrittNumPyro = model_jax_mod.OsipkovMerrittModel
+PlummerNumPyro = model_jax_mod.PlummerModel
+ZhaoNumPyro = model_jax_mod.ZhaoModel
 
 
 def _assert_all_finite(testcase: unittest.TestCase, values: Any, *, label: str) -> None:
@@ -79,13 +79,13 @@ def _jax_x64(enabled: bool):
 
 
 def _classical_dm_from_params(params: dict[str, float]):
-    if {"a", "b", "g"} <= params.keys():
+    if {"alpha", "beta", "gamma"} <= params.keys():
         return ZhaoClassical(
             rs_pc=params["rs_pc"],
             rhos_Msunpc3=params["rhos_Msunpc3"],
-            a=params["a"],
-            b=params["b"],
-            g=params["g"],
+            alpha=params["alpha"],
+            beta=params["beta"],
+            gamma=params["gamma"],
             r_t_pc=params["r_t_pc"],
         )
     return NFWClassical(
@@ -96,7 +96,7 @@ def _classical_dm_from_params(params: dict[str, float]):
 
 
 def _numpyro_dm_from_params(params: dict[str, float]):
-    if {"a", "b", "g"} <= params.keys():
+    if {"alpha", "beta", "gamma"} <= params.keys():
         return ZhaoNumPyro()
     return NFWNumPyro()
 
@@ -159,14 +159,14 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
             {"re_pc": 5e3},
         ]
 
-        model_numpyro = PlummerNumPyro()
+        model_jax = PlummerNumPyro()
         for params in cases:
             with self.subTest(params=params):
                 model_classical = PlummerClassical(re_pc=params["re_pc"])
                 _assert_allclose(
                     self,
                     model_classical.density_2d(radii),
-                    model_numpyro.density_2d(jnp.asarray(radii), re_pc=params["re_pc"]),
+                    model_jax.density_2d(jnp.asarray(radii), re_pc=params["re_pc"]),
                     label=f"Plummer.density_2d {params}",
                     rtol=5e-7,
                     rtol_ulps=16,
@@ -175,7 +175,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.density_3d(radii),
-                    model_numpyro.density_3d(jnp.asarray(radii), re_pc=params["re_pc"]),
+                    model_jax.density_3d(jnp.asarray(radii), re_pc=params["re_pc"]),
                     label=f"Plummer.density_3d {params}",
                     rtol=5e-7,
                     rtol_ulps=16,
@@ -199,7 +199,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         ]
 
         radii = np.geomspace(1e-3, 1e5, 96)
-        model_numpyro = NFWNumPyro()
+        model_jax = NFWNumPyro()
         for case in cases:
             params = case["params"]
             with self.subTest(params=params):
@@ -207,7 +207,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.mass_density_3d(radii),
-                    model_numpyro.mass_density_3d(jnp.asarray(radii), params=params),
+                    model_jax.mass_density_3d(jnp.asarray(radii), params=params),
                     label=f"NFW.mass_density_3d {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -216,7 +216,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.enclosure_mass(radii),
-                    model_numpyro.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
+                    model_jax.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
                     label=f"NFW.enclosed_mass {params}",
                     rtol=case["mass_rtol"],
                     atol=1e-10,
@@ -226,20 +226,20 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
 
     def test_zhao_density_and_enclosed_mass_match_classical(self):
         cases = [
-            {"rs_pc": 420.0, "rhos_Msunpc3": 0.06, "a": 1.2, "b": 4.0, "g": 0.6, "r_t_pc": 5000.0},
-            {"rs_pc": 50.0, "rhos_Msunpc3": 1e-4, "a": 0.5, "b": 6.0, "g": 0.1, "r_t_pc": 1e4},
-            {"rs_pc": 2000.0, "rhos_Msunpc3": 5.0, "a": 3.0, "b": 8.0, "g": 1.8, "r_t_pc": 2e4},
+            {"rs_pc": 420.0, "rhos_Msunpc3": 0.06, "alpha": 1.2, "beta": 4.0, "gamma": 0.6, "r_t_pc": 5000.0},
+            {"rs_pc": 50.0, "rhos_Msunpc3": 1e-4, "alpha": 0.5, "beta": 6.0, "gamma": 0.1, "r_t_pc": 1e4},
+            {"rs_pc": 2000.0, "rhos_Msunpc3": 5.0, "alpha": 3.0, "beta": 8.0, "gamma": 1.8, "r_t_pc": 2e4},
         ]
 
         radii = np.geomspace(1e-3, 1e5, 96)
-        model_numpyro = ZhaoNumPyro()
+        model_jax = ZhaoNumPyro()
         for params in cases:
             with self.subTest(params=params):
                 model_classical = ZhaoClassical(**params)
                 _assert_allclose(
                     self,
                     model_classical.mass_density_3d(radii),
-                    model_numpyro.mass_density_3d(jnp.asarray(radii), params=params),
+                    model_jax.mass_density_3d(jnp.asarray(radii), params=params),
                     label=f"Zhao.mass_density_3d {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -248,7 +248,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.enclosure_mass(radii),
-                    model_numpyro.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
+                    model_jax.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
                     label=f"Zhao.enclosed_mass {params}",
                     rtol=0.0,
                     atol=1e-10,
@@ -268,7 +268,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
             {"beta_ani": 0.95, "kernel_rtol": 1e-7},
         ]
 
-        model_numpyro = ConstantNumPyro()
+        model_jax = ConstantNumPyro()
         for case in cases:
             params = {"beta_ani": case["beta_ani"]}
             with self.subTest(params=params):
@@ -276,7 +276,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.beta(radii),
-                    model_numpyro.beta(jnp.asarray(radii), params=params),
+                    model_jax.beta(jnp.asarray(radii), params=params),
                     label=f"Constant.beta {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -285,7 +285,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.f(radii),
-                    model_numpyro.f(jnp.asarray(radii), params=params),
+                    model_jax.f(jnp.asarray(radii), params=params),
                     label=f"Constant.f {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -294,7 +294,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.kernel(u, R_pc),
-                    model_numpyro.kernel(jnp.asarray(u), jnp.asarray(R_pc), params=params),
+                    model_jax.kernel(jnp.asarray(u), jnp.asarray(R_pc), params=params),
                     label=f"Constant.kernel {params}",
                     rtol=case["kernel_rtol"],
                     atol=1e-10,
@@ -305,7 +305,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         u = np.geomspace(1.0 + 1e-6, 1e3, 256)
         R_pc = np.array([0.3, 3.0, 300.0], dtype=np.float64)[:, None]
 
-        model_numpyro = OsipkovMerrittNumPyro()
+        model_jax = OsipkovMerrittNumPyro()
         for r_a in (0.1, 1.0, 350.0, 1e4):
             params = {"r_a": r_a}
             with self.subTest(params=params):
@@ -313,7 +313,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.beta(radii),
-                    model_numpyro.beta(jnp.asarray(radii), params=params),
+                    model_jax.beta(jnp.asarray(radii), params=params),
                     label=f"OsipkovMerritt.beta {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -322,7 +322,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.f(radii),
-                    model_numpyro.f(jnp.asarray(radii), params=params),
+                    model_jax.f(jnp.asarray(radii), params=params),
                     label=f"OsipkovMerritt.f {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -331,7 +331,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.kernel(u[None, :], R_pc),
-                    model_numpyro.kernel(jnp.asarray(u)[None, :], jnp.asarray(R_pc), params=params),
+                    model_jax.kernel(jnp.asarray(u)[None, :], jnp.asarray(R_pc), params=params),
                     label=f"OsipkovMerritt.kernel {params}",
                     rtol=1e-10,
                     atol=1e-10,
@@ -348,7 +348,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
             {"beta_0": 0.8, "beta_inf": -0.5, "r_a": 100.0, "eta": 6.0},
         ]
 
-        model_numpyro = BaesNumPyro()
+        model_jax = BaesNumPyro()
         for params in cases:
             radii = np.geomspace(max(0.1, params["r_a"] * 0.1), params["r_a"] * 10.0, 64)
             with self.subTest(params=params):
@@ -356,7 +356,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.beta(radii),
-                    model_numpyro.beta(jnp.asarray(radii), params=params),
+                    model_jax.beta(jnp.asarray(radii), params=params),
                     label=f"Baes.beta {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -365,7 +365,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 _assert_allclose(
                     self,
                     model_classical.f(radii),
-                    model_numpyro.f(jnp.asarray(radii), params=params),
+                    model_jax.f(jnp.asarray(radii), params=params),
                     label=f"Baes.f {params}",
                     rtol=0.0,
                     rtol_ulps=16,
@@ -374,7 +374,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", RuntimeWarning)
                     classical_kernel = model_classical.kernel(u, R_pc, n=320)
-                numpyro_kernel = model_numpyro.kernel(
+                numpyro_kernel = model_jax.kernel(
                     jnp.asarray(u)[None, :],
                     jnp.asarray(R_pc)[:, None],
                     params=params,
@@ -393,9 +393,9 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         params = {
             "rs_pc": 1200.0,
             "rhos_Msunpc3": 1e-2,
-            "a": 1.0,
-            "b": 3.0,
-            "g": 1.0,
+            "alpha": 1.0,
+            "beta": 3.0,
+            "gamma": 1.0,
             "r_t_pc": 8000.0,
         }
         radii = np.geomspace(1.0, 1e4, 32)
@@ -466,9 +466,9 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
                     "re_pc": 50.0,
                     "rs_pc": 300.0,
                     "rhos_Msunpc3": 0.2,
-                    "a": 0.7,
-                    "b": 5.5,
-                    "g": 1.2,
+                    "alpha": 0.7,
+                    "beta": 5.5,
+                    "gamma": 1.2,
                     "r_t_pc": 2e4,
                     "beta_ani": 0.95,
                     "vmem_kms": 0.0,
@@ -529,9 +529,9 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
                     "re_pc": 50.0,
                     "rs_pc": 300.0,
                     "rhos_Msunpc3": 0.2,
-                    "a": 0.7,
-                    "b": 5.5,
-                    "g": 1.2,
+                    "alpha": 0.7,
+                    "beta": 5.5,
+                    "gamma": 1.2,
                     "r_t_pc": 2e4,
                     "beta_ani": 0.95,
                     "vmem_kms": 0.0,
@@ -564,7 +564,7 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
                 numpyro_sigmalos2 = numpyro_dsph.sigmalos2(
                     jnp.asarray(R_pc),
                     params=params,
-                    backend="kernel",
+                    solver="kernel",
                     n_u=1024,
                     u_max=5000.0,
                     dm_mass_method="analytic",
@@ -599,7 +599,7 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
         numpyro_sigmalos2 = numpyro_dsph.sigmalos2(
             jnp.asarray(R_pc),
             params=params,
-            backend="kernel",
+            solver="kernel",
             n_u=768,
             u_max=3000.0,
             dm_mass_method="analytic",

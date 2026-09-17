@@ -54,7 +54,7 @@ def main() -> None:
     import jax
     import jax.numpy as jnp
 
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         BaesAnisotropyModel,
         DSphModel,
         NFWModel,
@@ -99,7 +99,7 @@ def main() -> None:
             dsph.sigmalos2(
                 R64,
                 params=params64,
-                backend="kernel",
+                solver="kernel",
                 n_u=1024,
                 n_kernel=256,
                 u_max=1.0e5,
@@ -138,7 +138,7 @@ def main() -> None:
                     dsph.sigmalos2(
                         R,
                         params=params,
-                        backend="kernel",
+                        solver="kernel",
                         n_u=n_u,
                         n_kernel=n_kernel,
                         u_max=u_max,
@@ -155,7 +155,7 @@ def main() -> None:
                     value = dsph.sigmalos2(
                         R,
                         params=params,
-                        backend="kernel",
+                        solver="kernel",
                         n_u=n_u,
                         n_kernel=n_kernel,
                         u_max=u_max,

@@ -1,4 +1,4 @@
-"""Prior and inference utilities for the classical NumPy/SciPy backend."""
+"""Prior and inference utilities for the NumPy/SciPy backend."""
 
 from __future__ import annotations
 
@@ -11,8 +11,10 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm, truncnorm
 
+from ..parameters import SamplingParameter, _validate_parameter_specs, _photometry_coordinate
 from .core import Model, logger
-from .profiles import ConstantAnisotropyModel, NFWModel, PlummerModel
+from .profiles import (ConstantAnisotropyModel, NFWModel, PlummerModel,
+                       ProjectedExponentialModel, _EXP_HALF_LIGHT_FACTOR)
 from .solver import DSphModel
 
 
@@ -492,7 +494,7 @@ class DotDict(dict):
 
 
 class SimpleDSphEstimationModel(FittableModel, Model):
-    r"""Kinematics-only classical dwarf-spheroidal estimation model.
+    r"""Kinematics-only NumPy/SciPy dwarf-spheroidal estimation model.
 
     Notes
     -----
@@ -500,8 +502,9 @@ class SimpleDSphEstimationModel(FittableModel, Model):
     FlatPriorModel and PhotometryPriorModel. ``args_load_data=[data]`` supplies
     a DataFrame with ``R_pc``, ``vlos_kms`` and ``e_vlos_kms``;
     ``kwargs_load_data`` may contain shared=True. Parameter vectors follow
-    ``p_names_lnprob`` exactly. ``log10_`` names map to ``10**p``; ``bfunc_``
-    names map to ``1-10**p``.
+    ``p_names_lnprob`` exactly. ``parameter_specs`` is an ordered sequence of
+    :class:`jeanspy.parameters.SamplingParameter` objects specifying physical
+    names and transforms. Without specifications, names map by identity only.
 
     **Returns and shape.** lnlikelihoods gives (N,) log densities; lnlikelihood
     sums them. lnpriors returns prior terms. lnposterior returns (logposterior,
@@ -509,7 +512,10 @@ class SimpleDSphEstimationModel(FittableModel, Model):
     coordinates; ``sample_data`` simulates velocities at supplied positions.
 
     **Validity.** Nonempty finite 1-D data, R>0, error>=0; mean/error in km/s.
-    The historical observation storage dtype is float32.
+    ``dtype=None`` preserves the common floating dtype of the three input
+    columns (integer-only data use float64). An explicit floating ``dtype``
+    selects storage precision. Shared buffers use that same dtype and cannot
+    change dtype on reset. Numerical solvers may promote arithmetic precision.
     ``vmem_prior_from_data`` defaults to False. WBIC uses
     ``inverse_temparature = 1/log(N)`` and requires N>1. Shared data cannot be
     resized.
@@ -532,10 +538,15 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         "FlatPriorModel": FlatPriorModel,
         "PhotometryPriorModel": PhotometryPriorModel,
     }
-    dtype = np.float32
     prior_names = ["flat_prior", "photometry_prior"]
 
-    def __init__(self, *args, vmem_prior_from_data=False, **kwargs):
+    def __init__(self, *args, parameter_specs=None, dtype=None,
+                 vmem_prior_from_data=False, **kwargs):
+        self.parameter_specs = None if parameter_specs is None else tuple(parameter_specs)
+        self._requested_dtype = None if dtype is None else np.dtype(dtype)
+        if self._requested_dtype is not None and self._requested_dtype.kind != "f":
+            raise ValueError("Observation dtype must be a real floating dtype")
+        self.dtype = self._requested_dtype
         self.vmem_prior_from_data = vmem_prior_from_data
         super().__init__(*args, **kwargs)
         self._validate_prior_schema()
@@ -566,14 +577,17 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         prior = self["FlatPriorModel"]
         prior.validate_config(prior.data)
         names = self.p_names_lnprob
-        physical = [name[6:] if name.startswith(("log10_", "bfunc_")) else name for name in names]
-        if physical != self.required_param_names_combined:
+        self.parameter_specs = _validate_parameter_specs(self.parameter_specs, names)
+        physical = [spec.param_name for spec in self.parameter_specs]
+        if set(physical) != set(self.required_param_names_combined):
             raise ValueError(
-                "Prior names/order must match model parameters exactly after removing "
-                f"log10_ or bfunc_: expected {self.required_param_names_combined}, got {names}."
+                "Parameter specifications must match model parameters exactly: "
+                f"expected {self.required_param_names_combined}, got {physical}."
             )
-        if "log10_re_pc" not in names:
-            raise ValueError("The photometry prior requires the sampling coordinate log10_re_pc.")
+        exponential = isinstance(self["DSphModel"]["StellarModel"], ProjectedExponentialModel)
+        radius_name = "r_exp_pc" if exponential else "re_pc"
+        self._photometry_index = _photometry_coordinate(self.parameter_specs, radius_name)
+        self._photometry_offset = np.log10(_EXP_HALF_LIGHT_FACTOR) if exponential else 0.0
         photometry = self["PhotometryPriorModel"]
         if not np.isfinite(photometry.loc) or not np.isfinite(photometry.scale) or photometry.scale <= 0:
             raise ValueError("Photometry prior needs a finite location and positive finite scale.")
@@ -588,32 +602,18 @@ class SimpleDSphEstimationModel(FittableModel, Model):
 
         Notes
         -----
-        **Inputs and units.** One parameter vector in exact prior order; ``log10_``
-        and ``bfunc_`` prefixes identify the supported transforms.
+        **Inputs and units.** One parameter vector in exact prior order;
+        ``parameter_specs`` explicitly supplies each transformation.
 
-        **Returns and shape.** Named physical parameters with pc, Msun/pc^3, km/s,
-        radians and dimensionless quantities as appropriate. The axisymmetric result
-        also incorporates ``fixed_params``.
+        **Returns and shape.** A Series indexed by physical parameter names,
+        with units defined by the composed spherical model. Priors remain in
+        the sampled coordinates; conversion does not add a Jacobian.
         """
         self._validate_prior_schema()
-        p_names = self.p_names_lnprob
-        param_names = self.required_param_names_combined
-        if np.shape(p) != (len(p_names),):
-            raise ValueError(f"Parameters must have shape ({len(p_names)},) in prior config order.")
-
-        def convert_param(name, value):
-            if name.startswith("log10_"):
-                return 10.0**value
-            if name.startswith("bfunc_"):
-                return 1 - 10.0**value
-            return value
-
-        return pd.Series(
-            {
-                param_name: convert_param(p_name, value)
-                for p_name, param_name, value in zip(p_names, param_names, p)
-            }
-        )
+        if np.shape(p) != (len(self.parameter_specs),):
+            raise ValueError(f"Parameters must have shape ({len(self.parameter_specs)},) in prior config order.")
+        return pd.Series({spec.param_name: spec.to_physical(value).item()
+                          for spec, value in zip(self.parameter_specs, p)})
 
     def load_data(self, data, shared=False):
         """Load explicitly supplied observed kinematic data."""
@@ -639,10 +639,12 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         prior = self["FlatPriorModel"]
         updated_prior = prior.data.copy(deep=True)
         if self.vmem_prior_from_data:
-            if "vmem_kms" not in updated_prior.index:
-                raise ValueError("Data-derived velocity bounds require the vmem_kms coordinate.")
-            velocities = np.asarray(data["vlos_kms"], dtype=self.dtype)
-            updated_prior.loc["vmem_kms", ["lower", "upper"]] = [
+            velocity_spec = next((spec for spec in self.parameter_specs
+                                  if spec.param_name == "vmem_kms" and spec.transform == "identity"), None)
+            if velocity_spec is None:
+                raise ValueError("Data-derived velocity bounds require an identity vmem_kms specification.")
+            velocities = np.asarray(data["vlos_kms"], dtype=self._observation_dtype(data))
+            updated_prior.loc[velocity_spec.sample_name, ["lower", "upper"]] = [
                 velocities.min(), velocities.max()
             ]
             prior.validate_config(updated_prior)
@@ -701,6 +703,14 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         """Return the number of observed stars as an integer."""
         return self._n_data
 
+    def _observation_dtype(self, data):
+        if self._requested_dtype is not None:
+            return self._requested_dtype
+        dtype = np.result_type(*(data[field].dtype for field in ("R_pc", "vlos_kms", "e_vlos_kms")))
+        if dtype.kind not in "fiu":
+            raise ValueError("Kinematic columns must have real numeric dtypes")
+        return dtype if dtype.kind == "f" else np.dtype(np.float64)
+
     @data.setter
     def data(self, data: pd.DataFrame):
         fields = ("R_pc", "vlos_kms", "e_vlos_kms")
@@ -711,8 +721,11 @@ class SimpleDSphEstimationModel(FittableModel, Model):
                     "Cannot resize shared kinematic data; construct a new model "
                     "for a different number of observations."
                 )
-        data = data.astype(self.dtype)
-        values = {field: data[field].values for field in fields}
+        dtype = self._observation_dtype(data)
+        if self.shared and hasattr(self, "shared_shape") and dtype != self.dtype:
+            raise ValueError("Cannot change shared observation dtype; construct a new model "
+                             "or explicitly select the existing dtype when creating the model.")
+        values = {field: data[field].to_numpy(dtype=dtype, copy=True) for field in fields}
         if any(array.shape != shape for array in values.values()):
             raise ValueError("Kinematic columns must have matching shapes.")
         if len(shape) != 1 or not len(data) or not all(np.isfinite(v).all() for v in values.values()):
@@ -720,6 +733,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         if np.any(values["R_pc"] <= 0) or np.any(values["e_vlos_kms"] < 0):
             raise ValueError("Kinematic data require R_pc > 0 and e_vlos_kms >= 0.")
         if not self.shared:
+            self.dtype = dtype
             self._data = DotDict(values)
             self._n_data = len(data)
             return
@@ -747,7 +761,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
                         f"expected {buffer_size} bytes for {field}."
                     )
                 handles[field] = shm
-                arrays[field] = np.ndarray(shape, dtype=self.dtype, buffer=shm.buf)
+                arrays[field] = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
         except Exception:
             arrays.clear()
             for shm in opened:
@@ -759,6 +773,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         for field in fields:
             arrays[field][:] = values[field]
             setattr(self, f"shm_{field}", handles[field])
+        self.dtype = dtype
         self._n_data = len(data)
         self.shared_shape = shape
         self.buffer_size = buffer_size
@@ -801,8 +816,8 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         )
 
     def _lnpriors(self, p_before_conversion):
-        idx_log10_re_pc = self["FlatPriorModel"].get_index("log10_re_pc")
-        log10_re_pc = p_before_conversion[idx_log10_re_pc]
+        idx_log10_re_pc = self._photometry_index
+        log10_re_pc = p_before_conversion[idx_log10_re_pc] + self._photometry_offset
         return [
             self["FlatPriorModel"]._lnprior(p_before_conversion),
             self["PhotometryPriorModel"]._lnprior(log10_re_pc),
@@ -819,10 +834,10 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         """
         self._validate_prior_schema()
         p = self["FlatPriorModel"].sample(size)
-        idx_log10_re_pc = self["FlatPriorModel"].get_index("log10_re_pc")
+        idx_log10_re_pc = self._photometry_index
         prior = self["FlatPriorModel"]
         photometry = self["PhotometryPriorModel"]
-        loc, scale = photometry.loc, photometry.scale
+        loc, scale = photometry.loc - self._photometry_offset, photometry.scale
         # Draw from the product of the Gaussian photometry prior and finite
         # uniform support, so generated walkers always satisfy both priors.
         a = (prior.lower[idx_log10_re_pc] - loc) / scale
@@ -856,13 +871,16 @@ def get_default_estimation_model(
     config="priorconfig.csv",
     *,
     vmem_prior_from_data=False,
+    dtype=None,
 ):
     r"""Compose Plummer + NFW + constant anisotropy with explicit finite priors.
 
     ``config`` is a DataFrame or CSV in this order: vmem_kms, log10_re_pc,
-    log10_rs_pc, log10_rhos_Msunpc3, log10_r_t_pc, bfunc_beta_ani.
+    log10_rs_pc, log10_rhos_Msunpc3, log10_r_t_pc, log10_one_minus_beta_ani.
     A missing CSV is created as an unfilled template, then raises ValueError.
     Caller velocity bounds are preserved unless vmem_prior_from_data is True.
+    The preset supplies explicit SamplingParameter objects for these names;
+    ``dtype`` follows SimpleDSphEstimationModel's observation-storage contract.
 
     Notes
     -----
@@ -895,7 +913,7 @@ def get_default_estimation_model(
     )
 
     names = ["vmem_kms", "log10_re_pc", "log10_rs_pc", "log10_rhos_Msunpc3",
-             "log10_r_t_pc", "bfunc_beta_ani"]
+             "log10_r_t_pc", "log10_one_minus_beta_ani"]
     if isinstance(config, (str, os.PathLike)) and not os.path.exists(config):
         FlatPriorModel.generate_default_config_file(
             config,
@@ -909,6 +927,15 @@ def get_default_estimation_model(
 
     return SimpleDSphEstimationModel(
         args_load_data=[data],
+        dtype=dtype,
+        parameter_specs=[
+            SamplingParameter("vmem_kms", "vmem_kms"),
+            SamplingParameter("log10_re_pc", "re_pc", "pow10"),
+            SamplingParameter("log10_rs_pc", "rs_pc", "pow10"),
+            SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10"),
+            SamplingParameter("log10_r_t_pc", "r_t_pc", "pow10"),
+            SamplingParameter("log10_one_minus_beta_ani", "beta_ani", "one_minus_pow10"),
+        ],
         vmem_prior_from_data=vmem_prior_from_data,
         submodels={
             "DSphModel": dsph_model,

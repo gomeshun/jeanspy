@@ -13,14 +13,20 @@ when comparing results. The returned units are GeV² cm⁻⁵ and GeV cm⁻².
 
 ## Spherical apertures
 
-The spherical `DMModel.jfactor_ullio2016` method includes outer halo shells
-projected into a finite cone. Its `simple` variant uses a spherical-aperture
-approximation. The two are different integrals. The
+The spherical `DMModel.jfactor_cone` method includes outer halo shells
+projected into a finite cone through the truncated density.
+`jfactor_spherical_aperture` integrates only to
+`min(dist_pc*sin(roi_deg), r_t_pc)`, omitting shells outside that sphere.
+`NFWModel.jfactor_small_angle_infinite_los` uses the Evans et al. formula:
+it caps the projected aperture at `r_t_pc` but integrates the untruncated
+profile along the entire line of sight. These are different integrals.
+The small-angle approximations enforce `small_angle_limit_deg` (default 1 degree)
+by raising `ValueError`; the full cone does not use that bound. The
 [geometry derivation](ullio-geometry.md) follows
 [Ullio & Valli (2016)](https://arxiv.org/abs/1603.07721).
 
 The spherical limit of `AxisymmetricZhaoModel` also supplies a D-factor
-calculation for a spherical halo; there is no separate classical spherical
+calculation for a spherical halo; there is no separate NumPy/SciPy spherical
 `DMModel.dfactor` API.
 
 ```{literalinclude} ../../../examples/docs_factors.py

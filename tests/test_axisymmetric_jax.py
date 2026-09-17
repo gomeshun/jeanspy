@@ -7,7 +7,7 @@ import pytest
 jax = pytest.importorskip("jax")
 import jax.numpy as jnp
 from jeanspy.axisymmetric import AxisymmetricDSphModel as NumpyModel
-from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel as JaxModel
+from jeanspy.axisymmetric_jax import AxisymmetricDSphModel as JaxModel
 
 P = dict(re_pc=300., rs_pc=500., rhos_Msunpc3=.1, q=.65, Q=.7,
          alpha=2., beta=3., gamma=.8, beta_z=-.3, inclination=1.1)

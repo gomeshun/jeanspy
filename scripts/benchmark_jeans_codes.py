@@ -201,7 +201,7 @@ def generate_mock_with_jeanspy_fallback(
     import jax
     import jax.numpy as jnp
 
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         ConstantAnisotropyModel,
         DSphModel,
         NFWModel,
@@ -232,11 +232,11 @@ def generate_mock_with_jeanspy_fallback(
         dsph.sigmalos2(
             jnp.asarray(R_pc),
             params=params,
-            backend="kernel",
+            solver="kernel",
             jit=True,
             n_u=192,
             u_max=3000.0,
-            constant_kernel_backend="jax",
+            kernel_backend="jax",
         )
     )
     e_vlos = np.full(R_pc.size, velocity_error_kms, dtype=float)
@@ -429,7 +429,7 @@ def make_jeanspy_engine(anisotropy: str, R_pc: np.ndarray, args: argparse.Namesp
         import jax
         import jax.numpy as jnp
 
-        from jeanspy.model_numpyro import (
+        from jeanspy.model_jax import (
             ConstantAnisotropyModel,
             DSphModel,
             NFWModel,
@@ -460,11 +460,11 @@ def make_jeanspy_engine(anisotropy: str, R_pc: np.ndarray, args: argparse.Namesp
         sigma2 = dsph.sigmalos2(
             R_jax,
             params=params,
-            backend="kernel",
+            solver="kernel",
             jit=True,
             n_u=args.jeanspy_n_u,
             u_max=args.jeanspy_u_max,
-            constant_kernel_backend="jax",
+            kernel_backend="jax",
         )
         return np.sqrt(np.maximum(np.asarray(jax.block_until_ready(sigma2)), 0.0))
 
@@ -916,7 +916,7 @@ def run_jeanspy_nuts_sampler(
     import numpyro.distributions as dist
     from numpyro.infer import MCMC, NUTS
 
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         ConstantAnisotropyModel,
         DSphModel,
         NFWModel,
@@ -952,11 +952,11 @@ def run_jeanspy_nuts_sampler(
         sigma2 = dsph.sigmalos2(
             R_jax,
             params=params,
-            backend="kernel",
+            solver="kernel",
             jit=True,
             n_u=args.jeanspy_n_u,
             u_max=args.jeanspy_u_max,
-            constant_kernel_backend="jax",
+            kernel_backend="jax",
         )
         sigma_model = jnp.sqrt(jnp.clip(sigma2, min=1e-12, max=1e12))
         numpyro.sample("sigma_obs", dist.Normal(sigma_model, sigma_err), obs=sigma_obs)

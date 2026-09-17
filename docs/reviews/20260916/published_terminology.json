@@ -1,0 +1,16 @@
+{
+  "baseline_commit": "6eb9bdb7222c7baffdc8e259df571218e5fc4cbc",
+  "pages_commit": "ab57a5a",
+  "versions": [
+    {
+      "name": "dev (development)",
+      "version": "dev",
+      "url": "https://gomeshun.github.io/jeanspy/dev/",
+      "preferred": true
+    }
+  ],
+  "pages_checked": 603,
+  "fetch_errors": [],
+  "pages_with_visible_classical": 581,
+  "note": "Counts include repeated API navigation titles and source views."
+}

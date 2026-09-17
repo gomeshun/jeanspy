@@ -10,7 +10,7 @@ def classical_prior_config():
         {"lower": [-30., 2., 2.5, -3., 3.5, -.3],
          "upper": [30., 2.6, 3.5, -1., 4.5, .3]},
         index=["vmem_kms", "log10_re_pc", "log10_rs_pc",
-               "log10_rhos_Msunpc3", "log10_r_t_pc", "bfunc_beta_ani"],
+               "log10_rhos_Msunpc3", "log10_r_t_pc", "log10_one_minus_beta_ani"],
     )
 
 

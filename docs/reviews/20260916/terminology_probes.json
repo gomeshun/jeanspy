@@ -1,0 +1,44 @@
+{
+  "baseline": "6eb9bdb7222c7baffdc8e259df571218e5fc4cbc",
+  "exponential_models": {
+    "exp3d_parameter_re_pc": 100.0,
+    "exp3d_half_light_radius_pc": 167.83469900166602,
+    "same_projected_profile_after_scale_conversion": true,
+    "same_intrinsic_profile_after_scale_conversion": true
+  },
+  "ignored_update_target": {
+    "requested_target": "DMModel",
+    "tracer_re_pc_after_update": 300.0
+  },
+  "density_outside_same_cutoff": {
+    "radius_pc": 1000.0,
+    "cutoff_pc": 500.0,
+    "spherical_Msunpc3": 8.264462809917356e-05,
+    "axisymmetric_spherical_limit_Msunpc3": 0.0
+  },
+  "roi_deg_max_warning": {
+    "value": 1.0,
+    "actual_behavior": "ValueError",
+    "message": "Small-angle J-factor approximations require roi_deg <= 1.0 degrees."
+  },
+  "spherical_observation_precision": {
+    "input_dtype": "float64",
+    "stored_dtype": "float32",
+    "input_R_pc": 100.123456789,
+    "stored_R_pc": 100.12345886230469
+  },
+  "docstring_contract_checks": {
+    "sersic_has_documented_logdensity_2d": false,
+    "exp3d_has_documented_logdensity_2d": false,
+    "osipkov_kernel_has_documented_backend_option": false,
+    "baes_kernel_has_documented_backend_option": false
+  },
+  "specialized_baes_eta2_dispatch": {
+    "auto": "abel",
+    "kernel": "kernel"
+  },
+  "restart_software_source_digest": {
+    "baseline": "8b3e14de7a58bc00f98a6976f719a34eced79b2b8592b331d550941320ee6855",
+    "working_tree": "f246e994ee73b1d95ed509db07768f85e02c6465a8d18dc2be3f42e2672a90fd"
+  }
+}
