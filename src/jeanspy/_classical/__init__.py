@@ -1,4 +1,4 @@
-"""Internal modules for the classical NumPy/SciPy backend."""
+"""Internal modules for the NumPy/SciPy backend."""
 
 from .core import Model, Parameters, logger
 from .inference import (
@@ -15,8 +15,7 @@ from .profiles import (
     BaesAnisotropyModel,
     ConstantAnisotropyModel,
     DMModel,
-    Exp2dModel,
-    Exp3dModel,
+    ProjectedExponentialModel,
     NFWModel,
     OsipkovMerrittModel,
     PlummerModel,
@@ -34,8 +33,7 @@ __all__ = [
     "DMModel",
     "DSphModel",
     "DotDict",
-    "Exp2dModel",
-    "Exp3dModel",
+    "ProjectedExponentialModel",
     "FittableModel",
     "FlatPriorModel",
     "GMsun_m3s2",

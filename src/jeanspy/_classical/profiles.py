@@ -1,4 +1,4 @@
-"""Physical profile components for the classical NumPy/SciPy backend."""
+"""Physical profile components for the NumPy/SciPy backend."""
 
 from __future__ import annotations
 
@@ -12,6 +12,8 @@ from ..dequad import dequad
 from .._zhao import enclosed_mass as _zhao_mass, valid_domain as _zhao_valid
 from .core import Model
 from .jfactor import C_J, _ullio2016_inner_weight, _ullio2016_weight
+
+_EXP_HALF_LIGHT_FACTOR = 1.67834699001666
 
 
 def _jfactor_quad(integrand, lo, hi, **kwargs):
@@ -131,12 +133,12 @@ class PlummerModel(StellarModel):
     pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial
     CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface
     density within R. ``logdensity_2d`` is the natural log of the surface
-    density, not the radial PDF. ``density_2d_normalized_re``, where available,
+    density, not the radial PDF. ``density_2d_normalized_re``
     is the dimensionless ratio Sigma(R)/Sigma(re).
 
     **Validity.** Supply positive finite scales and real nonnegative radii. Use
-    NumPy arrays for array inputs. A central cusp may diverge at zero. The older
-    elementary density formulas do not uniformly validate domains.
+    NumPy arrays for array inputs. The central density is finite; elementary
+    formulas do not uniformly validate domains.
 
     **Errors.** Unknown parameter names raise ValueError in Model.update.
     Invalid values in elementary profile formulas can produce NaN/inf;
@@ -256,27 +258,25 @@ class PlummerModel(StellarModel):
         -----
         **Inputs and units.** No arguments; reads the stored tracer scales.
 
-        **Returns and shape.** Scalar radius in pc. Exp3dModel returns
-        1.67834699001666\*``re_pc``.
+        **Returns and shape.** Scalar radius in pc, equal to the stored ``re_pc``.
         """
         return self._half_light_radius(self.params.re_pc)
 
 
-class Exp2dModel(StellarModel):
+class ProjectedExponentialModel(StellarModel):
     r"""Stellar model with an exponential projected surface density.
 
     Notes
     -----
-    **Inputs and units.** ``re_pc`` is the projected half-light radius (pc);
-    ``R_exp_pc`` = ``re_pc``/1.67834699001666. Other constructor arguments
-    follow Model.
+    **Inputs and units.** ``r_exp_pc`` is the scale in ``exp(-R/r_exp_pc)``
+    in pc. The read-only ``re_pc`` property is the projected half-light radius,
+    1.67834699001666 times this scale. Other constructor arguments follow Model.
 
     **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and
     pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial
     CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface
     density within R. ``logdensity_2d`` is the natural log of the surface
-    density, not the radial PDF. ``density_2d_normalized_re``, where available,
-    is the dimensionless ratio Sigma(R)/Sigma(re).
+    density, not the radial PDF.
 
     **Validity.** Supply positive finite scales and real nonnegative radii. Use
     NumPy arrays for array inputs. A central cusp may diverge at zero. The older
@@ -294,14 +294,14 @@ class Exp2dModel(StellarModel):
     **Examples.** ``examples/docs_profiles.py``
     """
 
-    name = "Exp2dModel"
-    required_param_names = ["re_pc"]
+    name = "ProjectedExponentialModel"
+    required_param_names = ["r_exp_pc"]
     required_models = {}
 
     @property
-    def R_exp_pc(self):
-        """Return the exponential scale length in pc, re_pc/1.67834699001666."""
-        return self.params.re_pc / 1.67834699001666
+    def re_pc(self):
+        """Projected half-light radius in pc, 1.67834699001666 * r_exp_pc."""
+        return _EXP_HALF_LIGHT_FACTOR * self.params.r_exp_pc
 
     def density_2d(self, R_pc):
         r"""Evaluate normalized projected tracer density.
@@ -313,7 +313,7 @@ class Exp2dModel(StellarModel):
 
         **Returns and shape.** pc^-2 with input radius shape.
         """
-        scale = self.R_exp_pc
+        scale = self.params.r_exp_pc
         return np.exp(-R_pc / scale) / (2.0 * np.pi * scale**2)
 
     def logdensity_2d(self, R_pc):
@@ -326,7 +326,7 @@ class Exp2dModel(StellarModel):
         **Returns and shape.** Natural log of the numerical surface density in
         pc^-2, with input shape. This excludes the radial Jacobian 2\*pi\*R.
         """
-        scale = self.R_exp_pc
+        scale = self.params.r_exp_pc
         return np.log(1.0 / (2.0 * np.pi)) - 2.0 * np.log(scale) - R_pc / scale
 
     def density_3d(self, r_pc):
@@ -349,7 +349,7 @@ class Exp2dModel(StellarModel):
         This elementary NumPy formula does not uniformly validate input domains;
         no JAX physical-parameter differentiation is supported.
         """
-        scale = self.R_exp_pc
+        scale = self.params.r_exp_pc
         return k0(r_pc / scale) / (2.0 * np.pi**2 * scale**3)
 
     def cdf_R(self, R_pc):
@@ -363,7 +363,7 @@ class Exp2dModel(StellarModel):
         **Returns and shape.** Dimensionless cumulative probability with input
         radius shape.
         """
-        scale = self.R_exp_pc
+        scale = self.params.r_exp_pc
         return 1.0 - np.exp(-R_pc / scale) * (1.0 + R_pc / scale)
 
     def mean_density_2d(self, R_pc):
@@ -381,169 +381,25 @@ class Exp2dModel(StellarModel):
         """
         return self.cdf_R(R_pc) / (np.pi * R_pc**2)
 
-    def _half_light_radius(self, re_pc):
-        del re_pc
-        return 1.67834699001666 * self.R_exp_pc
-
     def half_light_radius(self):
-        r"""Return the projected half-light radius.
-
-        Notes
-        -----
-        **Inputs and units.** No arguments; reads the stored tracer scales.
-
-        **Returns and shape.** Scalar radius in pc. Exp3dModel returns
-        1.67834699001666\*``re_pc``.
-        """
-        return self._half_light_radius(self.params.re_pc)
-
-
-class Exp3dModel(StellarModel):
-    r"""Historical exponential model retained by the classical backend.
-
-    Notes
-    -----
-    **Inputs and units.** ``re_pc`` is the exponential scale length (pc),
-    despite its name; ``half_light_radius``() is 1.67834699001666\*``re_pc``. It
-    is not a pure 3-D exponential. Other constructor arguments follow Model.
-
-    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and
-    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial
-    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface
-    density within R. ``logdensity_2d`` is the natural log of the surface
-    density, not the radial PDF. ``density_2d_normalized_re``, where available,
-    is the dimensionless ratio Sigma(R)/Sigma(re).
-
-    **Validity.** Supply positive finite scales and real nonnegative radii. Use
-    NumPy arrays for array inputs. A central cusp may diverge at zero. The older
-    elementary density formulas do not uniformly validate domains.
-
-    **Errors.** Unknown parameter names raise ValueError in Model.update.
-    Invalid values in elementary profile formulas can produce NaN/inf;
-    successful construction alone does not validate a physical profile.
-
-    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** ``examples/docs_profiles.py``
-    """
-
-    name = "Exp3dModel"
-    required_param_names = ["re_pc"]
-    required_models = {}
-
-    def density_2d(self, R_pc):
-        r"""Evaluate normalized projected tracer density.
-
-        Notes
-        -----
-        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii
-        in pc.
-
-        **Returns and shape.** pc^-2 with input radius shape.
-        """
-        re_pc = self.params.re_pc
-        return np.exp(-R_pc / re_pc) / (2.0 * np.pi * re_pc**2)
-
-    def density_3d(self, r_pc):
-        """Evaluate the unit-normalized intrinsic tracer density.
-
-        Parameters
-        ----------
-        r_pc : float or numpy.ndarray
-            Nonnegative intrinsic radius in pc; NumPy array inputs keep their shape.
-
-        Returns
-        -------
-        float or numpy.ndarray
-            Density in pc^-3 with the input radius shape.
-
-        Notes
-        -----
-        The deprojected exponential density diverges at r_pc=0.
-        Negative radii are outside the supported domain. Stored tracer scales must be positive.
-        This elementary NumPy formula does not uniformly validate input domains;
-        no JAX physical-parameter differentiation is supported.
-        """
-        re_pc = self.params.re_pc
-        return k0(r_pc / re_pc) / (2.0 * np.pi**2 * re_pc**3)
-
-    def cdf_R(self, R_pc):
-        r"""Evaluate projected probability inside a circular radius.
-
-        Notes
-        -----
-        **Inputs and units.** ``R_pc`` is a scalar or NumPy array of projected radii
-        in pc.
-
-        **Returns and shape.** Dimensionless cumulative probability with input
-        radius shape.
-        """
-        re_pc = self.params.re_pc
-        return 1.0 - np.exp(-R_pc / re_pc) * (1.0 + R_pc / re_pc)
-
-    def mean_density_2d(self, R_pc):
-        r"""Average surface density inside a circular aperture.
-
-        Notes
-        -----
-        **Inputs and units.** Positive projected radius ``R_pc`` in pc, scalar or
-        NumPy array.
-
-        **Returns and shape.** ``cdf_R(R)/(pi*R**2)``, in pc^-2 with radius shape.
-
-        **Validity.** Use R>0; the elementary ratio is not a numerically regularized
-        central limit.
-        """
-        return self.cdf_R(R_pc) / (np.pi * R_pc**2)
-
-    def half_light_radius(self):
-        r"""Return the projected half-light radius.
-
-        Notes
-        -----
-        **Inputs and units.** No arguments; reads the stored tracer scales.
-
-        **Returns and shape.** Scalar radius in pc. Exp3dModel returns
-        1.67834699001666\*``re_pc``.
-        """
-        return 1.67834699001666 * self.params.re_pc
+        """Return the projected half-light radius in pc, equal to ``re_pc``."""
+        return self.re_pc
 
 
 class Uniform2dModel(StellarModel):
-    r"""Unit-integral uniform projected disk with no three-dimensional tracer.
+    r"""Unit-integral uniform projected disk with radius ``Rmax_pc`` in pc.
 
-    Notes
-    -----
-    **Inputs and units.** ``Rmax_pc`` is the disk radius (pc). Other constructor
-    arguments follow Model.
+    ``density_2d(R_pc)`` returns 1/(pi*Rmax_pc**2) for 0 <= R <= Rmax_pc
+    and zero outside; ``cdf_R`` returns the clipped dimensionless radial CDF.
+    Outputs follow the scalar/array radius shape. The inherited
+    ``density_2d_truncated`` can normalize an aperture inside the disk.
 
-    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and
-    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial
-    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface
-    density within R. ``logdensity_2d`` is the natural log of the surface
-    density, not the radial PDF. ``density_2d_normalized_re``, where available,
-    is the dimensionless ratio Sigma(R)/Sigma(re).
-
-    **Validity.** Supply positive finite scales and real nonnegative radii. Use
-    NumPy arrays for array inputs. A central cusp may diverge at zero. The older
-    elementary density formulas do not uniformly validate domains.
-    Uniform2dModel returns zero outside the disk; it cannot feed a 3-D Jeans
-    solver.
-
-    **Errors.** Unknown parameter names raise ValueError in Model.update.
-    Invalid values in elementary profile formulas can produce NaN/inf;
-    successful construction alone does not validate a physical profile.
-    ``density_3d`` raises NotImplementedError.
-
-    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** ``examples/docs_profiles.py``
+    The disk radius must be positive and finite; NaN radii raise ValueError.
+    There is no three-dimensional tracer: ``density_3d`` raises
+    NotImplementedError, so this profile cannot feed a 3-D Jeans solver.
+    Half-light, mean-density and log-density methods are not provided.
+    This is a stateful NumPy/SciPy model without JAX differentiation.
+    See ``examples/docs_profiles.py``.
     """
     name = "uniform Model"
     required_param_names = ["Rmax_pc"]
@@ -595,21 +451,21 @@ class Uniform2dModel(StellarModel):
 
 
 class DMModel(Model):
-    r"""Base class for classical dark-matter density profiles.
+    r"""Base class for NumPy/SciPy dark-matter density profiles.
 
     Notes
     -----
     **Inputs and units.** Subclasses supply ``mass_density_3d`` and
     ``enclosed_mass``/``enclosure_mass``. The base numerical J-factor methods
     require scalar ``dist_pc``, ``roi_deg`` (cone half-angle in degrees) and
-    ``r_t_pc``. NFW overrides the simple approximation and also supplies an
+    ``r_t_pc``. NFW overrides the spherical-aperture approximation and also supplies an
     Evans formula; these analytic methods support broadcastable geometry.
 
     **Returns and shape.** Mass in Msun; density in Msun/pc^3; J factor in GeV^2
     cm^-5.
 
     **Validity.** J-factor geometry requires a finite positive ``r_t_pc`` and an
-    external observer for the full cone. The simple method omits shells outside
+    external observer for the full cone. The spherical-aperture method omits shells outside
     the spherical aperture; see the factors guide.
 
     **Errors.** Invalid scales/apertures, divergent cusps or failed adaptive
@@ -627,7 +483,7 @@ class DMModel(Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.roi_deg_max_warning = 1.0
+        self.small_angle_limit_deg = 1.0
 
     @abstractmethod
     def mass_density_3d(self, r_pc):
@@ -686,10 +542,10 @@ class DMModel(Model):
                 "dist_pc, roi_deg, and r_t_pc must be finite and positive."
             )
 
-        if small_angle and np.any(roi_deg > self.roi_deg_max_warning):
+        if small_angle and np.any(roi_deg > self.small_angle_limit_deg):
             raise ValueError(
                 "Small-angle J-factor approximations require roi_deg <= "
-                f"{self.roi_deg_max_warning} degrees."
+                f"{self.small_angle_limit_deg} degrees."
             )
 
         if full:
@@ -717,13 +573,12 @@ class DMModel(Model):
             raise ValueError("J-factor density must be finite and nonnegative away from the origin")
         return rho
 
-    def assert_roi_is_enough_small(self, roi_deg):
+    def validate_small_angle(self, roi_deg):
         """Validate cone half-angles for the small-angle J-factor methods.
 
         ``roi_deg`` is a scalar or broadcastable array in degrees. Returns None
         when all values are finite, positive and no larger than
-        ``roi_deg_max_warning``. Otherwise raises ValueError; it does not emit
-        a warning despite the historical attribute name.
+        ``small_angle_limit_deg``. Otherwise raises ValueError.
         """
         try:
             roi_deg = np.asarray(roi_deg, dtype=float)
@@ -731,13 +586,13 @@ class DMModel(Model):
             raise ValueError("roi_deg must be a finite positive number.") from exc
         if np.any(~np.isfinite(roi_deg)) or np.any(roi_deg <= 0):
             raise ValueError("roi_deg must be a finite positive number.")
-        if np.any(roi_deg > self.roi_deg_max_warning):
+        if np.any(roi_deg > self.small_angle_limit_deg):
             raise ValueError(
                 "Small-angle J-factor approximations require roi_deg <= "
-                f"{self.roi_deg_max_warning} degrees."
+                f"{self.small_angle_limit_deg} degrees."
             )
 
-    def jfactor_ullio2016_simple(self, dist_pc, roi_deg=0.5):
+    def jfactor_spherical_aperture(self, dist_pc, roi_deg=0.5):
         r"""Calculate the small-angle spherical-aperture approximation.
 
         Let ``R_max = dist_pc * sin(roi_deg)``.  This method integrates the
@@ -748,7 +603,7 @@ class DMModel(Model):
         halo boundary ``mathcal R = r_t_pc``.  If ``R_max < r_t_pc``, this is
         instead a spherical-aperture approximation: projected contributions
         from shells with ``R_max < r < r_t_pc`` are omitted.  Use
-        :meth:`jfactor_ullio2016` for the full finite-ROI geometry of
+        :meth:`jfactor_cone` for the full finite-ROI geometry of
         Eqs. (B.8)--(B.9).
 
         Notes
@@ -762,7 +617,7 @@ class DMModel(Model):
         **Validity.** Small-aperture spherical approximation; outer shells projected
         into the cone are omitted. Require a positive finite halo cutoff and a
         convergent inner cusp. Small-angle variants enforce the configured
-        ``roi_deg_max_warning`` bound.
+        ``small_angle_limit_deg`` bound.
         """
         dist_pc, roi_deg, r_t_pc = self._validate_jfactor_inputs(
             dist_pc, roi_deg, small_angle=True
@@ -789,10 +644,10 @@ class DMModel(Model):
         )
         return C_J * 4.0 * np.pi / dist_pc**2 * integ
 
-    def jfactor_ullio2016(self, dist_pc, roi_deg=0.5):
+    def jfactor_cone(self, dist_pc, roi_deg=0.5):
         r"""Calculate the full finite-ROI Ullio & Valli (2016) J-factor.
 
-        Unlike :meth:`jfactor_ullio2016_simple`, this includes the projected
+        Unlike :meth:`jfactor_spherical_aperture`, this includes the projected
         contribution from shells with ``R_max < r < r_t_pc`` when the ROI is
         smaller than the truncated halo, following Eqs. (B.8)--(B.9).
 
@@ -807,7 +662,7 @@ class DMModel(Model):
         **Validity.** Full finite-distance cone; 0<``roi_deg``<=90,
         ``dist_pc``>``r_t_pc``. Require a positive finite halo cutoff and a
         convergent inner cusp. Small-angle variants enforce the configured
-        ``roi_deg_max_warning`` bound.
+        ``small_angle_limit_deg`` bound.
         """
         dist_pc, roi_deg, r_t_pc = self._validate_jfactor_inputs(
             dist_pc, roi_deg, full=True
@@ -863,27 +718,26 @@ class ZhaoModel(DMModel):
 
     .. math::
 
-        \rho(r)=\rho_s (r/r_s)^{-g}
-        [1+(r/r_s)^a]^{-(b-g)/a}.
+        \rho(r)=\rho_s (r/r_s)^{-\gamma}
+        [1+(r/r_s)^\alpha]^{-(\beta-\gamma)/\alpha}.
 
     Notes
     -----
-    **Inputs and units.** ``rs_pc`` (pc), ``rhos_Msunpc3`` (Msun/pc^3), a/b/g
+    **Inputs and units.** ``rs_pc`` (pc), ``rhos_Msunpc3`` (Msun/pc^3), alpha/beta/gamma
     (dimensionless transition, outer and inner slopes), ``r_t_pc`` (pc).
     ``r_pc`` is scalar or an array in pc; ``n_steps`` controls numerical Zhao
     mass integration.
 
     **Returns and shape.** ``mass_density_3d`` returns Msun/pc^3 with input
     shape; ``enclosed_mass`` returns Msun inside min(``r_pc``, ``r_t_pc``).
-    ``enclosure_mass`` is a historical alias. The classical density method
-    itself evaluates the untruncated profile.
+    ``enclosure_mass`` is a historical alias. Density is zero outside ``r_t_pc``.
 
-    **Validity.** Positive scales and cutoff; Zhao a>0 and g<3 for finite
-    central mass; finite-radius mass does not require b>3. Total untruncated
-    mass can diverge. J-factor requires g<1.5.
+    **Validity.** Positive scales and cutoff; Zhao alpha>0 and gamma<3 for finite
+    central mass; finite-radius mass does not require beta>3. Total untruncated
+    mass can diverge. J-factor requires gamma<1.5.
 
-    **Errors.** Invalid Zhao mass domains raise ValueError. Elementary density
-    calculations may return NaN/inf. J-factor methods validate geometry and
+    **Errors.** Invalid Zhao density/mass domains raise ValueError. A valid
+    central cusp can return infinite density. J-factor methods validate geometry and
     quadrature separately.
 
     **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
@@ -895,14 +749,14 @@ class ZhaoModel(DMModel):
     """
 
     name = "Zhao Model"
-    required_param_names = ["rs_pc", "rhos_Msunpc3", "a", "b", "g", "r_t_pc"]
+    required_param_names = ["rs_pc", "rhos_Msunpc3", "alpha", "beta", "gamma", "r_t_pc"]
     required_models = {}
 
     def _validate_jfactor_profile(self):
         super()._validate_jfactor_profile()
         if (not np.all(_zhao_valid(np.asarray(1.0), self.params, np))
-                or np.any(np.asarray(self.params.g) >= 1.5)):
-            raise ValueError("Finite Zhao J-factor requires positive scales, a > 0, and g < 1.5; "
+                or np.any(np.asarray(self.params.gamma) >= 1.5)):
+            raise ValueError("Finite Zhao J-factor requires positive scales, alpha > 0, and gamma < 1.5; "
                              "steeper central cusps have divergent annihilation luminosity")
 
     def mass_density_3d(self, r_pc):
@@ -913,19 +767,25 @@ class ZhaoModel(DMModel):
         **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; reads the
         model's stored physical parameters.
 
-        **Returns and shape.** Msun/pc^3 with input shape. The density formula
-        itself is untruncated; cusps can diverge at r=0.
+        **Returns and shape.** Msun/pc^3 with input shape; zero for r > r_t_pc.
+        The density includes the boundary r = r_t_pc; cusps can diverge at r=0.
+        Invalid physical domains raise ValueError.
         """
         rs_pc = self.params.rs_pc
         rhos = self.params.rhos_Msunpc3
-        a, b, g = self.params.a, self.params.b, self.params.g
-        x = np.asarray(r_pc) / rs_pc
-        return rhos * np.power(x, -g) * np.power(
-            1.0 + np.power(x, a), -(b - g) / a
-        )
+        alpha, beta, gamma = self.params.alpha, self.params.beta, self.params.gamma
+        r = np.asarray(r_pc)
+        if not np.all(_zhao_valid(r, self.params, np)):
+            raise ValueError("Invalid Zhao density domain: require positive scales, "
+                             "alpha > 0, gamma < 3 and nonnegative radii")
+        inside = r <= self.params.r_t_pc
+        x = np.where(inside, r / rs_pc, 1.0)
+        with np.errstate(divide="ignore"):
+            rho = rhos * x**(-gamma) * (1.0 + x**alpha)**(-(beta - gamma) / alpha)
+        return np.where(inside, rho, 0.0)
 
     def enclosed_mass(self, r_pc, *, n_steps=128):
-        r"""Finite-radius Zhao mass for a > 0 and g < 3, including b <= 3.
+        r"""Finite-radius Zhao mass for alpha > 0 and gamma < 3, including beta <= 3.
 
         n_steps controls Gauss-Legendre nodes per regularized segment.
 
@@ -940,8 +800,8 @@ class ZhaoModel(DMModel):
         params = {k: getattr(self.params, k) for k in self.required_param_names}
         if not np.all(_zhao_valid(np.asarray(r_pc), params, np)):
             raise ValueError(
-                "Invalid Zhao mass domain: require positive scales, a > 0, "
-                "g < 3, finite slopes and nonnegative truncated radii"
+                "Invalid Zhao mass domain: require positive scales, alpha > 0, "
+                "gamma < 3, finite slopes and nonnegative truncated radii"
             )
         return _zhao_mass(r_pc, params, xp=np, n_steps=n_steps)
 
@@ -960,33 +820,26 @@ class ZhaoModel(DMModel):
 
 
 class NFWModel(DMModel):
-    r"""Spherical dark-matter density and finite-radius mass.
+    r"""Spherical NFW halo with a hard density cutoff at ``r_t_pc``.
 
-    Notes
-    -----
-    **Inputs and units.** ``rs_pc`` (pc), ``rhos_Msunpc3`` (Msun/pc^3),
-    ``r_t_pc`` (pc). ``r_pc`` is scalar or an array in pc; ``n_steps`` controls
-    numerical Zhao mass integration.
+    Parameters are ``rs_pc`` and ``r_t_pc`` in pc, and ``rhos_Msunpc3``
+    in Msun/pc^3. Inside the cutoff, rho = rhos / (x*(1+x)**2), x=r/rs.
+    ``mass_density_3d`` returns zero for r > r_t_pc and includes the cutoff
+    boundary. The central density diverges. ``enclosed_mass`` (also spelled
+    ``enclosure_mass``) gives the analytic mass inside min(r, r_t_pc), in Msun.
+    Scalar/array outputs follow the input radius shape.
 
-    **Returns and shape.** ``mass_density_3d`` returns Msun/pc^3 with input
-    shape; ``enclosed_mass`` returns Msun inside min(``r_pc``, ``r_t_pc``).
-    ``enclosure_mass`` is a historical alias. The classical density method
-    itself evaluates the untruncated profile.
+    Scales must be positive, rs and rhos finite; an infinite cutoff is allowed
+    for density/mass at finite radii. Density validates this domain and raises
+    ValueError on invalid values. The elementary mass formula does not
+    uniformly validate inputs. A finite cutoff is required by J-factor methods.
+    ``jfactor_cone`` integrates the truncated halo; ``jfactor_spherical_aperture``
+    is an analytic aperture approximation. ``jfactor_small_angle_infinite_los``
+    instead integrates the untruncated LOS profile with a capped projected
+    aperture; it is not the J-factor of this hard-truncated density.
 
-    **Validity.** Positive scales and cutoff; Zhao a>0 and g<3 for finite
-    central mass; finite-radius mass does not require b>3. Total untruncated
-    mass can diverge. J-factor requires g<1.5.
-
-    **Errors.** NFW's elementary mass formula does not uniformly validate
-    physical domains. Elementary density calculations may return NaN/inf.
-    J-factor methods validate geometry and quadrature separately.
-
-    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** ``examples/docs_profiles.py``; ``examples/docs_factors.py``
+    This is a stateful NumPy/SciPy model without JAX differentiation.
+    See ``examples/docs_profiles.py`` and ``examples/docs_factors.py``.
     """
     name = "NFW Model"
     required_param_names = ["rs_pc", "rhos_Msunpc3", "r_t_pc"]
@@ -1005,13 +858,22 @@ class NFWModel(DMModel):
         **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; reads the
         model's stored physical parameters.
 
-        **Returns and shape.** Msun/pc^3 with input shape. The density formula
-        itself is untruncated; cusps can diverge at r=0.
+        **Returns and shape.** Msun/pc^3 with input shape; zero for r > r_t_pc.
+        The density includes the boundary r = r_t_pc; cusps can diverge at r=0.
+        Invalid physical domains raise ValueError.
         """
         rs_pc = self.params.rs_pc
         rhos = self.params.rhos_Msunpc3
-        x = np.asarray(r_pc) / rs_pc
-        return rhos / x / (1.0 + x) ** 2
+        r = np.asarray(r_pc)
+        domain = dict(self.params, alpha=1.0, beta=3.0, gamma=1.0)
+        if not np.all(_zhao_valid(r, domain, np)):
+            raise ValueError("Invalid NFW density domain: require positive scales "
+                             "and nonnegative radii")
+        inside = r <= self.params.r_t_pc
+        x = np.where(inside, r / rs_pc, 1.0)
+        with np.errstate(divide="ignore"):
+            rho = rhos / x / (1.0 + x)**2
+        return np.where(inside, rho, 0.0)
 
     def enclosure_mass(self, r_pc):
         r"""Evaluate halo mass inside a finite spherical radius.
@@ -1034,14 +896,14 @@ class NFWModel(DMModel):
         value = np.where(x < threshold, np.asarray(x) ** 2 / 2.0, value)
         return 4.0 * np.pi * rs_pc**3 * rhos * value
 
-    def jfactor_ullio2016_simple(self, dist_pc, roi_deg=0.5):
+    def jfactor_spherical_aperture(self, dist_pc, roi_deg=0.5):
         r"""Evaluate the NFW spherical-aperture approximation analytically.
 
         The geometric interpretation is the same as
-        :meth:`DMModel.jfactor_ullio2016_simple`: for ``R_max >= r_t_pc`` the
+        :meth:`DMModel.jfactor_spherical_aperture`: for ``R_max >= r_t_pc`` the
         aperture encloses the full truncated halo and corresponds to the
         Eq. (B.10) limit; for ``R_max < r_t_pc`` it omits projected outer-shell
-        contributions.  Use :meth:`jfactor_ullio2016` for the full finite-ROI
+        contributions.  Use :meth:`jfactor_cone` for the full finite-ROI
         geometry.
 
         Notes
@@ -1049,14 +911,14 @@ class NFWModel(DMModel):
         **Inputs and units.** ``dist_pc`` is observer distance in pc; ``roi_deg`` is
         cone half-angle in degrees. This NFW analytic override supports mutually
         broadcastable distances, apertures and model parameters. The inherited
-        full-cone ``jfactor_ullio2016`` method requires scalar geometry.
+        full-cone ``jfactor_cone`` method requires scalar geometry.
 
         **Returns and shape.** J in GeV^2 cm^-5, with the broadcast input shape.
 
         **Validity.** Small-aperture spherical approximation; outer shells projected
         into the cone are omitted. Require a positive finite halo cutoff and a
         convergent inner cusp. Small-angle variants enforce the configured
-        ``roi_deg_max_warning`` bound.
+        ``small_angle_limit_deg`` bound.
         """
         dist_pc, roi_deg, r_t_pc = self._validate_jfactor_inputs(
             dist_pc, roi_deg, small_angle=True
@@ -1076,12 +938,12 @@ class NFWModel(DMModel):
         )
         return j
 
-    def jfactor_evans2016(self, dist_pc, roi_deg=0.5):
+    def jfactor_small_angle_infinite_los(self, dist_pc, roi_deg=0.5):
         r"""Evaluate the small-angle, infinite-LOS Evans et al. (2016) formula.
 
         This historical approximation caps the *projected aperture* at r_t_pc;
         it does not truncate the density along the line of sight. For a halo
-        truncated in three dimensions use jfactor_ullio2016 instead.
+        truncated in three dimensions use jfactor_cone instead.
 
         Notes
         -----
@@ -1182,32 +1044,21 @@ class AnisotropyModel(Model):
 
 
 class ConstantAnisotropyModel(AnisotropyModel):
-    r"""Spherical velocity-anisotropy profile and projection kernel.
+    r"""Constant spherical anisotropy beta(r)=beta_ani.
 
-    Notes
-    -----
-    **Inputs and units.** ``beta_ani`` is dimensionless and constant.
-    beta(``r_pc``) and f(``r_pc``) take radii in pc. kernel(u, ``R_pc``, n) uses
-    u=r/R>=1 and projected radius ``R_pc`` in pc; n is a fixed quadrature order.
+    ``beta_ani`` is dimensionless and must be <1 for positive tangential dispersion.
+    ``beta`` returns a scalar; ``f(r)`` is r**(2*beta_ani).
+    Radii are in pc; f is an arbitrarily normalized Jeans integrating factor
+    satisfying d ln(f)/d ln(r)=2*beta. The kernel is dimensionless and uses
+    u=r/R >= 1 with positive R.
 
-    **Returns and shape.** beta is dimensionless; f is an arbitrarily normalized
-    integrating factor satisfying d ln(f)/d ln(r)=2 beta. The dimensionless
-    kernel broadcasts u and R inputs.
-
-    **Validity.** Require beta<1 for a positive tangential dispersion; this is
-    necessary, not sufficient for a nonnegative global distribution function.
-    Check numerical convergence near limits.
-
-    **Errors.** Elementary formulas do not uniformly validate all physical
-    domains; invalid values can produce nonfinite results later rejected by the
-    LOS solver.
-
-    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** ``examples/docs_profiles.py``
+    ``kernel(u,R,**kwargs)`` uses an analytic hypergeometric expression,
+    is independent of R and returns the u shape. Extra keywords are ignored.
+    Elementary formulas do not uniformly validate physical domains; invalid
+    inputs can produce nonfinite results. An anisotropy below 1 does not alone
+    establish a positive phase-space distribution function.
+    This stateful NumPy/SciPy API does not support JAX differentiation.
+    See ``examples/docs_profiles.py``.
     """
     name = "ConstantAnisotropyModel"
     required_param_names = ["beta_ani"]
@@ -1244,11 +1095,9 @@ class ConstantAnisotropyModel(AnisotropyModel):
         Notes
         -----
         **Inputs and units.** u=r/R>=1 is dimensionless; R is projected radius in
-        pc; broadcastable arrays. The Baes numerical implementation takes fixed
-        quadrature n through kwargs.
+        pc; broadcastable arrays. Extra kwargs are ignored by this analytic kernel.
 
-        **Returns and shape.** Dimensionless projection kernel with the broadcast
-        shape.
+        **Returns and shape.** Dimensionless projection kernel with the u shape; R is ignored.
         """
         del R, kwargs
         b = self.params.beta_ani
@@ -1259,33 +1108,21 @@ class ConstantAnisotropyModel(AnisotropyModel):
 
 
 class OsipkovMerrittModel(AnisotropyModel):
-    r"""Spherical velocity-anisotropy profile and projection kernel.
+    r"""Osipkov--Merritt spherical anisotropy with an analytic kernel.
 
-    Notes
-    -----
-    **Inputs and units.** ``r_a`` is a positive anisotropy radius in pc;
-    beta(r)=r^2/(r^2+``r_a``^2). beta(``r_pc``) and f(``r_pc``) take radii in
-    pc. kernel(u, ``R_pc``, n) uses u=r/R>=1 and projected radius ``R_pc`` in
-    pc; n is a fixed quadrature order.
+    ``r_a`` is a positive radius in pc. beta(r)=r**2/(r**2+r_a**2);
+    f(r)=1+r**2/r_a**2. Both preserve the radius shape.
+    Radii are in pc; f is an arbitrarily normalized Jeans integrating factor
+    satisfying d ln(f)/d ln(r)=2*beta. The kernel is dimensionless and uses
+    u=r/R >= 1 with positive R.
 
-    **Returns and shape.** beta is dimensionless; f is an arbitrarily normalized
-    integrating factor satisfying d ln(f)/d ln(r)=2 beta. The dimensionless
-    kernel broadcasts u and R inputs.
-
-    **Validity.** Require beta<1 for a positive tangential dispersion; this is
-    necessary, not sufficient for a nonnegative global distribution function.
-    Check numerical convergence near limits.
-
-    **Errors.** Elementary formulas do not uniformly validate all physical
-    domains; invalid values can produce nonfinite results later rejected by the
-    LOS solver.
-
-    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** ``examples/docs_profiles.py``
+    ``kernel(u,R,**kwargs)`` returns the broadcast u/R shape from a closed
+    form. Extra keywords are ignored; no quadrature order is needed.
+    Elementary formulas do not uniformly validate physical domains; invalid
+    inputs can produce nonfinite results. An anisotropy below 1 does not alone
+    establish a positive phase-space distribution function.
+    This stateful NumPy/SciPy API does not support JAX differentiation.
+    See ``examples/docs_profiles.py``.
     """
     name = "OsipkovMerrittModel"
     required_param_names = ["r_a"]
@@ -1298,8 +1135,7 @@ class OsipkovMerrittModel(AnisotropyModel):
         -----
         **Inputs and units.** r is a radius or NumPy radius array in pc.
 
-        **Returns and shape.** Dimensionless beta; constant models may return a
-        scalar.
+        **Returns and shape.** Dimensionless beta with radius shape.
         """
         r_a = self.params.r_a
         return r**2 / (r**2 + r_a**2)
@@ -1323,8 +1159,7 @@ class OsipkovMerrittModel(AnisotropyModel):
         Notes
         -----
         **Inputs and units.** u=r/R>=1 is dimensionless; R is projected radius in
-        pc; broadcastable arrays. The Baes numerical implementation takes fixed
-        quadrature n through kwargs.
+        pc; broadcastable arrays. Extra kwargs are ignored by this analytic kernel.
 
         **Returns and shape.** Dimensionless projection kernel with the broadcast
         shape.
@@ -1343,33 +1178,24 @@ class OsipkovMerrittModel(AnisotropyModel):
 
 
 class BaesAnisotropyModel(AnisotropyModel):
-    r"""Spherical velocity-anisotropy profile and projection kernel.
+    r"""Baes--van Hese spherical anisotropy with numerical LOS quadrature.
 
-    Notes
-    -----
-    **Inputs and units.** ``beta_0`` and ``beta_inf`` are inner/outer
-    anisotropies; ``r_a`` (pc) is positive; eta>0 sets transition sharpness.
-    beta(``r_pc``) and f(``r_pc``) take radii in pc. kernel(u, ``R_pc``, n) uses
-    u=r/R>=1 and projected radius ``R_pc`` in pc; n is a fixed quadrature order.
+    ``beta_0`` and ``beta_inf`` are dimensionless inner/outer anisotropies;
+    ``r_a`` (pc) and ``eta`` are positive radius and sharpness. With
+    t=(r/r_a)**eta, beta(r)=(beta_0+beta_inf*t)/(1+t). ``beta`` and ``f``
+    preserve radius shape.
+    Radii are in pc; f is an arbitrarily normalized Jeans integrating factor
+    satisfying d ln(f)/d ln(r)=2*beta. The kernel is dimensionless and uses
+    u=r/R >= 1 with positive R.
 
-    **Returns and shape.** beta is dimensionless; f is an arbitrarily normalized
-    integrating factor satisfying d ln(f)/d ln(r)=2 beta. The dimensionless
-    kernel broadcasts u and R inputs.
-
-    **Validity.** Require beta<1 for a positive tangential dispersion; this is
-    necessary, not sufficient for a nonnegative global distribution function.
-    Check numerical convergence near limits.
-
-    **Errors.** Elementary formulas do not uniformly validate all physical
-    domains; invalid values can produce nonfinite results later rejected by the
-    LOS solver.
-
-    **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** ``examples/docs_profiles.py``
+    ``kernel(u,R,n=128)`` flattens u and R and returns a grid with shape
+    (R.size,u.size), including (1,1) for scalar inputs. n controls the
+    double-exponential inner quadrature; increase it to check convergence.
+    Elementary formulas do not uniformly validate physical domains; invalid
+    inputs can produce nonfinite results. An anisotropy below 1 does not alone
+    establish a positive phase-space distribution function.
+    This stateful NumPy/SciPy API does not support JAX differentiation.
+    See ``examples/docs_profiles.py``.
     """
     name = "BaesAnisotropyModel"
     required_param_names = ["beta_0", "beta_inf", "r_a", "eta"]
@@ -1382,8 +1208,7 @@ class BaesAnisotropyModel(AnisotropyModel):
         -----
         **Inputs and units.** r is a radius or NumPy radius array in pc.
 
-        **Returns and shape.** Dimensionless beta; constant models may return a
-        scalar.
+        **Returns and shape.** Dimensionless beta with radius shape.
         """
         b0, binf = self.params.beta_0, self.params.beta_inf
         r_a, eta = self.params.r_a, self.params.eta
@@ -1432,8 +1257,8 @@ class BaesAnisotropyModel(AnisotropyModel):
         pc; broadcastable arrays. The Baes numerical implementation takes fixed
         quadrature n through kwargs.
 
-        **Returns and shape.** Dimensionless projection kernel with the broadcast
-        shape.
+        **Returns and shape.** Dimensionless kernel on the (R.size, u.size) Cartesian grid,
+        after flattening both inputs. Scalar inputs return shape (1,1).
         """
         n = kwargs.get("n", 128)
         u = np.asarray(u).reshape(-1)
@@ -1466,8 +1291,7 @@ __all__ = [
     "BaesAnisotropyModel",
     "ConstantAnisotropyModel",
     "DMModel",
-    "Exp2dModel",
-    "Exp3dModel",
+    "ProjectedExponentialModel",
     "NFWModel",
     "OsipkovMerrittModel",
     "PlummerModel",

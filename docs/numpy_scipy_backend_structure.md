@@ -1,12 +1,12 @@
-# Classical backend structure
+# NumPy/SciPy backend structure
 
 The public stateful NumPy/SciPy API remains `jeanspy.model`. Its implementation is split into focused private modules under `jeanspy._classical`:
 
 - `core.py`: `Parameters` and the base `Model` composition/parameter machinery.
 - `profiles.py`: stellar-density, dark-matter, and anisotropy profile components.
 - `jfactor.py`: J-factor units and Ullio & Valli geometry helpers.
-- `solver.py`: the composite `DSphModel` and classical Jeans-equation solvers.
-- `inference.py`: priors, data handling, likelihoods, and classical estimation helpers.
+- `solver.py`: the composite `DSphModel` and NumPy/SciPy Jeans-equation solvers.
+- `inference.py`: priors, data handling, likelihoods, and NumPy/SciPy estimation helpers.
 
 `jeanspy.sersic` remains separate because its deprojection implementation and coefficient tables have their own maintenance/validation lifecycle.
 
@@ -25,4 +25,4 @@ sersic ──> profiles.StellarModel
 model  ──> explicit public exports
 ```
 
-This structure is deliberately private below `jeanspy.model`: downstream code should continue to import supported classical APIs from `jeanspy.model`, not from `jeanspy._classical`.
+This structure is deliberately private below `jeanspy.model`: downstream code should continue to import supported NumPy/SciPy APIs from `jeanspy.model`, not from `jeanspy._classical`.

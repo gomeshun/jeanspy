@@ -149,7 +149,7 @@ class Sampler:
     continuing. Missing/malformed state, invalid parameter conversion or storage
     failures raise.
 
-    **Backend.** Python/emcee host sampler around classical CPU likelihoods.
+    **Backend.** Python/emcee host sampler around NumPy/SciPy CPU likelihoods.
 
     **Differentiation.** No physical-parameter automatic differentiation on this
     API.

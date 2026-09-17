@@ -7,7 +7,7 @@ from jeanspy.axisymmetric_factors import jfactor, dfactor
 # spherical-factors-start
 halo = NFWModel(rs_pc=500., rhos_Msunpc3=.1, r_t_pc=5000.)
 distance_pc, aperture_deg = 76000., .5
-J_GeV2_cm_minus5 = halo.jfactor_ullio2016(distance_pc, aperture_deg)
+J_GeV2_cm_minus5 = halo.jfactor_cone(distance_pc, aperture_deg)
 # The spherical limit of the spheroidal factor integrator also supplies D.
 spherical = AxisymmetricZhaoModel(rhos_Msunpc3=.1, rs_pc=500., Q=1., alpha=1., beta=3., gamma=1., r_t_pc=5000.)
 D_GeV_cm_minus2 = dfactor(spherical, distance_pc, aperture_deg,

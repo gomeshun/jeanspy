@@ -68,7 +68,7 @@ Both implementations compose `AxisymmetricPlummerModel`,
 | Implementation | Import module | Physical parameters |
 | --- | --- | --- |
 | NumPy/SciPy | `jeanspy.model` | Stored in immutable components; optional per-call `params` overrides |
-| JAX | `jeanspy.model_numpyro` | Passed explicitly at evaluation time |
+| JAX | `jeanspy.model_jax` | Passed explicitly at evaluation time |
 
 The component interfaces are `AxisymmetricStellarModel`, `AxisymmetricDMModel`
 and `AxisymmetricAnisotropyModel`. Zhao exponents retain the names
@@ -101,32 +101,38 @@ runtime precision and gradient checks, use the [backend tutorial](../tutorials/b
 
 Observations require matching, finite, nonempty 1-D arrays `x_pc`, `y_pc`,
 `vlos_kms`, `e_vlos_kms`. Errors must be nonnegative; zero is allowed. A
-DataFrame or mapping is accepted by the classical model. The explicit
+DataFrame or mapping is accepted by the NumPy/SciPy model. The explicit
 `AxisymmetricKinematicData` object copies observations and supplies detached
 arrays with `as_kwargs()` for NumPyro calls. `reset_data` validates replacements
 before mutation; user-provided priors are never derived from velocities.
 
 The [likelihood equation](../theory.md#likelihood-and-interpretation) and
 [MCMC tutorial](../tutorials/inference.ipynb) explain the statistical model.
-The classical wrapper is
+The NumPy/SciPy wrapper is
 {class}`~jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel`;
 NumPyro uses {class}`~jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel`.
 
-The classical prior table names the **sampling coordinates**, in sampler
-order. Prefixes `log10_` and `bfunc_` mean `10**x` and `1-10**x`, respectively.
-`cos_inclination` maps to `arccos(x)` in radians. Uniform bounds on this last
-coordinate give an isotropic orientation prior over the explicitly chosen
+The NumPy/SciPy prior table names the **sampling coordinates**, in sampler
+order. Supply matching `SamplingParameter` objects with a physical name and
+transform for each coordinate. For example,
+`SamplingParameter("log10_one_minus_beta_z", "beta_z", "one_minus_pow10")`
+means `beta_z = 1 - 10**x`, and
+`SamplingParameter("cos_inclination", "inclination", "arccos")`
+returns radians. Names alone imply no transformation. Uniform bounds on a
+coordinate with this `arccos` specification give an isotropic orientation
+prior over the explicitly chosen
 range; use bounds compatible with photometry, or allow the deprojection
 constraint to reject inadmissible proposals. No implicit transformation
 Jacobian is added: the prior is defined in the named sampling coordinate.
 
-An optional `PhotometryPriorModel` multiplies the prior on `log10_re_pc`;
+An optional `PhotometryPriorModel` multiplies the prior on a coordinate
+explicitly mapped by `pow10` to `re_pc`;
 initial points then use the appropriately truncated Gaussian. `fit.sample`
 accepts an RNG/seed and bounded rejection to return feasible initial points.
 Impossible support raises an error rather than changing the priors.
 `lnlikelihoods`, `lnlikelihood`, `lnpriors`, `lnposterior`,
 `lnposterior_wbic`, and `sample_data` are available. WBIC needs at least two
-stars. Classical data are process-local and pickleable; shared-memory buffers
+stars. NumPy/SciPy data are process-local and pickleable; shared-memory buffers
 specific to the spherical implementation are not used.
 
 `ParameterSpec` supports general priors/transforms and deterministic physical

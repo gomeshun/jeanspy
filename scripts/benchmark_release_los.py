@@ -173,7 +173,7 @@ def physical_params(q, protocol, spherical=False):
     result = dict(re_pc=p["a_pc"], rs_pc=p["a_pc"],
         rhos_Msunpc3=3*p["mass_Msun"]/(4*np.pi*p["a_pc"]**3), r_t_pc=np.inf)
     if spherical:
-        result.update(a=p["alpha"], b=p["beta"], g=p["gamma"], beta_ani=0.)
+        result.update(alpha=p["alpha"], beta=p["beta"], gamma=p["gamma"], beta_ani=0.)
     else:
         result.update(q=q, Q=p["halo_Q"], alpha=p["alpha"], beta=p["beta"],
             gamma=p["gamma"], beta_z=p["beta_z"], inclination=p["inclination_rad"])
@@ -184,8 +184,8 @@ def make_jeanspy(role, spherical, order, q, x, y, protocol, row):
     is_jax = role.startswith("jax")
     if is_jax:
         import jax
-        from jeanspy import model_numpyro as module
-        from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel
+        from jeanspy import model_jax as module
+        from jeanspy.axisymmetric_jax import AxisymmetricDSphModel
         sync = jax.block_until_ready
         jax.clear_caches()
     else:
@@ -207,9 +207,9 @@ def make_jeanspy(role, spherical, order, q, x, y, protocol, row):
         xx, yy, parameters = data
         if spherical:
             def forward(xx, yy, pars):
-                return model.sigmalos2((xx*xx+yy*yy)**.5, params=pars, backend="kernel",
+                return model.sigmalos2((xx*xx+yy*yy)**.5, params=pars, solver="kernel",
                     n_u=order, n_kernel=cfg["n_kernel"], u_max=cfg["u_max"],
-                    kernel_outer_transform=cfg["kernel_outer_transform"], constant_kernel_backend="jax",
+                    kernel_outer_transform=cfg["kernel_outer_transform"], kernel_backend="jax",
                     dm_mass_method=cfg["dm_mass_method"], dm_mass_n_steps=cfg["dm_mass_n_steps"])
         else:
             def forward(xx, yy, pars):
@@ -349,8 +349,8 @@ def main():
         from jeanspy._jax_env import configure_jax_environment
         configure_jax_environment()
         import jax
-        from jeanspy import model_numpyro
-        from jeanspy import axisymmetric_numpyro
+        from jeanspy import model_jax
+        from jeanspy import axisymmetric_jax
         if jax.default_backend() != args.role.split("-")[1] or not jax.config.jax_enable_x64:
             parser.error("use the declared JAX device with float64 enabled before imports")
         report["devices"] = [str(device) for device in jax.devices()]

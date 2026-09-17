@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 import numpy as np
 
-from jeanspy.model_numpyro import BaesAnisotropyModel, ConstantAnisotropyModel
+from jeanspy.model_jax import BaesAnisotropyModel, ConstantAnisotropyModel
 
 
 def assert_baes_constant_large_u_consistency(

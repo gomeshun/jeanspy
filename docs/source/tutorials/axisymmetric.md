@@ -3,7 +3,7 @@
 This example samples scale radius, density, cylindrical anisotropy,
 inclination and systemic velocity, and computes finite-cone J/D factors from
 a deterministic subset of saved posterior draws. Priors are explicit in
-`log10_rhos_Msunpc3`, `log10_rs_pc`, `bfunc_beta_z`, `cos_inclination` and
+`log10_rhos_Msunpc3`, `log10_rs_pc`, `log10_one_minus_beta_z`, `cos_inclination` and
 `vmem_kms`.
 
 Apply the [six tutorial steps](index.md) to a flattened system. Unlike the
@@ -20,7 +20,7 @@ positions; it does not infer the spatial selection function.
 The [geometry reference](../guides/axisymmetric.md#units-geometry-and-physical-parameters)
 defines inclination, deprojection and the physical parameter domains.
 
-## 2. Choose priors and run a backend
+## 2. Choose priors and a sampler
 
 The prior table explicitly distinguishes logarithmic scales, transformed
 cylindrical anisotropy and cosine inclination. A uniform prior in cosine
@@ -29,15 +29,15 @@ same physical configuration and mock-data recipe.
 
 ```bash
 python examples/axisymmetric_inference.py \
-    --backend classical --output-dir /tmp/axisymmetric-emcee
+    --sampler emcee --output-dir /tmp/axisymmetric-emcee
 JEANSPY_JAX_ENABLE_X64=true python examples/axisymmetric_inference.py \
-    --backend numpyro --output-dir /tmp/axisymmetric-nuts
+    --sampler numpyro --output-dir /tmp/axisymmetric-nuts
 ```
 
 ## 3. Save, resume and inspect
 
 Repeat the same command to resume. Keep the same warmup setting when resuming
-the classical example so that its export discards the original warmup steps.
+the emcee example so that its export discards the original warmup steps.
 Outputs include `observations.csv`, `prior.csv`, `posterior.csv`,
 `derived_factors.csv`, `summary.json` and persisted sampler state.
 

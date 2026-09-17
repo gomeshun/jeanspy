@@ -175,7 +175,7 @@ def _max_rel(candidate, reference) -> float:
 
 
 def _make_model(case: Case):
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         BaesAnisotropyModel,
         ConstantAnisotropyModel,
         DSphModel,
@@ -238,7 +238,7 @@ def _n_kernel_for(profile: Profile, case: Case) -> int | None:
 
 def _evaluate_candidate(dsph, R, params, case: Case, profile: Profile):
     kwargs = {
-        "backend": "kernel",
+        "solver": "kernel",
         "dm_mass_method": "analytic",
         "jit": True,
     }
@@ -262,7 +262,7 @@ def _evaluate_candidate(dsph, R, params, case: Case, profile: Profile):
 
 def _evaluate_reference(dsph, R64, params64, case: Case):
     kwargs = {
-        "backend": "kernel",
+        "solver": "kernel",
         "n_u": REFERENCE_N_U,
         "u_max": REFERENCE_U_MAX,
         "dm_mass_method": "analytic",
@@ -284,7 +284,7 @@ def _time_hot(jax, func, repeats: int = 3) -> float:
 
 
 def _check_cpu_defaults() -> None:
-    from jeanspy.model_numpyro import get_runtime_config
+    from jeanspy.model_jax import get_runtime_config
 
     config = get_runtime_config()
     if config["jax_backend_active"] != "cpu":

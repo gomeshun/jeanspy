@@ -7,7 +7,7 @@ from jeanspy.baes_eta2 import (
     BaesEta2AnisotropyModel,
     baes_eta2_kernel_appell_reference,
 )
-from jeanspy.model_numpyro import (
+from jeanspy.model_jax import (
     BaesAnisotropyModel,
     ConstantAnisotropyModel,
     DSphModel,
@@ -167,7 +167,7 @@ def test_eta2_sigmalos_kernel_matches_kernel_free_abel_solver():
         dsph.sigmalos2(
             R,
             params=params,
-            backend="kernel",
+            solver="kernel",
             n_u=256,
             n_kernel=160,
             u_max=1600.0,
@@ -180,7 +180,7 @@ def test_eta2_sigmalos_kernel_matches_kernel_free_abel_solver():
         dsph.sigmalos2(
             R,
             params=params,
-            backend="abel",
+            solver="abel",
             n_r=896,
             u_max=1600.0,
             r_min_factor=0.35,

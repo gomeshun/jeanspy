@@ -5,7 +5,7 @@ import jax.numpy as jnp
 from scipy.integrate import quad
 
 from jeanspy.model import DMModel, NFWModel, ZhaoModel
-from jeanspy.model_numpyro import (
+from jeanspy.model_jax import (
     ConstantAnisotropyModel as ConstantAnisotropyModelNumPyro,
     DSphModel as DSphModelNumPyro,
     NFWModel as NFWModelNumPyro,
@@ -43,9 +43,9 @@ class TestDMEnclosureMassConsistency(unittest.TestCase):
                 ZhaoModel(
                     rs_pc=420.0,
                     rhos_Msunpc3=0.06,
-                    a=1.2,
-                    b=4.0,
-                    g=0.6,
+                    alpha=1.2,
+                    beta=4.0,
+                    gamma=0.6,
                     r_t_pc=5000.0,
                 ),
                 np.array([0.4, 4.0, 40.0, 400.0, 2000.0, 5000.0, 9000.0]),
@@ -93,7 +93,7 @@ class TestDSSigmaLos2DMEquivalence(unittest.TestCase):
             "beta_ani": 0.2,
             "vmem_kms": 0.0,
         }
-        params_zhao = {**params_nfw, "a": 1.0, "b": 3.0, "g": 1.0}
+        params_zhao = {**params_nfw, "alpha": 1.0, "beta": 3.0, "gamma": 1.0}
 
         dsph_nfw = DSphModelNumPyro(
             submodels={

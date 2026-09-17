@@ -13,7 +13,7 @@ from numpyro.infer.util import log_density
 from scipy.integrate import quad
 
 from jeanspy import model as classical
-from jeanspy import model_numpyro as functional
+from jeanspy import model_jax as functional
 from jeanspy.sampler_numpyro import JeansLikelihoodModel, ParameterSpec
 
 
@@ -115,23 +115,23 @@ def test_transform_without_physical_name(factory, expected):
     assert float(result[0][1]) == pytest.approx(expected)
 
 
-@pytest.mark.parametrize("g", [1.5, 1.6, 2.5, 3.])
-@pytest.mark.parametrize("method", ["jfactor_ullio2016", "jfactor_ullio2016_simple"])
-def test_divergent_zhao_annihilation_cusp_is_rejected(g, method):
-    dm = classical.ZhaoModel(**PARAMS, a=1., b=4., g=g)
-    with pytest.raises(ValueError, match="g < 1.5"):
+@pytest.mark.parametrize("gamma", [1.5, 1.6, 2.5, 3.])
+@pytest.mark.parametrize("method", ["jfactor_cone", "jfactor_spherical_aperture"])
+def test_divergent_zhao_annihilation_cusp_is_rejected(gamma, method):
+    dm = classical.ZhaoModel(**PARAMS, alpha=1., beta=4., gamma=gamma)
+    with pytest.raises(ValueError, match="gamma < 1.5"):
         getattr(dm, method)(100000., .5)
 
 
 def test_convergent_zhao_cusp_reference():
     # An independently weighted quadrature resolves the singular origin.
-    g = 1.4
-    dm = classical.ZhaoModel(**PARAMS, a=1., b=4., g=g)
+    gamma = 1.4
+    dm = classical.ZhaoModel(**PARAMS, alpha=1., beta=4., gamma=gamma)
     upper = 100000. * np.sin(np.deg2rad(.5)) / PARAMS['rs_pc']
-    integral = quad(lambda x: (1+x)**(-2*(4-g)), 0., upper,
-                    weight='alg', wvar=(2-2*g, 0.), epsabs=1e-10, epsrel=1e-10)[0]
+    integral = quad(lambda x: (1+x)**(-2*(4-gamma)), 0., upper,
+                    weight='alg', wvar=(2-2*gamma, 0.), epsabs=1e-10, epsrel=1e-10)[0]
     expected = classical.C_J * 4*np.pi*PARAMS['rhos_Msunpc3']**2 * PARAMS['rs_pc']**3 / 100000.**2 * integral
-    assert dm.jfactor_ullio2016_simple(100000., .5) == pytest.approx(expected, rel=2e-8)
+    assert dm.jfactor_spherical_aperture(100000., .5) == pytest.approx(expected, rel=2e-8)
 
 
 def test_quadrature_nonconvergence_is_an_error():
@@ -141,7 +141,7 @@ def test_quadrature_nonconvergence_is_an_error():
         def mass_density_3d(self, r):
             return np.asarray(r)**-2
     with pytest.raises(ValueError, match="J-factor quadrature failed"):
-        DivergentCustom(r_t_pc=1000.).jfactor_ullio2016_simple(100000.)
+        DivergentCustom(r_t_pc=1000.).jfactor_spherical_aperture(100000.)
 
 
 def test_evans_transition_matches_high_precision_formula():
@@ -149,7 +149,7 @@ def test_evans_transition_matches_high_precision_formula():
     radii = np.r_[np.geomspace(.01, .85, 12), np.sqrt([.7999999, .8, .8000001]),
                  1 + np.r_[-np.geomspace(1e-12, .1, 15), 0., np.geomspace(1e-12, .1, 15)],
                  np.sqrt([1.1999999, 1.2, 1.2000001]), 1.3, 1.6]
-    actual = dm.jfactor_evans2016(100000., np.rad2deg(radii / 100.))
+    actual = dm.jfactor_small_angle_infinite_los(100000., np.rad2deg(radii / 100.))
     expected = []
     with mp.workdps(80):
         for radius in radii:
@@ -162,7 +162,7 @@ def test_evans_transition_matches_high_precision_formula():
                 coeff = (2*y*(7*y-4*y**3+3*mp.pi*delta**2)+6*(2*delta**3-2*delta-y**4)*x)/(6*delta**2)
             expected.append(float(coeff)*classical.C_J*2*np.pi*.01**2*1000.**3/100000.**2)
     np.testing.assert_allclose(actual, expected, rtol=2e-11)
-    assert np.isfinite(dm.jfactor_evans2016(100000., np.rad2deg(.01)))
+    assert np.isfinite(dm.jfactor_small_angle_infinite_los(100000., np.rad2deg(.01)))
 
 
 def test_truncated_surface_density_normalizes_over_all_radii():

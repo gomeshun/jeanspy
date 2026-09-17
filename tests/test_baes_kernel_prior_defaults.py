@@ -4,8 +4,8 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-import jeanspy.model_numpyro as mn
-from jeanspy.model_numpyro import BaesAnisotropyModel, DSphModel, NFWModel, PlummerModel
+import jeanspy.model_jax as mn
+from jeanspy.model_jax import BaesAnisotropyModel, DSphModel, NFWModel, PlummerModel
 
 
 def _params(*, eta=10.0, beta_0=-9.0, beta_inf=0.98, r_a=220.0, dtype=jnp.float32):
@@ -73,7 +73,7 @@ def test_nkernel32_matches_128_for_supported_eta_prior_projection():
     R = jnp.asarray(np.geomspace(0.005, 10.0, 20) * 220.0, dtype=jnp.float32)
     common = dict(
         params=params,
-        backend="kernel",
+        solver="kernel",
         jit=False,
         n_u=256,
         u_max=2e4,

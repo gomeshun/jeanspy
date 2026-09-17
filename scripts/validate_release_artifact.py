@@ -84,7 +84,10 @@ def validate_base(readme: Path) -> None:
                         vlos_kms=[1., -2., 3.], e_vlos_kms=[0., 1., 2.])
     prior = pd.DataFrame(dict(lower=[-1.5, -20.], upper=[-.5, 20.]),
                          index=["log10_rhos_Msunpc3", "vmem_kms"])
-    fit = AxisymmetricDSphEstimationModel(observations, prior, dsph_model=axis, fixed_params=fixed)
+    from jeanspy.parameters import SamplingParameter
+    fit = AxisymmetricDSphEstimationModel(observations, prior, dsph_model=axis, fixed_params=fixed,
+        parameter_specs=[SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10"),
+                         SamplingParameter("vmem_kms", "vmem_kms")])
     if not np.isfinite(fit.lnposterior([-1., 0.])).all():
         raise AssertionError("Packaged axisymmetric inference was nonfinite")
     params = fit.convert_params([-1., 0.])
@@ -111,7 +114,7 @@ def validate_numpyro_cpu() -> None:
     from numpyro import distributions as dist
     from numpyro.handlers import seed, trace
 
-    from jeanspy.model_numpyro import (
+    from jeanspy.model_jax import (
         ConstantAnisotropyModel,
         DSphModel,
         NFWModel,
@@ -189,7 +192,7 @@ def validate_numpyro_cpu() -> None:
     if model_trace["vlos"]["is_observed"] is not True:
         raise AssertionError(f"vlos trace entry was not observed: {model_trace['vlos']!r}")
 
-    from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel
+    from jeanspy.axisymmetric_jax import AxisymmetricDSphModel
     from jeanspy.sampler_numpyro import AxisymmetricJeansLikelihoodModel
     from numpyro.infer.util import log_density
     axis = AxisymmetricDSphModel(16, 16, 16)

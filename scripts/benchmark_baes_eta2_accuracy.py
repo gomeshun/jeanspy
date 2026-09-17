@@ -69,7 +69,7 @@ def main() -> None:
     import jax.numpy as jnp
 
     from jeanspy.baes_eta2 import BaesEta2AnisotropyModel
-    from jeanspy.model_numpyro import BaesAnisotropyModel, DSphModel, NFWModel, PlummerModel
+    from jeanspy.model_jax import BaesAnisotropyModel, DSphModel, NFWModel, PlummerModel
 
     if not bool(jax.config.read("jax_enable_x64")):
         raise RuntimeError("This convergence benchmark requires JAX float64.")
@@ -116,7 +116,7 @@ def main() -> None:
         return lambda: model.sigmalos2(
             R,
             params=params,
-            backend="kernel",
+            solver="kernel",
             n_u=n_u,
             n_kernel=n_kernel_local,
             u_max=u_max,
@@ -128,7 +128,7 @@ def main() -> None:
         return lambda: eta2_dsph.sigmalos2(
             R,
             params=params_eta2,
-            backend="abel",
+            solver="abel",
             n_r=n_r,
             u_max=u_max,
             r_min_factor=0.35,

@@ -26,7 +26,7 @@ class InvalidAxisymmetricModelError(ValueError):
     **Differentiation.** No physical-parameter automatic differentiation on this
     API.
 
-    **Examples.** Catch ValueError around an exploratory classical forward call;
+    **Examples.** Catch ValueError around an exploratory NumPy/SciPy forward call;
     preserve failures in a benchmark.
     """
 

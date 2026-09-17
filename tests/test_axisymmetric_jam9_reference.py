@@ -28,7 +28,7 @@ def test_current_jam_isotropic_projected_reference(case_index):
 def test_jax_physical_density_gradient_on_jam_matched_case():
     jax = pytest.importorskip("jax")
     import jax.numpy as jnp
-    from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel as JaxModel
+    from jeanspy.axisymmetric_jax import AxisymmetricDSphModel as JaxModel
     report = json.loads(REFERENCE.read_text())
     case = report["cases"][1]
     xy = report["protocol"]["sky_coordinates_pc"]

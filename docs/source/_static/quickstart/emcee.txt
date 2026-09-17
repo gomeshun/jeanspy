@@ -5,7 +5,7 @@ Mean acceptance fraction: 0.418
 Parameter                 16%      50%      84%
 log10_rs_pc                 2.438    3.130    3.616
 log10_rhos_Msunpc3         -2.284   -1.432   -0.394
-g                           0.281    0.889    1.373
+gamma                       0.281    0.889    1.373
 beta_ani                   -0.455    0.184    0.637
 vmem_kms                   -1.630   -0.123    1.150
 Short-run autocorrelation-time estimates:

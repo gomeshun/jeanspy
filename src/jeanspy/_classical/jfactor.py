@@ -1,4 +1,4 @@
-"""J-factor geometry helpers used by the classical dark-matter profiles."""
+"""J-factor geometry helpers used by the NumPy/SciPy dark-matter profiles."""
 
 from __future__ import annotations
 

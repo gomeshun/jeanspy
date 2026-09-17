@@ -1,4 +1,4 @@
-"""Jeans-equation solvers for the classical NumPy/SciPy backend."""
+"""Jeans-equation solvers for the NumPy/SciPy backend."""
 
 from __future__ import annotations
 
@@ -287,7 +287,7 @@ class DSphModel(Model):
         -----
         This NumPy/SciPy calculation reads the stored model parameters.
         Refine ``n`` and ``n_kernel`` to check numerical convergence.
-        The classical inference model uses this entry point with its defaults;
+        The NumPy/SciPy inference model uses this entry point with its defaults;
         no extra callable or closure is needed when passing it to emcee.
         """
         if method != "dequad":

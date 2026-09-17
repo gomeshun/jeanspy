@@ -17,9 +17,9 @@ from typing import Any, Mapping
 
 import numpy as np
 
-# Importing model_numpyro first ensures the repository's JAX environment
+# Importing model_jax first ensures the repository's JAX environment
 # configuration is applied before JAX is imported here.
-from .model_numpyro import BaesAnisotropyModel
+from .model_jax import BaesAnisotropyModel
 
 import jax
 import jax.numpy as jnp
@@ -247,7 +247,7 @@ class BaesEta2AnisotropyModel(BaesAnisotropyModel):
         beta(r) = [beta_0 + beta_inf (r/r_a)^2] / [1 + (r/r_a)^2],
 
     and admits the Appell-F1 LOS kernel implemented above.  The class is a
-    subclass of the generic NumPyro ``BaesAnisotropyModel`` so existing
+    subclass of the generic JAX ``BaesAnisotropyModel`` so existing
     ``DSphModel`` kernel plumbing (including ``n_kernel`` forwarding) works
     unchanged.
 
@@ -272,7 +272,7 @@ class BaesEta2AnisotropyModel(BaesAnisotropyModel):
     **Differentiation.** Continuous ``beta_0``/``beta_inf``/``r_a`` derivatives
     on the supported fixed-rule path.
 
-    **Examples.** ``examples/docs_jax_spherical.py``
+    **Examples.** ``scripts/benchmark_baes_eta2_accuracy.py``
     """
 
     required_param_names = ("beta_0", "beta_inf", "r_a")

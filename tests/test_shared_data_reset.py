@@ -31,7 +31,7 @@ def test_reset_updates_existing_shared_readers(shared_model):
     try:
         # Repeat to catch reopening/leaking handles and stale reattachment paths.
         for offset in (0., 10.):
-            new = replacement + offset  # float64 input; shared layout remains float32
+            new = replacement + offset  # float64 input; shared layout remains float64
             model.reset_data(new)
             assert model.n_data == 3
             for field in fields:
@@ -72,11 +72,11 @@ def test_existing_handle_size_mismatch_preserves_other_buffers(shared_model, siz
     model.shm_e_vlos_kms = wrong
     try:
         new = pd.DataFrame({field: values + 100. for field, values in original.items()})
-        with pytest.raises(ValueError, match="expected 12 bytes for e_vlos_kms"):
+        with pytest.raises(ValueError, match="expected 24 bytes for e_vlos_kms"):
             model.reset_data(new)
         assert model.n_data == 3
         assert model.shared_shape == (3,)
-        assert model.buffer_size == 12
+        assert model.buffer_size == 24
         # In particular the earlier fields must not have been copied yet.
         model.shm_e_vlos_kms = original_handle
         for field, values in original.items():
@@ -97,7 +97,7 @@ def test_stale_attachment_failure_cleans_new_segments_and_restores_state(classic
     stale = SharedMemory(name=basename + "_e_vlos_kms", create=True, size=size)
     old_bounds = model["FlatPriorModel"].data.copy()
     try:
-        with pytest.raises(ValueError, match="expected 12 bytes for e_vlos_kms"):
+        with pytest.raises(ValueError, match="expected 24 bytes for e_vlos_kms"):
             model.load_data(data + 100., shared=True)
         assert model.shared is False
         assert model.n_data == 3

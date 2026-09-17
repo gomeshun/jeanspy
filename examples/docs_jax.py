@@ -4,7 +4,7 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel
+from jeanspy.axisymmetric_jax import AxisymmetricDSphModel
 
 model = AxisymmetricDSphModel(24, 24, 24)
 fixed = dict(re_pc=300., rs_pc=500., q=.7, Q=.8,

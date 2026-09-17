@@ -2,7 +2,7 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from jeanspy.model_numpyro import (BaesAnisotropyModel, ConstantAnisotropyModel,
+from jeanspy.model_jax import (BaesAnisotropyModel, ConstantAnisotropyModel,
     DSphModel, NFWModel, OsipkovMerrittModel, PlummerModel, ZhaoModel,
     get_runtime_config)
 from jeanspy.baes_eta2 import BaesEta2AnisotropyModel
@@ -15,7 +15,7 @@ params = dict(re_pc=300., rs_pc=500., rhos_Msunpc3=.1,
               r_t_pc=5000., beta_ani=-.2)
 R_pc = jnp.array([30., 100., 300.])
 variance = jax.block_until_ready(model.sigmalos2(
-    R_pc, params=params, backend="kernel", n_u=128, n_kernel=64))
+    R_pc, params=params, solver="kernel", n_u=128, n_kernel=64))
 assert variance.shape == (3,) and np.all(np.asarray(variance) > 0)
 sampled_R = tracer.sample_R(jax.random.PRNGKey(20260913), 8, re_pc=300.)
 assert sampled_R.shape == (8,)
@@ -24,7 +24,7 @@ print(get_runtime_config(), variance)
 
 # functional-profiles-start
 zhao = ZhaoModel()
-mass = zhao.enclosed_mass(R_pc, params={**params, "a": 2., "b": 4., "g": .5},
+mass = zhao.enclosed_mass(R_pc, params={**params, "alpha": 2., "beta": 4., "gamma": .5},
                           method="numeric", n_steps=128)
 assert np.all(np.diff(np.asarray(mass)) > 0)
 for component, p in [

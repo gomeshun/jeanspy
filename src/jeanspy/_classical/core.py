@@ -1,4 +1,4 @@
-"""Shared building blocks for the classical NumPy/SciPy backend."""
+"""Shared building blocks for the NumPy/SciPy backend."""
 
 from __future__ import annotations
 
@@ -171,7 +171,7 @@ class Parameters(MutableMapping):
 
 
 class Model(metaclass=ABCMeta):
-    r"""Base class for stateful classical model components.
+    r"""Base class for stateful NumPy/SciPy model components.
 
     Notes
     -----
@@ -225,7 +225,7 @@ class Model(metaclass=ABCMeta):
         self.params = Parameters({p: np.nan for p in self.required_param_names})
         self._parammap: Dict[str, "Model"] = {}
         self._build_parammap()
-        self.update(params, target="all")
+        self.update(params)
 
         if len(self.submodels) > 0:
             self.name += "_" + "+".join(model.name for model in self.submodels.values)
@@ -331,20 +331,19 @@ class Model(metaclass=ABCMeta):
         """
         return [p in self.required_param_names for p in param_names_candidates]
 
-    def update(self, new_params=None, target: str = "all", **kwargs):
+    def update(self, new_params=None, **kwargs):
         r"""Replace named parameters in the owning components.
 
         Notes
         -----
         **Inputs and units.** ``new_params`` is an optional
         mapping/Parameters/Series; keyword values are additional replacements. Names
-        are physical names declared by this model and its components; target is
-        ignored.
+        are physical names declared by this model and its components.
+        Unknown names raise ValueError before any parameters are changed.
 
         **Returns and shape.** None; mutates component parameters. ``params_all``
         returns the resulting flattened copy.
         """
-        del target  # retained for API compatibility
         merged: Dict[str, Any] = {}
         if new_params is not None:
             if isinstance(new_params, Parameters):
@@ -355,14 +354,13 @@ class Model(metaclass=ABCMeta):
                 merged.update(dict(new_params))
         merged.update(kwargs)
 
-        for key, value in merged.items():
-            try:
-                owner = self._parammap[key]
-            except KeyError as exc:
+        for key in merged:
+            if key not in self._parammap:
                 raise ValueError(
                     f"Unknown parameter '{key}' for model '{self.name}'."
-                ) from exc
-            owner.params[key] = value
+                )
+        for key, value in merged.items():
+            self._parammap[key].params[key] = value
 
 
 __all__ = ["Model", "Parameters", "logger"]

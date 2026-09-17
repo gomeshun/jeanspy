@@ -12,28 +12,28 @@ from typing import Any, cast
 
 MODES = {
     "scipy": {
-        "constant_kernel_backend": "scipy",
+        "kernel_backend": "scipy",
         "env": {
             "JEANSPY_JAX_PLATFORM": "cpu",
             "JAX_ENABLE_X64": "true",
         },
     },
     "jax-cpu": {
-        "constant_kernel_backend": "jax",
+        "kernel_backend": "jax",
         "env": {
             "JEANSPY_JAX_PLATFORM": "cpu",
             "JAX_ENABLE_X64": "false",
         },
     },
     "jax-gpu-x32": {
-        "constant_kernel_backend": "jax",
+        "kernel_backend": "jax",
         "env": {
             "JEANSPY_JAX_PLATFORM": "gpu",
             "JAX_ENABLE_X64": "false",
         },
     },
     "jax-gpu-x64": {
-        "constant_kernel_backend": "jax",
+        "kernel_backend": "jax",
         "env": {
             "JEANSPY_JAX_PLATFORM": "gpu",
             "JAX_ENABLE_X64": "true",
@@ -61,7 +61,7 @@ def _worker(mode_name: str) -> None:
     import jax.numpy as jnp
 
     import jeanspy.model as classical_mod
-    import jeanspy.model_numpyro as new_mod
+    import jeanspy.model_jax as new_mod
 
     def sync(value):
         try:
@@ -81,13 +81,13 @@ def _worker(mode_name: str) -> None:
         return _median([time_once(func) for _ in range(repeats)])
 
     def make_classical_dsph(params: dict[str, float]):
-        if {"a", "b", "g"} <= params.keys():
+        if {"alpha", "beta", "gamma"} <= params.keys():
             dm = classical_mod.ZhaoModel(
                 rs_pc=params["rs_pc"],
                 rhos_Msunpc3=params["rhos_Msunpc3"],
-                a=params["a"],
-                b=params["b"],
-                g=params["g"],
+                alpha=params["alpha"],
+                beta=params["beta"],
+                gamma=params["gamma"],
                 r_t_pc=params["r_t_pc"],
             )
         else:
@@ -142,7 +142,7 @@ def _worker(mode_name: str) -> None:
                     u_jax,
                     R_jax,
                     params={"beta_ani": u_jax.dtype.type(beta)},
-                    backend=str(mode["constant_kernel_backend"]),
+                    kernel_backend=str(mode["kernel_backend"]),
                 ),
                 dtype=np.float64,
             ).reshape(-1)
@@ -159,7 +159,7 @@ def _worker(mode_name: str) -> None:
         u_max: float | None = None,
     ) -> float:
         classical_dsph = make_classical_dsph(params)
-        if {"a", "b", "g"} <= params.keys():
+        if {"alpha", "beta", "gamma"} <= params.keys():
             new_dsph = make_new_zhao_dsph()
         else:
             new_dsph = make_new_dsph()
@@ -174,9 +174,9 @@ def _worker(mode_name: str) -> None:
                 new_dsph.sigmalos2(
                     r_pc_jax,
                     params=params_jax,
-                    backend="kernel",
+                    solver="kernel",
                     jit=True,
-                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                    kernel_backend=str(mode["kernel_backend"]),
                 ),
                 dtype=np.float64,
             )
@@ -185,10 +185,10 @@ def _worker(mode_name: str) -> None:
                 new_dsph.sigmalos2(
                     r_pc_jax,
                     params=params_jax,
-                    backend="kernel",
+                    solver="kernel",
                     jit=True,
                     u_max=u_max,
-                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                    kernel_backend=str(mode["kernel_backend"]),
                 ),
                 dtype=np.float64,
             )
@@ -197,10 +197,10 @@ def _worker(mode_name: str) -> None:
                 new_dsph.sigmalos2(
                     r_pc_jax,
                     params=params_jax,
-                    backend="kernel",
+                    solver="kernel",
                     jit=True,
                     n_u=n_u,
-                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                    kernel_backend=str(mode["kernel_backend"]),
                 ),
                 dtype=np.float64,
             )
@@ -209,11 +209,11 @@ def _worker(mode_name: str) -> None:
                 new_dsph.sigmalos2(
                     r_pc_jax,
                     params=params_jax,
-                    backend="kernel",
+                    solver="kernel",
                     jit=True,
                     n_u=n_u,
                     u_max=u_max,
-                    constant_kernel_backend=str(mode["constant_kernel_backend"]),
+                    kernel_backend=str(mode["kernel_backend"]),
                 ),
                 dtype=np.float64,
             )
@@ -231,9 +231,9 @@ def _worker(mode_name: str) -> None:
         "re_pc": 50.0,
         "rs_pc": 300.0,
         "rhos_Msunpc3": 0.2,
-        "a": 0.7,
-        "b": 5.5,
-        "g": 1.2,
+        "alpha": 0.7,
+        "beta": 5.5,
+        "gamma": 1.2,
         "r_t_pc": 2e4,
         "beta_ani": 0.95,
         "vmem_kms": 0.0,
@@ -261,27 +261,27 @@ def _worker(mode_name: str) -> None:
         u_kernel_jax,
         R_kernel_jax,
         params=params_jax,
-        backend=str(mode["constant_kernel_backend"]),
+        kernel_backend=str(mode["kernel_backend"]),
     )
     new_sig_eager = lambda: new_dsph.sigmalos2(
         R_sig_jax,
         params=params_jax,
-        backend="kernel",
+        solver="kernel",
         jit=False,
-        constant_kernel_backend=str(mode["constant_kernel_backend"]),
+        kernel_backend=str(mode["kernel_backend"]),
     )
     new_sig_jit = lambda: new_dsph.sigmalos2(
         R_sig_jax,
         params=params_jax,
-        backend="kernel",
+        solver="kernel",
         jit=True,
-        constant_kernel_backend=str(mode["constant_kernel_backend"]),
+        kernel_backend=str(mode["kernel_backend"]),
     )
 
     result = {
         "mode": mode_name,
         "requested_env": mode["env"],
-        "constant_kernel_backend": mode["constant_kernel_backend"],
+        "kernel_backend": mode["kernel_backend"],
         "runtime": new_mod.get_runtime_config(),
         "accuracy": {
             "kernel_wide_beta_max_rel": kernel_accuracy_wide_beta(),
@@ -298,21 +298,21 @@ def _worker(mode_name: str) -> None:
         },
         "speed_s": {
             "model_py_kernel_hot_median": bench(classical_kernel_fn, repeats=5, warmups=1),
-            "model_numpyro_kernel_first": time_once(new_kernel_fn),
-            "model_numpyro_kernel_hot_median": bench(new_kernel_fn, repeats=5, warmups=1),
+            "model_jax_kernel_first": time_once(new_kernel_fn),
+            "model_jax_kernel_hot_median": bench(new_kernel_fn, repeats=5, warmups=1),
             "model_py_sigmalos2_hot_median": bench(classical_sig_fn, repeats=3, warmups=0),
-            "model_numpyro_sigmalos2_eager_first": time_once(new_sig_eager),
-            "model_numpyro_sigmalos2_eager_hot_median": bench(new_sig_eager, repeats=3, warmups=1),
-            "model_numpyro_sigmalos2_jit_first": time_once(new_sig_jit),
-            "model_numpyro_sigmalos2_jit_hot_median": bench(new_sig_jit, repeats=5, warmups=1),
+            "model_jax_sigmalos2_eager_first": time_once(new_sig_eager),
+            "model_jax_sigmalos2_eager_hot_median": bench(new_sig_eager, repeats=3, warmups=1),
+            "model_jax_sigmalos2_jit_first": time_once(new_sig_jit),
+            "model_jax_sigmalos2_jit_hot_median": bench(new_sig_jit, repeats=5, warmups=1),
         },
     }
 
     speed = result["speed_s"]
     result["speedup_vs_model_py"] = {
-        "kernel_hot": speed["model_py_kernel_hot_median"] / speed["model_numpyro_kernel_hot_median"],
-        "sigmalos2_eager_hot": speed["model_py_sigmalos2_hot_median"] / speed["model_numpyro_sigmalos2_eager_hot_median"],
-        "sigmalos2_jit_hot": speed["model_py_sigmalos2_hot_median"] / speed["model_numpyro_sigmalos2_jit_hot_median"],
+        "kernel_hot": speed["model_py_kernel_hot_median"] / speed["model_jax_kernel_hot_median"],
+        "sigmalos2_eager_hot": speed["model_py_sigmalos2_hot_median"] / speed["model_jax_sigmalos2_eager_hot_median"],
+        "sigmalos2_jit_hot": speed["model_py_sigmalos2_hot_median"] / speed["model_jax_sigmalos2_jit_hot_median"],
     }
 
     print(json.dumps(result, sort_keys=True))
@@ -366,9 +366,9 @@ def _print_summary(results: list[dict[str, object]]) -> None:
         speedup = cast(dict[str, Any], result["speedup_vs_model_py"])
         print(
             f"{result['mode']:<20} "
-            f"{speed['model_numpyro_kernel_hot_median']:<13.3e} "
-            f"{speed['model_numpyro_sigmalos2_eager_hot_median']:<14.3e} "
-            f"{speed['model_numpyro_sigmalos2_jit_hot_median']:<13.3e} "
+            f"{speed['model_jax_kernel_hot_median']:<13.3e} "
+            f"{speed['model_jax_sigmalos2_eager_hot_median']:<14.3e} "
+            f"{speed['model_jax_sigmalos2_jit_hot_median']:<13.3e} "
             f"{speedup['sigmalos2_jit_hot']:<.3f}"
         )
 

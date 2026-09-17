@@ -16,7 +16,7 @@ R_pc, vlos_kms, e_vlos_kms = (data[k] for k in ("R_pc", "vlos_kms", "e_vlos_kms"
 model = DSphModel(vmem_kms=0., submodels={
     "StellarModel": PlummerModel(re_pc=200.),
     "DMModel": ZhaoModel(rs_pc=500., rhos_Msunpc3=.1,
-                         a=1., b=3., g=1., r_t_pc=np.inf),
+                         alpha=1., beta=3., gamma=1., r_t_pc=np.inf),
     "AnisotropyModel": ConstantAnisotropyModel(beta_ani=0.),
 })
 sigma_kms = np.sqrt(model.sigmalos2(R_pc, n=128, n_kernel=32))
@@ -25,7 +25,7 @@ sigma_kms = np.sqrt(model.sigmalos2(R_pc, n=128, n_kernel=32))
 # inference-start
 # Sample halo radius, density, inner slope, anisotropy and systemic velocity.
 # These illustrative priors are uniform in the named coordinates.
-names = ["log10_rs_pc", "log10_rhos_Msunpc3", "g", "beta_ani", "vmem_kms"]
+names = ["log10_rs_pc", "log10_rhos_Msunpc3", "gamma", "beta_ani", "vmem_kms"]
 lower = np.array([1.5, -3., 0., -1., -50.])
 upper = np.array([4., 1., 2., .75, 50.])
 
@@ -35,7 +35,7 @@ def log_probability(theta):
         return -np.inf
     log_rs, log_rho, g, beta, mean = theta
     model.update(rs_pc=10**log_rs, rhos_Msunpc3=10**log_rho,
-                 g=g, beta_ani=beta, vmem_kms=mean)
+                 gamma=g, beta_ani=beta, vmem_kms=mean)
     variance = model.sigmalos2(R_pc, n=128, n_kernel=32) + e_vlos_kms**2
     return -.5 * np.sum(np.log(2*np.pi*variance) + (vlos_kms-mean)**2/variance)
 

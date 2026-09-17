@@ -132,7 +132,7 @@ evaluation time, as in the spherical JAX API:
 
 ```python
 # Configure JEANSPY_JAX_ENABLE_X64=true before starting Python for float64.
-from jeanspy.model_numpyro import (
+from jeanspy.model_jax import (
     AxisymmetricDSphModel as JaxAxisymmetricModel,
     AxisymmetricPlummerModel as JaxPlummerModel,
     AxisymmetricZhaoModel as JaxZhaoModel,
@@ -164,7 +164,7 @@ scalar coordinates produce scalar outputs in both backends.
 
 Observations require matching, finite, nonempty 1-D arrays `x_pc`, `y_pc`,
 `vlos_kms`, `e_vlos_kms`. Errors must be nonnegative; zero is allowed. A
-DataFrame or mapping is accepted by the classical model. The explicit
+DataFrame or mapping is accepted by the NumPy/SciPy model. The explicit
 `AxisymmetricKinematicData` object copies observations and supplies detached
 arrays with `as_kwargs()` for NumPyro calls. `reset_data` validates replacements
 before mutation; user-provided priors are never derived from velocities.
@@ -176,10 +176,15 @@ The unbinned likelihood is
  \sqrt{\sigma_{\rm los}^2(x_i,y_i)+e_i^2}\right).
 ```
 
-The classical prior table names the **sampling coordinates**, in sampler
-order. Prefixes `log10_` and `bfunc_` mean `10**x` and `1-10**x`, respectively.
-`cos_inclination` maps to `arccos(x)` in radians. Uniform bounds on this last
-coordinate give an isotropic orientation prior over the explicitly chosen
+The NumPy/SciPy prior table names the **sampling coordinates**, in sampler
+order. Supply matching `SamplingParameter` objects with a physical name and
+transform for each coordinate. For example,
+`SamplingParameter("log10_one_minus_beta_z", "beta_z", "one_minus_pow10")`
+means `beta_z = 1 - 10**x`, and
+`SamplingParameter("cos_inclination", "inclination", "arccos")`
+returns radians. Names alone imply no transformation. Uniform bounds on a
+coordinate with this `arccos` specification give an isotropic orientation
+prior over the explicitly chosen
 range; use bounds compatible with photometry, or allow the deprojection
 constraint to reject inadmissible proposals. No implicit transformation
 Jacobian is added: the prior is defined in the named sampling coordinate.
@@ -188,6 +193,7 @@ Jacobian is added: the prior is defined in the named sampling coordinate.
 import pandas as pd
 from jeanspy.axisymmetric_inference import AxisymmetricDSphEstimationModel
 from jeanspy.sampler import Sampler
+from jeanspy.parameters import SamplingParameter
 
 prior = pd.DataFrame({"lower": [-1.5, -30.], "upper": [-.5, 30.]},
                      index=["log10_rhos_Msunpc3", "vmem_kms"])
@@ -195,7 +201,9 @@ fixed = {name: value for name, value in params.items() if name != "rhos_Msunpc3"
 data = dict(x_pc=[30., -100., 300.], y_pc=[20., 70., -50.],
             vlos_kms=[1., -3., 5.], e_vlos_kms=[2., 2., 1.])
 # Stored components supply values for physical parameters not sampled here.
-fit = AxisymmetricDSphEstimationModel(data, prior, dsph_model=model)
+fit = AxisymmetricDSphEstimationModel(data, prior, dsph_model=model,
+    parameter_specs=[SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10"),
+                     SamplingParameter("vmem_kms", "vmem_kms")])
 sampler = Sampler(fit, fit.sample, nwalkers=6, prefix="axisymmetric_")
 # sampler.run_mcmc(iterations=100, loops=1)
 ```
@@ -206,7 +214,7 @@ accepts an RNG/seed and bounded rejection to return feasible initial points.
 Impossible support raises an error rather than changing the priors.
 `lnlikelihoods`, `lnlikelihood`, `lnpriors`, `lnposterior`,
 `lnposterior_wbic`, and `sample_data` are available. WBIC needs at least two
-stars. Classical data are process-local and pickleable; shared-memory buffers
+stars. NumPy/SciPy data are process-local and pickleable; shared-memory buffers
 specific to the spherical implementation are not used.
 
 NumPyro uses the existing `ParameterSpec` and sampler:
@@ -263,15 +271,15 @@ inclination and systemic velocity, writes posterior draws and J/D factors,
 and resumes when repeated with the same arguments:
 
 ```bash
-python examples/axisymmetric_inference.py --backend classical --output-dir /tmp/axisym-emcee
+python examples/axisymmetric_inference.py --sampler emcee --output-dir /tmp/axisym-emcee
 JEANSPY_JAX_ENABLE_X64=true python examples/axisymmetric_inference.py \
-    --backend numpyro --output-dir /tmp/axisym-nuts
+    --sampler numpyro --output-dir /tmp/axisym-nuts
 ```
 
 Defaults use eight synthetic stars and short chains to exercise the workflow;
 convergence, coverage and scientific calibration are not established by this
 example. Increase warmup/draw counts and check diagnostics for an actual fit.
-Use the same warmup setting when resuming the classical example, since its
+Use the same warmup setting when resuming the emcee example, since its
 stored warmup steps are explicitly discarded from the exported posterior.
 
 ## J and D factors
@@ -370,7 +378,7 @@ Automated checks cover:
 - Explicit prior schemas, physical rejection, data replacement, emcee export,
   real NUTS/emcee restart, and rejection before changing stored samples.
 - Exact finite-cone J/D geometry against independent observer-ray quadrature;
-  the spherical J limit against `jfactor_ullio2016`, convergence and divergent
+  the spherical J limit against `jfactor_cone`, convergence and divergent
   central-cusp rejection.
 
 The independent [JAM benchmark](../validation/axisymmetric_jam_reference.json)

@@ -15,7 +15,7 @@ from jeanspy.model import (
 def _direct_line_of_sight_jfactor(model, dist_pc, roi_deg):
     """Independent direct dOmega d(LOS) reference integral.
 
-    The substitutions b=b_max*u^2 and z=b*tan(t) keep the NFW central cusp
+    The substitutions beta=b_max*u^2 and z=b*tan(t) keep the NFW central cusp
     numerically well behaved without using the Ullio radial weight formula.
     """
     r_t_pc = float(model.params.r_t_pc)
@@ -72,9 +72,9 @@ def _direct_line_of_sight_jfactor(model, dist_pc, roi_deg):
             ZhaoModel(
                 rs_pc=500.0,
                 rhos_Msunpc3=0.02,
-                a=1.2,
-                b=4.5,
-                g=0.4,
+                alpha=1.2,
+                beta=4.5,
+                gamma=0.4,
                 r_t_pc=8000.0,
             ),
             30000.0,
@@ -95,7 +95,7 @@ def _direct_line_of_sight_jfactor(model, dist_pc, roi_deg):
 def test_full_ullio_matches_independent_line_of_sight_integral(
     model, dist_pc, roi_deg
 ):
-    full = model.jfactor_ullio2016(dist_pc, roi_deg)
+    full = model.jfactor_cone(dist_pc, roi_deg)
     reference = _direct_line_of_sight_jfactor(model, dist_pc, roi_deg)
 
     np.testing.assert_allclose(full, reference, rtol=3.0e-6)
@@ -105,14 +105,14 @@ def test_full_ullio_keeps_projected_outer_shells():
     model = ZhaoModel(
         rs_pc=500.0,
         rhos_Msunpc3=0.02,
-        a=1.2,
-        b=4.5,
-        g=0.4,
+        alpha=1.2,
+        beta=4.5,
+        gamma=0.4,
         r_t_pc=8000.0,
     )
 
-    full = model.jfactor_ullio2016(30000.0, 0.5)
-    spherical = model.jfactor_ullio2016_simple(30000.0, 0.5)
+    full = model.jfactor_cone(30000.0, 0.5)
+    spherical = model.jfactor_spherical_aperture(30000.0, 0.5)
 
     assert full > spherical
 
@@ -121,17 +121,17 @@ def test_full_ullio_is_continuous_and_saturates_at_truncation_angle():
     model = ZhaoModel(
         rs_pc=500.0,
         rhos_Msunpc3=0.02,
-        a=1.0,
-        b=3.0,
-        g=0.0,
+        alpha=1.0,
+        beta=3.0,
+        gamma=0.0,
         r_t_pc=1000.0,
     )
     dist_pc = 30000.0
     theta_t_deg = np.rad2deg(np.arcsin(model.params.r_t_pc / dist_pc))
 
-    just_below = model.jfactor_ullio2016(dist_pc, theta_t_deg * (1.0 - 1.0e-5))
-    at_edge = model.jfactor_ullio2016(dist_pc, theta_t_deg)
-    wider = model.jfactor_ullio2016(dist_pc, theta_t_deg + 1.0)
+    just_below = model.jfactor_cone(dist_pc, theta_t_deg * (1.0 - 1.0e-5))
+    at_edge = model.jfactor_cone(dist_pc, theta_t_deg)
+    wider = model.jfactor_cone(dist_pc, theta_t_deg + 1.0)
 
     np.testing.assert_allclose(just_below, at_edge, rtol=2.0e-8)
     np.testing.assert_allclose(wider, at_edge, rtol=1.0e-12)
@@ -141,9 +141,9 @@ def test_simple_approximation_respects_physical_truncation():
     model = ZhaoModel(
         rs_pc=500.0,
         rhos_Msunpc3=0.02,
-        a=1.2,
-        b=4.5,
-        g=0.4,
+        alpha=1.2,
+        beta=4.5,
+        gamma=0.4,
         r_t_pc=100.0,
     )
     dist_pc = 10000.0
@@ -161,7 +161,7 @@ def test_simple_approximation_respects_physical_truncation():
     expected = C_J * 4.0 * np.pi / dist_pc**2 * integral
 
     np.testing.assert_allclose(
-        model.jfactor_ullio2016_simple(dist_pc, roi_deg),
+        model.jfactor_spherical_aperture(dist_pc, roi_deg),
         expected,
         rtol=1.0e-7,
     )
@@ -198,12 +198,12 @@ def test_full_ullio_validates_geometry():
     ]
     for kwargs in invalid_geometry:
         with pytest.raises(ValueError):
-            model.jfactor_ullio2016(**kwargs)
+            model.jfactor_cone(**kwargs)
 
     with pytest.raises(ValueError):
-        model.jfactor_ullio2016_simple(30000.0, 1.1)
+        model.jfactor_spherical_aperture(30000.0, 1.1)
 
-    assert np.isfinite(model.jfactor_ullio2016(30000.0, 2.0))
+    assert np.isfinite(model.jfactor_cone(30000.0, 2.0))
 
 
 def test_jfactor_requires_a_finite_truncation_radius():
@@ -217,6 +217,6 @@ def test_jfactor_requires_a_finite_truncation_radius():
     model = UntruncatedDM(rho=1.0)
 
     with pytest.raises(ValueError, match="truncation radius"):
-        model.jfactor_ullio2016(30000.0, 0.5)
+        model.jfactor_cone(30000.0, 0.5)
     with pytest.raises(ValueError, match="truncation radius"):
-        model.jfactor_ullio2016_simple(30000.0, 0.5)
+        model.jfactor_spherical_aperture(30000.0, 0.5)

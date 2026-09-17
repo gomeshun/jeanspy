@@ -65,7 +65,7 @@ autosummary_context = {
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 autodoc_typehints_format = "fully-qualified"
-autodoc_type_aliases = {"DSphModel": "jeanspy.model_numpyro.DSphModel"}
+autodoc_type_aliases = {"DSphModel": "jeanspy.model_jax.DSphModel"}
 autodoc_class_signature = "mixed"
 napoleon_use_rtype = False
 myst_enable_extensions = ["dollarmath", "amsmath", "colon_fence", "deflist"]
@@ -107,7 +107,10 @@ html_context = {
 }
 html_baseurl = f"https://gomeshun.github.io/jeanspy/{version}/"
 html_last_updated_fmt = "%Y-%m-%d"
-doctest_global_setup = "import numpy as np"
+doctest_global_setup = """
+import numpy as np
+from jeanspy.parameters import SamplingParameter
+"""
 
 
 def substitute_build_identity(app, docname, source):
@@ -134,13 +137,13 @@ def qualify_imported_types(app, doctree):
     Sphinx 9's constructor type renderer retains the unqualified annotation
     even with fully-qualified output enabled. There are two public DSphModel
     classes, so preserve the import's meaning explicitly instead of accepting
-    Sphinx's ambiguous fallback to the classical class.
+    Sphinx's ambiguous fallback to the NumPy/SciPy class.
     """
     from sphinx import addnodes
     for node in doctree.findall(addnodes.pending_xref):
         if (node.get("py:module") == "jeanspy.sampler_numpyro"
                 and node.get("reftarget") == "DSphModel"):
-            node["reftarget"] = "jeanspy.model_numpyro.DSphModel"
+            node["reftarget"] = "jeanspy.model_jax.DSphModel"
 
 
 def preserve_source_alias_anchors(app, doctree):
@@ -163,7 +166,7 @@ def preserve_source_alias_anchors(app, doctree):
             break
     for node in doctree.findall(addnodes.desc_signature):
         for target in list(node.get("ids", [])):
-            for facade in ("jeanspy.model", "jeanspy.model_numpyro"):
+            for facade in ("jeanspy.model", "jeanspy.model_jax"):
                 prefix = facade + "."
                 if not target.startswith(prefix + "Axisymmetric"):
                     continue

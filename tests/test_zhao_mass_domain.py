@@ -11,7 +11,7 @@ from scipy.integrate import quad
 from numpyro.infer.util import log_density
 
 from jeanspy import model as classical
-from jeanspy import model_numpyro as functional
+from jeanspy import model_jax as functional
 from jeanspy.sampler_numpyro import JeansLikelihoodModel
 
 
@@ -26,20 +26,20 @@ def precision(enabled):
 
 
 def params(**overrides):
-    return dict(dict(rs_pc=1000., rhos_Msunpc3=.01, a=1., b=4., g=2.5,
+    return dict(dict(rs_pc=1000., rhos_Msunpc3=.01, alpha=1., beta=4., gamma=2.5,
                      r_t_pc=10000.), **overrides)
 
 
 @lru_cache(maxsize=None)
-def reference_mass(x, a, b, g):
+def reference_mass(x, alpha, beta, gamma):
     # QUADPACK's algebraically weighted adaptive rule treats the cusp directly;
     # it does not use the implementation's power substitution or fixed nodes.
-    p, q = 3 - g, (b - g) / a
+    p, q = 3 - gamma, (beta - gamma) / alpha
     c = min(x, 1.)
-    inner = c**p * quad(lambda u: (1 + (c*u)**a)**(-q), 0, 1,
+    inner = c**p * quad(lambda u: (1 + (c*u)**alpha)**(-q), 0, 1,
                         weight="alg", wvar=(p-1, 0), epsabs=1e-10,
                         epsrel=1e-10, limit=300)[0]
-    outer = quad(lambda t: np.exp(p*t-q*np.logaddexp(0, a*t)), 0,
+    outer = quad(lambda t: np.exp(p*t-q*np.logaddexp(0, alpha*t)), 0,
                  np.log(max(x, 1.)), epsabs=1e-10, epsrel=1e-10)[0]
     return 4*np.pi*(inner+outer)
 
@@ -50,22 +50,22 @@ def test_mass_accuracy_grid(x64, rtol):
         radii = np.array([1e-6, .01, 1., 100., 1e6])
         model = functional.ZhaoModel()
         evaluate = jax.jit(lambda r, p: model.enclosed_mass(r, params=p))
-        for a, b, g in product([.5, 1., 3., 5.], [2., 3., 4., 8.], [0., 1., 2.5, 2.99]):
-            p = params(rs_pc=1., rhos_Msunpc3=1., r_t_pc=1e7, a=a, b=b, g=g)
-            expected = [reference_mass(x, a, b, g) for x in radii]
+        for alpha, beta, gamma in product([.5, 1., 3., 5.], [2., 3., 4., 8.], [0., 1., 2.5, 2.99]):
+            p = params(rs_pc=1., rhos_Msunpc3=1., r_t_pc=1e7, alpha=alpha, beta=beta, gamma=gamma)
+            expected = [reference_mass(x, alpha, beta, gamma) for x in radii]
             np.testing.assert_allclose(evaluate(jnp.asarray(radii), p), expected, rtol=rtol)
             if x64:
                 np.testing.assert_allclose(classical.ZhaoModel(**p).enclosed_mass(radii),
                                            expected, rtol=rtol)
 
 
-@pytest.mark.parametrize("g", [0., 1., 2.5, 2.9, 2.99])
-def test_dehnen_closed_form_and_truncation(g):
+@pytest.mark.parametrize("gamma", [0., 1., 2.5, 2.9, 2.99])
+def test_dehnen_closed_form_and_truncation(gamma):
     with precision(True):
-        p = params(g=g)
+        p = params(gamma=gamma)
         radii = np.array([0., 1e-3, 10., 1000., 10000., 20000.])
         x = np.minimum(radii, p['r_t_pc']) / p['rs_pc']
-        expected = 4*np.pi*.01*1000**3/(3-g)*(x/(1+x))**(3-g)
+        expected = 4*np.pi*.01*1000**3/(3-gamma)*(x/(1+x))**(3-gamma)
         for model in (classical.ZhaoModel(**p), functional.ZhaoModel()):
             kw = {} if isinstance(model, classical.ZhaoModel) else {'params': p}
             np.testing.assert_allclose(model.enclosed_mass(radii, **kw), expected, rtol=1e-8)
@@ -73,29 +73,29 @@ def test_dehnen_closed_form_and_truncation(g):
             assert np.shape(model.enclosed_mass(1000., **kw)) == ()
 
 
-@pytest.mark.parametrize("b,g", [(2., 0.), (3., 0.), (3., 1.), (4., 2.5)])
-def test_explicit_analytic_domain_and_nfw_limit(b, g):
+@pytest.mark.parametrize("beta,gamma", [(2., 0.), (3., 0.), (3., 1.), (4., 2.5)])
+def test_explicit_analytic_domain_and_nfw_limit(beta, gamma):
     with precision(True):
-        p = params(b=b, g=g)
+        p = params(beta=beta, gamma=gamma)
         r = jnp.array([0., .001, 100., 1000., 1e5])
         model = functional.ZhaoModel()
         result = jax.jit(lambda r: model.enclosed_mass(r, params=p, method='analytic'))(r)
         np.testing.assert_allclose(result, classical.ZhaoModel(**p).enclosed_mass(r), rtol=1e-7)
-        if b == 3 and g == 0:
+        if beta == 3 and gamma == 0:
             assert float(result[2]) == pytest.approx(33785.62865245551, rel=1e-8)
 
 
 @pytest.mark.parametrize("x64,rtol", [(True, 3e-5), (False, .015)])
 def test_numeric_parameter_gradients_match_finite_differences(x64, rtol):
     with precision(x64):
-        p = params(a=.8, b=3., g=2.9)
+        p = params(alpha=.8, beta=3., gamma=2.9)
         names = tuple(p)
         values = jnp.array([p[k] for k in names])
         def objective(v):
             return jnp.sum(jnp.log(functional.ZhaoModel().enclosed_mass(
                 jnp.array([200., 3000., 30000.]), params=dict(zip(names, v)))))
         actual = np.asarray(jax.jit(jax.grad(objective))(values))
-        # Independent float64 classical evaluation, with a tighter Gauss rule.
+        # Independent float64 classical evaluation, with alpha tighter Gauss rule.
         def reference(v):
             return np.log(classical.ZhaoModel(**dict(zip(names, v))).enclosed_mass(
                 np.array([200., 3000., 30000.]), n_steps=256)).sum()
@@ -118,7 +118,7 @@ def dsph(module, p):
         AnisotropyModel=module.ConstantAnisotropyModel()))
 
 
-@pytest.mark.parametrize("bad", [dict(a=0.), dict(g=3.), dict(g=3.1), dict(b=np.nan),
+@pytest.mark.parametrize("bad", [dict(alpha=0.), dict(gamma=3.), dict(gamma=3.1), dict(beta=np.nan),
                                   dict(rs_pc=0.), dict(rhos_Msunpc3=-1.), dict(r_t_pc=-1.)])
 def test_invalid_domains_are_not_zero_mass(bad):
     p = params(**bad)
@@ -133,10 +133,10 @@ def test_invalid_domains_are_not_zero_mass(bad):
 @pytest.mark.parametrize("backend", ['kernel', 'abel'])
 def test_los_mass_resolution_and_invalid_likelihood(backend):
     with precision(True):
-        p = dict(params(g=2.5), re_pc=220., beta_ani=0., vmem_kms=0.)
+        p = dict(params(gamma=2.5), re_pc=220., beta_ani=0., vmem_kms=0.)
         model = dsph(functional, p)
         r = jnp.array([50., 100., 300.])
-        kwargs = dict(backend=backend, n_u=257, n_r=1024, u_max=2000.)
+        kwargs = dict(solver=backend, n_u=257, n_r=1024, u_max=2000.)
         low = model.sigmalos2(r, params=p, dm_mass_n_steps=64, **kwargs)
         high = model.sigmalos2(r, params=p, dm_mass_n_steps=128, **kwargs)
         np.testing.assert_allclose(low, high, rtol=1e-5)
@@ -146,7 +146,7 @@ def test_los_mass_resolution_and_invalid_likelihood(backend):
         eager = model.sigmalos2(r, params=p, dm_mass_n_steps=128, jit=False, **kwargs)
         np.testing.assert_allclose(high, eager, rtol=1e-10)
         assert np.all(np.asarray(high) > 0)
-        invalid = dict(p, g=3.)
+        invalid = dict(p, gamma=3.)
         assert np.isnan(model.sigmalos2(r, params=invalid, **kwargs)).all()
         likelihood = JeansLikelihoodModel(model, [], parameter_postprocess=lambda _: invalid,
                                           sigmalos2_kwargs=kwargs)
@@ -155,7 +155,7 @@ def test_los_mass_resolution_and_invalid_likelihood(backend):
 
 
 def test_classical_los_beta_domain_and_bad_mass():
-    p = params(b=3., g=0.)
+    p = params(beta=3., gamma=0.)
     model = dsph(classical, p)
     r = np.array([50., 100., 300.])
     expected = model.sigmalos2(r)
@@ -185,6 +185,6 @@ def test_resolution_and_radius_validation():
 @pytest.mark.parametrize("x64", [True, False])
 def test_explicit_analytic_fallback_at_saturated_beta_argument(x64):
     with precision(x64):
-        p = params(rs_pc=1., rhos_Msunpc3=1., r_t_pc=1e7, a=5., b=3.01, g=1.)
+        p = params(rs_pc=1., rhos_Msunpc3=1., r_t_pc=1e7, alpha=5., beta=3.01, gamma=1.)
         result = functional.ZhaoModel().enclosed_mass(jnp.array(1e6), params=p, method='analytic')
         assert float(result) == pytest.approx(reference_mass(1e6, 5., 3.01, 1.), rel=5e-5)

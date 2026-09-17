@@ -10,6 +10,7 @@ conventions and limits. Each guide covers a specific topic:
 | [Axisymmetric geometry](axisymmetric.md) | Coordinates, flattening, inclination and geometry-specific inference constraints |
 | [J and D factors](factors.md) | Aperture definitions, finite-cone integrals and cusp restrictions |
 | [Numerical accuracy](numerics.md) | Quadrature refinement, gradient checks and specialized kernel limits |
+| [API migration](api-migration.md) | Explicit backend names, density cutoffs, precision and sampled-parameter mappings |
 
 For setup and executable workflows, follow the [tutorials](../tutorials/index.md),
 including [JAX and backends](../tutorials/backends.ipynb),
@@ -27,4 +28,5 @@ profiles
 axisymmetric
 factors
 numerics
+api-migration
 ```

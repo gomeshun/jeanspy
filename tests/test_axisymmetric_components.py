@@ -5,6 +5,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import pytest
+from jeanspy.parameters import SamplingParameter
 
 from jeanspy import axisymmetric as classical
 from jeanspy._sampling_identity import fingerprint
@@ -83,7 +84,7 @@ def test_public_interface_alone_is_rejected_before_solver_hooks(backend_name, ro
     parts = components()
     if backend_name == "jax":
         pytest.importorskip("jax")
-        from jeanspy import axisymmetric_numpyro as backend
+        from jeanspy import axisymmetric_jax as backend
         parts = dict(StellarModel=backend.AxisymmetricPlummerModel(),
                      DMModel=backend.AxisymmetricZhaoModel(),
                      AnisotropyModel=backend.AxisymmetricConstantAnisotropyModel())
@@ -122,7 +123,8 @@ def test_bound_components_supply_inference_defaults_and_restart_identity(tmp_pat
     observations = dict(x_pc=[100., -100.], y_pc=[50., 80.],
                         vlos_kms=[1., -2.], e_vlos_kms=[1., 2.])
     prior = pd.DataFrame({"lower": [-1.3], "upper": [-.7]}, index=["log10_rhos_Msunpc3"])
-    target = AxisymmetricDSphEstimationModel(observations, prior, dsph_model=forward,
+    target = AxisymmetricDSphEstimationModel(observations, prior,
+        parameter_specs=[SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10")], dsph_model=forward,
                                              fixed_params={"vmem_kms": 0.})
     assert "rhos_Msunpc3" not in target.fixed_params
     assert target.fixed_params["re_pc"] == 300.
@@ -132,7 +134,8 @@ def test_bound_components_supply_inference_defaults_and_restart_identity(tmp_pat
     first = Sampler(target, initial, nwalkers=4, prefix=str(tmp_path)+"/")
     first.run_mcmc(2, 1, enable_convergence_check=False)
     saved = first.get_chain().copy()
-    same = AxisymmetricDSphEstimationModel(observations, prior, dsph_model=forward,
+    same = AxisymmetricDSphEstimationModel(observations, prior,
+        parameter_specs=[SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10")], dsph_model=forward,
                                            fixed_params={"vmem_kms": 0.})
     resumed = Sampler(same, initial, nwalkers=4, prefix=str(tmp_path)+"/")
     resumed.run_mcmc(1, 1, enable_convergence_check=False)
@@ -140,6 +143,7 @@ def test_bound_components_supply_inference_defaults_and_restart_identity(tmp_pat
     parts = dict(forward.submodels)
     parts["StellarModel"] = replace(parts["StellarModel"], re_pc=350.)
     changed = AxisymmetricDSphEstimationModel(observations, prior,
+        parameter_specs=[SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10")],
         dsph_model=replace(forward, submodels=parts), fixed_params={"vmem_kms": 0.})
     with pytest.raises(ValueError, match="identity mismatch"):
         Sampler(changed, initial, nwalkers=4, prefix=str(tmp_path)+"/")
@@ -148,7 +152,7 @@ def test_bound_components_supply_inference_defaults_and_restart_identity(tmp_pat
 
 def test_jax_components_and_composition_support_jit_and_gradients():
     pytest.importorskip("jax")
-    from jeanspy import axisymmetric_numpyro as backend
+    from jeanspy import axisymmetric_jax as backend
     import jax
     import jax.numpy as jnp
     parts = dict(StellarModel=backend.AxisymmetricPlummerModel(),

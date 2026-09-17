@@ -7,6 +7,7 @@ from scipy.stats import norm
 from jeanspy.axisymmetric import AxisymmetricDSphModel
 from jeanspy.axisymmetric_inference import AxisymmetricDSphEstimationModel, AxisymmetricKinematicData
 from jeanspy.model import PhotometryPriorModel
+from jeanspy.parameters import SamplingParameter
 from jeanspy.sampler import Sampler
 from jeanspy._sampling_identity import fingerprint
 
@@ -20,6 +21,8 @@ def make_model(**kwargs):
                             vlos_kms=[1., -3., 5.], e_vlos_kms=[0., 1., 2.]),
                    prior=pd.DataFrame(dict(lower=[-1.5, -20.], upper=[-.5, 20.]),
                                       index=["log10_rhos_Msunpc3", "vmem_kms"]),
+                   parameter_specs=[SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10"),
+                                    SamplingParameter("vmem_kms", "vmem_kms")],
                    dsph_model=AxisymmetricDSphModel(16, 16, 16), fixed_params=FIXED)
     options.update(kwargs)
     return AxisymmetricDSphEstimationModel(**options)
@@ -83,8 +86,11 @@ def test_coordinate_transforms_and_photometry_are_explicit():
     fixed = {key: value for key, value in FIXED.items() if key not in {"re_pc", "q", "inclination", "beta_z"}}
     fixed.update(rhos_Msunpc3=.1, vmem_kms=0., q_projected=.8)
     prior = pd.DataFrame(dict(lower=[2., 0., 0.], upper=[3., .7, .5]),
-                         index=["log10_re_pc", "cos_inclination", "bfunc_beta_z"])
-    m = make_model(prior=prior, fixed_params=fixed, photometry_prior=PhotometryPriorModel(2.4, .2))
+                         index=["log10_re_pc", "cos_inclination", "log10_one_minus_beta_z"])
+    m = make_model(prior=prior, fixed_params=fixed, photometry_prior=PhotometryPriorModel(2.4, .2),
+                   parameter_specs=[SamplingParameter("log10_re_pc", "re_pc", "pow10"),
+                                    SamplingParameter("cos_inclination", "inclination", "arccos"),
+                                    SamplingParameter("log10_one_minus_beta_z", "beta_z", "one_minus_pow10")])
     p = [2.4, .2, .1]
     values = m.convert_params(p)
     np.testing.assert_allclose([values["re_pc"], values["inclination"], values["beta_z"]],
@@ -103,7 +109,7 @@ def test_coordinate_transforms_and_photometry_are_explicit():
     (dict(fixed_params={**FIXED, "q_projected": .8}), "exactly one"),
     (dict(fixed_params={**FIXED, "typo": 1.}), "Unknown"),
     (dict(fixed_params={**FIXED, "Q": np.nan}), "finite scalar"),
-    (dict(photometry_prior=PhotometryPriorModel(2.4, .1)), "log10_re_pc"),
+    (dict(photometry_prior=PhotometryPriorModel(2.4, .1)), "pow10"),
 ])
 def test_bad_schema_fails_before_sampling(change, match):
     with pytest.raises(ValueError, match=match):

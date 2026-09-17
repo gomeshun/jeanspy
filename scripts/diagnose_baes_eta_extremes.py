@@ -55,8 +55,8 @@ def main() -> None:
     import jax
     import jax.numpy as jnp
 
-    import jeanspy.model_numpyro as mn
-    from jeanspy.model_numpyro import BaesAnisotropyModel, NFWModel, PlummerModel
+    import jeanspy.model_jax as mn
+    from jeanspy.model_jax import BaesAnisotropyModel, NFWModel, PlummerModel
 
     if not bool(jax.config.read("jax_enable_x64")):
         raise RuntimeError("Run with JAX_ENABLE_X64=true")

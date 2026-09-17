@@ -2,6 +2,7 @@
 from functools import partial
 import multiprocessing
 
+from jeanspy.parameters import SamplingParameter
 import numpy as np
 import pandas as pd
 import pytest
@@ -20,7 +21,7 @@ def _make_model(tmp_path, config_kind):
         {"lower": [-30., 2., 2.5, -3., 3.5, -.3],
          "upper": [30., 2.6, 3.5, -1., 4.5, .3]},
         index=["vmem_kms", "log10_re_pc", "log10_rs_pc",
-               "log10_rhos_Msunpc3", "log10_r_t_pc", "bfunc_beta_ani"],
+               "log10_rhos_Msunpc3", "log10_r_t_pc", "log10_one_minus_beta_ani"],
     )
     if config_kind == "path":
         path = tmp_path / "prior.csv"
@@ -29,7 +30,14 @@ def _make_model(tmp_path, config_kind):
     data = pd.DataFrame({"R_pc": np.linspace(10., 300., 12),
                          "vlos_kms": np.linspace(-10., 10., 12),
                          "e_vlos_kms": np.full(12, 2.)})
-    return SimpleDSphEstimationModel(args_load_data=[data], submodels={
+    return SimpleDSphEstimationModel(args_load_data=[data], parameter_specs=[
+            SamplingParameter("vmem_kms", "vmem_kms"),
+            SamplingParameter("log10_re_pc", "re_pc", "pow10"),
+            SamplingParameter("log10_rs_pc", "rs_pc", "pow10"),
+            SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10"),
+            SamplingParameter("log10_r_t_pc", "r_t_pc", "pow10"),
+            SamplingParameter("log10_one_minus_beta_ani", "beta_ani", "one_minus_pow10"),
+        ], submodels={
         "DSphModel": DSphModel(submodels={
             "StellarModel": PlummerModel(), "DMModel": NFWModel(),
             "AnisotropyModel": ConstantAnisotropyModel(),

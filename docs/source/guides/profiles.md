@@ -8,11 +8,14 @@ are defined in the [model contract](contracts.md).
 
 ## Tracer scales and three-dimensional support
 
-The classical Plummer, projected exponential and Sersic profiles have
+The NumPy/SciPy Plummer, projected exponential and Sersic profiles have
 three-dimensional deprojections. `Uniform2dModel` supplies only a projected
 disk and cannot be passed to a three-dimensional Jeans calculation.
-`Exp3dModel` retains its historical scale convention: `re_pc` is an exponential
-scale length, while `Exp2dModel.re_pc` is the projected half-light radius.
+`ProjectedExponentialModel(r_exp_pc=...)` uses the scale inside
+`exp(-R/r_exp_pc)`. Its read-only `re_pc` property returns the projected
+half-light radius, `1.67834699001666 * r_exp_pc`. This profile is a projected
+exponential with a Bessel-K0 three-dimensional deprojection, not a pure
+three-dimensional exponential. Plummer and Sersic still accept `re_pc` directly.
 
 ## Sersic deprojection domains
 
@@ -37,7 +40,13 @@ alone does not establish the existence of a nonnegative distribution function.
 
 ## Halo cutoff conventions
 
-Classical spherical halo density methods evaluate the untruncated profile;
-their enclosed mass and factor calculations apply the configured cutoff.
-The spheroidal `AxisymmetricZhaoModel.mass_density_3d` method instead returns zero outside its
-ellipsoidal cutoff. Preserve these conventions when writing a custom integral.
+Spherical NFW and Zhao `mass_density_3d` methods return zero for `r > r_t_pc`
+in both NumPy/SciPy and JAX; the boundary is included. Their enclosed mass is
+constant outside the same cutoff. `r_t_pc=np.inf` gives an untruncated halo
+at finite radii. Zhao uses `alpha`, `beta`, `gamma` for transition, outer and
+inner slopes in both geometries.
+
+The spheroidal `AxisymmetricZhaoModel` applies this convention to
+`m = sqrt(R**2 + z**2/Q**2)`. Its enclosed mass is inside that ellipsoid.
+For annihilation factors, use the [factor guide](factors.md) to select the
+finite cone or an explicitly named approximation.

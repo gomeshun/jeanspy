@@ -25,7 +25,7 @@ import numpyro.distributions as dist
 import xarray as xr
 from numpyro.infer import MCMC
 
-from .model_numpyro import DSphModel
+from .model_jax import DSphModel
 from ._axisymmetric_params import validate_param_names
 from ._sampling_identity import fingerprint, software_identity
 
@@ -169,7 +169,7 @@ class ParameterSpec:
     **Differentiation.** Transforms/distributions must support the intended JAX
     derivatives; discrete sample sites are not NUTS coordinates.
 
-    **Examples.** ``examples/docs_inference.py``
+    **Examples.** ``examples/docs_numpyro_inference.py``
     """
 
     sample_name: str
@@ -304,7 +304,7 @@ class JeansLikelihoodModel:
 
     Parameters
     ----------
-    dsph_model : jeanspy.model_numpyro.DSphModel
+    dsph_model : jeanspy.model_jax.DSphModel
         Functional JAX forward model. Its LOS variance is in (km/s)**2.
     parameter_specs : sequence of ParameterSpec
         Ordered sample sites, priors and transformations to physical parameters.
@@ -339,14 +339,12 @@ class JeansLikelihoodModel:
     transforms in the admissible interior. This class does not calculate J/D
     factors or establish a positive phase-space distribution function.
 
-    **Inputs and units.** ``dsph_model`` is the matching JAX model;
-    ``parameter_specs`` is a sequence of ParameterSpec; the axisymmetric
-    subclass accepts ``fixed_params`` for complementary scalars; the spherical
-    class uses ``parameter_postprocess`` to assemble additional fixed
-    parameters. Velocity mean and sigmalos2 options are explicit. Calling the
-    spherical model takes ``R_pc``/``vlos_kms``/``e_vlos_kms``; the axisymmetric
-    model takes ``x_pc``/``y_pc`` instead of ``R_pc``. Observation arrays are
-    matching finite nonempty 1-D arrays.
+    **Inputs and units.** ``dsph_model`` is a spherical JAX forward model;
+    ``parameter_specs`` is a sequence of ParameterSpec. Use
+    ``parameter_postprocess`` to assemble additional fixed physical parameters.
+    Calling this model takes matching finite nonempty 1-D arrays ``R_pc``
+    (pc), ``vlos_kms`` and ``e_vlos_kms`` (km/s). Velocity mean and static
+    sigmalos2 options are explicit.
 
     **Returns and shape.** __call__ returns None while registering NumPyro
     sample, deterministic and likelihood sites; ``sample_parameters`` returns
@@ -357,7 +355,7 @@ class JeansLikelihoodModel:
     Gaussian LOS closure at fixed positions. The standard class does not add
     membership mixtures, velocity-cut normalization or binaries.
 
-    **Errors.** Bad schema/shape and sampled/fixed collisions raise;
+    **Errors.** Bad site schemas or observation shapes raise;
     inadmissible forward variances are rejected with minus-infinite density.
 
     **Backend.** NumPyro with JAX forward model.
@@ -494,14 +492,12 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
 
     Notes
     -----
-    **Inputs and units.** ``dsph_model`` is the matching JAX model;
-    ``parameter_specs`` is a sequence of ParameterSpec; the axisymmetric
-    subclass accepts ``fixed_params`` for complementary scalars; the spherical
-    class uses ``parameter_postprocess`` to assemble additional fixed
-    parameters. Velocity mean and sigmalos2 options are explicit. Calling the
-    spherical model takes ``R_pc``/``vlos_kms``/``e_vlos_kms``; the axisymmetric
-    model takes ``x_pc``/``y_pc`` instead of ``R_pc``. Observation arrays are
-    matching finite nonempty 1-D arrays.
+    **Inputs and units.** ``dsph_model`` is a JAX AxisymmetricDSphModel;
+    ``parameter_specs`` is a sequence of ParameterSpec, and ``fixed_params``
+    supplies complementary physical scalars. Calling this model takes matching
+    finite nonempty 1-D ``x_pc``/``y_pc`` (pc) and ``vlos_kms``/``e_vlos_kms``
+    (km/s). Signed sky coordinates and the projected center are supported.
+    Velocity mean and static sigmalos2 options are explicit.
 
     **Returns and shape.** __call__ returns None while registering NumPyro
     sample, deterministic and likelihood sites; ``sample_parameters`` returns
@@ -521,7 +517,7 @@ class AxisymmetricJeansLikelihoodModel(JeansLikelihoodModel):
     J/D factors are not likelihood sites. Verify derivatives for custom prior
     transforms.
 
-    **Examples.** ``examples/docs_numpyro_inference.py``
+    **Examples.** ``examples/axisymmetric_inference.py``
     """
 
     def __init__(self, dsph_model, parameter_specs, *, fixed_params=None, **kwargs):
@@ -630,7 +626,7 @@ class SamplerRunResult:
     **Differentiation.** No physical-parameter automatic differentiation on this
     API.
 
-    **Examples.** ``examples/docs_inference.py``
+    **Examples.** ``examples/docs_numpyro_inference.py``
     """
     resumed: bool
     checkpoint_path: Path | None

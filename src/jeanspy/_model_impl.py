@@ -1,4 +1,4 @@
-"""Compatibility shim for the pre-refactor classical implementation module.
+"""Compatibility shim for the pre-refactor NumPy/SciPy implementation module.
 
 New code should import from :mod:`jeanspy.model`.  The implementation now
 lives in the focused :mod:`jeanspy._classical` modules; this shim is retained

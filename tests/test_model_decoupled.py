@@ -4,6 +4,7 @@ import pathlib
 import sys
 import warnings
 
+from jeanspy.parameters import SamplingParameter
 import numpy as np
 import pandas as pd
 import pytest
@@ -74,7 +75,14 @@ def test_simple_dsph_estimation_model_explicit_data(tmp_path, classical_prior_co
     classical_prior_config.to_csv(config_path)
 
     mdl = SimpleDSphEstimationModel(
-        args_load_data=[data],
+        args_load_data=[data], parameter_specs=[
+            SamplingParameter("vmem_kms", "vmem_kms"),
+            SamplingParameter("log10_re_pc", "re_pc", "pow10"),
+            SamplingParameter("log10_rs_pc", "rs_pc", "pow10"),
+            SamplingParameter("log10_rhos_Msunpc3", "rhos_Msunpc3", "pow10"),
+            SamplingParameter("log10_r_t_pc", "r_t_pc", "pow10"),
+            SamplingParameter("log10_one_minus_beta_ani", "beta_ani", "one_minus_pow10"),
+        ],
         submodels={
             "DSphModel": DSphModel(submodels={
                 "StellarModel": PlummerModel(),

@@ -10,7 +10,7 @@ from numpyro.infer.util import log_density
 from scipy.integrate import quad
 
 from jeanspy import model as classical
-from jeanspy import model_numpyro as functional
+from jeanspy import model_jax as functional
 from jeanspy.sampler_numpyro import JeansLikelihoodModel
 
 
@@ -77,7 +77,7 @@ def test_classical_rejects_invalid_scalar_and_mixed_radii(radius):
 def test_jax_masks_only_invalid_elements_and_preserves_shape(backend, jit, x64):
     with precision(x64):
         dsph = model(functional)
-        kwargs = dict(params=PARAMS, backend=backend, jit=jit)
+        kwargs = dict(params=PARAMS, solver=backend, jit=jit)
         valid = jnp.array([50., 300.])
         mixed = jnp.array([50., 0., -1., jnp.nan, jnp.inf, -jnp.inf, 300.])
         actual = dsph.sigmalos2(mixed, **kwargs)
@@ -92,7 +92,7 @@ def test_jax_masks_only_invalid_elements_and_preserves_shape(backend, jit, x64):
         direct = getattr(dsph, "sigmalos2_" + backend)
         assert np.isnan(direct(0., params=PARAMS)).all()
         likelihood = JeansLikelihoodModel(dsph, [], parameter_postprocess=lambda _: PARAMS,
-                                          sigmalos2_kwargs={"backend": backend, "jit": jit})
+                                          sigmalos2_kwargs={"solver": backend, "jit": jit})
         value, _ = log_density(likelihood, (mixed, jnp.zeros(7), jnp.ones(7)), {}, {})
         assert np.isneginf(value)
 
@@ -104,7 +104,7 @@ def test_bad_input_shape_rejected(radius):
     for jit in (False, True):
         for backend in ("kernel", "abel"):
             with pytest.raises(ValueError, match="scalar or nonempty one-dimensional"):
-                model(functional).sigmalos2(jnp.asarray(radius), params=PARAMS, jit=jit, backend=backend)
+                model(functional).sigmalos2(jnp.asarray(radius), params=PARAMS, jit=jit, solver=backend)
 
 
 @pytest.mark.parametrize("backend", ["kernel", "abel"])
@@ -120,7 +120,7 @@ def test_near_center_against_independent_integral_and_convergence(backend):
         dsph = model(functional)
         # Small R needs a larger u_max (r=R*u). These radii deliberately lie
         # outside the maintained R/Re>=.005 default accuracy envelope.
-        kwargs = dict(backend=backend, params=PARAMS, u_max=1e8, n_u=1025, n_r=8192)
+        kwargs = dict(solver=backend, params=PARAMS, u_max=1e8, n_u=1025, n_r=8192)
         actual = dsph.sigmalos2(jnp.asarray(radii), **kwargs)
         np.testing.assert_allclose(actual, reference, rtol=5e-4)
         refined = dsph.sigmalos2(jnp.asarray(radii), **dict(kwargs, n_u=2049, n_r=16384, u_max=2e8))
@@ -133,7 +133,7 @@ def test_positive_radius_gradients_are_finite_and_match_differences(backend):
         dsph = model(functional)
         radii = jnp.array([50., 130., 300.])
         def prediction(r):
-            return dsph.sigmalos2(r, params=PARAMS, backend=backend, n_r=1024).sum()
+            return dsph.sigmalos2(r, params=PARAMS, solver=backend, n_r=1024).sum()
         gradient = np.asarray(jax.jit(jax.grad(prediction))(radii))
         assert np.isfinite(gradient).all()
         delta = 1e-4

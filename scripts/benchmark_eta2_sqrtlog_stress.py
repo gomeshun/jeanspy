@@ -68,9 +68,9 @@ def main() -> None:
     import jax
     import jax.numpy as jnp
 
-    import jeanspy.model_numpyro as mn
+    import jeanspy.model_jax as mn
     from jeanspy.baes_eta2 import BaesEta2AnisotropyModel
-    from jeanspy.model_numpyro import BaesAnisotropyModel, NFWModel, PlummerModel
+    from jeanspy.model_jax import BaesAnisotropyModel, NFWModel, PlummerModel
 
     if not bool(jax.config.read("jax_enable_x64")):
         raise RuntimeError("This benchmark requires JAX float64.")

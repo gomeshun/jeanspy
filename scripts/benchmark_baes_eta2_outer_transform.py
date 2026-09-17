@@ -112,9 +112,9 @@ def main() -> None:
     import jax
     import jax.numpy as jnp
 
-    import jeanspy.model_numpyro as mn
+    import jeanspy.model_jax as mn
     from jeanspy.baes_eta2 import BaesEta2AnisotropyModel
-    from jeanspy.model_numpyro import DSphModel, NFWModel, PlummerModel
+    from jeanspy.model_jax import DSphModel, NFWModel, PlummerModel
 
     if not bool(jax.config.read("jax_enable_x64")):
         raise RuntimeError("This benchmark requires JAX float64.")
@@ -209,7 +209,7 @@ def main() -> None:
         return lambda: dsph.sigmalos2(
             R,
             params=params,
-            backend="kernel",
+            solver="kernel",
             n_u=n_u,
             n_kernel=n_kernel,
             u_max=u_max,
@@ -221,7 +221,7 @@ def main() -> None:
         return lambda: dsph.sigmalos2(
             R,
             params=params,
-            backend="abel",
+            solver="abel",
             n_r=n_r,
             u_max=u_max,
             r_min_factor=0.35,

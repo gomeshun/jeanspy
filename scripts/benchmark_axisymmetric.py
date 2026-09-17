@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
     if args.stars < 1:
         parser.error("stars must be positive")
-    from jeanspy.axisymmetric_numpyro import AxisymmetricDSphModel as JaxModel
+    from jeanspy.axisymmetric_jax import AxisymmetricDSphModel as JaxModel
     import jax
     import jax.numpy as jnp
     x = np.geomspace(10., 1200., args.stars)

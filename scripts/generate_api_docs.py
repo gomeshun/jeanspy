@@ -19,12 +19,13 @@ sys.path.insert(0, str(ROOT / "src"))
 SOURCE = ROOT / "docs" / "source"
 MODULES = {
     "model": "NumPy/SciPy",
+    "parameters": "Explicit NumPy/SciPy sampling coordinates",
     "axisymmetric": "Axisymmetric components and NumPy forward model",
-    "axisymmetric_inference": "Axisymmetric observations and classical inference",
-    "model_numpyro": "JAX",
-    "axisymmetric_numpyro": "JAX axisymmetric forward model",
+    "axisymmetric_inference": "Axisymmetric observations and NumPy/SciPy inference",
+    "model_jax": "JAX",
+    "axisymmetric_jax": "JAX axisymmetric forward model",
     "axisymmetric_factors": "Finite-cone NumPy J and D factors",
-    "sampler": "Classical emcee sampling and HDF5 storage",
+    "sampler": "emcee sampling and HDF5 storage",
     "sampler_numpyro": "NumPyro likelihoods, sampling and storage",
     "sersic": "Spherical Sersic tracer",
     "baes_eta2": "Specialized Baes anisotropy kernels",
@@ -137,7 +138,7 @@ def category_for(path):
     if "sampler" in module or "inference" in module or name in {
         "FittableModel", "FlatPriorModel", "PhotometryPriorModel",
         "SimpleDSphEstimationModel", "get_default_estimation_model",
-        "AxisymmetricDSphEstimationModel", "AxisymmetricKinematicData",
+        "AxisymmetricDSphEstimationModel", "AxisymmetricKinematicData", "SamplingParameter",
     }:
         return "inference"
     if module in {"jeanspy.dequad", "jeanspy.hyp2f1_jax"} or name in {

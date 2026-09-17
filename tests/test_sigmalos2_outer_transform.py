@@ -4,7 +4,7 @@ import numpy as np
 import jax.numpy as jnp
 import pytest
 
-from jeanspy.model_numpyro import (
+from jeanspy.model_jax import (
     BaesAnisotropyModel,
     ConstantAnisotropyModel,
     DSphModel,
@@ -56,7 +56,7 @@ def test_invalid_kernel_outer_transform_is_rejected():
         dsph.sigmalos2(
             jnp.asarray([100.0]),
             params=params,
-            backend="kernel",
+            solver="kernel",
             kernel_outer_transform="not-a-transform",
             jit=False,
         )
@@ -77,7 +77,7 @@ def test_sqrtlog_resolves_extreme_tangential_endpoint_far_better_than_log():
     reference = dsph.sigmalos2(
         R,
         params=params,
-        backend="kernel",
+        solver="kernel",
         n_u=512,
         n_kernel=64,
         u_max=2.0e4,
@@ -88,7 +88,7 @@ def test_sqrtlog_resolves_extreme_tangential_endpoint_far_better_than_log():
     sqrtlog = dsph.sigmalos2(
         R,
         params=params,
-        backend="kernel",
+        solver="kernel",
         n_u=64,
         n_kernel=32,
         u_max=2.0e4,
@@ -99,7 +99,7 @@ def test_sqrtlog_resolves_extreme_tangential_endpoint_far_better_than_log():
     legacy_log = dsph.sigmalos2(
         R,
         params=params,
-        backend="kernel",
+        solver="kernel",
         n_u=64,
         n_kernel=32,
         u_max=2.0e4,
@@ -132,7 +132,7 @@ def test_sqrtlog_generalizes_beyond_baes(anisotropy, ani_params):
     sqrtlog = dsph.sigmalos2(
         R,
         params=params,
-        backend="kernel",
+        solver="kernel",
         n_u=128,
         n_kernel=64,
         u_max=2.0e4,
@@ -143,7 +143,7 @@ def test_sqrtlog_generalizes_beyond_baes(anisotropy, ani_params):
     legacy_log_ref = dsph.sigmalos2(
         R,
         params=params,
-        backend="kernel",
+        solver="kernel",
         n_u=1024,
         n_kernel=64,
         u_max=2.0e4,

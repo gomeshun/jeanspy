@@ -152,14 +152,12 @@ class AxisymmetricPlummerModel(AxisymmetricStellarModel):
     ``projected_axis_ratio`` returns sqrt(cos(i)^2+q^2 sin(i)^2). Array outputs
     follow the broadcast shape, including scalar output.
 
-    **Validity.** x is the line of nodes; i=0 is face-on. No streaming
-    prescription, stellar self-gravity, PSF or pixel average is supplied. All
-    fixed rules require refinement.
+    **Validity.** x is the line of nodes; i=0 is face-on. re_pc and q are
+    positive finite scalars. This tracer has a finite central density.
 
-    **Errors.** Invalid values/shapes/orders raise ValueError; wrong component
-    types raise TypeError. Negative/nonfinite intrinsic moments raise
-    InvalidAxisymmetricModelError. Force evaluation exactly at a cusped origin
-    is unsupported.
+    **Errors.** Invalid scales, coordinates or inclination raise ValueError.
+    This component supplies densities and their radial derivative; it does not
+    calculate forces or velocity moments.
 
     **Backend.** NumPy/SciPy CPU, frozen dataclasses.
 
@@ -248,14 +246,13 @@ class AxisymmetricZhaoModel(AxisymmetricDMModel):
     ellipsoid ``R^2 + z^2/Q^2 <= m_pc^2``. J/D are scalar factors. Array outputs
     follow the broadcast shape, including scalar output.
 
-    **Validity.** x is the line of nodes; i=0 is face-on. No streaming
-    prescription, stellar self-gravity, PSF or pixel average is supplied. All
-    fixed rules require refinement.
+    **Validity.** Force and factor quadrature orders require convergence
+    checks. Annihilation factors additionally require gamma < 1.5 and a finite
+    cutoff. Force evaluation exactly at a cusped origin is unsupported.
 
-    **Errors.** Invalid values/shapes/orders raise ValueError; wrong component
-    types raise TypeError. Negative/nonfinite intrinsic moments raise
-    InvalidAxisymmetricModelError. Force evaluation exactly at a cusped origin
-    is unsupported.
+    **Errors.** Invalid scales, slopes, coordinates, geometry or quadrature
+    orders raise ValueError. This halo component does not calculate velocity
+    moments or select tracer/anisotropy components.
 
     **Backend.** NumPy/SciPy CPU, frozen dataclasses.
 
@@ -308,8 +305,8 @@ class AxisymmetricZhaoModel(AxisymmetricDMModel):
         if (radius.size == 0 or np.any(np.isnan(radius)) or np.any(radius < 0)
                 or np.any(~np.isfinite(np.minimum(radius, self.r_t_pc)))):
             raise ValueError("Require nonnegative m_pc with finite min(m_pc, r_t_pc)")
-        p = dict(rs_pc=self.rs_pc, rhos_Msunpc3=self.rhos_Msunpc3, a=self.alpha,
-                 b=self.beta, g=self.gamma, r_t_pc=self.r_t_pc)
+        p = dict(rs_pc=self.rs_pc, rhos_Msunpc3=self.rhos_Msunpc3, alpha=self.alpha,
+                 beta=self.beta, gamma=self.gamma, r_t_pc=self.r_t_pc)
         return self.Q * _zhao_mass(radius, p, xp=np, n_steps=n_steps)
 
     def _gradients(self, R, z, n):
@@ -518,8 +515,7 @@ class AxisymmetricDSphModel:
     ``rhos_Msunpc3`` (Msun/pc^3), and exactly one of q or ``q_projected``.
     Optional Q, alpha, beta, gamma, ``beta_z`` and inclination (radians) have
     the defaults shown in the axisymmetric guide. ``r_t_pc`` is a positive
-    ellipsoidal cutoff (pc). Use alpha/beta/gamma; spherical a/b/g names are not
-    accepted. Physical parameter dictionaries hold scalar values; radius arrays
+    ellipsoidal cutoff (pc). Use alpha/beta/gamma, matching the spherical Zhao profile. Physical parameter dictionaries hold scalar values; radius arrays
     are broadcast independently. Use vmap to batch parameter dictionaries.
     Constructor node counts ``n_force``/``n_vertical``/``n_los`` are static
     integers >=16.
