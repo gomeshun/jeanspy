@@ -502,8 +502,9 @@ class DMModel(Model):
 
         Notes
         -----
-        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; the Zhao
-        implementation accepts ``n_steps``.
+        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array. This base
+        implementation delegates to ``enclosure_mass(r_pc)``; subclasses may
+        override it with additional integration options.
 
         **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input
         shape. ``enclosure_mass`` is the historical spelling.
@@ -876,12 +877,12 @@ class NFWModel(DMModel):
         return np.where(inside, rho, 0.0)
 
     def enclosure_mass(self, r_pc):
-        r"""Evaluate halo mass inside a finite spherical radius.
+        r"""Evaluate analytic NFW mass inside a finite spherical radius.
 
         Notes
         -----
-        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; the Zhao
-        implementation accepts ``n_steps``.
+        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array. Reads the
+        stored NFW scales and cutoff; no numerical-integration option is needed.
 
         **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input
         shape. ``enclosure_mass`` is the historical spelling.

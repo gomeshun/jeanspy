@@ -854,8 +854,11 @@ class DMModel(Model):
         Notes
         -----
         **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
-        dictionary. ``enclosed_mass``/``enclosure_mass`` select
-        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+        dictionary. ``n_steps`` is an integer >= 2 giving the trapezoidal grid
+        size. ``t_min`` is the lower radial fraction, strictly between 0 and 1;
+        density is integrated from t_min * min(r_pc, r_t_pc) to that outer radius.
+        Out-of-range grid settings raise ValueError. To select a different mass
+        method, call ``enclosed_mass`` instead.
 
         **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
@@ -1045,13 +1048,13 @@ class NFWModel(DMModel):
     def enclosed_mass_analytic(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
-        r"""Evaluate functional spherical halo mass.
+        r"""Evaluate the analytic NFW mass, with a stable small-radius limit.
 
         Notes
         -----
-        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
-        dictionary. ``enclosed_mass``/``enclosure_mass`` select
-        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params contains
+        ``rs_pc``, ``rhos_Msunpc3`` and ``r_t_pc``. This direct analytic method
+        takes no quadrature or method-selection arguments.
 
         **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
@@ -1127,9 +1130,10 @@ class ZhaoModel(DMModel):
 
         Notes
         -----
-        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
-        dictionary. ``enclosed_mass``/``enclosure_mass`` select
-        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the Zhao
+        physical dictionary. ``n_steps`` is the Gauss-Legendre order per
+        regularized radial segment, an integer >= 8. Orders below 8 raise
+        ValueError. This method has no central cutoff or ``t_min`` argument.
 
         **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
@@ -1196,13 +1200,14 @@ class ZhaoModel(DMModel):
     def enclosed_mass_analytic(
         self, r_pc: jnp.ndarray, *, params: Mapping[str, Any]
     ) -> jnp.ndarray:
-        r"""Evaluate functional spherical halo mass.
+        r"""Evaluate the Zhao incomplete-beta mass and its domain fallbacks.
 
         Notes
         -----
-        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
-        dictionary. ``enclosed_mass``/``enclosure_mass`` select
-        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
+        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the Zhao
+        physical dictionary. This method delegates to ``enclosed_mass_betainc``
+        and accepts no quadrature settings. Shape-parameter autodiff is not
+        supported here; use ``enclosed_mass(method="numeric", ...)`` for it.
 
         **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
         matching radius shape. Invalid dynamic proposals yield NaN.
@@ -1825,8 +1830,8 @@ class DSphModel(Model):
         **Inputs and units.** Positive ``R_pc`` in pc, scalar or nonempty 1-D array;
         params contains physical scalars. Use the signature's static
         numerical/solver options; ``n_u`` and ``n_kernel`` apply to the kernel
-        route, ``n_r`` and ``u_max`` to the Abel grid, and ``dm_mass_n_steps`` to
-        the mass integral.
+        route, ``n_r`` to the Abel grid, and ``dm_mass_n_steps`` to the mass
+        integral. ``u_max`` controls the outer radial extent for both solvers.
 
         **Returns and shape.** Always a one-dimensional array of variances in
         (km/s)^2, length one for scalar input.
