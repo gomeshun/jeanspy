@@ -1,9 +1,0 @@
-dtype
-=====
-
-``jeanspy.model.SimpleDSphEstimationModel.dtype``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. automethod:: jeanspy.model.SimpleDSphEstimationModel.dtype
-   :no-index:

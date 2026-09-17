@@ -1,0 +1,14 @@
+Explicit NumPy/SciPy sampling coordinates
+=========================================
+
+.. py:module:: jeanspy.parameters
+
+.. currentmodule:: jeanspy.parameters
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+
+   SamplingParameter
+

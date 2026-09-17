@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -683,14 +683,12 @@
 <span class="sd">    ``projected_axis_ratio`` returns sqrt(cos(i)^2+q^2 sin(i)^2). Array outputs</span>
 <span class="sd">    follow the broadcast shape, including scalar output.</span>
 
-<span class="sd">    **Validity.** x is the line of nodes; i=0 is face-on. No streaming</span>
-<span class="sd">    prescription, stellar self-gravity, PSF or pixel average is supplied. All</span>
-<span class="sd">    fixed rules require refinement.</span>
+<span class="sd">    **Validity.** x is the line of nodes; i=0 is face-on. re_pc and q are</span>
+<span class="sd">    positive finite scalars. This tracer has a finite central density.</span>
 
-<span class="sd">    **Errors.** Invalid values/shapes/orders raise ValueError; wrong component</span>
-<span class="sd">    types raise TypeError. Negative/nonfinite intrinsic moments raise</span>
-<span class="sd">    InvalidAxisymmetricModelError. Force evaluation exactly at a cusped origin</span>
-<span class="sd">    is unsupported.</span>
+<span class="sd">    **Errors.** Invalid scales, coordinates or inclination raise ValueError.</span>
+<span class="sd">    This component supplies densities and their radial derivative; it does not</span>
+<span class="sd">    calculate forces or velocity moments.</span>
 
 <span class="sd">    **Backend.** NumPy/SciPy CPU, frozen dataclasses.</span>
 
@@ -797,14 +795,13 @@
 <span class="sd">    ellipsoid ``R^2 + z^2/Q^2 &lt;= m_pc^2``. J/D are scalar factors. Array outputs</span>
 <span class="sd">    follow the broadcast shape, including scalar output.</span>
 
-<span class="sd">    **Validity.** x is the line of nodes; i=0 is face-on. No streaming</span>
-<span class="sd">    prescription, stellar self-gravity, PSF or pixel average is supplied. All</span>
-<span class="sd">    fixed rules require refinement.</span>
+<span class="sd">    **Validity.** Force and factor quadrature orders require convergence</span>
+<span class="sd">    checks. Annihilation factors additionally require gamma &lt; 1.5 and a finite</span>
+<span class="sd">    cutoff. Force evaluation exactly at a cusped origin is unsupported.</span>
 
-<span class="sd">    **Errors.** Invalid values/shapes/orders raise ValueError; wrong component</span>
-<span class="sd">    types raise TypeError. Negative/nonfinite intrinsic moments raise</span>
-<span class="sd">    InvalidAxisymmetricModelError. Force evaluation exactly at a cusped origin</span>
-<span class="sd">    is unsupported.</span>
+<span class="sd">    **Errors.** Invalid scales, slopes, coordinates, geometry or quadrature</span>
+<span class="sd">    orders raise ValueError. This halo component does not calculate velocity</span>
+<span class="sd">    moments or select tracer/anisotropy components.</span>
 
 <span class="sd">    **Backend.** NumPy/SciPy CPU, frozen dataclasses.</span>
 
@@ -862,8 +859,8 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">radius</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">radius</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">radius</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)))):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Require nonnegative m_pc with finite min(m_pc, r_t_pc)"</span><span class="p">)</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rs_pc</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rhos_Msunpc3</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
-                 <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rs_pc</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rhos_Msunpc3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+                 <span class="n">beta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r_t_pc</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">*</span> <span class="n">_zhao_mass</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="n">np</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">)</span></div>
 
 
@@ -1094,8 +1091,7 @@
 <span class="sd">    ``rhos_Msunpc3`` (Msun/pc^3), and exactly one of q or ``q_projected``.</span>
 <span class="sd">    Optional Q, alpha, beta, gamma, ``beta_z`` and inclination (radians) have</span>
 <span class="sd">    the defaults shown in the axisymmetric guide. ``r_t_pc`` is a positive</span>
-<span class="sd">    ellipsoidal cutoff (pc). Use alpha/beta/gamma; spherical a/b/g names are not</span>
-<span class="sd">    accepted. Physical parameter dictionaries hold scalar values; radius arrays</span>
+<span class="sd">    ellipsoidal cutoff (pc). Use alpha/beta/gamma, matching the spherical Zhao profile. Physical parameter dictionaries hold scalar values; radius arrays</span>
 <span class="sd">    are broadcast independently. Use vmap to batch parameter dictionaries.</span>
 <span class="sd">    Constructor node counts ``n_force``/``n_vertical``/``n_los`` are static</span>
 <span class="sd">    integers &gt;=16.</span>

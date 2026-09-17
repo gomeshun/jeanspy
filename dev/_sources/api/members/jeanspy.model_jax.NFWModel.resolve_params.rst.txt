@@ -1,0 +1,9 @@
+resolve_params
+==============
+
+``jeanspy.model_jax.NFWModel.resolve_params``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model_jax.NFWModel>`.
+
+.. automethod:: jeanspy.model_jax.NFWModel.resolve_params
+   :no-index:

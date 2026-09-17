@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -542,9 +542,9 @@ Saved outputs are an example run; timings and short-chain results can vary.</p>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
 <p>Run this setup in a fresh kernel. It defines all objects used below.</p>
-<p>The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code>
-and an untruncated cutoff. Its inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code> is sampled in the
-inference examples; <code class="docutils literal notranslate"><span class="pre">truth[&quot;g&quot;]=1</span></code> generates standard-NFW mocks.</p>
+<p>The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">alpha=1</span></code>, <code class="docutils literal notranslate"><span class="pre">beta=3</span></code>
+and an untruncated cutoff. Its inner slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code> is sampled in the
+inference examples; <code class="docutils literal notranslate"><span class="pre">truth[&quot;gamma&quot;]=1</span></code> generates standard-NFW mocks.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -556,7 +556,7 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"IProgress not found.*"</span><span class="p">)</span>
 
 <span class="c1"># Import JeansPy before JAX so its runtime settings take effect.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">ParameterSpec</span>
@@ -571,9 +571,9 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
 <span class="p">})</span>
-<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -603,8 +603,8 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
 \qquad s_i^2=\sigma_{\rm los}^2(R_i;\theta)+\epsilon_i^2.
 \]</div>
 <p><code class="docutils literal notranslate"><span class="pre">JeansLikelihoodModel</span></code> implements this conditional velocity model for the
-JAX spherical solver. The tracer scale, <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code> and the untruncated cutoff are fixed;
-the inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code> is inferred. Thus the fit explores a generalized NFW
+JAX spherical solver. The tracer scale, <code class="docutils literal notranslate"><span class="pre">alpha=1</span></code>, <code class="docutils literal notranslate"><span class="pre">beta=3</span></code> and the untruncated cutoff are fixed;
+the inner slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code> is inferred. Thus the fit explores a generalized NFW
 family without marginalizing the tracer scale or outer slope. Membership,
 binaries and non-Gaussian velocity structure are not modeled here.</p>
 </section>
@@ -626,7 +626,7 @@ binaries and non-Gaussian velocity structure are not modeled here.</p>
 <td><p>Uniform(-3, 1)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span> <span class="pre">=</span> <span class="pre">10**log10_rhos_Msunpc3</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">g</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gamma</span></code></p></td>
 <td><p>Uniform(0, 2)</p></td>
 <td><p>Inner halo density slope</p></td>
 </tr>
@@ -647,14 +647,14 @@ logarithmic coordinate and transforms it for prediction. Do not add a
 Jacobian as though the distribution had instead been specified on the
 physical scale. Choose bounds for your scientific problem before fitting.</p>
 <p>These independent priors span about 32–10,000 pc in <code class="docutils literal notranslate"><span class="pre">rs_pc</span></code> and
-0.001–10 solar masses per pc³ in <code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span></code>. The <code class="docutils literal notranslate"><span class="pre">g</span></code> prior includes
-cores and cusps; the mock uses <code class="docutils literal notranslate"><span class="pre">g=1</span></code>. With only 32 stars, radius, density,
+0.001–10 solar masses per pc³ in <code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span></code>. The <code class="docutils literal notranslate"><span class="pre">gamma</span></code> prior includes
+cores and cusps; the mock uses <code class="docutils literal notranslate"><span class="pre">gamma=1</span></code>. With only 32 stars, radius, density,
 inner slope and anisotropy can remain degenerate. Inspect posterior
 sensitivity to the prior bounds rather than assuming the data constrain
 all five parameters. The broad anisotropy prior is a Jeans-moment
 example, not a guarantee of a nonnegative phase-space distribution.</p>
 <p><code class="docutils literal notranslate"><span class="pre">dm_mass_method=&quot;numeric&quot;</span></code> keeps the Zhao enclosed mass differentiable
-with respect to <code class="docutils literal notranslate"><span class="pre">g</span></code>. Its resolution <code class="docutils literal notranslate"><span class="pre">dm_mass_n_steps</span></code> is separate from
+with respect to <code class="docutils literal notranslate"><span class="pre">gamma</span></code>. Its resolution <code class="docutils literal notranslate"><span class="pre">dm_mass_n_steps</span></code> is separate from
 the LOS and anisotropy-kernel grids <code class="docutils literal notranslate"><span class="pre">n_u</span></code> and <code class="docutils literal notranslate"><span class="pre">n_kernel</span></code>. Refine all
 three on representative prior and posterior points before a scientific
 analysis; the NFW analytic mass path alone cannot fit an inner slope.</p>
@@ -668,7 +668,7 @@ analysis; the NFW analytic mass path alone cannot fit an inner slope.</p>
     <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
      <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
                          <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
-     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"gamma"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))],</span>
     <span class="n">parameter_postprocess</span><span class="o">=</span><span class="n">physical_parameters</span><span class="p">,</span>
@@ -690,7 +690,7 @@ also accepts <code class="docutils literal notranslate"><span class="pre">fixed_
 <span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span> <span class="n">max_tree_depth</span><span class="o">=</span><span class="n">max_tree_depth</span><span class="p">,</span>
               <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
                   <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
-                  <span class="s2">"g"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
+                  <span class="s2">"gamma"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
 <span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
             <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span>
@@ -710,7 +710,7 @@ or multimodality.</p>
 <h2>Read the result without losing chain structure<a class="headerlink" href="#read-the-result-without-losing-chain-structure" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
 <span class="n">mcmc</span><span class="o">.</span><span class="n">print_summary</span><span class="p">(</span><span class="n">exclude_deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">posterior</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">(</span><span class="n">group_by_chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Each value: (chain, draw).</span>
 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
@@ -733,7 +733,7 @@ or multimodality.</p>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                          mean       std    median      5.0%     95.0%     n_eff     r_hat
             beta_ani      0.26      0.42      0.38     -0.38      0.74    240.94      1.01
-                   g      0.83      0.47      0.81      0.00      1.46    168.39      1.01
+               gamma      0.83      0.47      0.81      0.00      1.46    168.39      1.01
   log10_rhos_Msunpc3     -1.57      0.83     -1.66     -2.99     -0.44    157.65      1.01
          log10_rs_pc      3.21      0.53      3.26      2.49      3.99    182.52      1.00
             vmem_kms     -0.35      1.55     -0.38     -2.81      2.24    432.42      1.00
@@ -741,13 +741,13 @@ or multimodality.</p>
 Number of divergences: 0
 log10_rs_pc 16%, 50%, 84%: [2.64120599 3.25927649 3.77525493]
 log10_rhos_Msunpc3 16%, 50%, 84%: [-2.39459069 -1.65517657 -0.71662544]
-g 16%, 50%, 84%: [0.29710162 0.80858003 1.31702316]
+gamma 16%, 50%, 84%: [0.29710162 0.80858003 1.31702316]
 beta_ani 16%, 50%, 84%: [-0.21152182  0.37810021  0.65304241]
 vmem_kms 16%, 50%, 84%: [-1.77938956 -0.37797063  1.17765941]
 Divergences: 0
 </pre></div>
 </div>
-<img alt="Separate posterior traces for two NumPyro chains and four sampling coordinates." src="../_images/dfdb7e27b754198aa57c5221365d3877702c86a45a694456c187a1bdb1f4944f.png" />
+<img alt="Separate posterior traces for two NumPyro chains and four sampling coordinates." src="../_images/1cf784c852e98e87d20739d0add343590810ae574dd6e150f17d831b1b9c1d69.png" />
 </div>
 </div>
 </section>
@@ -817,12 +817,12 @@ and <a class="reference external" href="https://python.arviz.org/projects/stats/
 parameter                                                                              
 log10_rs_pc         1.0054  150.0313  109.4618     0.0393        0.5273          0.0744
 log10_rhos_Msunpc3  1.0180  127.3284   88.8019     0.0660        0.8265          0.0799
-g                   1.0103  176.6550  221.2711     0.0361        0.4696          0.0768
+gamma               1.0103  176.6550  221.2711     0.0361        0.4696          0.0768
 beta_ani            1.0056  235.8798  194.5926     0.0271        0.4190          0.0648
 vmem_kms            1.0030  459.4640  288.3247     0.0743        1.5465          0.0481
 Nonfinite diagnostics (investigate): []
-R-hat &gt;= 1.01: ['log10_rhos_Msunpc3', 'g']
-Bulk ESS &lt; 100 per chain: ['log10_rs_pc', 'log10_rhos_Msunpc3', 'g']
+R-hat &gt;= 1.01: ['log10_rhos_Msunpc3', 'gamma']
+Bulk ESS &lt; 100 per chain: ['log10_rs_pc', 'log10_rhos_Msunpc3', 'gamma']
 Tail ESS &lt; 100 per chain: ['log10_rs_pc', 'log10_rhos_Msunpc3', 'beta_ani']
 </pre></div>
 </div>
@@ -908,7 +908,7 @@ locations help diagnose geometry but do not trace the entire failed trajectory.<
 <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">])</span>
 <span class="n">divergent_flat</span> <span class="o">=</span> <span class="n">diverging</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">true_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rs_pc"</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rhos_Msunpc3"</span><span class="p">]),</span>
-               <span class="n">truth</span><span class="p">[</span><span class="s2">"g"</span><span class="p">],</span> <span class="n">truth</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">],</span> <span class="mf">0.</span><span class="p">]</span>
+               <span class="n">truth</span><span class="p">[</span><span class="s2">"gamma"</span><span class="p">],</span> <span class="n">truth</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">],</span> <span class="mf">0.</span><span class="p">]</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">corner</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">truths</span><span class="o">=</span><span class="n">true_values</span><span class="p">,</span> <span class="n">truth_color</span><span class="o">=</span><span class="s2">"#242424"</span><span class="p">,</span>
                     <span class="n">levels</span><span class="o">=</span><span class="p">(</span><span class="mf">.68</span><span class="p">,</span> <span class="mf">.95</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
                     <span class="n">quantiles</span><span class="o">=</span><span class="p">(</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span>
@@ -934,7 +934,7 @@ locations help diagnose geometry but do not trace the entire failed trajectory.<
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Flagged draws in the corner plot: 0
 </pre></div>
 </div>
-<img alt="../_images/dd9d638c8d3c6329df04766ac4a4e558ba524611f7149c301c7433b03032afbd.png" src="../_images/dd9d638c8d3c6329df04766ac4a4e558ba524611f7149c301c7433b03032afbd.png" />
+<img alt="../_images/cd58c31bf4c0051fbd31079d03b73ff9ddaf1e4cf97fb049234b5991e2532506.png" src="../_images/cd58c31bf4c0051fbd31079d03b73ff9ddaf1e4cf97fb049234b5991e2532506.png" />
 </div>
 </div>
 </section>
@@ -942,7 +942,7 @@ locations help diagnose geometry but do not trace the entire failed trajectory.<
 <h2>Decide what to change before trusting the posterior<a class="headerlink" href="#decide-what-to-change-before-trusting-the-posterior" title="Link to this heading">#</a></h2>
 <p><strong>Reading the recorded run:</strong> both chains have zero divergences and no
 depth-limit hits, and their BFMI values exceed 0.3. Nevertheless,
-<code class="docutils literal notranslate"><span class="pre">log10_rhos_Msunpc3</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code> have rank-normalized R-hat above 1.01,
+<code class="docutils literal notranslate"><span class="pre">log10_rhos_Msunpc3</span></code> and <code class="docutils literal notranslate"><span class="pre">gamma</span></code> have rank-normalized R-hat above 1.01,
 and several ESS values fall below the stated target. These short-run
 summaries and contours illustrate the workflow; they are not ready
 for final inference merely because the divergence count is zero.</p>
@@ -972,7 +972,7 @@ median parameter vector.</p>
 </section>
 <section id="use-numpy-scipy-with-emcee">
 <h2>Use NumPy/SciPy with emcee<a class="headerlink" href="#use-numpy-scipy-with-emcee" title="Link to this heading">#</a></h2>
-<p>For the classical backend, define the same physical model with stored
+<p>For the NumPy/SciPy backend, define the same physical model with stored
 parameters and a log posterior that updates them at each call. This example
 uses the same five sampling coordinates and Gaussian likelihood:</p>
 <div class="cell docutils container">
@@ -984,7 +984,7 @@ uses the same five sampling coordinates and Gaussian likelihood:</p>
 <span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
     <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">),</span>
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-                         <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+                         <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span>
 <span class="p">})</span>
 <span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
@@ -996,7 +996,7 @@ uses the same five sampling coordinates and Gaussian likelihood:</p>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample halo radius, density, inner slope, anisotropy and systemic velocity.</span>
 <span class="c1"># These illustrative priors are uniform in the named coordinates.</span>
-<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
 <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.</span><span class="p">])</span>
 <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">,</span> <span class="mf">50.</span><span class="p">])</span>
 
@@ -1006,7 +1006,7 @@ uses the same five sampling coordinates and Gaussian likelihood:</p>
         <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
     <span class="n">log_rs</span><span class="p">,</span> <span class="n">log_rho</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">theta</span>
     <span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rs</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rho</span><span class="p">,</span>
-                 <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
+                 <span class="n">gamma</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
     <span class="n">variance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">variance</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">vlos_kms</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">variance</span><span class="p">)</span>
 </pre></div>
@@ -1027,9 +1027,10 @@ For process pools, use a picklable callable and guard process creation with
 <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code>; the local functions in the minimal Quickstart
 are not a multiprocessing example.</p>
 <p>Next: <a class="reference internal" href="storage.html"><span class="std std-doc">save and resume results</span></a>.</p>
+<p><a id="check-the-classical-sampling-interface"></a></p>
 </section>
-<section id="check-the-classical-sampling-interface">
-<h2>Check the classical sampling interface<a class="headerlink" href="#check-the-classical-sampling-interface" title="Link to this heading">#</a></h2>
+<section id="check-the-emcee-sampling-interface">
+<h2>Check the emcee sampling interface<a class="headerlink" href="#check-the-emcee-sampling-interface" title="Link to this heading">#</a></h2>
 <p>This short run exercises the emcee call on the same data. It does not establish convergence.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1109,7 +1110,7 @@ are not a multiprocessing example.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#locate-correlations-and-divergences-in-a-corner-plot">Locate correlations and divergences in a corner plot</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decide-what-to-change-before-trusting-the-posterior">Decide what to change before trusting the posterior</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-numpy-scipy-with-emcee">Use NumPy/SciPy with emcee</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-classical-sampling-interface">Check the classical sampling interface</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-emcee-sampling-interface">Check the emcee sampling interface</a></li>
 </ul>
   </nav></div>
 

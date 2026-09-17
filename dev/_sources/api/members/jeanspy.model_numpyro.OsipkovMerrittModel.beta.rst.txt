@@ -1,9 +1,0 @@
-beta
-====
-
-``jeanspy.model_numpyro.OsipkovMerrittModel.beta``
-
-Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model_numpyro.OsipkovMerrittModel>`.
-
-.. automethod:: jeanspy.model_numpyro.OsipkovMerrittModel.beta
-   :no-index:

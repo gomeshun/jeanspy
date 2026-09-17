@@ -5,7 +5,7 @@ Stored samples per parameter: (2, 512)
                     mean    sd eti89_lb eti89_ub  ess_bulk  ess_tail r_hat mcse_mean mcse_sd
 log10_rs_pc         3.19  0.53      2.3      3.9       287       296  1.00     0.031   0.019
 log10_rhos_Msunpc3  -1.5   0.8     -2.7    -0.13       250       321  1.01      0.05   0.035
-g                   0.81  0.47      0.1      1.6       453       493  1.01     0.022   0.013
+gamma               0.81  0.47      0.1      1.6       453       493  1.01     0.022   0.013
 beta_ani            0.26  0.43    -0.65     0.72       536       466  1.00     0.019   0.015
 vmem_kms            -0.3  1.53     -2.7      2.1       591       585  1.00     0.062   0.045
 Divergences: 0

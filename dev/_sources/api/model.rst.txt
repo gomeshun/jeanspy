@@ -17,8 +17,7 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
    DMModel
    DSphModel
    DotDict
-   Exp2dModel
-   Exp3dModel
+   ProjectedExponentialModel
    FittableModel
    FlatPriorModel
    GMsun_m3s2

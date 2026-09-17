@@ -4,15 +4,15 @@ ZhaoModel members
 .. toctree::
    :maxdepth: 1
 
-   members/jeanspy.model.ZhaoModel.assert_roi_is_enough_small
    members/jeanspy.model.ZhaoModel.enclosed_mass
    members/jeanspy.model.ZhaoModel.enclosure_mass
    members/jeanspy.model.ZhaoModel.is_required_param_names
-   members/jeanspy.model.ZhaoModel.jfactor_ullio2016
-   members/jeanspy.model.ZhaoModel.jfactor_ullio2016_simple
+   members/jeanspy.model.ZhaoModel.jfactor_cone
+   members/jeanspy.model.ZhaoModel.jfactor_spherical_aperture
    members/jeanspy.model.ZhaoModel.mass_density_3d
    members/jeanspy.model.ZhaoModel.params_all
    members/jeanspy.model.ZhaoModel.params_all_with_model_name
    members/jeanspy.model.ZhaoModel.required_param_names_combined
    members/jeanspy.model.ZhaoModel.sampling_identity
    members/jeanspy.model.ZhaoModel.update
+   members/jeanspy.model.ZhaoModel.validate_small_angle

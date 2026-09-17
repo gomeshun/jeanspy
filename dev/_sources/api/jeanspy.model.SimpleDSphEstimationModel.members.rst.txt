@@ -7,7 +7,6 @@ SimpleDSphEstimationModel members
    members/jeanspy.model.SimpleDSphEstimationModel.blobs_dtype
    members/jeanspy.model.SimpleDSphEstimationModel.convert_params
    members/jeanspy.model.SimpleDSphEstimationModel.data
-   members/jeanspy.model.SimpleDSphEstimationModel.dtype
    members/jeanspy.model.SimpleDSphEstimationModel.inverse_temparature
    members/jeanspy.model.SimpleDSphEstimationModel.is_required_param_names
    members/jeanspy.model.SimpleDSphEstimationModel.lnlikelihood

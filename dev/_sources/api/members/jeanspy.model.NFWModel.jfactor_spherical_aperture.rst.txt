@@ -1,0 +1,9 @@
+jfactor_spherical_aperture
+==========================
+
+``jeanspy.model.NFWModel.jfactor_spherical_aperture``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. automethod:: jeanspy.model.NFWModel.jfactor_spherical_aperture
+   :no-index:

@@ -1,0 +1,9 @@
+logdensity_2d
+=============
+
+``jeanspy.model.ProjectedExponentialModel.logdensity_2d``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. automethod:: jeanspy.model.ProjectedExponentialModel.logdensity_2d
+   :no-index:

@@ -1,9 +1,0 @@
-jfactor_ullio2016
-=================
-
-``jeanspy.model.DMModel.jfactor_ullio2016``
-
-Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
-
-.. automethod:: jeanspy.model.DMModel.jfactor_ullio2016
-   :no-index:

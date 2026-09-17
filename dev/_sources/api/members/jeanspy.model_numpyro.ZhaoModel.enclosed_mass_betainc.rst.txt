@@ -1,9 +1,0 @@
-enclosed_mass_betainc
-=====================
-
-``jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc``
-
-Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_numpyro.ZhaoModel>`.
-
-.. automethod:: jeanspy.model_numpyro.ZhaoModel.enclosed_mass_betainc
-   :no-index:

@@ -1,9 +1,0 @@
-sigmalos2_abel
-==============
-
-``jeanspy.model_numpyro.DSphModel.sigmalos2_abel``
-
-Class and construction: :doc:`DSphModel <../generated/jeanspy.model_numpyro.DSphModel>`.
-
-.. automethod:: jeanspy.model_numpyro.DSphModel.sigmalos2_abel
-   :no-index:

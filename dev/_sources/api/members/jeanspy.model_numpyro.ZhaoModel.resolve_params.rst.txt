@@ -1,9 +1,0 @@
-resolve_params
-==============
-
-``jeanspy.model_numpyro.ZhaoModel.resolve_params``
-
-Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_numpyro.ZhaoModel>`.
-
-.. automethod:: jeanspy.model_numpyro.ZhaoModel.resolve_params
-   :no-index:

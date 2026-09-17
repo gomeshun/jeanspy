@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -467,6 +467,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical accuracy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api-migration.html">Explicit model names and parameter specifications</a></li>
 </ul>
 </div>
 </nav></div>
@@ -532,10 +533,10 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="ullio-valli-j-factor-geometry-in-jeanspy">
 <h1>Ullio &amp; Valli J-factor geometry in JeansPy<a class="headerlink" href="#ullio-valli-j-factor-geometry-in-jeanspy" title="Link to this heading">#</a></h1>
-<p>JeansPy exposes two related classical J-factor methods:</p>
+<p>JeansPy exposes two related NumPy/SciPy J-factor methods:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">DMModel.jfactor_ullio2016(...)</span></code>: the full finite-ROI Ullio &amp; Valli (2016) geometry.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DMModel.jfactor_ullio2016_simple(...)</span></code>: a spherical-aperture approximation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DMModel.jfactor_cone(...)</span></code>: the full finite-ROI Ullio &amp; Valli (2016) geometry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DMModel.jfactor_spherical_aperture(...)</span></code>: a spherical-aperture approximation.</p></li>
 </ul>
 <p>The reference geometry is derived in <a class="reference external" href="https://arxiv.org/abs/1603.07721">Ullio &amp; Valli (2016), Appendix B</a>, Eqs. (B.8)–(B.10).</p>
 <p>Let</p>
@@ -543,35 +544,35 @@
 \[
 R_{\max}=D\sin\theta_{\max}
 \]</div>
-<p>be the projected aperture radius and let <code class="docutils literal notranslate"><span class="pre">r_t</span></code> be the halo truncation radius, with the observer outside the halo (<code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">&gt;</span> <span class="pre">r_t</span></code>). These J-factor integrals treat the density as zero for <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">&gt;</span> <span class="pre">r_t</span></code>; this does not imply that a direct call to <code class="docutils literal notranslate"><span class="pre">mass_density_3d(r)</span></code> applies the same cutoff.</p>
+<p>be the projected aperture radius and let <code class="docutils literal notranslate"><span class="pre">r_t</span></code> be the halo truncation radius, with the observer outside the halo (<code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">&gt;</span> <span class="pre">r_t</span></code>). These J-factor integrals use density zero for <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">&gt;</span> <span class="pre">r_t</span></code>, matching direct calls to the spherical NFW/Zhao <code class="docutils literal notranslate"><span class="pre">mass_density_3d(r)</span></code> methods.</p>
 <section id="full-finite-roi-method">
 <h2>Full finite-ROI method<a class="headerlink" href="#full-finite-roi-method" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">jfactor_ullio2016(...)</span></code> evaluates the Ullio &amp; Valli finite-aperture geometry. When <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&lt;</span> <span class="pre">r_t</span></code>, it includes the contribution from shells with</p>
+<p><code class="docutils literal notranslate"><span class="pre">jfactor_cone(...)</span></code> evaluates the Ullio &amp; Valli finite-aperture geometry. When <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&lt;</span> <span class="pre">r_t</span></code>, it includes the contribution from shells with</p>
 <div class="math notranslate nohighlight">
 \[
 R_{\max} &lt; r &lt; r_t
 \]</div>
 <p>whose projected radius still lies inside the observed aperture. This is the recommended reference calculation for a general finite ROI.</p>
 </section>
-<section id="simple-spherical-aperture-method">
-<h2>Simple spherical-aperture method<a class="headerlink" href="#simple-spherical-aperture-method" title="Link to this heading">#</a></h2>
-<p>The generic <code class="docutils literal notranslate"><span class="pre">jfactor_ullio2016_simple(...)</span></code> integrates</p>
+<section id="spherical-aperture-approximation">
+<h2>Spherical-aperture approximation<a class="headerlink" href="#spherical-aperture-approximation" title="Link to this heading">#</a></h2>
+<p>The generic <code class="docutils literal notranslate"><span class="pre">jfactor_spherical_aperture(...)</span></code> integrates</p>
 <div class="math notranslate nohighlight">
 \[
-J_{\rm simple}=\frac{4\pi}{D^2}
+J_{\rm sphere}=\frac{4\pi}{D^2}
 \int_0^{\min(R_{\max},r_t)} r^2\rho^2(r)\,dr.
 \]</div>
 <p>Its interpretation depends on the relative sizes of the aperture and the truncated halo:</p>
 <ul class="simple">
-<li><p><strong>If <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&gt;=</span> <span class="pre">r_t</span></code></strong>, the aperture contains the whole truncated halo. Then <code class="docutils literal notranslate"><span class="pre">min(R_max,</span> <span class="pre">r_t)</span> <span class="pre">=</span> <span class="pre">r_t</span></code>, and the generic simple expression coincides with the small-angle Ullio &amp; Valli Eq. B.10 after identifying their halo radius <code class="docutils literal notranslate"><span class="pre">\mathcal</span> <span class="pre">R</span></code> with <code class="docutils literal notranslate"><span class="pre">r_t</span></code>.</p></li>
+<li><p><strong>If <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&gt;=</span> <span class="pre">r_t</span></code></strong>, the aperture contains the whole truncated halo. Then <code class="docutils literal notranslate"><span class="pre">min(R_max,</span> <span class="pre">r_t)</span> <span class="pre">=</span> <span class="pre">r_t</span></code>, and the spherical-aperture expression coincides with the small-angle Ullio &amp; Valli Eq. B.10 after identifying their halo radius <code class="docutils literal notranslate"><span class="pre">\mathcal</span> <span class="pre">R</span></code> with <code class="docutils literal notranslate"><span class="pre">r_t</span></code>.</p></li>
 <li><p><strong>If <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&lt;</span> <span class="pre">r_t</span></code></strong>, the method drops the projected contribution from shells with <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">&gt;</span> <span class="pre">R_max</span></code>. In this regime it is a spherical-aperture approximation and should not be identified with the full finite-ROI result.</p></li>
 </ul>
 <p>Thus <code class="docutils literal notranslate"><span class="pre">min(R_max,</span> <span class="pre">r_t)</span></code> is intentional: it is exact for the radial support of a truncated halo once the aperture encloses the full halo, but it is only an approximation when the aperture cuts through the halo.</p>
 </section>
 <section id="nfw-override">
 <h2>NFW override<a class="headerlink" href="#nfw-override" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">NFWModel.jfactor_ullio2016_simple(...)</span></code> has the same spherical truncation semantics, using <code class="docutils literal notranslate"><span class="pre">min(R_max,</span> <span class="pre">r_t)</span></code>, but it additionally retains the existing analytic finite-distance correction term. Its leading small-angle term reduces to the Eq. B.10 expression when <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&gt;=</span> <span class="pre">r_t</span></code>.</p>
-<p>For analyses where the distinction matters, prefer <code class="docutils literal notranslate"><span class="pre">jfactor_ullio2016(...)</span></code> and use <code class="docutils literal notranslate"><span class="pre">jfactor_ullio2016_simple(...)</span></code> as a fast approximation or cross-check.</p>
+<p><code class="docutils literal notranslate"><span class="pre">NFWModel.jfactor_spherical_aperture(...)</span></code> has the same spherical truncation semantics, using <code class="docutils literal notranslate"><span class="pre">min(R_max,</span> <span class="pre">r_t)</span></code>, but it additionally retains the existing analytic finite-distance correction term. Its leading small-angle term reduces to the Eq. B.10 expression when <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&gt;=</span> <span class="pre">r_t</span></code>.</p>
+<p>For analyses where the distinction matters, prefer <code class="docutils literal notranslate"><span class="pre">jfactor_cone(...)</span></code> and use <code class="docutils literal notranslate"><span class="pre">jfactor_spherical_aperture(...)</span></code> as a fast approximation or cross-check.</p>
 </section>
 </section>
 
@@ -623,7 +624,7 @@ J_{\rm simple}=\frac{4\pi}{D^2}
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-finite-roi-method">Full finite-ROI method</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-spherical-aperture-method">Simple spherical-aperture method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spherical-aperture-approximation">Spherical-aperture approximation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nfw-override">NFW override</a></li>
 </ul>
   </nav></div>

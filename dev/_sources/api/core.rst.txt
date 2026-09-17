@@ -19,9 +19,9 @@ JAX
 .. autosummary::
    :toctree: generated
 
-   jeanspy.model_numpyro.Model
-   jeanspy.model_numpyro.configure_runtime
-   jeanspy.model_numpyro.get_runtime_config
+   jeanspy.model_jax.Model
+   jeanspy.model_jax.configure_runtime
+   jeanspy.model_jax.get_runtime_config
 
 Finite-cone NumPy J and D factors
 ---------------------------------

@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -494,7 +494,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for jeanspy._classical.inference</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Prior and inference utilities for the classical NumPy/SciPy backend."""</span>
+<span></span><span class="sd">"""Prior and inference utilities for the NumPy/SciPy backend."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -507,8 +507,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span><span class="p">,</span> <span class="n">truncnorm</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">..parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplingParameter</span><span class="p">,</span> <span class="n">_validate_parameter_specs</span><span class="p">,</span> <span class="n">_photometry_coordinate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.profiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span> <span class="n">NFWModel</span><span class="p">,</span> <span class="n">PlummerModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.profiles</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">ConstantAnisotropyModel</span><span class="p">,</span> <span class="n">NFWModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span>
+                       <span class="n">ProjectedExponentialModel</span><span class="p">,</span> <span class="n">_EXP_HALF_LIGHT_FACTOR</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span>
 
 
@@ -1036,7 +1038,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SimpleDSphEstimationModel</span><span class="p">(</span><span class="n">FittableModel</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""Kinematics-only classical dwarf-spheroidal estimation model.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Kinematics-only NumPy/SciPy dwarf-spheroidal estimation model.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1044,8 +1046,9 @@
 <span class="sd">    FlatPriorModel and PhotometryPriorModel. ``args_load_data=[data]`` supplies</span>
 <span class="sd">    a DataFrame with ``R_pc``, ``vlos_kms`` and ``e_vlos_kms``;</span>
 <span class="sd">    ``kwargs_load_data`` may contain shared=True. Parameter vectors follow</span>
-<span class="sd">    ``p_names_lnprob`` exactly. ``log10_`` names map to ``10**p``; ``bfunc_``</span>
-<span class="sd">    names map to ``1-10**p``.</span>
+<span class="sd">    ``p_names_lnprob`` exactly. ``parameter_specs`` is an ordered sequence of</span>
+<span class="sd">    :class:`jeanspy.parameters.SamplingParameter` objects specifying physical</span>
+<span class="sd">    names and transforms. Without specifications, names map by identity only.</span>
 
 <span class="sd">    **Returns and shape.** lnlikelihoods gives (N,) log densities; lnlikelihood</span>
 <span class="sd">    sums them. lnpriors returns prior terms. lnposterior returns (logposterior,</span>
@@ -1053,7 +1056,10 @@
 <span class="sd">    coordinates; ``sample_data`` simulates velocities at supplied positions.</span>
 
 <span class="sd">    **Validity.** Nonempty finite 1-D data, R&gt;0, error&gt;=0; mean/error in km/s.</span>
-<span class="sd">    The historical observation storage dtype is float32.</span>
+<span class="sd">    ``dtype=None`` preserves the common floating dtype of the three input</span>
+<span class="sd">    columns (integer-only data use float64). An explicit floating ``dtype``</span>
+<span class="sd">    selects storage precision. Shared buffers use that same dtype and cannot</span>
+<span class="sd">    change dtype on reset. Numerical solvers may promote arithmetic precision.</span>
 <span class="sd">    ``vmem_prior_from_data`` defaults to False. WBIC uses</span>
 <span class="sd">    ``inverse_temparature = 1/log(N)`` and requires N&gt;1. Shared data cannot be</span>
 <span class="sd">    resized.</span>
@@ -1076,10 +1082,15 @@
         <span class="s2">"FlatPriorModel"</span><span class="p">:</span> <span class="n">FlatPriorModel</span><span class="p">,</span>
         <span class="s2">"PhotometryPriorModel"</span><span class="p">:</span> <span class="n">PhotometryPriorModel</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
     <span class="n">prior_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"flat_prior"</span><span class="p">,</span> <span class="s2">"photometry_prior"</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">vmem_prior_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">parameter_specs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">vmem_prior_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">parameter_specs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">parameter_specs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requested_dtype</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requested_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requested_dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">"f"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Observation dtype must be a real floating dtype"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requested_dtype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vmem_prior_from_data</span> <span class="o">=</span> <span class="n">vmem_prior_from_data</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_prior_schema</span><span class="p">()</span>
@@ -1113,14 +1124,17 @@
         <span class="n">prior</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span>
         <span class="n">prior</span><span class="o">.</span><span class="n">validate_config</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_names_lnprob</span>
-        <span class="n">physical</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"log10_"</span><span class="p">,</span> <span class="s2">"bfunc_"</span><span class="p">))</span> <span class="k">else</span> <span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">physical</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">required_param_names_combined</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span> <span class="o">=</span> <span class="n">_validate_parameter_specs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+        <span class="n">physical</span> <span class="o">=</span> <span class="p">[</span><span class="n">spec</span><span class="o">.</span><span class="n">param_name</span> <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">physical</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_param_names_combined</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Prior names/order must match model parameters exactly after removing "</span>
-                <span class="sa">f</span><span class="s2">"log10_ or bfunc_: expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">required_param_names_combined</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">names</span><span class="si">}</span><span class="s2">."</span>
+                <span class="s2">"Parameter specifications must match model parameters exactly: "</span>
+                <span class="sa">f</span><span class="s2">"expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">required_param_names_combined</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">physical</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="s2">"log10_re_pc"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The photometry prior requires the sampling coordinate log10_re_pc."</span><span class="p">)</span>
+        <span class="n">exponential</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">"DSphModel"</span><span class="p">][</span><span class="s2">"StellarModel"</span><span class="p">],</span> <span class="n">ProjectedExponentialModel</span><span class="p">)</span>
+        <span class="n">radius_name</span> <span class="o">=</span> <span class="s2">"r_exp_pc"</span> <span class="k">if</span> <span class="n">exponential</span> <span class="k">else</span> <span class="s2">"re_pc"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photometry_index</span> <span class="o">=</span> <span class="n">_photometry_coordinate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span><span class="p">,</span> <span class="n">radius_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_photometry_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">_EXP_HALF_LIGHT_FACTOR</span><span class="p">)</span> <span class="k">if</span> <span class="n">exponential</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="n">photometry</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"PhotometryPriorModel"</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">photometry</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">photometry</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span> <span class="ow">or</span> <span class="n">photometry</span><span class="o">.</span><span class="n">scale</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Photometry prior needs a finite location and positive finite scale."</span><span class="p">)</span>
@@ -1137,32 +1151,18 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        **Inputs and units.** One parameter vector in exact prior order; ``log10_``</span>
-<span class="sd">        and ``bfunc_`` prefixes identify the supported transforms.</span>
+<span class="sd">        **Inputs and units.** One parameter vector in exact prior order;</span>
+<span class="sd">        ``parameter_specs`` explicitly supplies each transformation.</span>
 
-<span class="sd">        **Returns and shape.** Named physical parameters with pc, Msun/pc^3, km/s,</span>
-<span class="sd">        radians and dimensionless quantities as appropriate. The axisymmetric result</span>
-<span class="sd">        also incorporates ``fixed_params``.</span>
+<span class="sd">        **Returns and shape.** A Series indexed by physical parameter names,</span>
+<span class="sd">        with units defined by the composed spherical model. Priors remain in</span>
+<span class="sd">        the sampled coordinates; conversion does not add a Jacobian.</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_prior_schema</span><span class="p">()</span>
-        <span class="n">p_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_names_lnprob</span>
-        <span class="n">param_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">required_param_names_combined</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p_names</span><span class="p">),):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Parameters must have shape (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">p_names</span><span class="p">)</span><span class="si">}</span><span class="s2">,) in prior config order."</span><span class="p">)</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">convert_param</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"log10_"</span><span class="p">):</span>
-                <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="n">value</span>
-            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"bfunc_"</span><span class="p">):</span>
-                <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">10.0</span><span class="o">**</span><span class="n">value</span>
-            <span class="k">return</span> <span class="n">value</span>
-
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="n">param_name</span><span class="p">:</span> <span class="n">convert_param</span><span class="p">(</span><span class="n">p_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">p_name</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">p_names</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span><span class="p">),):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Parameters must have shape (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span><span class="p">)</span><span class="si">}</span><span class="s2">,) in prior config order."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="n">spec</span><span class="o">.</span><span class="n">param_name</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_physical</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                          <span class="k">for</span> <span class="n">spec</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span><span class="p">,</span> <span class="n">p</span><span class="p">)})</span></div>
 
 
 <div class="viewcode-block" id="SimpleDSphEstimationModel.load_data">
@@ -1194,10 +1194,12 @@
         <span class="n">prior</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span>
         <span class="n">updated_prior</span> <span class="o">=</span> <span class="n">prior</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vmem_prior_from_data</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">"vmem_kms"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">updated_prior</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Data-derived velocity bounds require the vmem_kms coordinate."</span><span class="p">)</span>
-            <span class="n">velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"vlos_kms"</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-            <span class="n">updated_prior</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">velocity_spec</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">spec</span> <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_specs</span>
+                                  <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">param_name</span> <span class="o">==</span> <span class="s2">"vmem_kms"</span> <span class="ow">and</span> <span class="n">spec</span><span class="o">.</span><span class="n">transform</span> <span class="o">==</span> <span class="s2">"identity"</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">velocity_spec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Data-derived velocity bounds require an identity vmem_kms specification."</span><span class="p">)</span>
+            <span class="n">velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"vlos_kms"</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_observation_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">updated_prior</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">velocity_spec</span><span class="o">.</span><span class="n">sample_name</span><span class="p">,</span> <span class="p">[</span><span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">velocities</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">velocities</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="p">]</span>
             <span class="n">prior</span><span class="o">.</span><span class="n">validate_config</span><span class="p">(</span><span class="n">updated_prior</span><span class="p">)</span>
@@ -1257,6 +1259,14 @@
 <span class="w">        </span><span class="sd">"""Return the number of observed stars as an integer."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_data</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_observation_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requested_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requested_dtype</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"R_pc"</span><span class="p">,</span> <span class="s2">"vlos_kms"</span><span class="p">,</span> <span class="s2">"e_vlos_kms"</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">"fiu"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Kinematic columns must have real numeric dtypes"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"f"</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
     <span class="nd">@data</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"R_pc"</span><span class="p">,</span> <span class="s2">"vlos_kms"</span><span class="p">,</span> <span class="s2">"e_vlos_kms"</span><span class="p">)</span>
@@ -1267,8 +1277,11 @@
                     <span class="s2">"Cannot resize shared kinematic data; construct a new model "</span>
                     <span class="s2">"for a different number of observations."</span>
                 <span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">}</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observation_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"shared_shape"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot change shared observation dtype; construct a new model "</span>
+                             <span class="s2">"or explicitly select the existing dtype when creating the model."</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">}</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">shape</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Kinematic columns must have matching shapes."</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
@@ -1276,6 +1289,7 @@
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">"R_pc"</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">"e_vlos_kms"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Kinematic data require R_pc &gt; 0 and e_vlos_kms &gt;= 0."</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">DotDict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="k">return</span>
@@ -1303,7 +1317,7 @@
                         <span class="sa">f</span><span class="s2">"expected </span><span class="si">{</span><span class="n">buffer_size</span><span class="si">}</span><span class="s2"> bytes for </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">."</span>
                     <span class="p">)</span>
                 <span class="n">handles</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">shm</span>
-                <span class="n">arrays</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">shm</span><span class="o">.</span><span class="n">buf</span><span class="p">)</span>
+                <span class="n">arrays</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">shm</span><span class="o">.</span><span class="n">buf</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">arrays</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">shm</span> <span class="ow">in</span> <span class="n">opened</span><span class="p">:</span>
@@ -1315,6 +1329,7 @@
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
             <span class="n">arrays</span><span class="p">[</span><span class="n">field</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"shm_</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">handles</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shared_shape</span> <span class="o">=</span> <span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
@@ -1360,8 +1375,8 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_lnpriors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_before_conversion</span><span class="p">):</span>
-        <span class="n">idx_log10_re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="s2">"log10_re_pc"</span><span class="p">)</span>
-        <span class="n">log10_re_pc</span> <span class="o">=</span> <span class="n">p_before_conversion</span><span class="p">[</span><span class="n">idx_log10_re_pc</span><span class="p">]</span>
+        <span class="n">idx_log10_re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photometry_index</span>
+        <span class="n">log10_re_pc</span> <span class="o">=</span> <span class="n">p_before_conversion</span><span class="p">[</span><span class="n">idx_log10_re_pc</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photometry_offset</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span><span class="o">.</span><span class="n">_lnprior</span><span class="p">(</span><span class="n">p_before_conversion</span><span class="p">),</span>
             <span class="bp">self</span><span class="p">[</span><span class="s2">"PhotometryPriorModel"</span><span class="p">]</span><span class="o">.</span><span class="n">_lnprior</span><span class="p">(</span><span class="n">log10_re_pc</span><span class="p">),</span>
@@ -1380,10 +1395,10 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_prior_schema</span><span class="p">()</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-        <span class="n">idx_log10_re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="s2">"log10_re_pc"</span><span class="p">)</span>
+        <span class="n">idx_log10_re_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photometry_index</span>
         <span class="n">prior</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"FlatPriorModel"</span><span class="p">]</span>
         <span class="n">photometry</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">"PhotometryPriorModel"</span><span class="p">]</span>
-        <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">photometry</span><span class="o">.</span><span class="n">loc</span><span class="p">,</span> <span class="n">photometry</span><span class="o">.</span><span class="n">scale</span>
+        <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">photometry</span><span class="o">.</span><span class="n">loc</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_photometry_offset</span><span class="p">,</span> <span class="n">photometry</span><span class="o">.</span><span class="n">scale</span>
         <span class="c1"># Draw from the product of the Gaussian photometry prior and finite</span>
         <span class="c1"># uniform support, so generated walkers always satisfy both priors.</span>
         <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">lower</span><span class="p">[</span><span class="n">idx_log10_re_pc</span><span class="p">]</span> <span class="o">-</span> <span class="n">loc</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span>
@@ -1421,13 +1436,16 @@
     <span class="n">config</span><span class="o">=</span><span class="s2">"priorconfig.csv"</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">vmem_prior_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""Compose Plummer + NFW + constant anisotropy with explicit finite priors.</span>
 
 <span class="sd">    ``config`` is a DataFrame or CSV in this order: vmem_kms, log10_re_pc,</span>
-<span class="sd">    log10_rs_pc, log10_rhos_Msunpc3, log10_r_t_pc, bfunc_beta_ani.</span>
+<span class="sd">    log10_rs_pc, log10_rhos_Msunpc3, log10_r_t_pc, log10_one_minus_beta_ani.</span>
 <span class="sd">    A missing CSV is created as an unfilled template, then raises ValueError.</span>
 <span class="sd">    Caller velocity bounds are preserved unless vmem_prior_from_data is True.</span>
+<span class="sd">    The preset supplies explicit SamplingParameter objects for these names;</span>
+<span class="sd">    ``dtype`` follows SimpleDSphEstimationModel's observation-storage contract.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1460,7 +1478,7 @@
     <span class="p">)</span>
 
     <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="s2">"log10_re_pc"</span><span class="p">,</span> <span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span>
-             <span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"bfunc_beta_ani"</span><span class="p">]</span>
+             <span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"log10_one_minus_beta_ani"</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
         <span class="n">FlatPriorModel</span><span class="o">.</span><span class="n">generate_default_config_file</span><span class="p">(</span>
             <span class="n">config</span><span class="p">,</span>
@@ -1474,6 +1492,15 @@
 
     <span class="k">return</span> <span class="n">SimpleDSphEstimationModel</span><span class="p">(</span>
         <span class="n">args_load_data</span><span class="o">=</span><span class="p">[</span><span class="n">data</span><span class="p">],</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">parameter_specs</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">),</span>
+            <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"log10_re_pc"</span><span class="p">,</span> <span class="s2">"re_pc"</span><span class="p">,</span> <span class="s2">"pow10"</span><span class="p">),</span>
+            <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"pow10"</span><span class="p">),</span>
+            <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"pow10"</span><span class="p">),</span>
+            <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">,</span> <span class="s2">"pow10"</span><span class="p">),</span>
+            <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"log10_one_minus_beta_ani"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"one_minus_pow10"</span><span class="p">),</span>
+        <span class="p">],</span>
         <span class="n">vmem_prior_from_data</span><span class="o">=</span><span class="n">vmem_prior_from_data</span><span class="p">,</span>
         <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">"DSphModel"</span><span class="p">:</span> <span class="n">dsph_model</span><span class="p">,</span>

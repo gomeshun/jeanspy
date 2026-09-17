@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -541,9 +541,9 @@ Saved outputs are an example run; timings and short-chain results can vary.</p>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
 <p>Run this setup in a fresh kernel. It defines all objects used below.</p>
-<p>The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code>
-and an untruncated cutoff. Its inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code> is sampled in the
-inference examples; <code class="docutils literal notranslate"><span class="pre">truth[&quot;g&quot;]=1</span></code> generates standard-NFW mocks.</p>
+<p>The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">alpha=1</span></code>, <code class="docutils literal notranslate"><span class="pre">beta=3</span></code>
+and an untruncated cutoff. Its inner slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code> is sampled in the
+inference examples; <code class="docutils literal notranslate"><span class="pre">truth[&quot;gamma&quot;]=1</span></code> generates standard-NFW mocks.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -555,7 +555,7 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"IProgress not found.*"</span><span class="p">)</span>
 
 <span class="c1"># Import JeansPy before JAX so its runtime settings take effect.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">ParameterSpec</span>
@@ -570,9 +570,9 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
 <span class="p">})</span>
-<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -606,7 +606,7 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 
-<span class="n">variance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span>
+<span class="n">variance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span>
                           <span class="n">n_u</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
 </pre></div>
@@ -615,7 +615,7 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">sigmalos2</span></code> returns the intrinsic LOS second central moment in (km/s)².
 The mean velocity does not belong inside its square root. NumPy users can
-call <code class="docutils literal notranslate"><span class="pre">model.sigmalos(R_pc,</span> <span class="pre">n=256,</span> <span class="pre">n_kernel=64)</span></code> directly on a classical model;
+call <code class="docutils literal notranslate"><span class="pre">model.sigmalos(R_pc,</span> <span class="pre">n=256,</span> <span class="pre">n_kernel=64)</span></code> directly on a NumPy/SciPy model;
 JAX users take the square root as above. The different keyword names are
 documented in the individual
 <a class="reference external" href="https://gomeshun.github.io/jeanspy/dev/api/all.html">NumPy</a> and
@@ -630,7 +630,7 @@ documented in the individual
 
 <span class="n">R_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">3000.</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">sigma_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span>
-    <span class="n">R_grid</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">64</span><span class="p">))</span>
+    <span class="n">R_grid</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">64</span><span class="p">))</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">R_grid</span><span class="p">,</span> <span class="n">sigma_grid</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"Projected radius [pc]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">"$\sigma_</span><span class="si">{los}</span><span class="s2">$ [km/s]"</span><span class="p">)</span>

@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -494,7 +494,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for jeanspy.sersic</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Spherical Sérsic profile for the public classical JeansPy model API."""</span>
+<span></span><span class="sd">"""Spherical Sérsic profile for the public NumPy/SciPy JeansPy model API."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -528,8 +528,7 @@
 <span class="sd">    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and</span>
 <span class="sd">    pc^-3 with input shape. ``cdf_R`` returns the dimensionless projected radial</span>
 <span class="sd">    CDF; ``half_light_radius`` returns pc. ``mean_density_2d`` is mean surface</span>
-<span class="sd">    density within R. ``logdensity_2d`` is the natural log of the surface</span>
-<span class="sd">    density, not the radial PDF. ``density_2d_normalized_re``, where available,</span>
+<span class="sd">    density within R. ``density_2d_normalized_re``</span>
 <span class="sd">    is the dimensionless ratio Sigma(R)/Sigma(re).</span>
 
 <span class="sd">    **Validity.** Supply positive finite scales and real nonnegative radii. Use</span>
@@ -765,8 +764,7 @@
 <span class="sd">        -----</span>
 <span class="sd">        **Inputs and units.** No arguments; reads the stored tracer scales.</span>
 
-<span class="sd">        **Returns and shape.** Scalar radius in pc. Exp3dModel returns</span>
-<span class="sd">        1.67834699001666\*``re_pc``.</span>
+<span class="sd">        **Returns and shape.** Scalar radius in pc, equal to the stored ``re_pc``.</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span></div>
 

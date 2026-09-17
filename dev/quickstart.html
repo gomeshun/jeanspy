@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="_static/searchtools.js"></script>
@@ -507,9 +507,9 @@ or notebook kernel. Use <strong>Restart Kernel and Run All Cells</strong> to rep
 <section id="define-the-model">
 <h2>1. Define the model<a class="headerlink" href="#define-the-model" title="Link to this heading">#</a></h2>
 <p>The three components are a Plummer stellar tracer, a generalized NFW dark-matter
-halo (<code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code>) and constant spherical anisotropy.
-We infer the inner density slope <code class="docutils literal notranslate"><span class="pre">g</span></code> along with the halo radius and density
-scales, anisotropy and systemic velocity. The mock has <code class="docutils literal notranslate"><span class="pre">g=1</span></code> (standard NFW). JAX components receive physical parameters
+halo (<code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with <code class="docutils literal notranslate"><span class="pre">alpha=1</span></code>, <code class="docutils literal notranslate"><span class="pre">beta=3</span></code>) and constant spherical anisotropy.
+We infer the inner density slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code> along with the halo radius and density
+scales, anisotropy and systemic velocity. The mock has <code class="docutils literal notranslate"><span class="pre">gamma=1</span></code> (standard NFW). JAX components receive physical parameters
 on each call. Lengths are in <strong>pc</strong>, velocities in <strong>km/s</strong>, and mass densities
 in <strong>solar masses per pc³</strong>. The normalized tracer contributes no gravitational
 mass. Set the JAX environment before importing it.</p>
@@ -524,7 +524,7 @@ mass. Set the JAX environment before importing it.</p>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"IProgress not found.*"</span><span class="p">)</span>
 
 <span class="c1"># Import JeansPy before JAX so its runtime settings take effect.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">ParameterSpec</span>
@@ -539,15 +539,15 @@ mass. Set the JAX environment before importing it.</p>
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
 <span class="p">})</span>
-<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">fixed</span></code> holds the tracer scale, <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code> and the untruncated halo
+<p><code class="docutils literal notranslate"><span class="pre">fixed</span></code> holds the tracer scale, <code class="docutils literal notranslate"><span class="pre">alpha=1</span></code>, <code class="docutils literal notranslate"><span class="pre">beta=3</span></code> and the untruncated halo
 cutoff (<code class="docutils literal notranslate"><span class="pre">r_t_pc=np.inf</span></code>);
 <code class="docutils literal notranslate"><span class="pre">truth</span></code> adds the parameters used to generate data. <code class="docutils literal notranslate"><span class="pre">options</span></code> chooses the
 numerical resolution. The <a class="reference internal" href="tutorials/backends.html"><span class="std std-doc">backend tutorial</span></a> explains
@@ -605,7 +605,7 @@ the positive physical scale passed to the model.</p>
     <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
      <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
                          <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
-     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"gamma"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))],</span>
     <span class="n">parameter_postprocess</span><span class="o">=</span><span class="n">physical_parameters</span><span class="p">,</span>
@@ -616,9 +616,9 @@ the positive physical scale passed to the model.</p>
 </div>
 </div>
 <p>The priors are uniform in the named coordinates: log halo radius, log halo
-density, inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code>, anisotropy and systemic velocity. The halo priors
+density, inner slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code>, anisotropy and systemic velocity. The halo priors
 span about 32–10,000 pc in scale radius, 0.001–10 solar masses per pc³ in
-density scale, and <code class="docutils literal notranslate"><span class="pre">g=0</span></code> (a finite-density core) through <code class="docutils literal notranslate"><span class="pre">g=2</span></code> (a steep cusp).
+density scale, and <code class="docutils literal notranslate"><span class="pre">gamma=0</span></code> (a finite-density core) through <code class="docutils literal notranslate"><span class="pre">gamma=2</span></code> (a steep cusp).
 They are illustrative choices
 for this mock dataset. Run two independent chains sequentially on the CPU;
 each has 200 warmup steps and 256 posterior draws. The first run also compiles
@@ -628,7 +628,7 @@ the JAX calculation and may take longer than subsequent evaluations.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span>
               <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
                   <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
-                  <span class="s2">"g"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
+                  <span class="s2">"gamma"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
 <span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
             <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
@@ -646,7 +646,7 @@ the <code class="docutils literal notranslate"><span class="pre">(chain,</span> 
 table above them uses its own default interval.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
 <span class="n">mcmc</span><span class="o">.</span><span class="n">print_summary</span><span class="p">(</span><span class="n">exclude_deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">posterior</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">(</span><span class="n">group_by_chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Each value: (chain, draw).</span>
 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
@@ -669,7 +669,7 @@ table above them uses its own default interval.</p>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                          mean       std    median      5.0%     95.0%     n_eff     r_hat
             beta_ani      0.26      0.42      0.38     -0.38      0.74    240.94      1.01
-                   g      0.83      0.47      0.81      0.00      1.46    168.39      1.01
+               gamma      0.83      0.47      0.81      0.00      1.46    168.39      1.01
   log10_rhos_Msunpc3     -1.57      0.83     -1.66     -2.99     -0.44    157.65      1.01
          log10_rs_pc      3.21      0.53      3.26      2.49      3.99    182.52      1.00
             vmem_kms     -0.35      1.55     -0.38     -2.81      2.24    432.42      1.00
@@ -677,20 +677,20 @@ table above them uses its own default interval.</p>
 Number of divergences: 0
 log10_rs_pc 16%, 50%, 84%: [2.64120599 3.25927649 3.77525493]
 log10_rhos_Msunpc3 16%, 50%, 84%: [-2.39459069 -1.65517657 -0.71662544]
-g 16%, 50%, 84%: [0.29710162 0.80858003 1.31702316]
+gamma 16%, 50%, 84%: [0.29710162 0.80858003 1.31702316]
 beta_ani 16%, 50%, 84%: [-0.21152182  0.37810021  0.65304241]
 vmem_kms 16%, 50%, 84%: [-1.77938956 -0.37797063  1.17765941]
 Divergences: 0
 </pre></div>
 </div>
-<img alt="Separate posterior traces for two NumPyro chains and four sampling coordinates." src="_images/dfdb7e27b754198aa57c5221365d3877702c86a45a694456c187a1bdb1f4944f.png" />
+<img alt="Separate posterior traces for two NumPyro chains and four sampling coordinates." src="_images/1cf784c852e98e87d20739d0add343590810ae574dd6e150f17d831b1b9c1d69.png" />
 </div>
 </div>
 <section id="compare-posterior-profiles-with-the-true-and-map-models">
 <h3>Compare posterior profiles with the true and MAP models<a class="headerlink" href="#compare-posterior-profiles-with-the-true-and-map-models" title="Link to this heading">#</a></h3>
 <p>First find a numerical <strong>maximum a posteriori (MAP)</strong> point. Here MAP refers
 to density in the sampled coordinates
-<code class="docutils literal notranslate"><span class="pre">(log10_rs_pc,</span> <span class="pre">log10_rhos_Msunpc3,</span> <span class="pre">g,</span> <span class="pre">beta_ani,</span> <span class="pre">vmem_kms)</span></code> with the priors above.
+<code class="docutils literal notranslate"><span class="pre">(log10_rs_pc,</span> <span class="pre">log10_rhos_Msunpc3,</span> <span class="pre">gamma,</span> <span class="pre">beta_ani,</span> <span class="pre">vmem_kms)</span></code> with the priors above.
 MAP depends on coordinates: maximizing density in linear radius/density is
 a different problem. <code class="docutils literal notranslate"><span class="pre">log_density</span></code> evaluates the same likelihood and priors;
 the unconstrained NUTS potential energy includes transformation Jacobians and
@@ -742,7 +742,7 @@ boundary reported below; a boundary mode can be strongly prior-dependent.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Converged MAP searches: 6 / 6
-Numerical MAP: {'log10_rs_pc': 4.0, 'log10_rhos_Msunpc3': -2.1904, 'g': 0.6041, 'beta_ani': 0.75, 'vmem_kms': -0.2776}
+Numerical MAP: {'log10_rs_pc': 4.0, 'log10_rhos_Msunpc3': -2.1904, 'gamma': 0.6041, 'beta_ani': 0.75, 'vmem_kms': -0.2776}
 MAP log posterior: -116.8054
 Best saved-draw log posterior: -116.9309
 MAP coordinates at a prior bound: ['log10_rs_pc', 'beta_ani']
@@ -764,7 +764,7 @@ Black dotted curves show the mock’s true model.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">physical_from_theta</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
     <span class="n">log_rs</span><span class="p">,</span> <span class="n">log_rho</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">theta</span>
     <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="s2">"rs_pc"</span><span class="p">:</span> <span class="mf">10.</span><span class="o">**</span><span class="n">log_rs</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">:</span> <span class="mf">10.</span><span class="o">**</span><span class="n">log_rho</span><span class="p">,</span>
-            <span class="s2">"g"</span><span class="p">:</span> <span class="n">g</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="n">beta</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="n">mean</span><span class="p">}</span>
+            <span class="s2">"gamma"</span><span class="p">:</span> <span class="n">g</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="n">beta</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="n">mean</span><span class="p">}</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">profiles</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">physical_from_theta</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
@@ -777,7 +777,7 @@ Black dotted curves show the mock’s true model.</p>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">profile_draws</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">profile_draws</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
 <span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">profile_draws</span><span class="p">,</span> <span class="p">[</span><span class="mf">.025</span><span class="p">,</span> <span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">,</span> <span class="mf">.975</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">true_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rs_pc"</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="s2">"rhos_Msunpc3"</span><span class="p">]),</span>
-                       <span class="n">truth</span><span class="p">[</span><span class="s2">"g"</span><span class="p">],</span> <span class="n">truth</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">],</span> <span class="mf">0.</span><span class="p">])</span>
+                       <span class="n">truth</span><span class="p">[</span><span class="s2">"gamma"</span><span class="p">],</span> <span class="n">truth</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">],</span> <span class="mf">0.</span><span class="p">])</span>
 <span class="n">true_profiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profiles</span><span class="p">(</span><span class="n">true_theta</span><span class="p">))</span>
 <span class="n">map_profiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profiles</span><span class="p">(</span><span class="n">map_theta</span><span class="p">))</span>
 

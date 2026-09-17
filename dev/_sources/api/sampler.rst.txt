@@ -1,5 +1,5 @@
-Classical emcee sampling and HDF5 storage
-=========================================
+emcee sampling and HDF5 storage
+===============================
 
 .. py:module:: jeanspy.sampler
 

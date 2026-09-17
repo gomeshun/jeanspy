@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -539,9 +539,9 @@ Saved outputs are an example run; timings and short-chain results can vary.</p>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
 <p>Run this setup in a fresh kernel. It defines all objects used below.</p>
-<p>The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code>
-and an untruncated cutoff. Its inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code> is sampled in the
-inference examples; <code class="docutils literal notranslate"><span class="pre">truth[&quot;g&quot;]=1</span></code> generates standard-NFW mocks.</p>
+<p>The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">alpha=1</span></code>, <code class="docutils literal notranslate"><span class="pre">beta=3</span></code>
+and an untruncated cutoff. Its inner slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code> is sampled in the
+inference examples; <code class="docutils literal notranslate"><span class="pre">truth[&quot;gamma&quot;]=1</span></code> generates standard-NFW mocks.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -553,7 +553,7 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"IProgress not found.*"</span><span class="p">)</span>
 
 <span class="c1"># Import JeansPy before JAX so its runtime settings take effect.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">ParameterSpec</span>
@@ -568,9 +568,9 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
 <span class="p">})</span>
-<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -599,7 +599,7 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
     <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
      <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
                          <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
-     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"gamma"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))],</span>
     <span class="n">parameter_postprocess</span><span class="o">=</span><span class="n">physical_parameters</span><span class="p">,</span>
@@ -614,7 +614,7 @@ inference examples; <code class="docutils literal notranslate"><span class="pre"
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span>
               <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
                   <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
-                  <span class="s2">"g"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
+                  <span class="s2">"gamma"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
 <span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
             <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
@@ -761,14 +761,15 @@ the complete save/reconstruct/resume example:</p>
 <p>That script deliberately requires a fresh directory, then performs both runs
 itself. Its <a class="reference internal" href="spherical.html"><span class="std std-doc">recorded results</span></a> include a check that the first
 chunk is unchanged after resuming.</p>
+<p><a id="save-classical-emcee-results"></a></p>
 </section>
-<section id="save-classical-emcee-results">
-<h2>Save classical emcee results<a class="headerlink" href="#save-classical-emcee-results" title="Link to this heading">#</a></h2>
+<section id="save-emcee-results">
+<h2>Save emcee results<a class="headerlink" href="#save-emcee-results" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">emcee.backends.HDFBackend</span></code> stores the chain and random state. Reopen the
 backend and pass <code class="docutils literal notranslate"><span class="pre">None</span></code> as the initial state to append. The direct emcee route
 requires you to preserve the model, priors and data yourself; JeansPy’s
 <a class="reference external" href="https://gomeshun.github.io/jeanspy/dev/api/all.html"><code class="docutils literal notranslate"><span class="pre">jeanspy.sampler.Sampler</span></code></a> adds identity checks for its estimation
-models. See the <a class="reference internal" href="spherical.html#classical-estimation-model-wrapper"><span class="std std-ref">classical wrapper example</span></a> and
+models. See the <a class="reference internal" href="spherical.html#numpy-scipy-estimation-model-wrapper"><span class="std std-ref">NumPy/SciPy wrapper example</span></a> and
 <a class="reference internal" href="spherical.html"><span class="std std-doc">complete spherical analysis</span></a>.</p>
 <p>Continue with a <a class="reference internal" href="axisymmetric.html"><span class="std std-doc">worked axisymmetric analysis</span></a>, or use the
 <a class="reference internal" href="../api/index.html"><span class="std std-doc">API dictionary</span></a> for an individual method’s arguments.</p>
@@ -827,7 +828,7 @@ models. See the <a class="reference internal" href="spherical.html#classical-est
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enable-checkpointing-before-sampling">Enable checkpointing before sampling</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconstruct-and-resume-the-same-analysis">Reconstruct and resume the same analysis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understand-the-stored-files">Understand the stored files</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-classical-emcee-results">Save classical emcee results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-emcee-results">Save emcee results</a></li>
 </ul>
   </nav></div>
 

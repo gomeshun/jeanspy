@@ -5,10 +5,11 @@ Import modules
    :maxdepth: 1
 
    model
+   parameters
    axisymmetric
    axisymmetric_inference
-   model_numpyro
-   axisymmetric_numpyro
+   model_jax
+   axisymmetric_jax
    axisymmetric_factors
    sampler
    sampler_numpyro

@@ -27,9 +27,9 @@
     "\n",
     "Run this setup in a fresh kernel. It defines all objects used below.\n",
     "\n",
-    "The generalized NFW halo uses `ZhaoModel` with fixed `a=1`, `b=3`\n",
-    "and an untruncated cutoff. Its inner slope `g` is sampled in the\n",
-    "inference examples; `truth[\"g\"]=1` generates standard-NFW mocks."
+    "The generalized NFW halo uses `ZhaoModel` with fixed `alpha=1`, `beta=3`\n",
+    "and an untruncated cutoff. Its inner slope `gamma` is sampled in the\n",
+    "inference examples; `truth[\"gamma\"]=1` generates standard-NFW mocks."
    ]
   },
   {
@@ -48,7 +48,7 @@
     "warnings.filterwarnings(\"ignore\", message=\"IProgress not found.*\")\n",
     "\n",
     "# Import JeansPy before JAX so its runtime settings take effect.\n",
-    "from jeanspy.model_numpyro import (\n",
+    "from jeanspy.model_jax import (\n",
     "    DSphModel, PlummerModel, ZhaoModel, ConstantAnisotropyModel,\n",
     ")\n",
     "from jeanspy.sampler_numpyro import JeansLikelihoodModel, ParameterSpec\n",
@@ -63,9 +63,9 @@
     "    \"DMModel\": ZhaoModel(),\n",
     "    \"AnisotropyModel\": ConstantAnisotropyModel(),\n",
     "})\n",
-    "fixed = dict(re_pc=200., a=1., b=3., r_t_pc=np.inf)\n",
-    "truth = dict(**fixed, rs_pc=500., rhos_Msunpc3=.1, g=1., beta_ani=0.)\n",
-    "options = dict(backend=\"kernel\", n_u=128, n_kernel=32,\n",
+    "fixed = dict(re_pc=200., alpha=1., beta=3., r_t_pc=np.inf)\n",
+    "truth = dict(**fixed, rs_pc=500., rhos_Msunpc3=.1, gamma=1., beta_ani=0.)\n",
+    "options = dict(solver=\"kernel\", n_u=128, n_kernel=32,\n",
     "               dm_mass_method=\"numeric\", dm_mass_n_steps=128)"
    ]
   },
@@ -113,7 +113,7 @@
    "source": [
     "import jax.numpy as jnp\n",
     "\n",
-    "variance = model.sigmalos2(R_pc, params=params, backend=\"kernel\",\n",
+    "variance = model.sigmalos2(R_pc, params=params, solver=\"kernel\",\n",
     "                          n_u=256, n_kernel=64)\n",
     "sigma_kms = jnp.sqrt(variance)"
    ]
@@ -125,7 +125,7 @@
    "source": [
     "`sigmalos2` returns the intrinsic LOS second central moment in (km/s)².\n",
     "The mean velocity does not belong inside its square root. NumPy users can\n",
-    "call `model.sigmalos(R_pc, n=256, n_kernel=64)` directly on a classical model;\n",
+    "call `model.sigmalos(R_pc, n=256, n_kernel=64)` directly on a NumPy/SciPy model;\n",
     "JAX users take the square root as above. The different keyword names are\n",
     "documented in the individual\n",
     "[NumPy](https://gomeshun.github.io/jeanspy/dev/api/all.html) and\n",
@@ -163,7 +163,7 @@
     "\n",
     "R_grid = np.geomspace(10., 3000., 100)\n",
     "sigma_grid = np.sqrt(model.sigmalos2(\n",
-    "    R_grid, params=params, backend=\"kernel\", n_u=256, n_kernel=64))\n",
+    "    R_grid, params=params, solver=\"kernel\", n_u=256, n_kernel=64))\n",
     "fig, ax = plt.subplots()\n",
     "ax.semilogx(R_grid, sigma_grid)\n",
     "ax.set(xlabel=\"Projected radius [pc]\", ylabel=r\"$\\sigma_{los}$ [km/s]\")\n",
@@ -287,11 +287,12 @@
  "metadata": {
   "jeanspy": {
    "execution": {
-    "code_sha256": "db08a5f246f314549bc5b17f2b470c62252c1b9801821d45f632488801eb83e5",
+    "code_sha256": "f66a1541e8f03375ff485a36d2214da26d44d575eb9e947bceba61a7bc11938b",
     "jax_enable_x64": true,
-    "lock_sha256": "3760852a1fa968563d71f8ebeb26a5734b2cefcea771bb1d71d6659f376ee4c9",
+    "lock_sha256": "a30f366620e23a49d6d7466055223a761824454169d8fc0364c24ac25b626dc7",
     "packages": {
      "arviz": "1.0.0",
+     "corner": "2.2.3",
      "jax": "0.9.1",
      "jeanspy": "0.1.0",
      "matplotlib": "3.10.8",
@@ -301,34 +302,35 @@
     },
     "platform": "cpu",
     "source_sha256": {
-     "src/jeanspy/__init__.py": "f2134c34567b2cfc530c39380201b2b734a503a51308396bbd79484cfa6bb745",
+     "src/jeanspy/__init__.py": "61671d182af04c0056cfb8d273db499d8774694711506698dbe7dc4a63d3b403",
      "src/jeanspy/_axisymmetric_components.py": "4b203c616c87e55182d105b37f9fa49e44fe1df6bc430ccccb09edc5cca42530",
-     "src/jeanspy/_axisymmetric_params.py": "93235bf5233a12bac6e9a80991db44d36c7cebed8d94fa064152095580e4712a",
-     "src/jeanspy/_classical/__init__.py": "303f79d4512f42501139e724ef95c732e530927e7172f0740ed50eeb6fd3a7b4",
-     "src/jeanspy/_classical/core.py": "00ada258d108fd03fd790f174fba75c8168d4c3db77a6e1ee9bf29d4442996fd",
-     "src/jeanspy/_classical/inference.py": "e9c872ec069f79b19dbfb2797873d64fb7e45c71cbcb4cd9c9aec0bda013a158",
-     "src/jeanspy/_classical/jfactor.py": "6bb094c788f4410b19d4b33b478b67923b94125e199355f935412fcc22d9cc0d",
-     "src/jeanspy/_classical/profiles.py": "78b08d1387ec8e35d1d3dd96841cbf4805d8326e19418a547115fc28ba91bb4e",
-     "src/jeanspy/_classical/solver.py": "beae38b0b2133c97fe570f25abe05166bf17804f0fd9af6cd8a06d33a265965d",
+     "src/jeanspy/_axisymmetric_params.py": "85da8de45bf5ba8cd9a40a137f7ccf971f7ce9534f312ef49fcd33539a230802",
+     "src/jeanspy/_classical/__init__.py": "d5187977c58109e363c5ef0a65dca261494ce46631183f4d0e0f287eab0a7a08",
+     "src/jeanspy/_classical/core.py": "c04e2def5a4ce4d16b65ac9f267d76c13a1202b45b1e82979a89827abf380776",
+     "src/jeanspy/_classical/inference.py": "70318ea7aa95adc2f8a6c8faca63ef449c3920903383c20666008af11e21d1ec",
+     "src/jeanspy/_classical/jfactor.py": "823f58a66a615ba59e057022ce51e2adfab577c25a4ced2f2033304c2cbd6cfe",
+     "src/jeanspy/_classical/profiles.py": "55ec7eb51d23cf2ac7f30da926f5d4e2a16cac24c8e6a0c0525d863888782940",
+     "src/jeanspy/_classical/solver.py": "7ec60a39c5eb90a9bbfdc52e3b2086ade4c690a38541211f1b90c3625dee596b",
      "src/jeanspy/_jax_env.py": "70ac1afc652c2ef3f250603b623794083b78130b4fc7044076b6d8af8db148b2",
-     "src/jeanspy/_model_impl.py": "ffd8c87d3b2a09ff89aef48c0cfbc1f09cf6d24d357345d23ed8be013dca320c",
+     "src/jeanspy/_model_impl.py": "e64b55d7410964425c217874fa3c949b97dad05b711350480728aa1bab49f5b4",
      "src/jeanspy/_sampling_identity.py": "ca87e62dc3bff542a21d9ea2b6ee5425504ac483c0a8eaa01203e6a1ce3058a5",
      "src/jeanspy/_sersic_deprojection.py": "004c5566448698ecfe536096c3fc8d5c348a8d4e1610042763c77568c0f3d821",
-     "src/jeanspy/_zhao.py": "e7b9cc51321f7fb20ea0413ee99dab50d94d33e77a44fe4877ec1f608f849578",
-     "src/jeanspy/axisymmetric.py": "05ff2f258161afcd183cc4b417d6dcaca54c473fe192c32e24604223f411d3f7",
+     "src/jeanspy/_zhao.py": "df83c7427dc583123c7464a03d2d45272e90f5a6724c9729eee64fad92e0c41a",
+     "src/jeanspy/axisymmetric.py": "683d67b91f8eb67e8d898eb23e6c8ca0e5c78020a65a7d05e183c19b076bd506",
      "src/jeanspy/axisymmetric_factors.py": "7ad5e4240f0e8016d5780e6b99e92e73a3fb5b96555a567ac77920c24c81930d",
-     "src/jeanspy/axisymmetric_inference.py": "40bc3a243c9c43df254a9a9cad9acafad014e555684ae7c2fab378aeddf08b99",
-     "src/jeanspy/axisymmetric_numpyro.py": "dfb7f0f9717f6ef543a5daf3532c5ee5841b8884fc2f8af954372682913d6e47",
-     "src/jeanspy/baes_eta2.py": "28f9eb3f2e8a802e889ae381d5d305f2eb54f9afd40ee0b03db1323e4f8c6298",
+     "src/jeanspy/axisymmetric_inference.py": "ed7fb058c2b634839b00a0886730afedf3d63fa242093b03e95b0434701e4e82",
+     "src/jeanspy/axisymmetric_jax.py": "de5f78937104ce7008242d55c321c8a3c6d9491f6aa25d4be3bdab8de076ed54",
+     "src/jeanspy/baes_eta2.py": "bebae39d3cea2bb678d83297b62151e9c6b5e2392a31644585ecbc9fece63b98",
      "src/jeanspy/dequad.py": "0a4b0bb9f4993a50bb84aa73d424979907c1ee052bccfd2ebaa7f82d81512e79",
      "src/jeanspy/hyp2f1_jax.py": "04adbf7c63ddefc5a072252fd66ca4b89b4cbec7359675acbfe3c8c7f007b226",
-     "src/jeanspy/model.py": "88627d37bbaec208872819f8e9aa898a53220bd11416689914ab0ae7c039e1be",
-     "src/jeanspy/model_numpyro.py": "fee85f602bac18f09058e64f93438167b9501eb65b06c5c16ac06ca4bd1f7117",
-     "src/jeanspy/sampler.py": "c3aed0607224aa30295cd5a50add4f652c6b7fe30d8e0d6dbbc4c8241cc223d4",
-     "src/jeanspy/sampler_numpyro.py": "8f3ef398aa3cec6d3376ad33c829e9812cda613f40c1fbee9b14919aa3ae0df3",
-     "src/jeanspy/sersic.py": "24c972e865f6557026a1d75e1ce283ea1a6217af16f07f537f1dee70c3e2cb13"
+     "src/jeanspy/model.py": "c1cfb027552405ddf5498088e22715cce6c7a8c9950448ea879e0cde94fa0e2f",
+     "src/jeanspy/model_jax.py": "77598789a6970436d3129d00cbddab9969540da1c1b7d4adf339c39c35454088",
+     "src/jeanspy/parameters.py": "7760f4c85063105eb1328910867f3c57516f885dc577533bf9b91ac08a648cb2",
+     "src/jeanspy/sampler.py": "1639fae513ebe198fda6b1d3718d8e8907fdc44ef2be03afe1627c541a5b72c3",
+     "src/jeanspy/sampler_numpyro.py": "712ed43a04ba63a679eff1109b616108db9b553fa3f9a7fbed42a9d9d79ebd6a",
+     "src/jeanspy/sersic.py": "b9f0af0097277a4ca09f59687fbf9b1b46ef49566f84f6d41f689bcf3cee44f6"
     },
-    "utc": "2026-09-16T02:13:30.090333+00:00"
+    "utc": "2026-09-17T03:34:47.037260+00:00"
    },
    "mcmc": false
   },

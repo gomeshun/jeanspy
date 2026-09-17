@@ -1,0 +1,9 @@
+log_prob_R
+==========
+
+``jeanspy.model_jax.PlummerModel.log_prob_R``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model_jax.PlummerModel>`.
+
+.. automethod:: jeanspy.model_jax.PlummerModel.log_prob_R
+   :no-index:

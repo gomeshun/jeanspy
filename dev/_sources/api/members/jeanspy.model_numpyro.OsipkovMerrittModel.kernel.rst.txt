@@ -1,9 +1,0 @@
-kernel
-======
-
-``jeanspy.model_numpyro.OsipkovMerrittModel.kernel``
-
-Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model_numpyro.OsipkovMerrittModel>`.
-
-.. automethod:: jeanspy.model_numpyro.OsipkovMerrittModel.kernel
-   :no-index:

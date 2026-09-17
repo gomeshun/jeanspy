@@ -1,9 +1,0 @@
-is_required_param_names
-=======================
-
-``jeanspy.model.Exp3dModel.is_required_param_names``
-
-Class and construction: :doc:`Exp3dModel <../generated/jeanspy.model.Exp3dModel>`.
-
-.. automethod:: jeanspy.model.Exp3dModel.is_required_param_names
-   :no-index:

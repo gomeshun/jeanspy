@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -467,6 +467,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical accuracy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api-migration.html">Explicit model names and parameter specifications</a></li>
 </ul>
 </div>
 </nav></div>
@@ -628,7 +629,7 @@ saturates outside r_t. The Hayashi 2015 halo uses <code class="docutils literal 
 <td><p>Stored in immutable components; optional per-call <code class="docutils literal notranslate"><span class="pre">params</span></code> overrides</p></td>
 </tr>
 <tr class="row-odd"><td><p>JAX</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">jeanspy.model_numpyro</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jeanspy.model_jax</span></code></p></td>
 <td><p>Passed explicitly at evaluation time</p></td>
 </tr>
 </tbody>
@@ -661,29 +662,35 @@ runtime precision and gradient checks, use the <a class="reference internal" hre
 <h2>Inference and restart<a class="headerlink" href="#inference-and-restart" title="Link to this heading">#</a></h2>
 <p>Observations require matching, finite, nonempty 1-D arrays <code class="docutils literal notranslate"><span class="pre">x_pc</span></code>, <code class="docutils literal notranslate"><span class="pre">y_pc</span></code>,
 <code class="docutils literal notranslate"><span class="pre">vlos_kms</span></code>, <code class="docutils literal notranslate"><span class="pre">e_vlos_kms</span></code>. Errors must be nonnegative; zero is allowed. A
-DataFrame or mapping is accepted by the classical model. The explicit
+DataFrame or mapping is accepted by the NumPy/SciPy model. The explicit
 <code class="docutils literal notranslate"><span class="pre">AxisymmetricKinematicData</span></code> object copies observations and supplies detached
 arrays with <code class="docutils literal notranslate"><span class="pre">as_kwargs()</span></code> for NumPyro calls. <code class="docutils literal notranslate"><span class="pre">reset_data</span></code> validates replacements
 before mutation; user-provided priors are never derived from velocities.</p>
 <p>The <a class="reference internal" href="../theory.html#likelihood-and-interpretation"><span class="std std-ref">likelihood equation</span></a> and
 <a class="reference internal" href="../tutorials/inference.html"><span class="std std-doc">MCMC tutorial</span></a> explain the statistical model.
-The classical wrapper is
+The NumPy/SciPy wrapper is
 <a class="reference internal" href="../api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel" title="jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisymmetricDSphEstimationModel</span></code></a>;
 NumPyro uses <a class="reference internal" href="../api/generated/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.html#jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel" title="jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisymmetricJeansLikelihoodModel</span></code></a>.</p>
-<p>The classical prior table names the <strong>sampling coordinates</strong>, in sampler
-order. Prefixes <code class="docutils literal notranslate"><span class="pre">log10_</span></code> and <code class="docutils literal notranslate"><span class="pre">bfunc_</span></code> mean <code class="docutils literal notranslate"><span class="pre">10**x</span></code> and <code class="docutils literal notranslate"><span class="pre">1-10**x</span></code>, respectively.
-<code class="docutils literal notranslate"><span class="pre">cos_inclination</span></code> maps to <code class="docutils literal notranslate"><span class="pre">arccos(x)</span></code> in radians. Uniform bounds on this last
-coordinate give an isotropic orientation prior over the explicitly chosen
+<p>The NumPy/SciPy prior table names the <strong>sampling coordinates</strong>, in sampler
+order. Supply matching <code class="docutils literal notranslate"><span class="pre">SamplingParameter</span></code> objects with a physical name and
+transform for each coordinate. For example,
+<code class="docutils literal notranslate"><span class="pre">SamplingParameter(&quot;log10_one_minus_beta_z&quot;,</span> <span class="pre">&quot;beta_z&quot;,</span> <span class="pre">&quot;one_minus_pow10&quot;)</span></code>
+means <code class="docutils literal notranslate"><span class="pre">beta_z</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">10**x</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">SamplingParameter(&quot;cos_inclination&quot;,</span> <span class="pre">&quot;inclination&quot;,</span> <span class="pre">&quot;arccos&quot;)</span></code>
+returns radians. Names alone imply no transformation. Uniform bounds on a
+coordinate with this <code class="docutils literal notranslate"><span class="pre">arccos</span></code> specification give an isotropic orientation
+prior over the explicitly chosen
 range; use bounds compatible with photometry, or allow the deprojection
 constraint to reject inadmissible proposals. No implicit transformation
 Jacobian is added: the prior is defined in the named sampling coordinate.</p>
-<p>An optional <code class="docutils literal notranslate"><span class="pre">PhotometryPriorModel</span></code> multiplies the prior on <code class="docutils literal notranslate"><span class="pre">log10_re_pc</span></code>;
+<p>An optional <code class="docutils literal notranslate"><span class="pre">PhotometryPriorModel</span></code> multiplies the prior on a coordinate
+explicitly mapped by <code class="docutils literal notranslate"><span class="pre">pow10</span></code> to <code class="docutils literal notranslate"><span class="pre">re_pc</span></code>;
 initial points then use the appropriately truncated Gaussian. <code class="docutils literal notranslate"><span class="pre">fit.sample</span></code>
 accepts an RNG/seed and bounded rejection to return feasible initial points.
 Impossible support raises an error rather than changing the priors.
 <code class="docutils literal notranslate"><span class="pre">lnlikelihoods</span></code>, <code class="docutils literal notranslate"><span class="pre">lnlikelihood</span></code>, <code class="docutils literal notranslate"><span class="pre">lnpriors</span></code>, <code class="docutils literal notranslate"><span class="pre">lnposterior</span></code>,
 <code class="docutils literal notranslate"><span class="pre">lnposterior_wbic</span></code>, and <code class="docutils literal notranslate"><span class="pre">sample_data</span></code> are available. WBIC needs at least two
-stars. Classical data are process-local and pickleable; shared-memory buffers
+stars. NumPy/SciPy data are process-local and pickleable; shared-memory buffers
 specific to the spherical implementation are not used.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> supports general priors/transforms and deterministic physical
 sites. Sampled and fixed physical names must be disjoint; optional

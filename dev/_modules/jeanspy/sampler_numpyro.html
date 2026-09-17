@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -521,7 +521,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._axisymmetric_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_param_names</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sampling_identity</span><span class="w"> </span><span class="kn">import</span> <span class="n">fingerprint</span><span class="p">,</span> <span class="n">software_identity</span>
 
@@ -667,7 +667,7 @@
 <span class="sd">    **Differentiation.** Transforms/distributions must support the intended JAX</span>
 <span class="sd">    derivatives; discrete sample sites are not NUTS coordinates.</span>
 
-<span class="sd">    **Examples.** ``examples/docs_inference.py``</span>
+<span class="sd">    **Examples.** ``examples/docs_numpyro_inference.py``</span>
 <span class="sd">    """</span>
 
     <span class="n">sample_name</span><span class="p">:</span> <span class="nb">str</span>
@@ -817,7 +817,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dsph_model : jeanspy.model_numpyro.DSphModel</span>
+<span class="sd">    dsph_model : jeanspy.model_jax.DSphModel</span>
 <span class="sd">        Functional JAX forward model. Its LOS variance is in (km/s)**2.</span>
 <span class="sd">    parameter_specs : sequence of ParameterSpec</span>
 <span class="sd">        Ordered sample sites, priors and transformations to physical parameters.</span>
@@ -852,14 +852,12 @@
 <span class="sd">    transforms in the admissible interior. This class does not calculate J/D</span>
 <span class="sd">    factors or establish a positive phase-space distribution function.</span>
 
-<span class="sd">    **Inputs and units.** ``dsph_model`` is the matching JAX model;</span>
-<span class="sd">    ``parameter_specs`` is a sequence of ParameterSpec; the axisymmetric</span>
-<span class="sd">    subclass accepts ``fixed_params`` for complementary scalars; the spherical</span>
-<span class="sd">    class uses ``parameter_postprocess`` to assemble additional fixed</span>
-<span class="sd">    parameters. Velocity mean and sigmalos2 options are explicit. Calling the</span>
-<span class="sd">    spherical model takes ``R_pc``/``vlos_kms``/``e_vlos_kms``; the axisymmetric</span>
-<span class="sd">    model takes ``x_pc``/``y_pc`` instead of ``R_pc``. Observation arrays are</span>
-<span class="sd">    matching finite nonempty 1-D arrays.</span>
+<span class="sd">    **Inputs and units.** ``dsph_model`` is a spherical JAX forward model;</span>
+<span class="sd">    ``parameter_specs`` is a sequence of ParameterSpec. Use</span>
+<span class="sd">    ``parameter_postprocess`` to assemble additional fixed physical parameters.</span>
+<span class="sd">    Calling this model takes matching finite nonempty 1-D arrays ``R_pc``</span>
+<span class="sd">    (pc), ``vlos_kms`` and ``e_vlos_kms`` (km/s). Velocity mean and static</span>
+<span class="sd">    sigmalos2 options are explicit.</span>
 
 <span class="sd">    **Returns and shape.** __call__ returns None while registering NumPyro</span>
 <span class="sd">    sample, deterministic and likelihood sites; ``sample_parameters`` returns</span>
@@ -870,7 +868,7 @@
 <span class="sd">    Gaussian LOS closure at fixed positions. The standard class does not add</span>
 <span class="sd">    membership mixtures, velocity-cut normalization or binaries.</span>
 
-<span class="sd">    **Errors.** Bad schema/shape and sampled/fixed collisions raise;</span>
+<span class="sd">    **Errors.** Bad site schemas or observation shapes raise;</span>
 <span class="sd">    inadmissible forward variances are rejected with minus-infinite density.</span>
 
 <span class="sd">    **Backend.** NumPyro with JAX forward model.</span>
@@ -1016,14 +1014,12 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    **Inputs and units.** ``dsph_model`` is the matching JAX model;</span>
-<span class="sd">    ``parameter_specs`` is a sequence of ParameterSpec; the axisymmetric</span>
-<span class="sd">    subclass accepts ``fixed_params`` for complementary scalars; the spherical</span>
-<span class="sd">    class uses ``parameter_postprocess`` to assemble additional fixed</span>
-<span class="sd">    parameters. Velocity mean and sigmalos2 options are explicit. Calling the</span>
-<span class="sd">    spherical model takes ``R_pc``/``vlos_kms``/``e_vlos_kms``; the axisymmetric</span>
-<span class="sd">    model takes ``x_pc``/``y_pc`` instead of ``R_pc``. Observation arrays are</span>
-<span class="sd">    matching finite nonempty 1-D arrays.</span>
+<span class="sd">    **Inputs and units.** ``dsph_model`` is a JAX AxisymmetricDSphModel;</span>
+<span class="sd">    ``parameter_specs`` is a sequence of ParameterSpec, and ``fixed_params``</span>
+<span class="sd">    supplies complementary physical scalars. Calling this model takes matching</span>
+<span class="sd">    finite nonempty 1-D ``x_pc``/``y_pc`` (pc) and ``vlos_kms``/``e_vlos_kms``</span>
+<span class="sd">    (km/s). Signed sky coordinates and the projected center are supported.</span>
+<span class="sd">    Velocity mean and static sigmalos2 options are explicit.</span>
 
 <span class="sd">    **Returns and shape.** __call__ returns None while registering NumPyro</span>
 <span class="sd">    sample, deterministic and likelihood sites; ``sample_parameters`` returns</span>
@@ -1043,7 +1039,7 @@
 <span class="sd">    J/D factors are not likelihood sites. Verify derivatives for custom prior</span>
 <span class="sd">    transforms.</span>
 
-<span class="sd">    **Examples.** ``examples/docs_numpyro_inference.py``</span>
+<span class="sd">    **Examples.** ``examples/axisymmetric_inference.py``</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dsph_model</span><span class="p">,</span> <span class="n">parameter_specs</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fixed_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1164,7 +1160,7 @@
 <span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
 <span class="sd">    API.</span>
 
-<span class="sd">    **Examples.** ``examples/docs_inference.py``</span>
+<span class="sd">    **Examples.** ``examples/docs_numpyro_inference.py``</span>
 <span class="sd">    """</span>
     <span class="n">resumed</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">checkpoint_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span>

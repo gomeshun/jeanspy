@@ -1,9 +1,0 @@
-cdf_R
-=====
-
-``jeanspy.model.Exp2dModel.cdf_R``
-
-Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
-
-.. automethod:: jeanspy.model.Exp2dModel.cdf_R
-   :no-index:

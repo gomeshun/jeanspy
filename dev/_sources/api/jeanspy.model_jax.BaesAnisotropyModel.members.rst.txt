@@ -1,0 +1,10 @@
+BaesAnisotropyModel members
+===========================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_jax.BaesAnisotropyModel.beta
+   members/jeanspy.model_jax.BaesAnisotropyModel.f
+   members/jeanspy.model_jax.BaesAnisotropyModel.kernel
+   members/jeanspy.model_jax.BaesAnisotropyModel.sampling_identity

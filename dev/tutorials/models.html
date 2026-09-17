@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -549,7 +549,7 @@ spelling even when replacing the concrete classes.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_PLATFORM"</span><span class="p">,</span> <span class="s2">"cpu"</span><span class="p">)</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_ENABLE_X64"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">NFWModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span> <span class="n">get_runtime_config</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
@@ -569,7 +569,7 @@ spelling even when replacing the concrete classes.</p>
               <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">5000.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=-</span><span class="mf">.2</span><span class="p">)</span>
 <span class="n">R_pc</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">])</span>
 <span class="n">variance</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">block_until_ready</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span>
-    <span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">64</span><span class="p">))</span>
+    <span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">64</span><span class="p">))</span>
 <span class="k">assert</span> <span class="n">variance</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">sampled_R</span> <span class="o">=</span> <span class="n">tracer</span><span class="o">.</span><span class="n">sample_R</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">20260913</span><span class="p">),</span> <span class="mi">8</span><span class="p">,</span> <span class="n">re_pc</span><span class="o">=</span><span class="mf">300.</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">sampled_R</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">8</span><span class="p">,)</span>
@@ -579,7 +579,7 @@ spelling even when replacing the concrete classes.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'jax_platform_requested': 'cpu', 'jax_platform_effective_env': 'cpu', 'jax_backend_active': 'cpu', 'jax_enable_x64': True, 'constant_kernel_backend_default': 'jax', 'constant_kernel_n_quad_default': 32, 'sigmalos2_backend_default': 'auto', 'sigmalos2_jit_default': True, 'sigmalos2_kernel_outer_transform_default': 'sqrtlog', 'baes_kernel_n_quad_default': 32, 'baes_eta_recommended_max': 10.0, 'sigmalos2_n_u_default': 128, 'sigmalos2_n_r_default': 768, 'sigmalos2_u_max_default': 10000.0} [91.44464827 89.19126387 74.77863921]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'jax_platform_requested': 'cpu', 'jax_platform_effective_env': 'cpu', 'jax_backend_active': 'cpu', 'jax_enable_x64': True, 'kernel_backend_default': 'jax', 'constant_kernel_n_quad_default': 32, 'sigmalos2_solver_default': 'auto', 'sigmalos2_jit_default': True, 'sigmalos2_kernel_outer_transform_default': 'sqrtlog', 'baes_kernel_n_quad_default': 32, 'baes_eta_recommended_max': 10.0, 'sigmalos2_n_u_default': 128, 'sigmalos2_n_r_default': 768, 'sigmalos2_u_max_default': 10000.0} [91.44464827 89.19126387 74.77863921]
 </pre></div>
 </div>
 </div>
@@ -590,33 +590,34 @@ without mutating the model:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">denser</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">"rhos_Msunpc3"</span><span class="p">]}</span>
-<span class="n">variance_denser</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">denser</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">)</span>
+<span class="n">variance_denser</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">denser</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Logarithms and other sampling transforms belong in <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code>, not in
+<p>Logarithms and other sampling transforms belong in <code class="docutils literal notranslate"><span class="pre">SamplingParameter</span></code> (NumPy/SciPy) or <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> (NumPyro), not in
 the physical dictionary. For instance, <code class="docutils literal notranslate"><span class="pre">rs_pc</span></code> is a radius in pc even when
 the sampler uses a coordinate called <code class="docutils literal notranslate"><span class="pre">log10_rs_pc</span></code>.</p>
 </section>
 <section id="generalize-the-nfw-inner-slope">
 <h2>Generalize the NFW inner slope<a class="headerlink" href="#generalize-the-nfw-inner-slope" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">NFWModel</span></code> fixes the inner and outer density slopes to 1 and 3. The
-Quickstart instead uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code> and a variable <code class="docutils literal notranslate"><span class="pre">g</span></code>:</p>
+Quickstart instead uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with <code class="docutils literal notranslate"><span class="pre">alpha=1</span></code>, <code class="docutils literal notranslate"><span class="pre">beta=3</span></code> and a variable <code class="docutils literal notranslate"><span class="pre">gamma</span></code>:</p>
 <div class="math notranslate nohighlight">
 \[
-\rho(r)=\frac{\rho_s}{(r/r_s)^g(1+r/r_s)^{3-g}}.
+\rho(r)=\frac{\rho_s}{(r/r_s)^gamma(1+r/r_s)^{3-gamma}}.
 \]</div>
-<p>Here <code class="docutils literal notranslate"><span class="pre">g=0</span></code> has a finite central density, <code class="docutils literal notranslate"><span class="pre">g=1</span></code> recovers NFW and <code class="docutils literal notranslate"><span class="pre">g=2</span></code>
+<p>Here <code class="docutils literal notranslate"><span class="pre">gamma=0</span></code> has a finite central density, <code class="docutils literal notranslate"><span class="pre">gamma=1</span></code> recovers NFW and <code class="docutils literal notranslate"><span class="pre">gamma=2</span></code>
 has a steeper cusp. <code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span></code> is the normalization <span class="math notranslate nohighlight">\(\rho_s\)</span>; the density
-at <span class="math notranslate nohighlight">\(r_s\)</span> is <span class="math notranslate nohighlight">\(\rho_s/2^{3-g}\)</span>. Keep <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> in the fixed physical
-dictionary, and sample <code class="docutils literal notranslate"><span class="pre">g</span></code> in <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code>. Use the differentiable
-numerical Zhao mass when fitting <code class="docutils literal notranslate"><span class="pre">g</span></code>; switching to <code class="docutils literal notranslate"><span class="pre">NFWModel</span></code> fixes this
+at <span class="math notranslate nohighlight">\(r_s\)</span> is <span class="math notranslate nohighlight">\(\rho_s/2^{3-gamma}\)</span>. Keep <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> in the fixed physical
+dictionary, and sample <code class="docutils literal notranslate"><span class="pre">gamma</span></code> in <code class="docutils literal notranslate"><span class="pre">SamplingParameter</span></code> (NumPy/SciPy) or <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> (NumPyro). Use the differentiable
+numerical Zhao mass when fitting <code class="docutils literal notranslate"><span class="pre">gamma</span></code>; switching to <code class="docutils literal notranslate"><span class="pre">NFWModel</span></code> fixes this
 slope instead. The <a class="reference internal" href="inference.html"><span class="std std-doc">inference notebook</span></a> demonstrates this fit.</p>
+<p><a id="use-the-classical-interface"></a></p>
 </section>
-<section id="use-the-classical-interface">
-<h2>Use the classical interface<a class="headerlink" href="#use-the-classical-interface" title="Link to this heading">#</a></h2>
-<p>Classical spherical components store their parameters. All required physical
+<section id="use-the-numpy-scipy-interface">
+<h2>Use the NumPy/SciPy interface<a class="headerlink" href="#use-the-numpy-scipy-interface" title="Link to this heading">#</a></h2>
+<p>NumPy/SciPy spherical components store their parameters. All required physical
 values must be supplied; omitted values can remain NaN. This example supplies
 every parameter and evaluates the assembled model:</p>
 <div class="cell docutils container">
@@ -658,7 +659,7 @@ separates the NumPy and JAX implementations.</p>
 </section>
 <section id="implement-your-own-tracer">
 <h2>Implement your own tracer<a class="headerlink" href="#implement-your-own-tracer" title="Link to this heading">#</a></h2>
-<p>The following minimal classical tracer implements the Plummer formula again
+<p>The following minimal NumPy/SciPy tracer implements the Plummer formula again
 so that it can be checked against a built-in reference. Replace these two
 consistent projected and spatial densities with your own profile once their
 normalization and projection relation are established.</p>
@@ -696,7 +697,7 @@ normalization and projection relation are established.</p>
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">required_param_names</span></code> declares the scalar parameters maintained by the
-classical <code class="docutils literal notranslate"><span class="pre">Model</span></code> container. <code class="docutils literal notranslate"><span class="pre">required_models={}</span></code> means that the component has
+NumPy/SciPy <code class="docutils literal notranslate"><span class="pre">Model</span></code> container. <code class="docutils literal notranslate"><span class="pre">required_models={}</span></code> means that the component has
 no nested components. The LOS solver needs both <code class="docutils literal notranslate"><span class="pre">density_2d</span></code> and <code class="docutils literal notranslate"><span class="pre">density_3d</span></code>;
 implement them for scalar and broadcast array inputs. Extra helpers such as a
 radial CDF or sampling method are needed only when your own workflow uses them.</p>
@@ -723,7 +724,7 @@ and integrate each to unit tracer number. For a new profile, also check that
 projecting the 3-D density reproduces the 2-D density, inspect central and outer
 limits, and refine the Jeans quadrature. These checks do not establish the
 existence of a physical distribution function.</p>
-<p>For a custom classical halo, implement a consistent mass density and enclosed
+<p>For a custom NumPy/SciPy halo, implement a consistent mass density and enclosed
 mass with an explicit cutoff convention; consult
 <a class="reference external" href="https://gomeshun.github.io/jeanspy/dev/api/all.html"><code class="docutils literal notranslate"><span class="pre">jeanspy.model.DMModel</span></code></a>. A custom anisotropy must implement the
 <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">f</span></code> and <code class="docutils literal notranslate"><span class="pre">kernel</span></code> interfaces consistently; see
@@ -796,7 +797,7 @@ and <a class="reference internal" href="axisymmetric.html"><span class="std std-
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compose-the-jax-model">Compose the JAX model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generalize-the-nfw-inner-slope">Generalize the NFW inner slope</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-the-classical-interface">Use the classical interface</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-the-numpy-scipy-interface">Use the NumPy/SciPy interface</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implement-your-own-tracer">Implement your own tracer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-a-custom-implementation-before-inference">Check a custom implementation before inference</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extend-the-geometry">Extend the geometry</a></li>

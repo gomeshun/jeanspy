@@ -1,9 +1,0 @@
-enclosure_mass
-==============
-
-``jeanspy.model_numpyro.ZhaoModel.enclosure_mass``
-
-Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_numpyro.ZhaoModel>`.
-
-.. automethod:: jeanspy.model_numpyro.ZhaoModel.enclosure_mass
-   :no-index:

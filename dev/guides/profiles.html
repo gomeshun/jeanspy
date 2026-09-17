@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -467,6 +467,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical accuracy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api-migration.html">Explicit model names and parameter specifications</a></li>
 </ul>
 </div>
 </nav></div>
@@ -536,11 +537,14 @@ for available classes in each backend. Shared units and parameter interfaces
 are defined in the <a class="reference internal" href="contracts.html"><span class="std std-doc">model contract</span></a>.</p>
 <section id="tracer-scales-and-three-dimensional-support">
 <h2>Tracer scales and three-dimensional support<a class="headerlink" href="#tracer-scales-and-three-dimensional-support" title="Link to this heading">#</a></h2>
-<p>The classical Plummer, projected exponential and Sersic profiles have
+<p>The NumPy/SciPy Plummer, projected exponential and Sersic profiles have
 three-dimensional deprojections. <code class="docutils literal notranslate"><span class="pre">Uniform2dModel</span></code> supplies only a projected
 disk and cannot be passed to a three-dimensional Jeans calculation.
-<code class="docutils literal notranslate"><span class="pre">Exp3dModel</span></code> retains its historical scale convention: <code class="docutils literal notranslate"><span class="pre">re_pc</span></code> is an exponential
-scale length, while <code class="docutils literal notranslate"><span class="pre">Exp2dModel.re_pc</span></code> is the projected half-light radius.</p>
+<code class="docutils literal notranslate"><span class="pre">ProjectedExponentialModel(r_exp_pc=...)</span></code> uses the scale inside
+<code class="docutils literal notranslate"><span class="pre">exp(-R/r_exp_pc)</span></code>. Its read-only <code class="docutils literal notranslate"><span class="pre">re_pc</span></code> property returns the projected
+half-light radius, <code class="docutils literal notranslate"><span class="pre">1.67834699001666</span> <span class="pre">*</span> <span class="pre">r_exp_pc</span></code>. This profile is a projected
+exponential with a Bessel-K0 three-dimensional deprojection, not a pure
+three-dimensional exponential. Plummer and Sersic still accept <code class="docutils literal notranslate"><span class="pre">re_pc</span></code> directly.</p>
 </section>
 <section id="sersic-deprojection-domains">
 <h2>Sersic deprojection domains<a class="headerlink" href="#sersic-deprojection-domains" title="Link to this heading">#</a></h2>
@@ -565,10 +569,15 @@ alone does not establish the existence of a nonnegative distribution function.</
 </section>
 <section id="halo-cutoff-conventions">
 <h2>Halo cutoff conventions<a class="headerlink" href="#halo-cutoff-conventions" title="Link to this heading">#</a></h2>
-<p>Classical spherical halo density methods evaluate the untruncated profile;
-their enclosed mass and factor calculations apply the configured cutoff.
-The spheroidal <code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel.mass_density_3d</span></code> method instead returns zero outside its
-ellipsoidal cutoff. Preserve these conventions when writing a custom integral.</p>
+<p>Spherical NFW and Zhao <code class="docutils literal notranslate"><span class="pre">mass_density_3d</span></code> methods return zero for <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">&gt;</span> <span class="pre">r_t_pc</span></code>
+in both NumPy/SciPy and JAX; the boundary is included. Their enclosed mass is
+constant outside the same cutoff. <code class="docutils literal notranslate"><span class="pre">r_t_pc=np.inf</span></code> gives an untruncated halo
+at finite radii. Zhao uses <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code> for transition, outer and
+inner slopes in both geometries.</p>
+<p>The spheroidal <code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel</span></code> applies this convention to
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">=</span> <span class="pre">sqrt(R**2</span> <span class="pre">+</span> <span class="pre">z**2/Q**2)</span></code>. Its enclosed mass is inside that ellipsoid.
+For annihilation factors, use the <a class="reference internal" href="factors.html"><span class="std std-doc">factor guide</span></a> to select the
+finite cone or an explicitly named approximation.</p>
 </section>
 </section>
 

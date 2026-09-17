@@ -1,9 +1,0 @@
-has_analytic_enclosed_mass
-==========================
-
-``jeanspy.model_numpyro.ZhaoModel.has_analytic_enclosed_mass``
-
-Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_numpyro.ZhaoModel>`.
-
-.. autoattribute:: jeanspy.model_numpyro.ZhaoModel.has_analytic_enclosed_mass
-   :no-index:

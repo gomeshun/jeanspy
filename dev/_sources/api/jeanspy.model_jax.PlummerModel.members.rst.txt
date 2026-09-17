@@ -1,0 +1,11 @@
+PlummerModel members
+====================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_jax.PlummerModel.density_2d
+   members/jeanspy.model_jax.PlummerModel.density_3d
+   members/jeanspy.model_jax.PlummerModel.log_prob_R
+   members/jeanspy.model_jax.PlummerModel.sample_R
+   members/jeanspy.model_jax.PlummerModel.sampling_identity

@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -513,9 +513,9 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="c1"># Importing model_numpyro first ensures the repository's JAX environment</span>
+<span class="c1"># Importing model_jax first ensures the repository's JAX environment</span>
 <span class="c1"># configuration is applied before JAX is imported here.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaesAnisotropyModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaesAnisotropyModel</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
@@ -751,7 +751,7 @@
 <span class="sd">        beta(r) = [beta_0 + beta_inf (r/r_a)^2] / [1 + (r/r_a)^2],</span>
 
 <span class="sd">    and admits the Appell-F1 LOS kernel implemented above.  The class is a</span>
-<span class="sd">    subclass of the generic NumPyro ``BaesAnisotropyModel`` so existing</span>
+<span class="sd">    subclass of the generic JAX ``BaesAnisotropyModel`` so existing</span>
 <span class="sd">    ``DSphModel`` kernel plumbing (including ``n_kernel`` forwarding) works</span>
 <span class="sd">    unchanged.</span>
 
@@ -776,7 +776,7 @@
 <span class="sd">    **Differentiation.** Continuous ``beta_0``/``beta_inf``/``r_a`` derivatives</span>
 <span class="sd">    on the supported fixed-rule path.</span>
 
-<span class="sd">    **Examples.** ``examples/docs_jax_spherical.py``</span>
+<span class="sd">    **Examples.** ``scripts/benchmark_baes_eta2_accuracy.py``</span>
 <span class="sd">    """</span>
 
     <span class="n">required_param_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"beta_0"</span><span class="p">,</span> <span class="s2">"beta_inf"</span><span class="p">,</span> <span class="s2">"r_a"</span><span class="p">)</span>

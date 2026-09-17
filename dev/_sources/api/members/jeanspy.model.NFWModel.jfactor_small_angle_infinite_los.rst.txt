@@ -1,0 +1,9 @@
+jfactor_small_angle_infinite_los
+================================
+
+``jeanspy.model.NFWModel.jfactor_small_angle_infinite_los``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. automethod:: jeanspy.model.NFWModel.jfactor_small_angle_infinite_los
+   :no-index:

@@ -1,5 +1,5 @@
-Axisymmetric observations and classical inference
-=================================================
+Axisymmetric observations and NumPy/SciPy inference
+===================================================
 
 .. py:module:: jeanspy.axisymmetric_inference
 

@@ -35,7 +35,7 @@
     "import os\n",
     "os.environ.setdefault(\"JEANSPY_JAX_PLATFORM\", \"cpu\")\n",
     "os.environ.setdefault(\"JEANSPY_JAX_ENABLE_X64\", \"true\")\n",
-    "from jeanspy.model_numpyro import (\n",
+    "from jeanspy.model_jax import (\n",
     "    DSphModel, PlummerModel, NFWModel, ConstantAnisotropyModel, get_runtime_config,\n",
     ")\n",
     "import jax\n",
@@ -54,7 +54,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "{'jax_platform_requested': 'cpu', 'jax_platform_effective_env': 'cpu', 'jax_backend_active': 'cpu', 'jax_enable_x64': True, 'constant_kernel_backend_default': 'jax', 'constant_kernel_n_quad_default': 32, 'sigmalos2_backend_default': 'auto', 'sigmalos2_jit_default': True, 'sigmalos2_kernel_outer_transform_default': 'sqrtlog', 'baes_kernel_n_quad_default': 32, 'baes_eta_recommended_max': 10.0, 'sigmalos2_n_u_default': 128, 'sigmalos2_n_r_default': 768, 'sigmalos2_u_max_default': 10000.0} [91.44464827 89.19126387 74.77863921]\n"
+      "{'jax_platform_requested': 'cpu', 'jax_platform_effective_env': 'cpu', 'jax_backend_active': 'cpu', 'jax_enable_x64': True, 'kernel_backend_default': 'jax', 'constant_kernel_n_quad_default': 32, 'sigmalos2_solver_default': 'auto', 'sigmalos2_jit_default': True, 'sigmalos2_kernel_outer_transform_default': 'sqrtlog', 'baes_kernel_n_quad_default': 32, 'baes_eta_recommended_max': 10.0, 'sigmalos2_n_u_default': 128, 'sigmalos2_n_r_default': 768, 'sigmalos2_u_max_default': 10000.0} [91.44464827 89.19126387 74.77863921]\n"
      ]
     }
    ],
@@ -66,7 +66,7 @@
     "              r_t_pc=5000., beta_ani=-.2)\n",
     "R_pc = jnp.array([30., 100., 300.])\n",
     "variance = jax.block_until_ready(model.sigmalos2(\n",
-    "    R_pc, params=params, backend=\"kernel\", n_u=128, n_kernel=64))\n",
+    "    R_pc, params=params, solver=\"kernel\", n_u=128, n_kernel=64))\n",
     "assert variance.shape == (3,) and np.all(np.asarray(variance) > 0)\n",
     "sampled_R = tracer.sample_R(jax.random.PRNGKey(20260913), 8, re_pc=300.)\n",
     "assert sampled_R.shape == (8,)\n",
@@ -92,7 +92,7 @@
    "outputs": [],
    "source": [
     "denser = {**params, \"rhos_Msunpc3\": 2 * params[\"rhos_Msunpc3\"]}\n",
-    "variance_denser = model.sigmalos2(R_pc, params=denser, backend=\"kernel\")"
+    "variance_denser = model.sigmalos2(R_pc, params=denser, solver=\"kernel\")"
    ]
   },
   {
@@ -100,29 +100,31 @@
    "id": "10f789dc",
    "metadata": {},
    "source": [
-    "Logarithms and other sampling transforms belong in `ParameterSpec`, not in\n",
+    "Logarithms and other sampling transforms belong in `SamplingParameter` (NumPy/SciPy) or `ParameterSpec` (NumPyro), not in\n",
     "the physical dictionary. For instance, `rs_pc` is a radius in pc even when\n",
     "the sampler uses a coordinate called `log10_rs_pc`.\n",
     "\n",
     "## Generalize the NFW inner slope\n",
     "\n",
     "`NFWModel` fixes the inner and outer density slopes to 1 and 3. The\n",
-    "Quickstart instead uses `ZhaoModel` with `a=1`, `b=3` and a variable `g`:\n",
+    "Quickstart instead uses `ZhaoModel` with `alpha=1`, `beta=3` and a variable `gamma`:\n",
     "\n",
     "$$\n",
-    "\\rho(r)=\\frac{\\rho_s}{(r/r_s)^g(1+r/r_s)^{3-g}}.\n",
+    "\\rho(r)=\\frac{\\rho_s}{(r/r_s)^gamma(1+r/r_s)^{3-gamma}}.\n",
     "$$\n",
     "\n",
-    "Here `g=0` has a finite central density, `g=1` recovers NFW and `g=2`\n",
+    "Here `gamma=0` has a finite central density, `gamma=1` recovers NFW and `gamma=2`\n",
     "has a steeper cusp. `rhos_Msunpc3` is the normalization $\\rho_s$; the density\n",
-    "at $r_s$ is $\\rho_s/2^{3-g}$. Keep `a` and `b` in the fixed physical\n",
-    "dictionary, and sample `g` in `ParameterSpec`. Use the differentiable\n",
-    "numerical Zhao mass when fitting `g`; switching to `NFWModel` fixes this\n",
+    "at $r_s$ is $\\rho_s/2^{3-gamma}$. Keep `a` and `b` in the fixed physical\n",
+    "dictionary, and sample `gamma` in `SamplingParameter` (NumPy/SciPy) or `ParameterSpec` (NumPyro). Use the differentiable\n",
+    "numerical Zhao mass when fitting `gamma`; switching to `NFWModel` fixes this\n",
     "slope instead. The [inference notebook](inference.ipynb) demonstrates this fit.\n",
     "\n",
-    "## Use the classical interface\n",
+    "<a id=\"use-the-classical-interface\"></a>\n",
     "\n",
-    "Classical spherical components store their parameters. All required physical\n",
+    "## Use the NumPy/SciPy interface\n",
+    "\n",
+    "NumPy/SciPy spherical components store their parameters. All required physical\n",
     "values must be supplied; omitted values can remain NaN. This example supplies\n",
     "every parameter and evaluates the assembled model:"
    ]
@@ -178,7 +180,7 @@
     "\n",
     "## Implement your own tracer\n",
     "\n",
-    "The following minimal classical tracer implements the Plummer formula again\n",
+    "The following minimal NumPy/SciPy tracer implements the Plummer formula again\n",
     "so that it can be checked against a built-in reference. Replace these two\n",
     "consistent projected and spatial densities with your own profile once their\n",
     "normalization and projection relation are established."
@@ -226,7 +228,7 @@
    "metadata": {},
    "source": [
     "`required_param_names` declares the scalar parameters maintained by the\n",
-    "classical `Model` container. `required_models={}` means that the component has\n",
+    "NumPy/SciPy `Model` container. `required_models={}` means that the component has\n",
     "no nested components. The LOS solver needs both `density_2d` and `density_3d`;\n",
     "implement them for scalar and broadcast array inputs. Extra helpers such as a\n",
     "radial CDF or sampling method are needed only when your own workflow uses them.\n",
@@ -263,7 +265,7 @@
     "limits, and refine the Jeans quadrature. These checks do not establish the\n",
     "existence of a physical distribution function.\n",
     "\n",
-    "For a custom classical halo, implement a consistent mass density and enclosed\n",
+    "For a custom NumPy/SciPy halo, implement a consistent mass density and enclosed\n",
     "mass with an explicit cutoff convention; consult\n",
     "[`jeanspy.model.DMModel`](https://gomeshun.github.io/jeanspy/dev/api/all.html). A custom anisotropy must implement the\n",
     "`beta`, `f` and `kernel` interfaces consistently; see\n",
@@ -292,11 +294,12 @@
  "metadata": {
   "jeanspy": {
    "execution": {
-    "code_sha256": "3e9ace5f57ee2374ead0233539c855c68daf3eb1f350754b63a2e1d3f9fd3110",
+    "code_sha256": "de6678e58e6a7d43dbdea2c75a76ba8a5ad4bfd367d1f2c53d3ce1c303a36753",
     "jax_enable_x64": true,
-    "lock_sha256": "3760852a1fa968563d71f8ebeb26a5734b2cefcea771bb1d71d6659f376ee4c9",
+    "lock_sha256": "a30f366620e23a49d6d7466055223a761824454169d8fc0364c24ac25b626dc7",
     "packages": {
      "arviz": "1.0.0",
+     "corner": "2.2.3",
      "jax": "0.9.1",
      "jeanspy": "0.1.0",
      "matplotlib": "3.10.8",
@@ -306,34 +309,35 @@
     },
     "platform": "cpu",
     "source_sha256": {
-     "src/jeanspy/__init__.py": "f2134c34567b2cfc530c39380201b2b734a503a51308396bbd79484cfa6bb745",
+     "src/jeanspy/__init__.py": "61671d182af04c0056cfb8d273db499d8774694711506698dbe7dc4a63d3b403",
      "src/jeanspy/_axisymmetric_components.py": "4b203c616c87e55182d105b37f9fa49e44fe1df6bc430ccccb09edc5cca42530",
-     "src/jeanspy/_axisymmetric_params.py": "93235bf5233a12bac6e9a80991db44d36c7cebed8d94fa064152095580e4712a",
-     "src/jeanspy/_classical/__init__.py": "303f79d4512f42501139e724ef95c732e530927e7172f0740ed50eeb6fd3a7b4",
-     "src/jeanspy/_classical/core.py": "00ada258d108fd03fd790f174fba75c8168d4c3db77a6e1ee9bf29d4442996fd",
-     "src/jeanspy/_classical/inference.py": "e9c872ec069f79b19dbfb2797873d64fb7e45c71cbcb4cd9c9aec0bda013a158",
-     "src/jeanspy/_classical/jfactor.py": "6bb094c788f4410b19d4b33b478b67923b94125e199355f935412fcc22d9cc0d",
-     "src/jeanspy/_classical/profiles.py": "78b08d1387ec8e35d1d3dd96841cbf4805d8326e19418a547115fc28ba91bb4e",
-     "src/jeanspy/_classical/solver.py": "beae38b0b2133c97fe570f25abe05166bf17804f0fd9af6cd8a06d33a265965d",
+     "src/jeanspy/_axisymmetric_params.py": "85da8de45bf5ba8cd9a40a137f7ccf971f7ce9534f312ef49fcd33539a230802",
+     "src/jeanspy/_classical/__init__.py": "d5187977c58109e363c5ef0a65dca261494ce46631183f4d0e0f287eab0a7a08",
+     "src/jeanspy/_classical/core.py": "c04e2def5a4ce4d16b65ac9f267d76c13a1202b45b1e82979a89827abf380776",
+     "src/jeanspy/_classical/inference.py": "70318ea7aa95adc2f8a6c8faca63ef449c3920903383c20666008af11e21d1ec",
+     "src/jeanspy/_classical/jfactor.py": "823f58a66a615ba59e057022ce51e2adfab577c25a4ced2f2033304c2cbd6cfe",
+     "src/jeanspy/_classical/profiles.py": "55ec7eb51d23cf2ac7f30da926f5d4e2a16cac24c8e6a0c0525d863888782940",
+     "src/jeanspy/_classical/solver.py": "7ec60a39c5eb90a9bbfdc52e3b2086ade4c690a38541211f1b90c3625dee596b",
      "src/jeanspy/_jax_env.py": "70ac1afc652c2ef3f250603b623794083b78130b4fc7044076b6d8af8db148b2",
-     "src/jeanspy/_model_impl.py": "ffd8c87d3b2a09ff89aef48c0cfbc1f09cf6d24d357345d23ed8be013dca320c",
+     "src/jeanspy/_model_impl.py": "e64b55d7410964425c217874fa3c949b97dad05b711350480728aa1bab49f5b4",
      "src/jeanspy/_sampling_identity.py": "ca87e62dc3bff542a21d9ea2b6ee5425504ac483c0a8eaa01203e6a1ce3058a5",
      "src/jeanspy/_sersic_deprojection.py": "004c5566448698ecfe536096c3fc8d5c348a8d4e1610042763c77568c0f3d821",
-     "src/jeanspy/_zhao.py": "e7b9cc51321f7fb20ea0413ee99dab50d94d33e77a44fe4877ec1f608f849578",
-     "src/jeanspy/axisymmetric.py": "05ff2f258161afcd183cc4b417d6dcaca54c473fe192c32e24604223f411d3f7",
+     "src/jeanspy/_zhao.py": "df83c7427dc583123c7464a03d2d45272e90f5a6724c9729eee64fad92e0c41a",
+     "src/jeanspy/axisymmetric.py": "683d67b91f8eb67e8d898eb23e6c8ca0e5c78020a65a7d05e183c19b076bd506",
      "src/jeanspy/axisymmetric_factors.py": "7ad5e4240f0e8016d5780e6b99e92e73a3fb5b96555a567ac77920c24c81930d",
-     "src/jeanspy/axisymmetric_inference.py": "40bc3a243c9c43df254a9a9cad9acafad014e555684ae7c2fab378aeddf08b99",
-     "src/jeanspy/axisymmetric_numpyro.py": "dfb7f0f9717f6ef543a5daf3532c5ee5841b8884fc2f8af954372682913d6e47",
-     "src/jeanspy/baes_eta2.py": "28f9eb3f2e8a802e889ae381d5d305f2eb54f9afd40ee0b03db1323e4f8c6298",
+     "src/jeanspy/axisymmetric_inference.py": "ed7fb058c2b634839b00a0886730afedf3d63fa242093b03e95b0434701e4e82",
+     "src/jeanspy/axisymmetric_jax.py": "de5f78937104ce7008242d55c321c8a3c6d9491f6aa25d4be3bdab8de076ed54",
+     "src/jeanspy/baes_eta2.py": "bebae39d3cea2bb678d83297b62151e9c6b5e2392a31644585ecbc9fece63b98",
      "src/jeanspy/dequad.py": "0a4b0bb9f4993a50bb84aa73d424979907c1ee052bccfd2ebaa7f82d81512e79",
      "src/jeanspy/hyp2f1_jax.py": "04adbf7c63ddefc5a072252fd66ca4b89b4cbec7359675acbfe3c8c7f007b226",
-     "src/jeanspy/model.py": "88627d37bbaec208872819f8e9aa898a53220bd11416689914ab0ae7c039e1be",
-     "src/jeanspy/model_numpyro.py": "fee85f602bac18f09058e64f93438167b9501eb65b06c5c16ac06ca4bd1f7117",
-     "src/jeanspy/sampler.py": "c3aed0607224aa30295cd5a50add4f652c6b7fe30d8e0d6dbbc4c8241cc223d4",
-     "src/jeanspy/sampler_numpyro.py": "8f3ef398aa3cec6d3376ad33c829e9812cda613f40c1fbee9b14919aa3ae0df3",
-     "src/jeanspy/sersic.py": "24c972e865f6557026a1d75e1ce283ea1a6217af16f07f537f1dee70c3e2cb13"
+     "src/jeanspy/model.py": "c1cfb027552405ddf5498088e22715cce6c7a8c9950448ea879e0cde94fa0e2f",
+     "src/jeanspy/model_jax.py": "77598789a6970436d3129d00cbddab9969540da1c1b7d4adf339c39c35454088",
+     "src/jeanspy/parameters.py": "7760f4c85063105eb1328910867f3c57516f885dc577533bf9b91ac08a648cb2",
+     "src/jeanspy/sampler.py": "1639fae513ebe198fda6b1d3718d8e8907fdc44ef2be03afe1627c541a5b72c3",
+     "src/jeanspy/sampler_numpyro.py": "712ed43a04ba63a679eff1109b616108db9b553fa3f9a7fbed42a9d9d79ebd6a",
+     "src/jeanspy/sersic.py": "b9f0af0097277a4ca09f59687fbf9b1b46ef49566f84f6d41f689bcf3cee44f6"
     },
-    "utc": "2026-09-16T01:41:05.920261+00:00"
+    "utc": "2026-09-17T03:34:36.381384+00:00"
    },
    "mcmc": false
   },

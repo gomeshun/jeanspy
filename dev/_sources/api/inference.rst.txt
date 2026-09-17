@@ -15,8 +15,16 @@ NumPy/SciPy
    jeanspy.model.AxisymmetricDSphEstimationModel
    jeanspy.model.AxisymmetricKinematicData
 
-Classical emcee sampling and HDF5 storage
+Explicit NumPy/SciPy sampling coordinates
 -----------------------------------------
+
+.. autosummary::
+   :toctree: generated
+
+   jeanspy.parameters.SamplingParameter
+
+emcee sampling and HDF5 storage
+-------------------------------
 
 .. autosummary::
    :toctree: generated

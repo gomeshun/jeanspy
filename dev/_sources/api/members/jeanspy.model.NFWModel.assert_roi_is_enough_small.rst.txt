@@ -1,9 +1,0 @@
-assert_roi_is_enough_small
-==========================
-
-``jeanspy.model.NFWModel.assert_roi_is_enough_small``
-
-Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
-
-.. automethod:: jeanspy.model.NFWModel.assert_roi_is_enough_small
-   :no-index:

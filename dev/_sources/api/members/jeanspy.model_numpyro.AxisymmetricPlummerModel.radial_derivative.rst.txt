@@ -1,9 +1,0 @@
-radial_derivative
-=================
-
-``jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative``
-
-Class and construction: :doc:`AxisymmetricPlummerModel <../generated/jeanspy.model_numpyro.AxisymmetricPlummerModel>`.
-
-.. automethod:: jeanspy.model_numpyro.AxisymmetricPlummerModel.radial_derivative
-   :no-index:

@@ -1,9 +1,0 @@
-sampling_identity
-=================
-
-``jeanspy.model_numpyro.DSphModel.sampling_identity``
-
-Class and construction: :doc:`DSphModel <../generated/jeanspy.model_numpyro.DSphModel>`.
-
-.. automethod:: jeanspy.model_numpyro.DSphModel.sampling_identity
-   :no-index:

@@ -1,0 +1,9 @@
+beta
+====
+
+``jeanspy.model_jax.OsipkovMerrittModel.beta``
+
+Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model_jax.OsipkovMerrittModel>`.
+
+.. automethod:: jeanspy.model_jax.OsipkovMerrittModel.beta
+   :no-index:

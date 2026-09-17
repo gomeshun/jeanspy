@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -535,7 +535,7 @@
 anisotropy. Their parameter interfaces and numerical implementations differ.
 The Quickstart uses <strong>JAX/NumPyro</strong> so the likelihood can supply gradients to
 NUTS. Choose NumPy/SciPy when you need its profile implementations or a
-classical, stateful interface.</p>
+stateful interface.</p>
 <p>This notebook is self-contained. Install JeansPy with the <code class="docutils literal notranslate"><span class="pre">numpyro_cpu</span></code> and
 <code class="docutils literal notranslate"><span class="pre">plotting</span></code> extras as described in the installation guide, then select that
 environment as your Jupyter kernel and run cells from top to bottom.
@@ -552,7 +552,7 @@ Saved outputs are an example run; timings and short-chain results can vary.</p>
 <tbody>
 <tr class="row-even"><td><p>Spherical import</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">jeanspy.model</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">jeanspy.model_numpyro</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jeanspy.model_jax</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Physical parameters</p></td>
 <td><p>Stored in components; change with <code class="docutils literal notranslate"><span class="pre">update(...)</span></code></p></td>
@@ -579,7 +579,7 @@ Saved outputs are an example run; timings and short-chain results can vary.</p>
 </div>
 <p>Backend choice does not change the intended physical units. It does change
 available models, argument names, returned shapes and numerical defaults.
-For example, the classical spherical solver has <code class="docutils literal notranslate"><span class="pre">sigmalos</span></code> and <code class="docutils literal notranslate"><span class="pre">sigmalos2</span></code>;
+For example, the NumPy/SciPy spherical solver has <code class="docutils literal notranslate"><span class="pre">sigmalos</span></code> and <code class="docutils literal notranslate"><span class="pre">sigmalos2</span></code>;
 the JAX model exposes <code class="docutils literal notranslate"><span class="pre">sigmalos2</span></code>, whose square root gives the dispersion.
 The profile catalogues are not identical. See the two sections of the
 <a class="reference internal" href="../api/spherical.html"><span class="std std-doc">spherical API</span></a> before switching a component.</p>
@@ -587,7 +587,7 @@ The profile catalogues are not identical. See the two sections of the
 <section id="build-the-same-model-twice">
 <h2>Build the same model twice<a class="headerlink" href="#build-the-same-model-twice" title="Link to this heading">#</a></h2>
 <p>This executable example uses the same physical values and radius grid for
-both backends. The classical components receive constructor parameters;
+both backends. The NumPy/SciPy components receive constructor parameters;
 the JAX components receive a dictionary at evaluation time.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -595,8 +595,8 @@ the JAX components receive a dictionary at evaluation time.</p>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_PLATFORM"</span><span class="p">,</span> <span class="s2">"cpu"</span><span class="p">)</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_ENABLE_X64"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">model</span> <span class="k">as</span> <span class="n">classical</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_numpyro</span> <span class="k">as</span> <span class="n">functional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">model</span> <span class="k">as</span> <span class="n">numpy_backend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_jax</span> <span class="k">as</span> <span class="n">jax_backend</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -605,25 +605,25 @@ the JAX components receive a dictionary at evaluation time.</p>
 <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
               <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">5000.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
 <span class="n">R_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">1000.</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
-<span class="n">numpy_model</span> <span class="o">=</span> <span class="n">classical</span><span class="o">.</span><span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
-    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">classical</span><span class="o">.</span><span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]),</span>
-    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">classical</span><span class="o">.</span><span class="n">NFWModel</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>
+<span class="n">numpy_model</span> <span class="o">=</span> <span class="n">numpy_backend</span><span class="o">.</span><span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">numpy_backend</span><span class="o">.</span><span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]),</span>
+    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">numpy_backend</span><span class="o">.</span><span class="n">NFWModel</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>
                                     <span class="p">(</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">)}),</span>
-    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">classical</span><span class="o">.</span><span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">numpy_backend</span><span class="o">.</span><span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span>
 <span class="p">})</span>
-<span class="n">jax_model</span> <span class="o">=</span> <span class="n">functional</span><span class="o">.</span><span class="n">DSphModel</span><span class="p">(</span><span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
-    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">functional</span><span class="o">.</span><span class="n">PlummerModel</span><span class="p">(),</span>
-    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">functional</span><span class="o">.</span><span class="n">NFWModel</span><span class="p">(),</span>
-    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">functional</span><span class="o">.</span><span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
+<span class="n">jax_model</span> <span class="o">=</span> <span class="n">jax_backend</span><span class="o">.</span><span class="n">DSphModel</span><span class="p">(</span><span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">jax_backend</span><span class="o">.</span><span class="n">PlummerModel</span><span class="p">(),</span>
+    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">jax_backend</span><span class="o">.</span><span class="n">NFWModel</span><span class="p">(),</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">jax_backend</span><span class="o">.</span><span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
 <span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">functional</span><span class="o">.</span><span class="n">get_runtime_config</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">jax_backend</span><span class="o">.</span><span class="n">get_runtime_config</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">devices</span><span class="p">())</span>
 <span class="c1">#</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'jax_platform_requested': 'cpu', 'jax_platform_effective_env': 'cpu', 'jax_backend_active': 'cpu', 'jax_enable_x64': True, 'constant_kernel_backend_default': 'jax', 'constant_kernel_n_quad_default': 32, 'sigmalos2_backend_default': 'auto', 'sigmalos2_jit_default': True, 'sigmalos2_kernel_outer_transform_default': 'sqrtlog', 'baes_kernel_n_quad_default': 32, 'baes_eta_recommended_max': 10.0, 'sigmalos2_n_u_default': 128, 'sigmalos2_n_r_default': 768, 'sigmalos2_u_max_default': 10000.0}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'jax_platform_requested': 'cpu', 'jax_platform_effective_env': 'cpu', 'jax_backend_active': 'cpu', 'jax_enable_x64': True, 'kernel_backend_default': 'jax', 'constant_kernel_n_quad_default': 32, 'sigmalos2_solver_default': 'auto', 'sigmalos2_jit_default': True, 'sigmalos2_kernel_outer_transform_default': 'sqrtlog', 'baes_kernel_n_quad_default': 32, 'baes_eta_recommended_max': 10.0, 'sigmalos2_n_u_default': 128, 'sigmalos2_n_r_default': 768, 'sigmalos2_u_max_default': 10000.0}
 [CpuDevice(id=0)]
 </pre></div>
 </div>
@@ -646,8 +646,8 @@ installing GPU dependencies alone does not establish which device is active.</p>
 <span class="n">jax</span><span class="o">.</span><span class="n">block_until_ready</span><span class="p">((</span><span class="n">R_jax</span><span class="p">,</span> <span class="n">jax_params</span><span class="p">))</span>  <span class="c1"># Complete transfers before timing.</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_jax</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span>
-                               <span class="n">constant_kernel_backend</span><span class="o">=</span><span class="s2">"jax"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jax_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_jax</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span>
+                               <span class="n">kernel_backend</span><span class="o">=</span><span class="s2">"jax"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 
 <span class="n">start</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
 <span class="n">jax_variance</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">block_until_ready</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">jax_params</span><span class="p">))</span>
@@ -666,7 +666,7 @@ installing GPU dependencies alone does not establish which device is active.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'numpy_call_s': 0.001767248846590519, 'jax_first_call_s': 0.334632113808766, 'jax_repeated_median_s': 0.001156575046479702, 'max_relative_variance_difference': 3.200623051036189e-07}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'numpy_call_s': 0.0028806328773498535, 'jax_first_call_s': 0.499122564913705, 'jax_repeated_median_s': 0.0026582928840070963, 'max_relative_variance_difference': 3.200623051036189e-07}
 </pre></div>
 </div>
 </div>
@@ -733,9 +733,9 @@ For other parameters, check gradients against finite differences and refined
 quadrature on the intended domain. Use JAX operations in transforms and
 custom components; converting a traced value with <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">np.asarray</span></code>
 breaks that calculation.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">backend=&quot;kernel&quot;</span></code> option above selects a numerical route <strong>within JAX</strong>;
+<p>The <code class="docutils literal notranslate"><span class="pre">solver=&quot;kernel&quot;</span></code> option above selects a numerical route <strong>within JAX</strong>;
 it is separate from selecting NumPy versus JAX by import. For the constant
-anisotropy kernel, <code class="docutils literal notranslate"><span class="pre">constant_kernel_backend=&quot;jax&quot;</span></code> keeps the path in JAX.
+anisotropy kernel, <code class="docutils literal notranslate"><span class="pre">kernel_backend=&quot;jax&quot;</span></code> keeps the path in JAX.
 The SciPy callback alternative is not an all-JAX differentiable kernel.
 Cutoffs, validity masks and discrete choices also need care at boundaries.
 Current J/D-factor postprocessing uses NumPy and is not a differentiable

@@ -30,10 +30,10 @@ JAX
 .. autosummary::
    :toctree: generated
 
-   jeanspy.model_numpyro.AxisymmetricDSphModel
-   jeanspy.model_numpyro.AxisymmetricPlummerModel
-   jeanspy.model_numpyro.AxisymmetricZhaoModel
-   jeanspy.model_numpyro.AxisymmetricConstantAnisotropyModel
+   jeanspy.model_jax.AxisymmetricDSphModel
+   jeanspy.model_jax.AxisymmetricPlummerModel
+   jeanspy.model_jax.AxisymmetricZhaoModel
+   jeanspy.model_jax.AxisymmetricConstantAnisotropyModel
 
 Finite-cone NumPy J and D factors
 ---------------------------------

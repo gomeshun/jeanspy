@@ -1,0 +1,18 @@
+﻿AxisymmetricConstantAnisotropyModel
+===================================
+
+``jeanspy.model_jax.AxisymmetricConstantAnisotropyModel``
+
+
+See :doc:`methods and properties <../jeanspy.model_jax.AxisymmetricConstantAnisotropyModel.members>` for individual
+lookup pages, or the :doc:`alphabetical API dictionary <../all>` to search
+all classes. The full class contract and existing member anchors are retained below.
+
+
+.. currentmodule:: jeanspy.model_jax
+
+.. autoclass:: AxisymmetricConstantAnisotropyModel
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

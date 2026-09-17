@@ -12,8 +12,7 @@ NumPy/SciPy
    jeanspy.model.ConstantAnisotropyModel
    jeanspy.model.DMModel
    jeanspy.model.DSphModel
-   jeanspy.model.Exp2dModel
-   jeanspy.model.Exp3dModel
+   jeanspy.model.ProjectedExponentialModel
    jeanspy.model.NFWModel
    jeanspy.model.OsipkovMerrittModel
    jeanspy.model.PlummerModel
@@ -28,13 +27,13 @@ JAX
 .. autosummary::
    :toctree: generated
 
-   jeanspy.model_numpyro.PlummerModel
-   jeanspy.model_numpyro.ZhaoModel
-   jeanspy.model_numpyro.NFWModel
-   jeanspy.model_numpyro.ConstantAnisotropyModel
-   jeanspy.model_numpyro.BaesAnisotropyModel
-   jeanspy.model_numpyro.OsipkovMerrittModel
-   jeanspy.model_numpyro.DSphModel
+   jeanspy.model_jax.PlummerModel
+   jeanspy.model_jax.ZhaoModel
+   jeanspy.model_jax.NFWModel
+   jeanspy.model_jax.ConstantAnisotropyModel
+   jeanspy.model_jax.BaesAnisotropyModel
+   jeanspy.model_jax.OsipkovMerrittModel
+   jeanspy.model_jax.DSphModel
 
 Specialized Baes anisotropy kernels
 -----------------------------------

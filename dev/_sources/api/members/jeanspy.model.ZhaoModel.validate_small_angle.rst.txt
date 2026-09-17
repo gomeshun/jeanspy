@@ -1,0 +1,9 @@
+validate_small_angle
+====================
+
+``jeanspy.model.ZhaoModel.validate_small_angle``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. automethod:: jeanspy.model.ZhaoModel.validate_small_angle
+   :no-index:

@@ -1,9 +1,0 @@
-jfactor_ullio2016
-=================
-
-``jeanspy.model.NFWModel.jfactor_ullio2016``
-
-Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
-
-.. automethod:: jeanspy.model.NFWModel.jfactor_ullio2016
-   :no-index:

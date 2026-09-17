@@ -1,9 +1,0 @@
-valid_mass_domain
-=================
-
-``jeanspy.model_numpyro.ZhaoModel.valid_mass_domain``
-
-Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_numpyro.ZhaoModel>`.
-
-.. automethod:: jeanspy.model_numpyro.ZhaoModel.valid_mass_domain
-   :no-index:

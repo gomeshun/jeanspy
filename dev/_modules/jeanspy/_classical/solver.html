@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -494,7 +494,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for jeanspy._classical.solver</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Jeans-equation solvers for the classical NumPy/SciPy backend."""</span>
+<span></span><span class="sd">"""Jeans-equation solvers for the NumPy/SciPy backend."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -800,7 +800,7 @@
 <span class="sd">        -----</span>
 <span class="sd">        This NumPy/SciPy calculation reads the stored model parameters.</span>
 <span class="sd">        Refine ``n`` and ``n_kernel`` to check numerical convergence.</span>
-<span class="sd">        The classical inference model uses this entry point with its defaults;</span>
+<span class="sd">        The NumPy/SciPy inference model uses this entry point with its defaults;</span>
 <span class="sd">        no extra callable or closure is needed when passing it to emcee.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"dequad"</span><span class="p">:</span>

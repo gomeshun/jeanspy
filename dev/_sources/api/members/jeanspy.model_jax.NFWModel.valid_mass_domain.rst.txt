@@ -1,0 +1,9 @@
+valid_mass_domain
+=================
+
+``jeanspy.model_jax.NFWModel.valid_mass_domain``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model_jax.NFWModel>`.
+
+.. automethod:: jeanspy.model_jax.NFWModel.valid_mass_domain
+   :no-index:

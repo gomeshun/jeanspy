@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -536,7 +536,7 @@ additional diagnostics.</p>
 <p>Build a <strong>Plummer + generalized NFW + constant anisotropy</strong> model, generate
 mock velocities, run MCMC, resume from disk, and inspect the saved posterior.
 The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code> and a sampled
-inner slope <code class="docutils literal notranslate"><span class="pre">g</span></code>. The small dataset lets the complete example run on a CPU.</p>
+inner slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code>. The small dataset lets the complete example run on a CPU.</p>
 <p>Install the package using the <a class="reference internal" href="../installation.html"><span class="std std-doc">installation guide</span></a>. The emcee
 example needs the <code class="docutils literal notranslate"><span class="pre">plotting</span></code> extra; the NumPyro example also needs
 <code class="docutils literal notranslate"><span class="pre">numpyro_cpu</span></code>. Run the scripts below from the source checkout. Use a new output
@@ -546,18 +546,18 @@ directory for each example.</p>
 <p>Both backends use the same 32 mock stars. Lengths are in pc, velocities in km/s,
 and halo densities in solar masses per cubic parsec. The Plummer tracer weights
 the kinematics and contributes no gravitational mass. The tracer scale, Zhao
-exponents <code class="docutils literal notranslate"><span class="pre">a=1,</span> <span class="pre">b=3</span></code> and untruncated halo cutoff are fixed. The mock has <code class="docutils literal notranslate"><span class="pre">g=1</span></code>
+exponents <code class="docutils literal notranslate"><span class="pre">alpha=1,</span> <span class="pre">beta=3</span></code> and untruncated halo cutoff are fixed. The mock has <code class="docutils literal notranslate"><span class="pre">gamma=1</span></code>
 (standard NFW), while inference allows the inner slope to vary from 0 to 2.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span>
 
 <span class="c1"># This example fixes photometry and the outer halo shape, and fits five parameters.</span>
 <span class="n">true_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-                   <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+                   <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
 <span class="n">truth_model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">],</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
     <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]),</span>
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">true_params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>
-                           <span class="p">(</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">)}),</span>
+                           <span class="p">(</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">,</span> <span class="s2">"beta"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">)}),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">]),</span>
 <span class="p">})</span>
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
@@ -569,11 +569,11 @@ exponents <code class="docutils literal notranslate"><span class="pre">a=1,</spa
 <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">R_pc</span><span class="o">=</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="o">=</span><span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="n">e_vlos_kms</span><span class="p">)</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id1">
+<figure class="align-default" id="id2">
 <a class="reference internal image-reference" href="../_images/observations.png"><img alt="Synthetic line-of-sight velocities versus projected radius with measurement error bars." src="../_images/observations.png" style="width: 640px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Mock observations generated by the code above, with random seed 123.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">Mock observations generated by the code above, with random seed 123.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>We sample five parameters with the same uniform priors in both backends:</p>
@@ -596,7 +596,7 @@ exponents <code class="docutils literal notranslate"><span class="pre">a=1,</spa
 <td class="text-right"><p>1.0</p></td>
 <td><p>Logarithm of the halo density scale</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">g</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gamma</span></code></p></td>
 <td class="text-right"><p>0.0</p></td>
 <td class="text-right"><p>2.0</p></td>
 <td><p>Inner halo density slope</p></td>
@@ -632,7 +632,7 @@ NumPy / SciPy / emcee</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/docs_quickstart_emcee.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/jeanspy-emcee-example
 </pre></div>
 </div>
-<p><strong>Construct the model.</strong> Classical components store their physical parameters.</p>
+<p><strong>Construct the model.</strong> NumPy/SciPy components store their physical parameters.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span>
@@ -648,7 +648,7 @@ NumPy / SciPy / emcee</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
     <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">),</span>
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
-                         <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+                         <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span>
 <span class="p">})</span>
 <span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
@@ -663,7 +663,7 @@ identical when using this emcee interface; the JeansPy
 checks for its supported estimation-model classes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample halo radius, density, inner slope, anisotropy and systemic velocity.</span>
 <span class="c1"># These illustrative priors are uniform in the named coordinates.</span>
-<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
 <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.</span><span class="p">])</span>
 <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">,</span> <span class="mf">50.</span><span class="p">])</span>
 
@@ -673,7 +673,7 @@ checks for its supported estimation-model classes.</p>
         <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
     <span class="n">log_rs</span><span class="p">,</span> <span class="n">log_rho</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">theta</span>
     <span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rs</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rho</span><span class="p">,</span>
-                 <span class="n">g</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
+                 <span class="n">gamma</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
     <span class="n">variance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">variance</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">vlos_kms</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">variance</span><span class="p">)</span>
 
@@ -727,7 +727,7 @@ Mean acceptance fraction: 0.418
 Parameter                 16%      50%      84%
 log10_rs_pc                 2.438    3.130    3.616
 log10_rhos_Msunpc3         -2.284   -1.432   -0.394
-g                           0.281    0.889    1.373
+gamma                       0.281    0.889    1.373
 beta_ani                   -0.455    0.184    0.637
 vmem_kms                   -1.630   -0.123    1.150
 Short-run autocorrelation-time estimates:
@@ -735,29 +735,29 @@ Short-run autocorrelation-time estimates:
 Walkers interact: no R-hat from this single ensemble.
 </pre></div>
 </div>
-<figure class="align-default" id="id2">
+<figure class="align-default" id="id3">
 <a class="reference internal image-reference" href="../_images/emcee-trace.png"><img alt="Posterior histograms and stored emcee walker traces for five sampled parameters." src="../_images/emcee-trace.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Posterior histograms and walker traces. Dashed red lines mark the generating values.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+<p><span class="caption-text">Posterior histograms and walker traces. Dashed red lines mark the generating values.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<figure class="align-default" id="id3">
+<figure class="align-default" id="id4">
 <a class="reference internal image-reference" href="../_images/emcee-autocorrelation.png"><img alt="Autocorrelation versus lag for each of the five emcee sampling coordinates." src="../_images/emcee-autocorrelation.png" style="width: 640px;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Mean autocorrelation across walkers. A short-chain estimate of its integrated
-time is exploratory; interacting walkers are not independent chains for R-hat.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+time is exploratory; interacting walkers are not independent chains for R-hat.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<figure class="align-default" id="id4">
+<figure class="align-default" id="id5">
 <a class="reference internal image-reference" href="../_images/emcee-posterior.png"><img alt="Marginal and pairwise emcee posterior distributions, with generating values and central 68 percent intervals." src="../_images/emcee-posterior.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">The corner plot shows 68% and 95% enclosed-probability contours in each
 2-D marginal. The diagonal dashed lines mark 16%, 50% and 84% quantiles;
 black lines mark the generating values. Contours are estimated from smoothed
-histograms. A mock-data posterior need not peak at the generating value.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+histograms. A mock-data posterior need not peak at the generating value.</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -770,14 +770,14 @@ python<span class="w"> </span>examples/docs_quickstart_numpyro.py<span class="w"
 </pre></div>
 </div>
 <p><strong>Construct the model.</strong> JAX components receive physical parameters explicitly.
-Import the components from <code class="docutils literal notranslate"><span class="pre">jeanspy.model_numpyro</span></code> and the likelihood and
+Import the components from <code class="docutils literal notranslate"><span class="pre">jeanspy.model_jax</span></code> and the likelihood and
 sampler from <code class="docutils literal notranslate"><span class="pre">jeanspy.sampler_numpyro</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_PLATFORM"</span><span class="p">,</span> <span class="s2">"cpu"</span><span class="p">)</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_ENABLE_X64"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">)</span>
 
 <span class="c1"># Import JeansPy before JAX so its precision/device settings take effect.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">NumPyroSampler</span><span class="p">,</span> <span class="n">ParameterSpec</span>
@@ -800,9 +800,9 @@ sampler from <code class="docutils literal notranslate"><span class="pre">jeansp
     <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
     <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
 <span class="p">})</span>
-<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
                <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 <span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
 </pre></div>
@@ -820,7 +820,7 @@ warmup, after checking that the analysis and environment match the stored state.
     <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
      <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
                          <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
-     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"gamma"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">)),</span>
      <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))],</span>
     <span class="n">parameter_postprocess</span><span class="o">=</span><span class="n">physical_parameters</span><span class="p">,</span>
@@ -832,7 +832,7 @@ warmup, after checking that the analysis and environment match the stored state.
     <span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span>
                   <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
                       <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
-                      <span class="s2">"g"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
+                      <span class="s2">"gamma"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
     <span class="k">return</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="n">num_samples</span><span class="p">,</span>
                 <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -863,7 +863,7 @@ warmup, after checking that the analysis and environment match the stored state.
                                           <span class="n">original</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         <span class="c1"># checkpoint-end</span>
         <span class="c1"># diagnostics-start</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">"Divergences:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">idata</span><span class="p">[</span><span class="s2">"sample_stats"</span><span class="p">][</span><span class="s2">"diverging"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
         <span class="n">chain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">posterior</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -883,33 +883,33 @@ Stored samples per parameter: (2, 512)
                     mean    sd eti89_lb eti89_ub  ess_bulk  ess_tail r_hat mcse_mean mcse_sd
 log10_rs_pc         3.19  0.53      2.3      3.9       287       296  1.00     0.031   0.019
 log10_rhos_Msunpc3  -1.5   0.8     -2.7    -0.13       250       321  1.01      0.05   0.035
-g                   0.81  0.47      0.1      1.6       453       493  1.01     0.022   0.013
+gamma               0.81  0.47      0.1      1.6       453       493  1.01     0.022   0.013
 beta_ani            0.26  0.43    -0.65     0.72       536       466  1.00     0.019   0.015
 vmem_kms            -0.3  1.53     -2.7      2.1       591       585  1.00     0.062   0.045
 Divergences: 0
 </pre></div>
 </div>
-<figure class="align-default" id="id5">
+<figure class="align-default" id="id6">
 <a class="reference internal image-reference" href="../_images/numpyro-trace.png"><img alt="Posterior histograms and two stored NumPyro chain traces for five sampled parameters." src="../_images/numpyro-trace.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Posterior histograms and the two independent chain traces. Dashed red lines mark
-the generating values.</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id6">
-<a class="reference internal image-reference" href="../_images/numpyro-autocorrelation.png"><img alt="Autocorrelation versus lag for each of the five NumPyro sampling coordinates." src="../_images/numpyro-autocorrelation.png" style="width: 640px;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Mean autocorrelation across the two chains.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+the generating values.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id7">
+<a class="reference internal image-reference" href="../_images/numpyro-autocorrelation.png"><img alt="Autocorrelation versus lag for each of the five NumPyro sampling coordinates." src="../_images/numpyro-autocorrelation.png" style="width: 640px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Mean autocorrelation across the two chains.</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id8">
 <a class="reference internal image-reference" href="../_images/numpyro-posterior.png"><img alt="Marginal and pairwise NumPyro posterior distributions, with generating values and central 68 percent intervals." src="../_images/numpyro-posterior.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Marginal and pairwise posterior distributions, with the same conventions as the
-emcee panels.</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+emcee panels.</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1000,9 +1000,10 @@ environment. Ordinary documentation builds reuse these recorded outputs; the
 metadata identifies the source and environment used to produce them. Both
 workflows run again on a published GitHub release or a manual Documentation
 workflow run with <code class="docutils literal notranslate"><span class="pre">run_mcmc=true</span></code>.</p>
+<p><a id="classical-estimation-model-wrapper"></a></p>
 </section>
-<section id="classical-estimation-model-wrapper">
-<h2>Classical estimation-model wrapper<a class="headerlink" href="#classical-estimation-model-wrapper" title="Link to this heading">#</a></h2>
+<section id="numpy-scipy-estimation-model-wrapper">
+<span id="id1"></span><h2>NumPy/SciPy estimation-model wrapper<a class="headerlink" href="#numpy-scipy-estimation-model-wrapper" title="Link to this heading">#</a></h2>
 <p>The analysis above supplies its own log posterior to emcee. When using
 JeansPy estimation models, <a class="reference internal" href="../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler" title="jeanspy.sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> adds HDF5
 storage and restart identity checks. Its <code class="docutils literal notranslate"><span class="pre">FlatPriorModel</span></code> uses an ordered
@@ -1014,7 +1015,7 @@ requests the data-derived option.</p>
 Its autocorrelation estimate may be undefined because the chain is deliberately
 short. The wrapper still computes that diagnostic when early stopping is
 disabled; the example only exercises the storage workflow.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Short classical save/restart workflow; these draws are not converged inference."""</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Short NumPy/SciPy and emcee save/restart workflow; these draws are not converged inference."""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tempfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemporaryDirectory</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -1022,14 +1023,14 @@ disabled; the example only exercises the storage workflow.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_default_estimation_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
 
-<span class="c1"># classical-inference-start</span>
+<span class="c1"># numpy-inference-start</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"R_pc"</span><span class="p">:</span> <span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">,</span> <span class="mf">500.</span><span class="p">],</span>
                      <span class="s2">"vlos_kms"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.</span><span class="p">],</span> <span class="s2">"e_vlos_kms"</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">})</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span><span class="s2">"lower"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">.3</span><span class="p">],</span>
      <span class="s2">"upper"</span><span class="p">:</span> <span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">.3</span><span class="p">]},</span>
     <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="s2">"log10_re_pc"</span><span class="p">,</span> <span class="s2">"log10_rs_pc"</span><span class="p">,</span>
-           <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"bfunc_beta_ani"</span><span class="p">],</span>
+           <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"log10_one_minus_beta_ani"</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">get_default_estimation_model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
@@ -1108,7 +1109,7 @@ calibration need their own checks as discussed in the <a class="reference intern
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-and-mock-observations">Model and mock observations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-and-inspect-the-posterior">Sample and inspect the posterior</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-and-saved-files">Plotting and saved files</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classical-estimation-model-wrapper">Classical estimation-model wrapper</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-scipy-estimation-model-wrapper">NumPy/SciPy estimation-model wrapper</a></li>
 </ul>
   </nav></div>
 

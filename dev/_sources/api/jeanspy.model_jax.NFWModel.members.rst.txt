@@ -1,0 +1,15 @@
+NFWModel members
+================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_jax.NFWModel.enclosed_mass
+   members/jeanspy.model_jax.NFWModel.enclosed_mass_analytic
+   members/jeanspy.model_jax.NFWModel.enclosed_mass_numeric
+   members/jeanspy.model_jax.NFWModel.enclosure_mass
+   members/jeanspy.model_jax.NFWModel.has_analytic_enclosed_mass
+   members/jeanspy.model_jax.NFWModel.mass_density_3d
+   members/jeanspy.model_jax.NFWModel.resolve_params
+   members/jeanspy.model_jax.NFWModel.sampling_identity
+   members/jeanspy.model_jax.NFWModel.valid_mass_domain

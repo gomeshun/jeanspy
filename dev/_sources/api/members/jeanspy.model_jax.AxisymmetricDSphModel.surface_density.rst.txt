@@ -1,0 +1,9 @@
+surface_density
+===============
+
+``jeanspy.model_jax.AxisymmetricDSphModel.surface_density``
+
+Class and construction: :doc:`AxisymmetricDSphModel <../generated/jeanspy.model_jax.AxisymmetricDSphModel>`.
+
+.. automethod:: jeanspy.model_jax.AxisymmetricDSphModel.surface_density
+   :no-index:

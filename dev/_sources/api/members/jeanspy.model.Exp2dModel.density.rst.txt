@@ -1,9 +1,0 @@
-density
-=======
-
-``jeanspy.model.Exp2dModel.density``
-
-Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
-
-.. automethod:: jeanspy.model.Exp2dModel.density
-   :no-index:

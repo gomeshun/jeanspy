@@ -1,0 +1,20 @@
+JAX axisymmetric forward model
+==============================
+
+.. py:module:: jeanspy.axisymmetric_jax
+
+.. currentmodule:: jeanspy.axisymmetric_jax
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+Aliases
+-------
+
+* ``jeanspy.axisymmetric_jax.AxisymmetricDSphModel`` is :py:obj:`jeanspy.model_jax.AxisymmetricDSphModel`.
+* ``jeanspy.axisymmetric_jax.AxisymmetricPlummerModel`` is :py:obj:`jeanspy.model_jax.AxisymmetricPlummerModel`.
+* ``jeanspy.axisymmetric_jax.AxisymmetricZhaoModel`` is :py:obj:`jeanspy.model_jax.AxisymmetricZhaoModel`.
+* ``jeanspy.axisymmetric_jax.AxisymmetricConstantAnisotropyModel`` is :py:obj:`jeanspy.model_jax.AxisymmetricConstantAnisotropyModel`.
+* ``jeanspy.axisymmetric_jax.AxisymmetricStellarModel`` is :py:obj:`jeanspy.model.AxisymmetricStellarModel`.
+* ``jeanspy.axisymmetric_jax.AxisymmetricDMModel`` is :py:obj:`jeanspy.model.AxisymmetricDMModel`.
+* ``jeanspy.axisymmetric_jax.AxisymmetricAnisotropyModel`` is :py:obj:`jeanspy.model.AxisymmetricAnisotropyModel`.

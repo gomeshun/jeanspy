@@ -1,0 +1,9 @@
+half_light_radius
+=================
+
+``jeanspy.model.ProjectedExponentialModel.half_light_radius``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. automethod:: jeanspy.model.ProjectedExponentialModel.half_light_radius
+   :no-index:

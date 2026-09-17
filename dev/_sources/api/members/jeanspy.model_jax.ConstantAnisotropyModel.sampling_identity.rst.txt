@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model_jax.ConstantAnisotropyModel.sampling_identity``
+
+Class and construction: :doc:`ConstantAnisotropyModel <../generated/jeanspy.model_jax.ConstantAnisotropyModel>`.
+
+.. automethod:: jeanspy.model_jax.ConstantAnisotropyModel.sampling_identity
+   :no-index:

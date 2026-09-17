@@ -1,0 +1,9 @@
+surface_density
+===============
+
+``jeanspy.model_jax.AxisymmetricPlummerModel.surface_density``
+
+Class and construction: :doc:`AxisymmetricPlummerModel <../generated/jeanspy.model_jax.AxisymmetricPlummerModel>`.
+
+.. automethod:: jeanspy.model_jax.AxisymmetricPlummerModel.surface_density
+   :no-index:

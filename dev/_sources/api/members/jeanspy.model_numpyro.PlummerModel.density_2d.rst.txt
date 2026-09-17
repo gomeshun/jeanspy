@@ -1,9 +1,0 @@
-density_2d
-==========
-
-``jeanspy.model_numpyro.PlummerModel.density_2d``
-
-Class and construction: :doc:`PlummerModel <../generated/jeanspy.model_numpyro.PlummerModel>`.
-
-.. automethod:: jeanspy.model_numpyro.PlummerModel.density_2d
-   :no-index:

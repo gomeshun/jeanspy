@@ -1,9 +1,0 @@
-jfactor_ullio2016_simple
-========================
-
-``jeanspy.model.ZhaoModel.jfactor_ullio2016_simple``
-
-Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
-
-.. automethod:: jeanspy.model.ZhaoModel.jfactor_ullio2016_simple
-   :no-index:

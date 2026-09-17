@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-16"/>
+    <meta name="docbuild:last-update" content="2026-09-17"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -467,6 +467,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="numerics.html">Numerical accuracy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api-migration.html">Explicit model names and parameter specifications</a></li>
 </ul>
 </div>
 </nav></div>
@@ -538,13 +539,19 @@ either sampler; keep the same distance, aperture, cutoff and density convention
 when comparing results. The returned units are GeV² cm⁻⁵ and GeV cm⁻².</p>
 <section id="spherical-apertures">
 <h2>Spherical apertures<a class="headerlink" href="#spherical-apertures" title="Link to this heading">#</a></h2>
-<p>The spherical <code class="docutils literal notranslate"><span class="pre">DMModel.jfactor_ullio2016</span></code> method includes outer halo shells
-projected into a finite cone. Its <code class="docutils literal notranslate"><span class="pre">simple</span></code> variant uses a spherical-aperture
-approximation. The two are different integrals. The
+<p>The spherical <code class="docutils literal notranslate"><span class="pre">DMModel.jfactor_cone</span></code> method includes outer halo shells
+projected into a finite cone through the truncated density.
+<code class="docutils literal notranslate"><span class="pre">jfactor_spherical_aperture</span></code> integrates only to
+<code class="docutils literal notranslate"><span class="pre">min(dist_pc*sin(roi_deg),</span> <span class="pre">r_t_pc)</span></code>, omitting shells outside that sphere.
+<code class="docutils literal notranslate"><span class="pre">NFWModel.jfactor_small_angle_infinite_los</span></code> uses the Evans et al. formula:
+it caps the projected aperture at <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> but integrates the untruncated
+profile along the entire line of sight. These are different integrals.
+The small-angle approximations enforce <code class="docutils literal notranslate"><span class="pre">small_angle_limit_deg</span></code> (default 1 degree)
+by raising <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>; the full cone does not use that bound. The
 <a class="reference internal" href="ullio-geometry.html"><span class="std std-doc">geometry derivation</span></a> follows
 <a class="reference external" href="https://arxiv.org/abs/1603.07721">Ullio &amp; Valli (2016)</a>.</p>
 <p>The spherical limit of <code class="docutils literal notranslate"><span class="pre">AxisymmetricZhaoModel</span></code> also supplies a D-factor
-calculation for a spherical halo; there is no separate classical spherical
+calculation for a spherical halo; there is no separate NumPy/SciPy spherical
 <code class="docutils literal notranslate"><span class="pre">DMModel.dfactor</span></code> API.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Finite-cone factors for spherical and flattened halos."""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -555,7 +562,7 @@ calculation for a spherical halo; there is no separate classical spherical
 <span class="c1"># spherical-factors-start</span>
 <span class="n">halo</span> <span class="o">=</span> <span class="n">NFWModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">5000.</span><span class="p">)</span>
 <span class="n">distance_pc</span><span class="p">,</span> <span class="n">aperture_deg</span> <span class="o">=</span> <span class="mf">76000.</span><span class="p">,</span> <span class="mf">.5</span>
-<span class="n">J_GeV2_cm_minus5</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">jfactor_ullio2016</span><span class="p">(</span><span class="n">distance_pc</span><span class="p">,</span> <span class="n">aperture_deg</span><span class="p">)</span>
+<span class="n">J_GeV2_cm_minus5</span> <span class="o">=</span> <span class="n">halo</span><span class="o">.</span><span class="n">jfactor_cone</span><span class="p">(</span><span class="n">distance_pc</span><span class="p">,</span> <span class="n">aperture_deg</span><span class="p">)</span>
 <span class="c1"># The spherical limit of the spheroidal factor integrator also supplies D.</span>
 <span class="n">spherical</span> <span class="o">=</span> <span class="n">AxisymmetricZhaoModel</span><span class="p">(</span><span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="mf">5000.</span><span class="p">)</span>
 <span class="n">D_GeV_cm_minus2</span> <span class="o">=</span> <span class="n">dfactor</span><span class="p">(</span><span class="n">spherical</span><span class="p">,</span> <span class="n">distance_pc</span><span class="p">,</span> <span class="n">aperture_deg</span><span class="p">,</span>

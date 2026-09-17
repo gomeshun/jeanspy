@@ -1,0 +1,9 @@
+jfactor_cone
+============
+
+``jeanspy.model.DMModel.jfactor_cone``
+
+Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
+
+.. automethod:: jeanspy.model.DMModel.jfactor_cone
+   :no-index:

@@ -1,9 +1,0 @@
-mass_density_3d
-===============
-
-``jeanspy.model_numpyro.ZhaoModel.mass_density_3d``
-
-Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_numpyro.ZhaoModel>`.
-
-.. automethod:: jeanspy.model_numpyro.ZhaoModel.mass_density_3d
-   :no-index:

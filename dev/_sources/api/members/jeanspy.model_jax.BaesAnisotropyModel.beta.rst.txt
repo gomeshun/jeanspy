@@ -1,0 +1,9 @@
+beta
+====
+
+``jeanspy.model_jax.BaesAnisotropyModel.beta``
+
+Class and construction: :doc:`BaesAnisotropyModel <../generated/jeanspy.model_jax.BaesAnisotropyModel>`.
+
+.. automethod:: jeanspy.model_jax.BaesAnisotropyModel.beta
+   :no-index:

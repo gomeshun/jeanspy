@@ -1,9 +1,0 @@
-required_param_names_combined
-=============================
-
-``jeanspy.model.Exp3dModel.required_param_names_combined``
-
-Class and construction: :doc:`Exp3dModel <../generated/jeanspy.model.Exp3dModel>`.
-
-.. autoattribute:: jeanspy.model.Exp3dModel.required_param_names_combined
-   :no-index:

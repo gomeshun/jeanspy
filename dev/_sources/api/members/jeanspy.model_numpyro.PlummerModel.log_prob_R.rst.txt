@@ -1,9 +1,0 @@
-log_prob_R
-==========
-
-``jeanspy.model_numpyro.PlummerModel.log_prob_R``
-
-Class and construction: :doc:`PlummerModel <../generated/jeanspy.model_numpyro.PlummerModel>`.
-
-.. automethod:: jeanspy.model_numpyro.PlummerModel.log_prob_R
-   :no-index:

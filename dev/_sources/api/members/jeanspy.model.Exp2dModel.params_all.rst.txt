@@ -1,9 +1,0 @@
-params_all
-==========
-
-``jeanspy.model.Exp2dModel.params_all``
-
-Class and construction: :doc:`Exp2dModel <../generated/jeanspy.model.Exp2dModel>`.
-
-.. autoattribute:: jeanspy.model.Exp2dModel.params_all
-   :no-index:

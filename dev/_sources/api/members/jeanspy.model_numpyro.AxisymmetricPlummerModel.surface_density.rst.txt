@@ -1,9 +1,0 @@
-surface_density
-===============
-
-``jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density``
-
-Class and construction: :doc:`AxisymmetricPlummerModel <../generated/jeanspy.model_numpyro.AxisymmetricPlummerModel>`.
-
-.. automethod:: jeanspy.model_numpyro.AxisymmetricPlummerModel.surface_density
-   :no-index:
