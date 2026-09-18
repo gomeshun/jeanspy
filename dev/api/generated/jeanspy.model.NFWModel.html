@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -468,17 +468,13 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model_jax.get_runtime_config.html">get_runtime_config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_J.html">jeanspy.axisymmetric_factors.C_J</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.axisymmetric_factors.C_D.html">jeanspy.axisymmetric_factors.C_D</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.GaussLegendre01.html">GaussLegendre01</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.TanhSinh01.html">TanhSinh01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_d_series.html">hyp2f1_1b_d_series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_series.html">hyp2f1_1b_3half_series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad.html">hyp2f1_1b_3half_quad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html">hyp2f1_1b_3half_asymptotic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html">hyp2f1_1b_3half</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.hashable.html">hashable</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.memorize.html">memorize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.generate_x_w.html">generate_x_w</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.dequad.html">dequad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.dequad.generate_x_w.html">generate_x_w</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../spherical.html">Spherical models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -530,8 +526,8 @@
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FittableModel.html">FittableModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.FlatPriorModel.html">FlatPriorModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.PhotometryPriorModel.html">PhotometryPriorModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SimpleDSphEstimationModel.html">SimpleDSphEstimationModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.get_default_estimation_model.html">get_default_estimation_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.SphericalDSphEstimationModel.html">SphericalDSphEstimationModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jeanspy.model.plummer_nfw_constant_anisotropy_model.html">plummer_nfw_constant_anisotropy_model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricDSphEstimationModel.html">AxisymmetricDSphEstimationModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.model.AxisymmetricKinematicData.html">AxisymmetricKinematicData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jeanspy.parameters.SamplingParameter.html">SamplingParameter</a></li>
@@ -605,8 +601,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.sampling_identity.html">sampling_identity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.sigmalos.html">sigmalos</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.sigmalos2.html">sigmalos2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.sigmalos2_dequad.html">sigmalos2_dequad</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.sigmalos_dequad.html">sigmalos_dequad</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.sigmar2.html">sigmar2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.sigmat2.html">sigmat2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.DSphModel.update.html">update</a></li>
@@ -647,7 +641,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.FittableModel.members.html">FittableModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FittableModel.blobs_dtype.html">blobs_dtype</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FittableModel.convert_params.html">convert_params</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FittableModel.inverse_temparature.html">inverse_temparature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FittableModel.inverse_temperature.html">inverse_temperature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FittableModel.is_required_param_names.html">is_required_param_names</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FittableModel.lnlikelihood.html">lnlikelihood</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FittableModel.lnlikelihoods.html">lnlikelihoods</a></li>
@@ -665,7 +659,6 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.FlatPriorModel.members.html">FlatPriorModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.extract_value_by_name.html">extract_value_by_name</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.generate_default_config_file.html">generate_default_config_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.get_index.html">get_index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.is_required_param_names.html">is_required_param_names</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.load_config.html">load_config</a></li>
@@ -678,6 +671,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.update.html">update</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.upper.html">upper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.validate_config.html">validate_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.FlatPriorModel.write_config_template.html">write_config_template</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.Model.members.html">Model members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -691,7 +685,6 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.NFWModel.members.html">NFWModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.NFWModel.enclosed_mass.html">enclosed_mass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.NFWModel.enclosure_mass.html">enclosure_mass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.NFWModel.is_required_param_names.html">is_required_param_names</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.NFWModel.jfactor_cone.html">jfactor_cone</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.NFWModel.jfactor_small_angle_infinite_los.html">jfactor_small_angle_infinite_los</a></li>
@@ -764,7 +757,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.SersicModel.members.html">SersicModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.b.html">b</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.b_CB.html">b_CB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.b_approx.html">b_approx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.b_linear.html">b_linear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.cdf_R.html">cdf_R</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.density.html">density</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.density_2d.html">density_2d</a></li>
@@ -778,9 +771,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.density_3d_numerical.html">density_3d_numerical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.half_light_radius.html">half_light_radius</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.lgm_norm_3d.html">lgm_norm_3d</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.mean_density_2d.html">mean_density_2d</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.norm.html">norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.norm_3d.html">norm_3d</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.p_LGM.html">p_LGM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.params_all.html">params_all</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
@@ -789,31 +782,31 @@
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SersicModel.update.html">update</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.SimpleDSphEstimationModel.members.html">SimpleDSphEstimationModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.blobs_dtype.html">blobs_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.convert_params.html">convert_params</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.data.html">data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.inverse_temparature.html">inverse_temparature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.is_required_param_names.html">is_required_param_names</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.lnlikelihood.html">lnlikelihood</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.lnlikelihoods.html">lnlikelihoods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.lnposterior.html">lnposterior</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic.html">lnposterior_wbic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.lnpriors.html">lnpriors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.load_data.html">load_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.n_data.html">n_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.ndim.html">ndim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob.html">p_names_lnprob</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.params_all.html">params_all</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.release_shared_memory.html">release_shared_memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined.html">required_param_names_combined</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.reset_data.html">reset_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.sample.html">sample</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.sample_data.html">sample_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.sampling_identity.html">sampling_identity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename.html">shared_memory_basename</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SimpleDSphEstimationModel.update.html">update</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.SphericalDSphEstimationModel.members.html">SphericalDSphEstimationModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.blobs_dtype.html">blobs_dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.convert_params.html">convert_params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.data.html">data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.inverse_temperature.html">inverse_temperature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.is_required_param_names.html">is_required_param_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.lnlikelihood.html">lnlikelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.lnlikelihoods.html">lnlikelihoods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.lnposterior.html">lnposterior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.lnposterior_wbic.html">lnposterior_wbic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.lnpriors.html">lnpriors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.load_data.html">load_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.n_data.html">n_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.ndim.html">ndim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.p_names_lnprob.html">p_names_lnprob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.params_all.html">params_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.params_all_with_model_name.html">params_all_with_model_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.release_shared_memory.html">release_shared_memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.required_param_names_combined.html">required_param_names_combined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.reset_data.html">reset_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.sample.html">sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.sample_data.html">sample_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.sampling_identity.html">sampling_identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.shared_memory_basename.html">shared_memory_basename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.SphericalDSphEstimationModel.update.html">update</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.StellarModel.members.html">StellarModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -845,7 +838,6 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jeanspy.model.ZhaoModel.members.html">ZhaoModel members</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.ZhaoModel.enclosed_mass.html">enclosed_mass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.ZhaoModel.enclosure_mass.html">enclosure_mass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.ZhaoModel.is_required_param_names.html">is_required_param_names</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.ZhaoModel.jfactor_cone.html">jfactor_cone</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.ZhaoModel.jfactor_spherical_aperture.html">jfactor_spherical_aperture</a></li>
@@ -876,7 +868,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype.html">blobs_dtype</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.convert_params.html">convert_params</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.data.html">data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature.html">inverse_temparature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temperature.html">inverse_temperature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood.html">lnlikelihood</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods.html">lnlikelihoods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior.html">lnposterior</a></li>
@@ -971,7 +963,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.ZhaoModel.enclosed_mass_analytic.html">enclosed_mass_analytic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.ZhaoModel.enclosed_mass_betainc.html">enclosed_mass_betainc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.ZhaoModel.enclosed_mass_numeric.html">enclosed_mass_numeric</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.ZhaoModel.enclosure_mass.html">enclosure_mass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.ZhaoModel.has_analytic_enclosed_mass.html">has_analytic_enclosed_mass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.ZhaoModel.mass_density_3d.html">mass_density_3d</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.ZhaoModel.resolve_params.html">resolve_params</a></li>
@@ -983,7 +974,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.NFWModel.enclosed_mass.html">enclosed_mass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.NFWModel.enclosed_mass_analytic.html">enclosed_mass_analytic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.NFWModel.enclosed_mass_numeric.html">enclosed_mass_numeric</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.NFWModel.enclosure_mass.html">enclosure_mass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.NFWModel.has_analytic_enclosed_mass.html">has_analytic_enclosed_mass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.NFWModel.mass_density_3d.html">mass_density_3d</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../members/jeanspy.model_jax.NFWModel.resolve_params.html">resolve_params</a></li>
@@ -1191,8 +1181,7 @@ all classes. The full class contract and existing member anchors are retained be
 <p>Parameters are <code class="docutils literal notranslate"><span class="pre">rs_pc</span></code> and <code class="docutils literal notranslate"><span class="pre">r_t_pc</span></code> in pc, and <code class="docutils literal notranslate"><span class="pre">rhos_Msunpc3</span></code>
 in Msun/pc^3. Inside the cutoff, rho = rhos / (x*(1+x)**2), x=r/rs.
 <code class="docutils literal notranslate"><span class="pre">mass_density_3d</span></code> returns zero for r &gt; r_t_pc and includes the cutoff
-boundary. The central density diverges. <code class="docutils literal notranslate"><span class="pre">enclosed_mass</span></code> (also spelled
-<code class="docutils literal notranslate"><span class="pre">enclosure_mass</span></code>) gives the analytic mass inside min(r, r_t_pc), in Msun.
+boundary. The central density diverges. <code class="docutils literal notranslate"><span class="pre">enclosed_mass</span></code> gives the analytic mass inside min(r, r_t_pc), in Msun.
 Scalar/array outputs follow the input radius shape.</p>
 <p>Scales must be positive, rs and rhos finite; an infinite cutoff is allowed
 for density/mass at finite radii. Density validates this domain and raises
@@ -1206,27 +1195,13 @@ aperture; it is not the J-factor of this hard-truncated density.</p>
 See <code class="docutils literal notranslate"><span class="pre">examples/docs_profiles.py</span></code> and <code class="docutils literal notranslate"><span class="pre">examples/docs_factors.py</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model.NFWModel.enclosed_mass">
-<span class="sig-name descname"><span class="pre">enclosed_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_pc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jeanspy.model.NFWModel.enclosed_mass" title="Link to this definition">#</a></dt>
-<dd><p>Return mass enclosed within <code class="docutils literal notranslate"><span class="pre">r_pc</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">enclosure_mass</span></code> is retained on concrete models for compatibility
-with the original API.</p>
-<p class="rubric">Notes</p>
-<p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">r_pc</span></code> in pc, scalar or NumPy array. This base
-implementation delegates to <code class="docutils literal notranslate"><span class="pre">enclosure_mass(r_pc)</span></code>; subclasses may
-override it with additional integration options.</p>
-<p><strong>Returns and shape.</strong> Msun within min(<code class="docutils literal notranslate"><span class="pre">r_pc</span></code>,``r_t_pc``), with input
-shape. <code class="docutils literal notranslate"><span class="pre">enclosure_mass</span></code> is the historical spelling.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jeanspy.model.NFWModel.enclosure_mass">
-<span class="sig-name descname"><span class="pre">enclosure_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_pc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_classical/profiles.html#NFWModel.enclosure_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.enclosure_mass" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">enclosed_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_pc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_numpy/profiles.html#NFWModel.enclosed_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.enclosed_mass" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate analytic NFW mass inside a finite spherical radius.</p>
 <p class="rubric">Notes</p>
 <p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">r_pc</span></code> in pc, scalar or NumPy array. Reads the
 stored NFW scales and cutoff; no numerical-integration option is needed.</p>
 <p><strong>Returns and shape.</strong> Msun within min(<code class="docutils literal notranslate"><span class="pre">r_pc</span></code>,``r_t_pc``), with input
-shape. <code class="docutils literal notranslate"><span class="pre">enclosure_mass</span></code> is the historical spelling.</p>
+shape.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1257,7 +1232,7 @@ convergent inner cusp. Small-angle variants enforce the configured
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model.NFWModel.jfactor_small_angle_infinite_los">
-<span class="sig-name descname"><span class="pre">jfactor_small_angle_infinite_los</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_classical/profiles.html#NFWModel.jfactor_small_angle_infinite_los"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.jfactor_small_angle_infinite_los" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">jfactor_small_angle_infinite_los</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_numpy/profiles.html#NFWModel.jfactor_small_angle_infinite_los"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.jfactor_small_angle_infinite_los" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate the small-angle, infinite-LOS Evans et al. (2016) formula.</p>
 <p>This historical approximation caps the <em>projected aperture</em> at r_t_pc;
 it does not truncate the density along the line of sight. For a halo
@@ -1274,7 +1249,7 @@ from the three-dimensionally truncated finite-cone factor.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model.NFWModel.jfactor_spherical_aperture">
-<span class="sig-name descname"><span class="pre">jfactor_spherical_aperture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_classical/profiles.html#NFWModel.jfactor_spherical_aperture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.jfactor_spherical_aperture" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">jfactor_spherical_aperture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_pc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_numpy/profiles.html#NFWModel.jfactor_spherical_aperture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.jfactor_spherical_aperture" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate the NFW spherical-aperture approximation analytically.</p>
 <p>The geometric interpretation is the same as
 <a class="reference internal" href="jeanspy.model.DMModel.html#jeanspy.model.DMModel.jfactor_spherical_aperture" title="jeanspy.model.DMModel.jfactor_spherical_aperture"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DMModel.jfactor_spherical_aperture()</span></code></a>: for <code class="docutils literal notranslate"><span class="pre">R_max</span> <span class="pre">&gt;=</span> <span class="pre">r_t_pc</span></code> the
@@ -1296,7 +1271,7 @@ convergent inner cusp. Small-angle variants enforce the configured
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jeanspy.model.NFWModel.mass_density_3d">
-<span class="sig-name descname"><span class="pre">mass_density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_pc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_classical/profiles.html#NFWModel.mass_density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.mass_density_3d" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">mass_density_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_pc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jeanspy/_numpy/profiles.html#NFWModel.mass_density_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jeanspy.model.NFWModel.mass_density_3d" title="Link to this definition">#</a></dt>
 <dd><p>Evaluate spherical halo density.</p>
 <p class="rubric">Notes</p>
 <p><strong>Inputs and units.</strong> <code class="docutils literal notranslate"><span class="pre">r_pc</span></code> in pc, scalar or NumPy array; reads the
@@ -1425,7 +1400,6 @@ when all values are finite, positive and no larger than
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.NFWModel"><code class="docutils literal notranslate"><span class="pre">NFWModel</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.NFWModel.enclosed_mass"><code class="docutils literal notranslate"><span class="pre">NFWModel.enclosed_mass()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.NFWModel.enclosure_mass"><code class="docutils literal notranslate"><span class="pre">NFWModel.enclosure_mass()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.NFWModel.is_required_param_names"><code class="docutils literal notranslate"><span class="pre">NFWModel.is_required_param_names()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.NFWModel.jfactor_cone"><code class="docutils literal notranslate"><span class="pre">NFWModel.jfactor_cone()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jeanspy.model.NFWModel.jfactor_small_angle_infinite_los"><code class="docutils literal notranslate"><span class="pre">NFWModel.jfactor_small_angle_infinite_los()</span></code></a></li>

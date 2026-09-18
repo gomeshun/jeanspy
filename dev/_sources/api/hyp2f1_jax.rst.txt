@@ -10,8 +10,6 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
 
 .. autosummary::
 
-   GaussLegendre01
-   TanhSinh01
    hyp2f1_1b_d_series
    hyp2f1_1b_3half_series
    hyp2f1_1b_3half_quad

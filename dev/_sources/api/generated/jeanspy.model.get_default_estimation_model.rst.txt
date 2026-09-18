@@ -1,8 +1,0 @@
-﻿get\_default\_estimation\_model
-===============================
-
-``jeanspy.model.get_default_estimation_model``
-
-.. currentmodule:: jeanspy.model
-
-.. autofunction:: get_default_estimation_model

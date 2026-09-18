@@ -1,9 +1,0 @@
-sample_data
-===========
-
-``jeanspy.model.SimpleDSphEstimationModel.sample_data``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. automethod:: jeanspy.model.SimpleDSphEstimationModel.sample_data
-   :no-index:

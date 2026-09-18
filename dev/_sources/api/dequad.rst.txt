@@ -10,8 +10,6 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
 
 .. autosummary::
 
-   hashable
-   memorize
-   generate_x_w
    dequad
+   generate_x_w
 

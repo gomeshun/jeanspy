@@ -7,7 +7,6 @@ NFWModel members
    members/jeanspy.model_jax.NFWModel.enclosed_mass
    members/jeanspy.model_jax.NFWModel.enclosed_mass_analytic
    members/jeanspy.model_jax.NFWModel.enclosed_mass_numeric
-   members/jeanspy.model_jax.NFWModel.enclosure_mass
    members/jeanspy.model_jax.NFWModel.has_analytic_enclosed_mass
    members/jeanspy.model_jax.NFWModel.mass_density_3d
    members/jeanspy.model_jax.NFWModel.resolve_params

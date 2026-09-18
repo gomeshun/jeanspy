@@ -5,7 +5,6 @@ NFWModel members
    :maxdepth: 1
 
    members/jeanspy.model.NFWModel.enclosed_mass
-   members/jeanspy.model.NFWModel.enclosure_mass
    members/jeanspy.model.NFWModel.is_required_param_names
    members/jeanspy.model.NFWModel.jfactor_cone
    members/jeanspy.model.NFWModel.jfactor_small_angle_infinite_los

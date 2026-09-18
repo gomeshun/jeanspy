@@ -5,7 +5,6 @@ ZhaoModel members
    :maxdepth: 1
 
    members/jeanspy.model.ZhaoModel.enclosed_mass
-   members/jeanspy.model.ZhaoModel.enclosure_mass
    members/jeanspy.model.ZhaoModel.is_required_param_names
    members/jeanspy.model.ZhaoModel.jfactor_cone
    members/jeanspy.model.ZhaoModel.jfactor_spherical_aperture

@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -638,8 +638,7 @@
 <span class="sd">    **Validity.** Changing precision after tracing can create a different</span>
 <span class="sd">    numerical analysis and restart identity.</span>
 
-<span class="sd">    **Errors.** Unsupported legacy options are rejected rather than silently</span>
-<span class="sd">    changing device behavior.</span>
+<span class="sd">    **Errors.** Device initialization errors from JAX propagate.</span>
 
 <span class="sd">    **Backend.** Host configuration of JAX.</span>
 
@@ -673,7 +672,6 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">configure_runtime</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">jax_enable_x64</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">legacy_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""Update global runtime knobs used by model_jax.</span>
 
@@ -693,8 +691,7 @@
 <span class="sd">    **Validity.** Changing precision after tracing can create a different</span>
 <span class="sd">    numerical analysis and restart identity.</span>
 
-<span class="sd">    **Errors.** Unsupported legacy options are rejected rather than silently</span>
-<span class="sd">    changing device behavior.</span>
+<span class="sd">    **Errors.** Unsupported keyword arguments raise TypeError.</span>
 
 <span class="sd">    **Backend.** Host configuration of JAX.</span>
 
@@ -702,16 +699,6 @@
 
 <span class="sd">    **Examples.** ``examples/docs_jax_spherical.py``</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">legacy_kwargs</span><span class="p">:</span>
-        <span class="n">unsupported</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">legacy_kwargs</span><span class="p">))</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">"Numerical runtime options are now per-call arguments. "</span>
-            <span class="s2">"Pass kernel_backend/n_kernel to ConstantAnisotropyModel.kernel() and "</span>
-            <span class="s2">"solver/jit/n_u/n_r/u_max/kernel_outer_transform/"</span>
-            <span class="s2">"kernel_backend/n_kernel to DSphModel.sigmalos2(). "</span>
-            <span class="sa">f</span><span class="s2">"Unsupported configure_runtime keys: </span><span class="si">{</span><span class="n">unsupported</span><span class="si">}</span><span class="s2">."</span>
-        <span class="p">)</span>
-
     <span class="k">if</span> <span class="n">jax_enable_x64</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">jax</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">"jax_enable_x64"</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">jax_enable_x64</span><span class="p">))</span>
 
@@ -1449,7 +1436,7 @@
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical</span>
-<span class="sd">        dictionary. ``enclosed_mass``/``enclosure_mass`` select</span>
+<span class="sd">        dictionary. ``enclosed_mass`` accepts</span>
 <span class="sd">        method=auto/analytic/numeric; numerical methods accept ``n_steps``.</span>
 
 <span class="sd">        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,</span>
@@ -1483,22 +1470,6 @@
                 <span class="sa">f</span><span class="s2">"method must be 'analytic', 'numeric', or 'auto', got </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">"</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">enclosure_mass</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">n_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compatibility spelling shared with the NumPy/SciPy backend.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical</span>
-<span class="sd">        dictionary. ``enclosed_mass``/``enclosure_mass`` select</span>
-<span class="sd">        method=auto/analytic/numeric; numerical methods accept ``n_steps``.</span>
-
-<span class="sd">        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,</span>
-<span class="sd">        matching radius shape. Invalid dynamic proposals yield NaN.</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enclosed_mass</span><span class="p">(</span><span class="n">r_pc</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="NFWModel">
@@ -1856,7 +1827,7 @@
 <span class="sd">        u:</span>
 <span class="sd">            Dimensionless radius ratio u=r/R (typically u&gt;1).</span>
 <span class="sd">        R_pc:</span>
-<span class="sd">            Kept for API compatibility; K(u) is independent of R in this model.</span>
+<span class="sd">            Accepted by the shared anisotropy interface; K(u) is independent of R.</span>
 <span class="sd">        kernel_backend:</span>
 <span class="sd">            ``'jax'`` uses the direct JAX quadrature kernel. ``'scipy'`` uses the</span>
 <span class="sd">            SciPy hypergeometric formulation.</span>
@@ -2191,7 +2162,7 @@
 
 <span class="sd">        ``kernel_outer_transform='sqrtlog'`` uses ``log(u)=x^2``.  Since</span>
 <span class="sd">        ``K(u) ~ sqrt(u-1)`` at the lower endpoint, the transformed integrand</span>
-<span class="sd">        is smooth in ``x``.  ``'log'`` retains the legacy uniform-log(u) grid.</span>
+<span class="sd">        is smooth in ``x``. ``'log'`` selects a uniform-log(u) grid.</span>
 
 <span class="sd">        The default ``sqrtlog`` grid is tuned to a maximum relative-error target</span>
 <span class="sd">        of ``1e-3`` on the documented Plummer+NFW dSph stress benchmark.  For</span>

@@ -5,7 +5,6 @@ FlatPriorModel members
    :maxdepth: 1
 
    members/jeanspy.model.FlatPriorModel.extract_value_by_name
-   members/jeanspy.model.FlatPriorModel.generate_default_config_file
    members/jeanspy.model.FlatPriorModel.get_index
    members/jeanspy.model.FlatPriorModel.is_required_param_names
    members/jeanspy.model.FlatPriorModel.load_config
@@ -18,3 +17,4 @@ FlatPriorModel members
    members/jeanspy.model.FlatPriorModel.update
    members/jeanspy.model.FlatPriorModel.upper
    members/jeanspy.model.FlatPriorModel.validate_config
+   members/jeanspy.model.FlatPriorModel.write_config_template

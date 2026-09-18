@@ -1,9 +1,0 @@
-generate_default_config_file
-============================
-
-``jeanspy.model.FlatPriorModel.generate_default_config_file``
-
-Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
-
-.. automethod:: jeanspy.model.FlatPriorModel.generate_default_config_file
-   :no-index:

@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="_static/searchtools.js"></script>
@@ -559,9 +559,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.b">b (jeanspy.model.SersicModel property)</a>
 </li>
-      <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.b_approx">b_approx (jeanspy.model.SersicModel property)</a>
-</li>
       <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.b_CB">b_CB (jeanspy.model.SersicModel property)</a>
+</li>
+      <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.b_linear">b_linear (jeanspy.model.SersicModel property)</a>
 </li>
       <li><a href="api/generated/jeanspy.baes_eta2.baes_eta2_kernel_appell_reference.html#jeanspy.baes_eta2.baes_eta2_kernel_appell_reference">baes_eta2_kernel_appell_reference() (in module jeanspy.baes_eta2)</a>
 </li>
@@ -610,7 +610,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.blobs_dtype">(jeanspy.model.FittableModel property)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.blobs_dtype">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.blobs_dtype">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.ParameterSpec.html#jeanspy.sampler_numpyro.ParameterSpec.build_distribution">build_distribution() (jeanspy.sampler_numpyro.ParameterSpec method)</a>
@@ -684,7 +684,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.convert_params">(jeanspy.model.FittableModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.convert_params">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.convert_params">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.DotDict.html#jeanspy.model.DotDict.copy">copy() (jeanspy.model.DotDict method)</a>
@@ -702,7 +702,7 @@
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.data">data (jeanspy.model.AxisymmetricDSphEstimationModel property)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.data">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.data">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD.html#jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD">DEFAULT_BAES_ETA2_KERNEL_N_QUAD (in module jeanspy.baes_eta2)</a>
@@ -861,16 +861,6 @@
         <li><a href="api/generated/jeanspy.model_jax.ZhaoModel.html#jeanspy.model_jax.ZhaoModel.enclosed_mass_numeric">(jeanspy.model_jax.ZhaoModel method)</a>
 </li>
       </ul></li>
-      <li><a href="api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel.enclosure_mass">enclosure_mass() (jeanspy.model.NFWModel method)</a>
-
-      <ul>
-        <li><a href="api/generated/jeanspy.model.ZhaoModel.html#jeanspy.model.ZhaoModel.enclosure_mass">(jeanspy.model.ZhaoModel method)</a>
-</li>
-        <li><a href="api/generated/jeanspy.model_jax.NFWModel.html#jeanspy.model_jax.NFWModel.enclosure_mass">(jeanspy.model_jax.NFWModel method)</a>
-</li>
-        <li><a href="api/generated/jeanspy.model_jax.ZhaoModel.html#jeanspy.model_jax.ZhaoModel.enclosure_mass">(jeanspy.model_jax.ZhaoModel method)</a>
-</li>
-      </ul></li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.ParameterSpec.html#jeanspy.sampler_numpyro.ParameterSpec.exp">exp() (jeanspy.sampler_numpyro.ParameterSpec class method)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.extract_value_by_name">extract_value_by_name() (jeanspy.model.FlatPriorModel method)</a>
@@ -921,10 +911,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/jeanspy.model.AxisymmetricZhaoModel.html#jeanspy.model.AxisymmetricZhaoModel.gamma">gamma (jeanspy.model.AxisymmetricZhaoModel attribute)</a>
 </li>
-      <li><a href="api/generated/jeanspy.hyp2f1_jax.GaussLegendre01.html#jeanspy.hyp2f1_jax.GaussLegendre01">GaussLegendre01 (class in jeanspy.hyp2f1_jax)</a>
-</li>
-      <li><a href="api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.generate_default_config_file">generate_default_config_file() (jeanspy.model.FlatPriorModel static method)</a>
-</li>
       <li><a href="api/generated/jeanspy.dequad.generate_x_w.html#jeanspy.dequad.generate_x_w">generate_x_w() (in module jeanspy.dequad)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.DotDict.html#jeanspy.model.DotDict.get">get() (jeanspy.model.DotDict method)</a>
@@ -935,13 +921,11 @@
       </ul></li>
       <li><a href="api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_blobs">get_blobs() (jeanspy.sampler.Sampler method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_chain">get_chain() (jeanspy.sampler.Sampler method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.get_dataframe">get_dataframe() (jeanspy.sampler.Sampler method)</a>
-</li>
-      <li><a href="api/generated/jeanspy.model.get_default_estimation_model.html#jeanspy.model.get_default_estimation_model">get_default_estimation_model() (in module jeanspy.model)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.get_index">get_index() (jeanspy.model.FlatPriorModel method)</a>
 </li>
@@ -975,8 +959,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/generated/jeanspy.dequad.hashable.html#jeanspy.dequad.hashable">hashable() (in module jeanspy.dequad)</a>
-</li>
       <li><a href="api/generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half.html#jeanspy.hyp2f1_jax.hyp2f1_1b_3half">hyp2f1_1b_3half() (in module jeanspy.hyp2f1_jax)</a>
 </li>
       <li><a href="api/generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic.html#jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic">hyp2f1_1b_3half_asymptotic() (in module jeanspy.hyp2f1_jax)</a>
@@ -1011,12 +993,12 @@
       </ul></li>
       <li><a href="api/generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError.html#jeanspy.axisymmetric.InvalidAxisymmetricModelError">InvalidAxisymmetricModelError</a>
 </li>
-      <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature">inverse_temparature (jeanspy.model.AxisymmetricDSphEstimationModel property)</a>
+      <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temperature">inverse_temperature (jeanspy.model.AxisymmetricDSphEstimationModel property)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.inverse_temparature">(jeanspy.model.FittableModel property)</a>
+        <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.inverse_temperature">(jeanspy.model.FittableModel property)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.inverse_temparature">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.inverse_temperature">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.AnisotropyModel.html#jeanspy.model.AnisotropyModel.is_required_param_names">is_required_param_names() (jeanspy.model.AnisotropyModel method)</a>
@@ -1048,7 +1030,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.is_required_param_names">(jeanspy.model.SersicModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.is_required_param_names">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.is_required_param_names">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.is_required_param_names">(jeanspy.model.StellarModel method)</a>
 </li>
@@ -1230,6 +1212,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.lgm_norm_3d">lgm_norm_3d (jeanspy.model.SersicModel property)</a>
+</li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.NumPyroSampler.html#jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths">list_chunk_paths() (jeanspy.sampler_numpyro.NumPyroSampler method)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood">lnlikelihood() (jeanspy.model.AxisymmetricDSphEstimationModel method)</a>
@@ -1237,7 +1221,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnlikelihood">(jeanspy.model.FittableModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.lnlikelihood">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.lnlikelihood">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods">lnlikelihoods() (jeanspy.model.AxisymmetricDSphEstimationModel method)</a>
@@ -1245,7 +1229,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnlikelihoods">(jeanspy.model.FittableModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.lnlikelihoods">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.lnlikelihoods">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior">lnposterior() (jeanspy.model.AxisymmetricDSphEstimationModel method)</a>
@@ -1253,7 +1237,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnposterior">(jeanspy.model.FittableModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.lnposterior">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.lnposterior">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic">lnposterior_wbic() (jeanspy.model.AxisymmetricDSphEstimationModel method)</a>
@@ -1261,7 +1245,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnposterior_wbic">(jeanspy.model.FittableModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.lnposterior_wbic">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1271,7 +1255,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.lnpriors">(jeanspy.model.FittableModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.lnpriors">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.lnpriors">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.NumPyroSampler.html#jeanspy.sampler_numpyro.NumPyroSampler.load_checkpoint">load_checkpoint() (jeanspy.sampler_numpyro.NumPyroSampler method)</a>
@@ -1281,7 +1265,7 @@
       <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.load_data">load_data() (jeanspy.model.FittableModel method)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.load_data">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.load_data">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.NumPyroSampler.html#jeanspy.sampler_numpyro.NumPyroSampler.load_samples">load_samples() (jeanspy.sampler_numpyro.NumPyroSampler method)</a>
@@ -1332,18 +1316,16 @@
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.mean_density_2d">(jeanspy.model.SersicModel method)</a>
 </li>
       </ul></li>
-      <li><a href="api/generated/jeanspy.dequad.memorize.html#jeanspy.dequad.memorize">memorize() (in module jeanspy.dequad)</a>
-</li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.NumPyroSampler.html#jeanspy.sampler_numpyro.NumPyroSampler.metadata_path">metadata_path (jeanspy.sampler_numpyro.NumPyroSampler property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/jeanspy.model.Model.html#jeanspy.model.Model">Model (class in jeanspy.model)</a>
 
       <ul>
         <li><a href="api/generated/jeanspy.model_jax.Model.html#jeanspy.model_jax.Model">(class in jeanspy.model_jax)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
@@ -1384,7 +1366,7 @@
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.n_data">n_data (jeanspy.model.AxisymmetricDSphEstimationModel property)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.n_data">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.n_data">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.model.AxisymmetricDSphModel.n_force">n_force (jeanspy.model.AxisymmetricDSphModel attribute)</a>
@@ -1444,7 +1426,7 @@
       <ul>
         <li><a href="api/generated/jeanspy.model.FittableModel.html#jeanspy.model.FittableModel.ndim">(jeanspy.model.FittableModel property)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.ndim">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.ndim">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.NFWModel.html#jeanspy.model.NFWModel">NFWModel (class in jeanspy.model)</a>
@@ -1454,8 +1436,6 @@
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.norm">norm (jeanspy.model.SersicModel property)</a>
-</li>
-      <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.norm_3d">norm_3d (jeanspy.model.SersicModel property)</a>
 </li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.NumPyroSampler.html#jeanspy.sampler_numpyro.NumPyroSampler">NumPyroSampler (class in jeanspy.sampler_numpyro)</a>
 </li>
@@ -1482,7 +1462,7 @@
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob">p_names_lnprob (jeanspy.model.AxisymmetricDSphEstimationModel property)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.p_names_lnprob">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.parameters.SamplingParameter.html#jeanspy.parameters.SamplingParameter.param_name">param_name (jeanspy.parameters.SamplingParameter attribute)</a>
@@ -1524,7 +1504,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.params_all">(jeanspy.model.SersicModel property)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.params_all">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.params_all">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.params_all">(jeanspy.model.StellarModel property)</a>
 </li>
@@ -1562,7 +1542,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.params_all_with_model_name">(jeanspy.model.SersicModel property)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.params_all_with_model_name">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.params_all_with_model_name">(jeanspy.model.StellarModel property)</a>
 </li>
@@ -1578,6 +1558,8 @@
       <li><a href="api/generated/jeanspy.model.PhotometryPriorModel.html#jeanspy.model.PhotometryPriorModel">PhotometryPriorModel (class in jeanspy.model)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphModel.html#jeanspy.model.AxisymmetricDSphModel.physical_params">physical_params (jeanspy.model.AxisymmetricDSphModel property)</a>
+</li>
+      <li><a href="api/generated/jeanspy.model.plummer_nfw_constant_anisotropy_model.html#jeanspy.model.plummer_nfw_constant_anisotropy_model">plummer_nfw_constant_anisotropy_model() (in module jeanspy.model)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.PlummerModel.html#jeanspy.model.PlummerModel">PlummerModel (class in jeanspy.model)</a>
 
@@ -1614,7 +1596,7 @@
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.prior_names">prior_names (jeanspy.model.AxisymmetricDSphEstimationModel property)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.prior_names">(jeanspy.model.SimpleDSphEstimationModel attribute)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.prior_names">(jeanspy.model.SphericalDSphEstimationModel attribute)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.model.AxisymmetricPlummerModel.html#jeanspy.model.AxisymmetricPlummerModel.projected_axis_ratio">projected_axis_ratio() (jeanspy.model.AxisymmetricPlummerModel method)</a>
@@ -1659,7 +1641,7 @@
 </li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.ParameterSpec.html#jeanspy.sampler_numpyro.ParameterSpec.records_deterministic">records_deterministic (jeanspy.sampler_numpyro.ParameterSpec property)</a>
 </li>
-      <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.release_shared_memory">release_shared_memory() (jeanspy.model.SimpleDSphEstimationModel method)</a>
+      <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.release_shared_memory">release_shared_memory() (jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       <li><a href="api/generated/jeanspy.baes_eta2.BaesEta2AnisotropyModel.html#jeanspy.baes_eta2.BaesEta2AnisotropyModel.required_models">required_models (jeanspy.baes_eta2.BaesEta2AnisotropyModel attribute)</a>
 
@@ -1684,7 +1666,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.required_models">(jeanspy.model.SersicModel attribute)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.required_models">(jeanspy.model.SimpleDSphEstimationModel attribute)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.required_models">(jeanspy.model.SphericalDSphEstimationModel attribute)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.required_models">(jeanspy.model.StellarModel attribute)</a>
 </li>
@@ -1732,7 +1714,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.required_param_names">(jeanspy.model.SersicModel attribute)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.required_param_names">(jeanspy.model.SimpleDSphEstimationModel attribute)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.required_param_names">(jeanspy.model.SphericalDSphEstimationModel attribute)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.Uniform2dModel.html#jeanspy.model.Uniform2dModel.required_param_names">(jeanspy.model.Uniform2dModel attribute)</a>
 </li>
@@ -1786,7 +1768,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.required_param_names_combined">(jeanspy.model.SersicModel property)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined">(jeanspy.model.SimpleDSphEstimationModel property)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.required_param_names_combined">(jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.required_param_names_combined">(jeanspy.model.StellarModel property)</a>
 </li>
@@ -1798,7 +1780,7 @@
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.reset_data">reset_data() (jeanspy.model.AxisymmetricDSphEstimationModel method)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.reset_data">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.reset_data">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler.reset_pool">reset_pool() (jeanspy.sampler.Sampler method)</a>
@@ -1836,7 +1818,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.PhotometryPriorModel.html#jeanspy.model.PhotometryPriorModel.sample">(jeanspy.model.PhotometryPriorModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.sample">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.sample">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
         <li><a href="api/generated/jeanspy.sampler_numpyro.ParameterSpec.html#jeanspy.sampler_numpyro.ParameterSpec.sample">(jeanspy.sampler_numpyro.ParameterSpec method)</a>
 </li>
@@ -1844,7 +1826,7 @@
       <li><a href="api/generated/jeanspy.model.AxisymmetricDSphEstimationModel.html#jeanspy.model.AxisymmetricDSphEstimationModel.sample_data">sample_data() (jeanspy.model.AxisymmetricDSphEstimationModel method)</a>
 
       <ul>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.sample_data">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.sample_data">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/jeanspy.parameters.SamplingParameter.html#jeanspy.parameters.SamplingParameter.sample_name">sample_name (jeanspy.parameters.SamplingParameter attribute)</a>
@@ -1900,7 +1882,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.sampling_identity">(jeanspy.model.SersicModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.sampling_identity">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.sampling_identity">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.sampling_identity">(jeanspy.model.StellarModel method)</a>
 </li>
@@ -1947,7 +1929,7 @@
         <li><a href="api/generated/jeanspy.model.Parameters.html#jeanspy.model.Parameters.setdefault">(jeanspy.model.Parameters method)</a>
 </li>
       </ul></li>
-      <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename">shared_memory_basename (jeanspy.model.SimpleDSphEstimationModel property)</a>
+      <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.shared_memory_basename">shared_memory_basename (jeanspy.model.SphericalDSphEstimationModel property)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmalos">sigmalos() (jeanspy.model.DSphModel method)</a>
 </li>
@@ -1963,17 +1945,13 @@
       </ul></li>
       <li><a href="api/generated/jeanspy.model_jax.DSphModel.html#jeanspy.model_jax.DSphModel.sigmalos2_abel">sigmalos2_abel() (jeanspy.model_jax.DSphModel method)</a>
 </li>
-      <li><a href="api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmalos2_dequad">sigmalos2_dequad() (jeanspy.model.DSphModel method)</a>
-</li>
       <li><a href="api/generated/jeanspy.model_jax.DSphModel.html#jeanspy.model_jax.DSphModel.sigmalos2_kernel">sigmalos2_kernel() (jeanspy.model_jax.DSphModel method)</a>
-</li>
-      <li><a href="api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmalos_dequad">sigmalos_dequad() (jeanspy.model.DSphModel method)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmar2">sigmar2() (jeanspy.model.DSphModel method)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.DSphModel.html#jeanspy.model.DSphModel.sigmat2">sigmat2() (jeanspy.model.DSphModel method)</a>
 </li>
-      <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel">SimpleDSphEstimationModel (class in jeanspy.model)</a>
+      <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel">SphericalDSphEstimationModel (class in jeanspy.model)</a>
 </li>
       <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel">StellarModel (class in jeanspy.model)</a>
 </li>
@@ -2019,8 +1997,6 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/generated/jeanspy.hyp2f1_jax.TanhSinh01.html#jeanspy.hyp2f1_jax.TanhSinh01">TanhSinh01 (class in jeanspy.hyp2f1_jax)</a>
-</li>
       <li><a href="api/generated/jeanspy.sampler_numpyro.NumPyroSampler.html#jeanspy.sampler_numpyro.NumPyroSampler.to_datatree">to_datatree() (jeanspy.sampler_numpyro.NumPyroSampler method)</a>
 </li>
       <li><a href="api/generated/jeanspy.parameters.SamplingParameter.html#jeanspy.parameters.SamplingParameter.to_physical">to_physical() (jeanspy.parameters.SamplingParameter method)</a>
@@ -2076,7 +2052,7 @@
 </li>
         <li><a href="api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.update">(jeanspy.model.SersicModel method)</a>
 </li>
-        <li><a href="api/generated/jeanspy.model.SimpleDSphEstimationModel.html#jeanspy.model.SimpleDSphEstimationModel.update">(jeanspy.model.SimpleDSphEstimationModel method)</a>
+        <li><a href="api/generated/jeanspy.model.SphericalDSphEstimationModel.html#jeanspy.model.SphericalDSphEstimationModel.update">(jeanspy.model.SphericalDSphEstimationModel method)</a>
 </li>
         <li><a href="api/generated/jeanspy.model.StellarModel.html#jeanspy.model.StellarModel.update">(jeanspy.model.StellarModel method)</a>
 </li>
@@ -2127,12 +2103,8 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/generated/jeanspy.hyp2f1_jax.GaussLegendre01.html#jeanspy.hyp2f1_jax.GaussLegendre01.w">w (jeanspy.hyp2f1_jax.GaussLegendre01 attribute)</a>
-
-      <ul>
-        <li><a href="api/generated/jeanspy.hyp2f1_jax.TanhSinh01.html#jeanspy.hyp2f1_jax.TanhSinh01.w">(jeanspy.hyp2f1_jax.TanhSinh01 attribute)</a>
+      <li><a href="api/generated/jeanspy.model.FlatPriorModel.html#jeanspy.model.FlatPriorModel.write_config_template">write_config_template() (jeanspy.model.FlatPriorModel static method)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/jeanspy.sampler_numpyro.SamplerRunResult.html#jeanspy.sampler_numpyro.SamplerRunResult.write_submitted">write_submitted (jeanspy.sampler_numpyro.SamplerRunResult attribute)</a>
@@ -2142,14 +2114,6 @@
 
 <h2 id="X">X</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/generated/jeanspy.hyp2f1_jax.GaussLegendre01.html#jeanspy.hyp2f1_jax.GaussLegendre01.x">x (jeanspy.hyp2f1_jax.GaussLegendre01 attribute)</a>
-
-      <ul>
-        <li><a href="api/generated/jeanspy.hyp2f1_jax.TanhSinh01.html#jeanspy.hyp2f1_jax.TanhSinh01.x">(jeanspy.hyp2f1_jax.TanhSinh01 attribute)</a>
-</li>
-      </ul></li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/jeanspy.model.AxisymmetricKinematicData.html#jeanspy.model.AxisymmetricKinematicData.x_pc">x_pc (jeanspy.model.AxisymmetricKinematicData attribute)</a>
 </li>

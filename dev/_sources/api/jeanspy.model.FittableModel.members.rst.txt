@@ -6,7 +6,7 @@ FittableModel members
 
    members/jeanspy.model.FittableModel.blobs_dtype
    members/jeanspy.model.FittableModel.convert_params
-   members/jeanspy.model.FittableModel.inverse_temparature
+   members/jeanspy.model.FittableModel.inverse_temperature
    members/jeanspy.model.FittableModel.is_required_param_names
    members/jeanspy.model.FittableModel.lnlikelihood
    members/jeanspy.model.FittableModel.lnlikelihoods

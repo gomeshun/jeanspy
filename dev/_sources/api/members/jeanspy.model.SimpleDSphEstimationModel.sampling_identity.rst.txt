@@ -1,9 +1,0 @@
-sampling_identity
-=================
-
-``jeanspy.model.SimpleDSphEstimationModel.sampling_identity``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. automethod:: jeanspy.model.SimpleDSphEstimationModel.sampling_identity
-   :no-index:

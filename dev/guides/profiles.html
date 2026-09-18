@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -549,6 +549,8 @@ three-dimensional exponential. Plummer and Sersic still accept <code class="docu
 <section id="sersic-deprojection-domains">
 <h2>Sersic deprojection domains<a class="headerlink" href="#sersic-deprojection-domains" title="Link to this heading">#</a></h2>
 <p><a class="reference internal" href="../api/generated/jeanspy.model.SersicModel.html#jeanspy.model.SersicModel.density_3d" title="jeanspy.model.SersicModel.density_3d"><code class="xref py py-meth docutils literal notranslate"><span class="pre">density_3d()</span></code></a> selects the deprojection explicitly.
+The <code class="docutils literal notranslate"><span class="pre">lgm</span></code> selection uses the Lima Neto–Gerbal–Márquez approximation for
+<span class="math notranslate nohighlight">\(0.5\le n\le10\)</span>; its normalization is <code class="docutils literal notranslate"><span class="pre">lgm_norm_3d</span></code>, independently of <code class="docutils literal notranslate"><span class="pre">auto</span></code>.
 The VM20 approximation is restricted to <span class="math notranslate nohighlight">\(0.5\le n\le10\)</span> and
 <span class="math notranslate nohighlight">\(10^{-3}\le r/r_e\le10^3\)</span>; VM20bis uses <span class="math notranslate nohighlight">\(0.5\le n\le3.4\)</span> and
 <span class="math notranslate nohighlight">\(10^{-4}\le r/r_e\le10^3\)</span>. The default <code class="docutils literal notranslate"><span class="pre">auto</span></code> route selects VM20bis inside
@@ -564,7 +566,10 @@ See that method’s API entry for the quadrature controls of <code class="docuti
 <a class="reference internal" href="../api/generated/jeanspy.model.OsipkovMerrittModel.html#jeanspy.model.OsipkovMerrittModel" title="jeanspy.model.OsipkovMerrittModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">OsipkovMerrittModel</span></code></a> and
 <a class="reference internal" href="../api/generated/jeanspy.model.BaesAnisotropyModel.html#jeanspy.model.BaesAnisotropyModel" title="jeanspy.model.BaesAnisotropyModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaesAnisotropyModel</span></code></a>; consult their API entries for
 parameters and supported kernels. The <a class="reference internal" href="../theory.html"><span class="std std-doc">theory page</span></a>
-defines spherical and cylindrical anisotropy. The restriction <span class="math notranslate nohighlight">\(\beta&lt;1\)</span>
+defines spherical and cylindrical anisotropy.
+For JAX <code class="docutils literal notranslate"><span class="pre">BaesEta2AnisotropyModel</span></code>, <code class="docutils literal notranslate"><span class="pre">solver=&quot;auto&quot;</span></code> uses Abel integration.
+Select <code class="docutils literal notranslate"><span class="pre">solver=&quot;kernel&quot;</span></code> to activate its specialized Appell-F1 kernel, controlled
+by <code class="docutils literal notranslate"><span class="pre">n_kernel</span></code>. The eta=2 specialization alone does not change solver selection. The restriction <span class="math notranslate nohighlight">\(\beta&lt;1\)</span>
 alone does not establish the existence of a nonnegative distribution function.</p>
 </section>
 <section id="halo-cutoff-conventions">

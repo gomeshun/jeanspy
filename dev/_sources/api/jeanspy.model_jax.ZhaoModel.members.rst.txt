@@ -8,7 +8,6 @@ ZhaoModel members
    members/jeanspy.model_jax.ZhaoModel.enclosed_mass_analytic
    members/jeanspy.model_jax.ZhaoModel.enclosed_mass_betainc
    members/jeanspy.model_jax.ZhaoModel.enclosed_mass_numeric
-   members/jeanspy.model_jax.ZhaoModel.enclosure_mass
    members/jeanspy.model_jax.ZhaoModel.has_analytic_enclosed_mass
    members/jeanspy.model_jax.ZhaoModel.mass_density_3d
    members/jeanspy.model_jax.ZhaoModel.resolve_params

@@ -1,8 +1,0 @@
-﻿hashable
-========
-
-``jeanspy.dequad.hashable``
-
-.. currentmodule:: jeanspy.dequad
-
-.. autofunction:: hashable

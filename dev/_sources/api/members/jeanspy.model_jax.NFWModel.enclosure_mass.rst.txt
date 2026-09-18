@@ -1,9 +1,0 @@
-enclosure_mass
-==============
-
-``jeanspy.model_jax.NFWModel.enclosure_mass``
-
-Class and construction: :doc:`NFWModel <../generated/jeanspy.model_jax.NFWModel>`.
-
-.. automethod:: jeanspy.model_jax.NFWModel.enclosure_mass
-   :no-index:

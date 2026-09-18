@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -722,11 +722,16 @@ and skips completed warmup. A new seed argument is not a request for an
 independent chain when resuming. <code class="docutils literal notranslate"><span class="pre">load_samples(combine=True)</span></code> concatenates
 chunks along <code class="docutils literal notranslate"><span class="pre">draw</span></code>, preserving <code class="docutils literal notranslate"><span class="pre">chain</span></code>. In the locked environment it returns
 an Xarray <code class="docutils literal notranslate"><span class="pre">DataTree</span></code>; use <code class="docutils literal notranslate"><span class="pre">tree[&quot;posterior&quot;].ds</span></code> to obtain the dataset.</p>
-<p>The wrapper checks data, model/prior configuration, source/dependencies and
+<p>The wrapper checks data, model/prior configuration, computational source/dependencies and
 effective JAX backend/precision against the stored analysis identity. A
 changed analysis needs a new output directory. If an existing analysis lacks
 <code class="docutils literal notranslate"><span class="pre">metadata.json</span></code>, restore the original metadata or start separately; do not
 assign current inputs as a replacement identity for old samples.</p>
+<p>Identity format 2 allows documentation-only edits while retaining checks on
+calculation code, data and numerical settings. Full source/data byte hashes are
+kept separately in <code class="docutils literal notranslate"><span class="pre">metadata.json</span></code> under <code class="docutils literal notranslate"><span class="pre">source_provenance</span></code>. Format-1 chains
+require their original code/environment to resume; see the
+<a class="reference internal" href="../guides/api-migration.html#resume-compatibility-and-source-provenance"><span class="std std-ref">API migration guide</span></a>.</p>
 </section>
 <section id="understand-the-stored-files">
 <h2>Understand the stored files<a class="headerlink" href="#understand-the-stored-files" title="Link to this heading">#</a></h2>
@@ -738,7 +743,7 @@ assign current inputs as a replacement identity for old samples.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">metadata.json</span></code></p></td>
-<td><p>Analysis identity, storage configuration and chunk metadata</p></td>
+<td><p>Analysis identity, source provenance and storage configuration</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">last_state.pkl</span></code></p></td>
 <td><p>Sampler continuation state; load only trusted local checkpoints</p></td>

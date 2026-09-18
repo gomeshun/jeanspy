@@ -1,8 +1,0 @@
-﻿memorize
-========
-
-``jeanspy.dequad.memorize``
-
-.. currentmodule:: jeanspy.dequad
-
-.. autofunction:: memorize

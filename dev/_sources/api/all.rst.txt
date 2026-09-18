@@ -65,10 +65,10 @@ B
 
 * :doc:`jeanspy.model.SersicModel.b <members/jeanspy.model.SersicModel.b>` — method / property.
 * :doc:`jeanspy.sersic.SersicModel.b <members/jeanspy.model.SersicModel.b>` — method / property.
-* :doc:`jeanspy.model.SersicModel.b_approx <members/jeanspy.model.SersicModel.b_approx>` — method / property.
-* :doc:`jeanspy.sersic.SersicModel.b_approx <members/jeanspy.model.SersicModel.b_approx>` — method / property.
 * :doc:`jeanspy.model.SersicModel.b_CB <members/jeanspy.model.SersicModel.b_CB>` — method / property.
 * :doc:`jeanspy.sersic.SersicModel.b_CB <members/jeanspy.model.SersicModel.b_CB>` — method / property.
+* :doc:`jeanspy.model.SersicModel.b_linear <members/jeanspy.model.SersicModel.b_linear>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.b_linear <members/jeanspy.model.SersicModel.b_linear>` — method / property.
 * :doc:`jeanspy.baes_eta2.baes_eta2_kernel_appell_reference <generated/jeanspy.baes_eta2.baes_eta2_kernel_appell_reference>` — export.
 * :doc:`jeanspy.baes_eta2.baes_eta2_kernel_jax <generated/jeanspy.baes_eta2.baes_eta2_kernel_jax>` — export.
 * :doc:`jeanspy.model.BaesAnisotropyModel <generated/jeanspy.model.BaesAnisotropyModel>` — export.
@@ -93,7 +93,7 @@ B
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.blobs_dtype <members/jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype <members/jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype>` — method / property.
 * :doc:`jeanspy.model.FittableModel.blobs_dtype <members/jeanspy.model.FittableModel.blobs_dtype>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.blobs_dtype <members/jeanspy.model.SimpleDSphEstimationModel.blobs_dtype>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.blobs_dtype <members/jeanspy.model.SphericalDSphEstimationModel.blobs_dtype>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.ParameterSpec.build_distribution <members/jeanspy.sampler_numpyro.ParameterSpec.build_distribution>` — method / property.
 * :doc:`jeanspy.sampler.Sampler.burn_in <members/jeanspy.sampler.Sampler.burn_in>` — method / property.
 
@@ -123,7 +123,7 @@ C
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.convert_params <members/jeanspy.model.AxisymmetricDSphEstimationModel.convert_params>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.convert_params <members/jeanspy.model.AxisymmetricDSphEstimationModel.convert_params>` — method / property.
 * :doc:`jeanspy.model.FittableModel.convert_params <members/jeanspy.model.FittableModel.convert_params>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.convert_params <members/jeanspy.model.SimpleDSphEstimationModel.convert_params>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.convert_params <members/jeanspy.model.SphericalDSphEstimationModel.convert_params>` — method / property.
 * :doc:`jeanspy.model.DotDict.copy <members/jeanspy.model.DotDict.copy>` — method / property.
 * :doc:`jeanspy.model.Parameters.copy <members/jeanspy.model.Parameters.copy>` — method / property.
 
@@ -132,7 +132,7 @@ D
 
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.data <members/jeanspy.model.AxisymmetricDSphEstimationModel.data>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.data <members/jeanspy.model.AxisymmetricDSphEstimationModel.data>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.data <members/jeanspy.model.SimpleDSphEstimationModel.data>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.data <members/jeanspy.model.SphericalDSphEstimationModel.data>` — method / property.
 * :doc:`jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD <generated/jeanspy.baes_eta2.DEFAULT_BAES_ETA2_KERNEL_N_QUAD>` — export.
 * :doc:`jeanspy.axisymmetric.AxisymmetricPlummerModel.density <members/jeanspy.model.AxisymmetricPlummerModel.density>` — method / property.
 * :doc:`jeanspy.axisymmetric.AxisymmetricZhaoModel.density <members/jeanspy.model.AxisymmetricZhaoModel.density>` — method / property.
@@ -225,10 +225,6 @@ E
 * :doc:`jeanspy.model_jax.ZhaoModel.enclosed_mass_betainc <members/jeanspy.model_jax.ZhaoModel.enclosed_mass_betainc>` — method / property.
 * :doc:`jeanspy.model_jax.NFWModel.enclosed_mass_numeric <members/jeanspy.model_jax.NFWModel.enclosed_mass_numeric>` — method / property.
 * :doc:`jeanspy.model_jax.ZhaoModel.enclosed_mass_numeric <members/jeanspy.model_jax.ZhaoModel.enclosed_mass_numeric>` — method / property.
-* :doc:`jeanspy.model.NFWModel.enclosure_mass <members/jeanspy.model.NFWModel.enclosure_mass>` — method / property.
-* :doc:`jeanspy.model.ZhaoModel.enclosure_mass <members/jeanspy.model.ZhaoModel.enclosure_mass>` — method / property.
-* :doc:`jeanspy.model_jax.NFWModel.enclosure_mass <members/jeanspy.model_jax.NFWModel.enclosure_mass>` — method / property.
-* :doc:`jeanspy.model_jax.ZhaoModel.enclosure_mass <members/jeanspy.model_jax.ZhaoModel.enclosure_mass>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.ParameterSpec.exp <members/jeanspy.sampler_numpyro.ParameterSpec.exp>` — method / property.
 * :doc:`jeanspy.model.FlatPriorModel.extract_value_by_name <members/jeanspy.model.FlatPriorModel.extract_value_by_name>` — method / property.
 
@@ -254,15 +250,12 @@ F
 G
 -
 
-* :doc:`jeanspy.hyp2f1_jax.GaussLegendre01 <generated/jeanspy.hyp2f1_jax.GaussLegendre01>` — export.
-* :doc:`jeanspy.model.FlatPriorModel.generate_default_config_file <members/jeanspy.model.FlatPriorModel.generate_default_config_file>` — method / property.
 * :doc:`jeanspy.dequad.generate_x_w <generated/jeanspy.dequad.generate_x_w>` — export.
 * :doc:`jeanspy.model.DotDict.get <members/jeanspy.model.DotDict.get>` — method / property.
 * :doc:`jeanspy.model.Parameters.get <members/jeanspy.model.Parameters.get>` — method / property.
 * :doc:`jeanspy.sampler.Sampler.get_blobs <members/jeanspy.sampler.Sampler.get_blobs>` — method / property.
 * :doc:`jeanspy.sampler.Sampler.get_chain <members/jeanspy.sampler.Sampler.get_chain>` — method / property.
 * :doc:`jeanspy.sampler.Sampler.get_dataframe <members/jeanspy.sampler.Sampler.get_dataframe>` — method / property.
-* :doc:`jeanspy.model.get_default_estimation_model <generated/jeanspy.model.get_default_estimation_model>` — export.
 * :doc:`jeanspy.model.FlatPriorModel.get_index <members/jeanspy.model.FlatPriorModel.get_index>` — method / property.
 * :doc:`jeanspy.sampler.Sampler.get_last_sample <members/jeanspy.sampler.Sampler.get_last_sample>` — method / property.
 * :doc:`jeanspy.sampler.Sampler.get_log_prob <members/jeanspy.sampler.Sampler.get_log_prob>` — method / property.
@@ -278,7 +271,6 @@ H
 * :doc:`jeanspy.sersic.SersicModel.half_light_radius <members/jeanspy.model.SersicModel.half_light_radius>` — method / property.
 * :doc:`jeanspy.model_jax.NFWModel.has_analytic_enclosed_mass <members/jeanspy.model_jax.NFWModel.has_analytic_enclosed_mass>` — method / property.
 * :doc:`jeanspy.model_jax.ZhaoModel.has_analytic_enclosed_mass <members/jeanspy.model_jax.ZhaoModel.has_analytic_enclosed_mass>` — method / property.
-* :doc:`jeanspy.dequad.hashable <generated/jeanspy.dequad.hashable>` — export.
 * :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_3half <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half>` — export.
 * :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic>` — export.
 * :doc:`jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad <generated/jeanspy.hyp2f1_jax.hyp2f1_1b_3half_quad>` — export.
@@ -297,10 +289,10 @@ I
 * :doc:`jeanspy.model.AxisymmetricDSphModel.intrinsic_moments <members/jeanspy.model.AxisymmetricDSphModel.intrinsic_moments>` — method / property.
 * :doc:`jeanspy.model_jax.AxisymmetricDSphModel.intrinsic_moments <members/jeanspy.model_jax.AxisymmetricDSphModel.intrinsic_moments>` — method / property.
 * :doc:`jeanspy.axisymmetric.InvalidAxisymmetricModelError <generated/jeanspy.axisymmetric.InvalidAxisymmetricModelError>` — export.
-* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.inverse_temparature <members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature>` — method / property.
-* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature <members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature>` — method / property.
-* :doc:`jeanspy.model.FittableModel.inverse_temparature <members/jeanspy.model.FittableModel.inverse_temparature>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.inverse_temparature <members/jeanspy.model.SimpleDSphEstimationModel.inverse_temparature>` — method / property.
+* :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.inverse_temperature <members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temperature>` — method / property.
+* :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temperature <members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temperature>` — method / property.
+* :doc:`jeanspy.model.FittableModel.inverse_temperature <members/jeanspy.model.FittableModel.inverse_temperature>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.inverse_temperature <members/jeanspy.model.SphericalDSphEstimationModel.inverse_temperature>` — method / property.
 * :doc:`jeanspy.model.AnisotropyModel.is_required_param_names <members/jeanspy.model.AnisotropyModel.is_required_param_names>` — method / property.
 * :doc:`jeanspy.model.BaesAnisotropyModel.is_required_param_names <members/jeanspy.model.BaesAnisotropyModel.is_required_param_names>` — method / property.
 * :doc:`jeanspy.model.ConstantAnisotropyModel.is_required_param_names <members/jeanspy.model.ConstantAnisotropyModel.is_required_param_names>` — method / property.
@@ -315,7 +307,7 @@ I
 * :doc:`jeanspy.model.PlummerModel.is_required_param_names <members/jeanspy.model.PlummerModel.is_required_param_names>` — method / property.
 * :doc:`jeanspy.model.ProjectedExponentialModel.is_required_param_names <members/jeanspy.model.ProjectedExponentialModel.is_required_param_names>` — method / property.
 * :doc:`jeanspy.model.SersicModel.is_required_param_names <members/jeanspy.model.SersicModel.is_required_param_names>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.is_required_param_names <members/jeanspy.model.SimpleDSphEstimationModel.is_required_param_names>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.is_required_param_names <members/jeanspy.model.SphericalDSphEstimationModel.is_required_param_names>` — method / property.
 * :doc:`jeanspy.model.StellarModel.is_required_param_names <members/jeanspy.model.StellarModel.is_required_param_names>` — method / property.
 * :doc:`jeanspy.model.Uniform2dModel.is_required_param_names <members/jeanspy.model.Uniform2dModel.is_required_param_names>` — method / property.
 * :doc:`jeanspy.model.ZhaoModel.is_required_param_names <members/jeanspy.model.ZhaoModel.is_required_param_names>` — method / property.
@@ -357,31 +349,33 @@ K
 L
 -
 
+* :doc:`jeanspy.model.SersicModel.lgm_norm_3d <members/jeanspy.model.SersicModel.lgm_norm_3d>` — method / property.
+* :doc:`jeanspy.sersic.SersicModel.lgm_norm_3d <members/jeanspy.model.SersicModel.lgm_norm_3d>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths <members/jeanspy.sampler_numpyro.NumPyroSampler.list_chunk_paths>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnlikelihood <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood>` — method / property.
 * :doc:`jeanspy.model.FittableModel.lnlikelihood <members/jeanspy.model.FittableModel.lnlikelihood>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnlikelihood <members/jeanspy.model.SimpleDSphEstimationModel.lnlikelihood>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.lnlikelihood <members/jeanspy.model.SphericalDSphEstimationModel.lnlikelihood>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnlikelihoods <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods>` — method / property.
 * :doc:`jeanspy.model.FittableModel.lnlikelihoods <members/jeanspy.model.FittableModel.lnlikelihoods>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnlikelihoods <members/jeanspy.model.SimpleDSphEstimationModel.lnlikelihoods>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.lnlikelihoods <members/jeanspy.model.SphericalDSphEstimationModel.lnlikelihoods>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnposterior <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior>` — method / property.
 * :doc:`jeanspy.model.FittableModel.lnposterior <members/jeanspy.model.FittableModel.lnposterior>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnposterior <members/jeanspy.model.SimpleDSphEstimationModel.lnposterior>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.lnposterior <members/jeanspy.model.SphericalDSphEstimationModel.lnposterior>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnposterior_wbic <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior_wbic>` — method / property.
 * :doc:`jeanspy.model.FittableModel.lnposterior_wbic <members/jeanspy.model.FittableModel.lnposterior_wbic>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic <members/jeanspy.model.SimpleDSphEstimationModel.lnposterior_wbic>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.lnposterior_wbic <members/jeanspy.model.SphericalDSphEstimationModel.lnposterior_wbic>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.lnpriors <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors <members/jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors>` — method / property.
 * :doc:`jeanspy.model.FittableModel.lnpriors <members/jeanspy.model.FittableModel.lnpriors>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.lnpriors <members/jeanspy.model.SimpleDSphEstimationModel.lnpriors>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.lnpriors <members/jeanspy.model.SphericalDSphEstimationModel.lnpriors>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.NumPyroSampler.load_checkpoint <members/jeanspy.sampler_numpyro.NumPyroSampler.load_checkpoint>` — method / property.
 * :doc:`jeanspy.model.FlatPriorModel.load_config <members/jeanspy.model.FlatPriorModel.load_config>` — method / property.
 * :doc:`jeanspy.model.FittableModel.load_data <members/jeanspy.model.FittableModel.load_data>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.load_data <members/jeanspy.model.SimpleDSphEstimationModel.load_data>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.load_data <members/jeanspy.model.SphericalDSphEstimationModel.load_data>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.NumPyroSampler.load_samples <members/jeanspy.sampler_numpyro.NumPyroSampler.load_samples>` — method / property.
 * :doc:`jeanspy.model_jax.PlummerModel.log_prob_R <members/jeanspy.model_jax.PlummerModel.log_prob_R>` — method / property.
 * :doc:`jeanspy.model.PlummerModel.logdensity_2d <members/jeanspy.model.PlummerModel.logdensity_2d>` — method / property.
@@ -412,7 +406,6 @@ M
 * :doc:`jeanspy.model.ProjectedExponentialModel.mean_density_2d <members/jeanspy.model.ProjectedExponentialModel.mean_density_2d>` — method / property.
 * :doc:`jeanspy.model.SersicModel.mean_density_2d <members/jeanspy.model.SersicModel.mean_density_2d>` — method / property.
 * :doc:`jeanspy.sersic.SersicModel.mean_density_2d <members/jeanspy.model.SersicModel.mean_density_2d>` — method / property.
-* :doc:`jeanspy.dequad.memorize <generated/jeanspy.dequad.memorize>` — export.
 * :doc:`jeanspy.sampler_numpyro.NumPyroSampler.metadata_path <members/jeanspy.sampler_numpyro.NumPyroSampler.metadata_path>` — method / property.
 * :doc:`jeanspy.model.Model <generated/jeanspy.model.Model>` — export.
 * :doc:`jeanspy.model_jax.Model <generated/jeanspy.model_jax.Model>` — export.
@@ -422,17 +415,15 @@ N
 
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.n_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.n_data>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.n_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.n_data>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.n_data <members/jeanspy.model.SimpleDSphEstimationModel.n_data>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.n_data <members/jeanspy.model.SphericalDSphEstimationModel.n_data>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.ndim <members/jeanspy.model.AxisymmetricDSphEstimationModel.ndim>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.ndim <members/jeanspy.model.AxisymmetricDSphEstimationModel.ndim>` — method / property.
 * :doc:`jeanspy.model.FittableModel.ndim <members/jeanspy.model.FittableModel.ndim>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.ndim <members/jeanspy.model.SimpleDSphEstimationModel.ndim>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.ndim <members/jeanspy.model.SphericalDSphEstimationModel.ndim>` — method / property.
 * :doc:`jeanspy.model.NFWModel <generated/jeanspy.model.NFWModel>` — export.
 * :doc:`jeanspy.model_jax.NFWModel <generated/jeanspy.model_jax.NFWModel>` — export.
 * :doc:`jeanspy.model.SersicModel.norm <members/jeanspy.model.SersicModel.norm>` — method / property.
 * :doc:`jeanspy.sersic.SersicModel.norm <members/jeanspy.model.SersicModel.norm>` — method / property.
-* :doc:`jeanspy.model.SersicModel.norm_3d <members/jeanspy.model.SersicModel.norm_3d>` — method / property.
-* :doc:`jeanspy.sersic.SersicModel.norm_3d <members/jeanspy.model.SersicModel.norm_3d>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.NumPyroSampler <generated/jeanspy.sampler_numpyro.NumPyroSampler>` — export.
 
 O
@@ -448,7 +439,7 @@ P
 * :doc:`jeanspy.sersic.SersicModel.p_LGM <members/jeanspy.model.SersicModel.p_LGM>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.p_names_lnprob <members/jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob <members/jeanspy.model.AxisymmetricDSphEstimationModel.p_names_lnprob>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob <members/jeanspy.model.SimpleDSphEstimationModel.p_names_lnprob>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.p_names_lnprob <members/jeanspy.model.SphericalDSphEstimationModel.p_names_lnprob>` — method / property.
 * :doc:`jeanspy.model.Parameters <generated/jeanspy.model.Parameters>` — export.
 * :doc:`jeanspy.sampler_numpyro.ParameterSpec <generated/jeanspy.sampler_numpyro.ParameterSpec>` — export.
 * :doc:`jeanspy.model.AnisotropyModel.params_all <members/jeanspy.model.AnisotropyModel.params_all>` — method / property.
@@ -465,7 +456,7 @@ P
 * :doc:`jeanspy.model.PlummerModel.params_all <members/jeanspy.model.PlummerModel.params_all>` — method / property.
 * :doc:`jeanspy.model.ProjectedExponentialModel.params_all <members/jeanspy.model.ProjectedExponentialModel.params_all>` — method / property.
 * :doc:`jeanspy.model.SersicModel.params_all <members/jeanspy.model.SersicModel.params_all>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.params_all <members/jeanspy.model.SimpleDSphEstimationModel.params_all>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.params_all <members/jeanspy.model.SphericalDSphEstimationModel.params_all>` — method / property.
 * :doc:`jeanspy.model.StellarModel.params_all <members/jeanspy.model.StellarModel.params_all>` — method / property.
 * :doc:`jeanspy.model.Uniform2dModel.params_all <members/jeanspy.model.Uniform2dModel.params_all>` — method / property.
 * :doc:`jeanspy.model.ZhaoModel.params_all <members/jeanspy.model.ZhaoModel.params_all>` — method / property.
@@ -484,7 +475,7 @@ P
 * :doc:`jeanspy.model.PlummerModel.params_all_with_model_name <members/jeanspy.model.PlummerModel.params_all_with_model_name>` — method / property.
 * :doc:`jeanspy.model.ProjectedExponentialModel.params_all_with_model_name <members/jeanspy.model.ProjectedExponentialModel.params_all_with_model_name>` — method / property.
 * :doc:`jeanspy.model.SersicModel.params_all_with_model_name <members/jeanspy.model.SersicModel.params_all_with_model_name>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name <members/jeanspy.model.SimpleDSphEstimationModel.params_all_with_model_name>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.params_all_with_model_name <members/jeanspy.model.SphericalDSphEstimationModel.params_all_with_model_name>` — method / property.
 * :doc:`jeanspy.model.StellarModel.params_all_with_model_name <members/jeanspy.model.StellarModel.params_all_with_model_name>` — method / property.
 * :doc:`jeanspy.model.Uniform2dModel.params_all_with_model_name <members/jeanspy.model.Uniform2dModel.params_all_with_model_name>` — method / property.
 * :doc:`jeanspy.model.ZhaoModel.params_all_with_model_name <members/jeanspy.model.ZhaoModel.params_all_with_model_name>` — method / property.
@@ -493,6 +484,7 @@ P
 * :doc:`jeanspy.model.PhotometryPriorModel <generated/jeanspy.model.PhotometryPriorModel>` — export.
 * :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.physical_params <members/jeanspy.model.AxisymmetricDSphModel.physical_params>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphModel.physical_params <members/jeanspy.model.AxisymmetricDSphModel.physical_params>` — method / property.
+* :doc:`jeanspy.model.plummer_nfw_constant_anisotropy_model <generated/jeanspy.model.plummer_nfw_constant_anisotropy_model>` — export.
 * :doc:`jeanspy.model.PlummerModel <generated/jeanspy.model.PlummerModel>` — export.
 * :doc:`jeanspy.model_jax.PlummerModel <generated/jeanspy.model_jax.PlummerModel>` — export.
 * :doc:`jeanspy.model.DotDict.pop <members/jeanspy.model.DotDict.pop>` — method / property.
@@ -531,7 +523,7 @@ R
 * :doc:`jeanspy.model_jax.AxisymmetricStellarModel.radial_derivative <members/jeanspy.model.AxisymmetricStellarModel.radial_derivative>` — method / property.
 * :doc:`jeanspy.model.ProjectedExponentialModel.re_pc <members/jeanspy.model.ProjectedExponentialModel.re_pc>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.ParameterSpec.records_deterministic <members/jeanspy.sampler_numpyro.ParameterSpec.records_deterministic>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.release_shared_memory <members/jeanspy.model.SimpleDSphEstimationModel.release_shared_memory>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.release_shared_memory <members/jeanspy.model.SphericalDSphEstimationModel.release_shared_memory>` — method / property.
 * :doc:`jeanspy.model.AnisotropyModel.required_param_names_combined <members/jeanspy.model.AnisotropyModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.model.BaesAnisotropyModel.required_param_names_combined <members/jeanspy.model.BaesAnisotropyModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.model.ConstantAnisotropyModel.required_param_names_combined <members/jeanspy.model.ConstantAnisotropyModel.required_param_names_combined>` — method / property.
@@ -546,14 +538,14 @@ R
 * :doc:`jeanspy.model.PlummerModel.required_param_names_combined <members/jeanspy.model.PlummerModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.model.ProjectedExponentialModel.required_param_names_combined <members/jeanspy.model.ProjectedExponentialModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.model.SersicModel.required_param_names_combined <members/jeanspy.model.SersicModel.required_param_names_combined>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined <members/jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.required_param_names_combined <members/jeanspy.model.SphericalDSphEstimationModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.model.StellarModel.required_param_names_combined <members/jeanspy.model.StellarModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.model.Uniform2dModel.required_param_names_combined <members/jeanspy.model.Uniform2dModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.model.ZhaoModel.required_param_names_combined <members/jeanspy.model.ZhaoModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.sersic.SersicModel.required_param_names_combined <members/jeanspy.model.SersicModel.required_param_names_combined>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.reset_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.reset_data>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.reset_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.reset_data>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.reset_data <members/jeanspy.model.SimpleDSphEstimationModel.reset_data>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.reset_data <members/jeanspy.model.SphericalDSphEstimationModel.reset_data>` — method / property.
 * :doc:`jeanspy.sampler.Sampler.reset_pool <members/jeanspy.sampler.Sampler.reset_pool>` — method / property.
 * :doc:`jeanspy.model.PhotometryPriorModel.reset_prior <members/jeanspy.model.PhotometryPriorModel.reset_prior>` — method / property.
 * :doc:`jeanspy.model_jax.NFWModel.resolve_params <members/jeanspy.model_jax.NFWModel.resolve_params>` — method / property.
@@ -569,11 +561,11 @@ S
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.sample <members/jeanspy.model.AxisymmetricDSphEstimationModel.sample>` — method / property.
 * :doc:`jeanspy.model.FlatPriorModel.sample <members/jeanspy.model.FlatPriorModel.sample>` — method / property.
 * :doc:`jeanspy.model.PhotometryPriorModel.sample <members/jeanspy.model.PhotometryPriorModel.sample>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.sample <members/jeanspy.model.SimpleDSphEstimationModel.sample>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.sample <members/jeanspy.model.SphericalDSphEstimationModel.sample>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.ParameterSpec.sample <members/jeanspy.sampler_numpyro.ParameterSpec.sample>` — method / property.
 * :doc:`jeanspy.axisymmetric_inference.AxisymmetricDSphEstimationModel.sample_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.sample_data>` — method / property.
 * :doc:`jeanspy.model.AxisymmetricDSphEstimationModel.sample_data <members/jeanspy.model.AxisymmetricDSphEstimationModel.sample_data>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.sample_data <members/jeanspy.model.SimpleDSphEstimationModel.sample_data>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.sample_data <members/jeanspy.model.SphericalDSphEstimationModel.sample_data>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters <members/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters>` — method / property.
 * :doc:`jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters <members/jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters>` — method / property.
 * :doc:`jeanspy.model_jax.PlummerModel.sample_R <members/jeanspy.model_jax.PlummerModel.sample_R>` — method / property.
@@ -599,7 +591,7 @@ S
 * :doc:`jeanspy.model.PlummerModel.sampling_identity <members/jeanspy.model.PlummerModel.sampling_identity>` — method / property.
 * :doc:`jeanspy.model.ProjectedExponentialModel.sampling_identity <members/jeanspy.model.ProjectedExponentialModel.sampling_identity>` — method / property.
 * :doc:`jeanspy.model.SersicModel.sampling_identity <members/jeanspy.model.SersicModel.sampling_identity>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.sampling_identity <members/jeanspy.model.SimpleDSphEstimationModel.sampling_identity>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.sampling_identity <members/jeanspy.model.SphericalDSphEstimationModel.sampling_identity>` — method / property.
 * :doc:`jeanspy.model.StellarModel.sampling_identity <members/jeanspy.model.StellarModel.sampling_identity>` — method / property.
 * :doc:`jeanspy.model.Uniform2dModel.sampling_identity <members/jeanspy.model.Uniform2dModel.sampling_identity>` — method / property.
 * :doc:`jeanspy.model.ZhaoModel.sampling_identity <members/jeanspy.model.ZhaoModel.sampling_identity>` — method / property.
@@ -622,7 +614,7 @@ S
 * :doc:`jeanspy.sampler.Sampler.set_wrapper_function <members/jeanspy.sampler.Sampler.set_wrapper_function>` — method / property.
 * :doc:`jeanspy.model.DotDict.setdefault <members/jeanspy.model.DotDict.setdefault>` — method / property.
 * :doc:`jeanspy.model.Parameters.setdefault <members/jeanspy.model.Parameters.setdefault>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename <members/jeanspy.model.SimpleDSphEstimationModel.shared_memory_basename>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.shared_memory_basename <members/jeanspy.model.SphericalDSphEstimationModel.shared_memory_basename>` — method / property.
 * :doc:`jeanspy.model.DSphModel.sigmalos <members/jeanspy.model.DSphModel.sigmalos>` — method / property.
 * :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.sigmalos2 <members/jeanspy.model.AxisymmetricDSphModel.sigmalos2>` — method / property.
 * :doc:`jeanspy.axisymmetric_jax.AxisymmetricDSphModel.sigmalos2 <members/jeanspy.model_jax.AxisymmetricDSphModel.sigmalos2>` — method / property.
@@ -631,12 +623,10 @@ S
 * :doc:`jeanspy.model_jax.AxisymmetricDSphModel.sigmalos2 <members/jeanspy.model_jax.AxisymmetricDSphModel.sigmalos2>` — method / property.
 * :doc:`jeanspy.model_jax.DSphModel.sigmalos2 <members/jeanspy.model_jax.DSphModel.sigmalos2>` — method / property.
 * :doc:`jeanspy.model_jax.DSphModel.sigmalos2_abel <members/jeanspy.model_jax.DSphModel.sigmalos2_abel>` — method / property.
-* :doc:`jeanspy.model.DSphModel.sigmalos2_dequad <members/jeanspy.model.DSphModel.sigmalos2_dequad>` — method / property.
 * :doc:`jeanspy.model_jax.DSphModel.sigmalos2_kernel <members/jeanspy.model_jax.DSphModel.sigmalos2_kernel>` — method / property.
-* :doc:`jeanspy.model.DSphModel.sigmalos_dequad <members/jeanspy.model.DSphModel.sigmalos_dequad>` — method / property.
 * :doc:`jeanspy.model.DSphModel.sigmar2 <members/jeanspy.model.DSphModel.sigmar2>` — method / property.
 * :doc:`jeanspy.model.DSphModel.sigmat2 <members/jeanspy.model.DSphModel.sigmat2>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel <generated/jeanspy.model.SimpleDSphEstimationModel>` — export.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel <generated/jeanspy.model.SphericalDSphEstimationModel>` — export.
 * :doc:`jeanspy.model.StellarModel <generated/jeanspy.model.StellarModel>` — export.
 * :doc:`jeanspy.sampler_numpyro.StorageBackend <generated/jeanspy.sampler_numpyro.StorageBackend>` — export.
 * :doc:`jeanspy.axisymmetric.AxisymmetricDSphModel.surface_density <members/jeanspy.model.AxisymmetricDSphModel.surface_density>` — method / property.
@@ -655,7 +645,6 @@ S
 T
 -
 
-* :doc:`jeanspy.hyp2f1_jax.TanhSinh01 <generated/jeanspy.hyp2f1_jax.TanhSinh01>` — export.
 * :doc:`jeanspy.sampler_numpyro.NumPyroSampler.to_datatree <members/jeanspy.sampler_numpyro.NumPyroSampler.to_datatree>` — method / property.
 * :doc:`jeanspy.parameters.SamplingParameter.to_physical <members/jeanspy.parameters.SamplingParameter.to_physical>` — method / property.
 * :doc:`jeanspy.model.Parameters.to_series <members/jeanspy.model.Parameters.to_series>` — method / property.
@@ -680,7 +669,7 @@ U
 * :doc:`jeanspy.model.PlummerModel.update <members/jeanspy.model.PlummerModel.update>` — method / property.
 * :doc:`jeanspy.model.ProjectedExponentialModel.update <members/jeanspy.model.ProjectedExponentialModel.update>` — method / property.
 * :doc:`jeanspy.model.SersicModel.update <members/jeanspy.model.SersicModel.update>` — method / property.
-* :doc:`jeanspy.model.SimpleDSphEstimationModel.update <members/jeanspy.model.SimpleDSphEstimationModel.update>` — method / property.
+* :doc:`jeanspy.model.SphericalDSphEstimationModel.update <members/jeanspy.model.SphericalDSphEstimationModel.update>` — method / property.
 * :doc:`jeanspy.model.StellarModel.update <members/jeanspy.model.StellarModel.update>` — method / property.
 * :doc:`jeanspy.model.Uniform2dModel.update <members/jeanspy.model.Uniform2dModel.update>` — method / property.
 * :doc:`jeanspy.model.ZhaoModel.update <members/jeanspy.model.ZhaoModel.update>` — method / property.
@@ -704,6 +693,7 @@ W
 -
 
 * :doc:`jeanspy.axisymmetric.InvalidAxisymmetricModelError.with_traceback <members/jeanspy.axisymmetric.InvalidAxisymmetricModelError.with_traceback>` — method / property.
+* :doc:`jeanspy.model.FlatPriorModel.write_config_template <members/jeanspy.model.FlatPriorModel.write_config_template>` — method / property.
 
 Z
 -
@@ -730,7 +720,7 @@ Z
    jeanspy.model.PhotometryPriorModel.members
    jeanspy.model.PlummerModel.members
    jeanspy.model.SersicModel.members
-   jeanspy.model.SimpleDSphEstimationModel.members
+   jeanspy.model.SphericalDSphEstimationModel.members
    jeanspy.model.StellarModel.members
    jeanspy.model.Uniform2dModel.members
    jeanspy.model.ZhaoModel.members

@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -506,7 +506,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">gammainc</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">._classical.profiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">StellarModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy.profiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">StellarModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sersic_deprojection</span><span class="w"> </span><span class="kn">import</span> <span class="n">sp04_density</span>
 
 
@@ -522,7 +522,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    **Inputs and units.** ``re_pc`` is projected half-light radius (pc); n is</span>
 <span class="sd">    dimensionless Sersic index; ``deprojection_method`` is</span>
-<span class="sd">    auto/approx/vm20/vm20bis/numerical. Other constructor arguments follow</span>
+<span class="sd">    auto/lgm/vm20/vm20bis/numerical. Other constructor arguments follow</span>
 <span class="sd">    Model.</span>
 
 <span class="sd">    **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and</span>
@@ -556,7 +556,7 @@
 
     <span class="n">_VALID_DEPROJECTION_METHODS</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">"auto"</span><span class="p">,</span>
-        <span class="s2">"approx"</span><span class="p">,</span>
+        <span class="s2">"lgm"</span><span class="p">,</span>
         <span class="s2">"vm20"</span><span class="p">,</span>
         <span class="s2">"vm20bis"</span><span class="p">,</span>
         <span class="s2">"numerical"</span><span class="p">,</span>
@@ -594,8 +594,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deprojection_method</span> <span class="o">=</span> <span class="n">deprojection_method</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">b_approx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the historical approximation b_n = 2*n - 0.324.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">b_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the linear approximation b_n = 2*n - 0.324.</span>
 
 <span class="sd">        This helper does not impose a validity interval and is not the tabulated</span>
 <span class="sd">        b_n used by the normalized surface-density formula.</span>
@@ -715,7 +715,7 @@
         <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">0.6097</span> <span class="o">/</span> <span class="n">n</span> <span class="o">+</span> <span class="mf">0.05463</span> <span class="o">/</span> <span class="n">n</span><span class="o">**</span><span class="mi">2</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">norm_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lgm_norm_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return the LGM approximate deprojection normalization in pc^3.</span>
 
 <span class="sd">        Uses the stored n, re_pc, b_CB and p_LGM. This is the LGM approximation</span>
@@ -731,7 +731,7 @@
 <div class="viewcode-block" id="SersicModel.density_3d_LGM">
 <a class="viewcode-back" href="../../api/members/jeanspy.model.SersicModel.density_3d_LGM.html#jeanspy.model.SersicModel.density_3d_LGM">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">density_3d_LGM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_pc</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Legacy Lima Neto--Gerbal--Márquez Sérsic deprojection.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Lima Neto--Gerbal--Márquez Sérsic deprojection.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -741,8 +741,8 @@
 <span class="sd">        **Returns and shape.** Unit-integral tracer density in pc^-3 with input</span>
 <span class="sd">        shape.</span>
 
-<span class="sd">        **Validity.** Approximate deprojection; it is not a general reference or</span>
-<span class="sd">        central-limit formula.</span>
+<span class="sd">        **Validity.** Requires 0.5 &lt;= n &lt;= 10 (otherwise ValueError).</span>
+<span class="sd">        This approximate deprojection is not a general central-limit formula.</span>
 <span class="sd">        """</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">&lt;=</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mf">10.0</span><span class="p">):</span>
@@ -752,7 +752,7 @@
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_LGM</span>
         <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_CB</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">re_pc</span>
-        <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_3d</span></div>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lgm_norm_3d</span></div>
 
 
 <div class="viewcode-block" id="SersicModel.half_light_radius">
@@ -1036,7 +1036,9 @@
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        **Inputs and units.** ``r_pc`` is a scalar or NumPy array of intrinsic radii</span>
-<span class="sd">        in pc. SersicModel also accepts method.</span>
+<span class="sd">        in pc. method is auto/lgm/vm20/vm20bis/numerical; None uses the</span>
+<span class="sd">        constructor selection. ``lgm`` is the Lima Neto--Gerbal--Márquez</span>
+<span class="sd">        approximation (0.5 &lt;= n &lt;= 10), with normalization ``lgm_norm_3d``.</span>
 
 <span class="sd">        **Returns and shape.** pc^-3 with input radius shape.</span>
 <span class="sd">        """</span>
@@ -1048,7 +1050,7 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">resolved</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">density_3d_auto</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">resolved</span> <span class="o">==</span> <span class="s2">"approx"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">resolved</span> <span class="o">==</span> <span class="s2">"lgm"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">density_3d_LGM</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">resolved</span> <span class="o">==</span> <span class="s2">"vm20"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">density_3d_VM20</span><span class="p">(</span><span class="n">r_pc</span><span class="p">)</span>

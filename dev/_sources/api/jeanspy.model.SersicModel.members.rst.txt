@@ -6,7 +6,7 @@ SersicModel members
 
    members/jeanspy.model.SersicModel.b
    members/jeanspy.model.SersicModel.b_CB
-   members/jeanspy.model.SersicModel.b_approx
+   members/jeanspy.model.SersicModel.b_linear
    members/jeanspy.model.SersicModel.cdf_R
    members/jeanspy.model.SersicModel.density
    members/jeanspy.model.SersicModel.density_2d
@@ -20,9 +20,9 @@ SersicModel members
    members/jeanspy.model.SersicModel.density_3d_numerical
    members/jeanspy.model.SersicModel.half_light_radius
    members/jeanspy.model.SersicModel.is_required_param_names
+   members/jeanspy.model.SersicModel.lgm_norm_3d
    members/jeanspy.model.SersicModel.mean_density_2d
    members/jeanspy.model.SersicModel.norm
-   members/jeanspy.model.SersicModel.norm_3d
    members/jeanspy.model.SersicModel.p_LGM
    members/jeanspy.model.SersicModel.params_all
    members/jeanspy.model.SersicModel.params_all_with_model_name

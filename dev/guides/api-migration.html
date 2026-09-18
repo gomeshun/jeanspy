@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -583,6 +583,30 @@ examples below. The old spellings are no longer supported.</p>
 <tr class="row-even"><td><p>Axisymmetric example <code class="docutils literal notranslate"><span class="pre">--backend</span> <span class="pre">numpy/numpyro</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">--sampler</span> <span class="pre">emcee/numpyro</span></code></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_default_estimation_model</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plummer_nfw_constant_anisotropy_model</span></code>, with required <code class="docutils literal notranslate"><span class="pre">config</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SimpleDSphEstimationModel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SphericalDSphEstimationModel</span></code> for custom spherical compositions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FlatPriorModel.generate_default_config_file</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FlatPriorModel.write_config_template</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Sérsic <code class="docutils literal notranslate"><span class="pre">method=&quot;approx&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">deprojection_method=&quot;approx&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;lgm&quot;</span></code> (Lima Neto–Gerbal–Márquez)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sérsic <code class="docutils literal notranslate"><span class="pre">norm_3d</span></code> / <code class="docutils literal notranslate"><span class="pre">b_approx</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lgm_norm_3d</span></code> / <code class="docutils literal notranslate"><span class="pre">b_linear</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enclosure_mass</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">enclosed_mass</span></code> in both backends</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inverse_temparature</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">inverse_temperature</span></code> in both inference interfaces</p></td>
+</tr>
+<tr class="row-even"><td><p>NumPy <code class="docutils literal notranslate"><span class="pre">sigmalos2_dequad</span></code> / <code class="docutils literal notranslate"><span class="pre">sigmalos_dequad</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sigmalos2(...,</span> <span class="pre">method=&quot;dequad&quot;)</span></code> / <code class="docutils literal notranslate"><span class="pre">sigmalos(...,</span> <span class="pre">method=&quot;dequad&quot;)</span></code></p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -608,11 +632,11 @@ Without specifications, names map by identity; prefixes never trigger a transfor
     <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">,</span> <span class="s2">"pow10"</span><span class="p">),</span>
     <span class="n">SamplingParameter</span><span class="p">(</span><span class="s2">"log10_one_minus_beta_ani"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"one_minus_pow10"</span><span class="p">),</span>
 <span class="p">]</span>
-<span class="c1"># Pass these to SimpleDSphEstimationModel(parameter_specs=..., ...).</span>
+<span class="c1"># Pass these to SphericalDSphEstimationModel(parameter_specs=..., ...).</span>
 <span class="c1"># Prior-table row labels must match the sample_name values, in this order.</span>
 </pre></div>
 </div>
-<p>The preset <code class="docutils literal notranslate"><span class="pre">get_default_estimation_model</span></code> supplies exactly these specifications.
+<p>The preset <code class="docutils literal notranslate"><span class="pre">plummer_nfw_constant_anisotropy_model</span></code> supplies exactly these specifications.
 Rename its prior-table row <code class="docutils literal notranslate"><span class="pre">bfunc_beta_ani</span></code> to <code class="docutils literal notranslate"><span class="pre">log10_one_minus_beta_ani</span></code> without
 changing the numerical bounds. Those bounds are uniform in <code class="docutils literal notranslate"><span class="pre">log10(1-beta_ani)</span></code>.
 For custom compositions, coordinate labels can be arbitrary; the specifications
@@ -649,6 +673,45 @@ that change. Dtype and parameter specifications participate in sampling identity
 readable with their original metadata, but the modified package must use a new
 output directory rather than resume a chain created with the previous source.
 Retain the original checkout and environment to reproduce or resume that analysis.</p>
+</section>
+<section id="explicit-presets-and-public-utilities">
+<h2>Explicit presets and public utilities<a class="headerlink" href="#explicit-presets-and-public-utilities" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">plummer_nfw_constant_anisotropy_model(data,</span> <span class="pre">photometry_prior_loc,</span> <span class="pre">photometry_prior_scale,</span> <span class="pre">config)</span></code> composes Plummer light, NFW mass, constant
+anisotropy, Gaussian LOS velocities, uniform coordinate bounds and a Gaussian
+photometric prior in <code class="docutils literal notranslate"><span class="pre">log10(re_pc)</span></code>. A missing CSV raises <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>
+without writing a file. Use <code class="docutils literal notranslate"><span class="pre">FlatPriorModel.write_config_template</span></code> explicitly
+if a blank prior table is wanted; complete its bounds before constructing a model.</p>
+<p>Private implementation imports are unsupported. The temporary <code class="docutils literal notranslate"><span class="pre">_model_impl</span></code>
+module has been removed and the NumPy/SciPy implementation is organized under
+<code class="docutils literal notranslate"><span class="pre">_numpy</span></code>; import supported classes from <code class="docutils literal notranslate"><span class="pre">jeanspy.model</span></code>.
+<code class="docutils literal notranslate"><span class="pre">dequad</span></code> and <code class="docutils literal notranslate"><span class="pre">generate_x_w</span></code> remain public. Memoization/hashability helpers and
+hypergeometric quadrature containers are private. API documentation now requires
+an explicit <code class="docutils literal notranslate"><span class="pre">__all__</span></code> in every public module, preventing incidental helper exports.</p>
+</section>
+<section id="resume-compatibility-and-source-provenance">
+<h2>Resume compatibility and source provenance<a class="headerlink" href="#resume-compatibility-and-source-provenance" title="Link to this heading">#</a></h2>
+<p>The identity format is now <strong>2</strong>. A new output location is required for every
+format-1 chain and for the API changes above. Preserve the original code and
+environment to continue those analyses; no old identity is silently replaced.</p>
+<p>Within format 2, edits to comments, code layout and docstrings do not by themselves
+invalidate a chain. The package comparison uses Python syntax with only those
+documentary elements removed. Runtime callable code, defaults and captured state,
+model parameters, observations, priors, coordinate order/transforms, solver and
+sampler settings, packaged data, Python/dependency versions, and JAX backend and
+precision are still checked. Adding/removing/renaming package modules also changes
+identity. Checks are recomputed at persistence boundaries, including repeated
+runs in the same process.</p>
+<p>Full source/data byte hashes remain recorded separately, with a new history entry
+when an accepted run uses changed bytes. NumPyro writes <code class="docutils literal notranslate"><span class="pre">source_provenance</span></code> in
+<code class="docutils literal notranslate"><span class="pre">metadata.json</span></code>; emcee stores JSON records in the <code class="docutils literal notranslate"><span class="pre">jeanspy_source_provenance</span></code>
+dataset of its HDF5 backend group, with the starting iteration for each record.
+These hashes document which files were present; compatibility is determined by
+the analysis identity, not by substituting provenance records.</p>
+<p>This guards accidental mismatches, not arbitrary Python side effects. Custom
+models must expose external/opaque state through <code class="docutils literal notranslate"><span class="pre">sampling_identity()</span></code>. If a
+model uses documentation or source text as computational input, include that text
+in its declared identity too. Preserve the matching files/environment for exact
+reproduction; a hash alone is not a source archive.</p>
 </section>
 </section>
 
@@ -701,6 +764,8 @@ Retain the original checkout and environment to reproduce or resume that analysi
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#specify-sampling-coordinates">Specify sampling coordinates</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#density-cutoffs-and-observation-precision">Density cutoffs and observation precision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-presets-and-public-utilities">Explicit presets and public utilities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resume-compatibility-and-source-provenance">Resume compatibility and source provenance</a></li>
 </ul>
   </nav></div>
 

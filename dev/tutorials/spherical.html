@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -1020,7 +1020,7 @@ disabled; the example only exercises the storage workflow.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tempfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemporaryDirectory</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_default_estimation_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">plummer_nfw_constant_anisotropy_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
 
 <span class="c1"># numpy-inference-start</span>
@@ -1032,7 +1032,7 @@ disabled; the example only exercises the storage workflow.</p>
     <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="s2">"log10_re_pc"</span><span class="p">,</span> <span class="s2">"log10_rs_pc"</span><span class="p">,</span>
            <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"log10_one_minus_beta_ani"</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">get_default_estimation_model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">plummer_nfw_constant_anisotropy_model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">initial_state</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>

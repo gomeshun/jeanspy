@@ -1,9 +1,0 @@
-reset_data
-==========
-
-``jeanspy.model.SimpleDSphEstimationModel.reset_data``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. automethod:: jeanspy.model.SimpleDSphEstimationModel.reset_data
-   :no-index:

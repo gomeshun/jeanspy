@@ -62,7 +62,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -599,7 +599,7 @@ Axisymmetric mass is inside an ellipsoid, including its axis-ratio volume
 factor. It is not a spherical enclosed mass except when <code class="docutils literal notranslate"><span class="pre">Q=1</span></code>.</p>
 <section id="observation-precision-and-sampled-parameters">
 <h2>Observation precision and sampled parameters<a class="headerlink" href="#observation-precision-and-sampled-parameters" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleDSphEstimationModel(dtype=None)</span></code> stores observations in the common
+<p><code class="docutils literal notranslate"><span class="pre">SphericalDSphEstimationModel(dtype=None)</span></code> stores observations in the common
 floating dtype of the three input columns; integer-only data use float64.
 Pass <code class="docutils literal notranslate"><span class="pre">dtype=np.float32</span></code> or <code class="docutils literal notranslate"><span class="pre">dtype=np.float64</span></code> to choose explicitly. Shared
 buffers retain this dtype and reject a reset requiring a different dtype or

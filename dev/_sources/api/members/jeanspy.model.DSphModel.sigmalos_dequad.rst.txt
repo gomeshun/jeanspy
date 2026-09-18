@@ -1,9 +1,0 @@
-sigmalos_dequad
-===============
-
-``jeanspy.model.DSphModel.sigmalos_dequad``
-
-Class and construction: :doc:`DSphModel <../generated/jeanspy.model.DSphModel>`.
-
-.. automethod:: jeanspy.model.DSphModel.sigmalos_dequad
-   :no-index:

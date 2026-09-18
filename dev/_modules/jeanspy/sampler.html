@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -495,17 +495,17 @@
                   
   <h1>Source code for jeanspy.sampler</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">emcee.backends</span>
-<span class="c1"># import torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">cpu_count</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>  <span class="c1"># kept for comments above; no longer used in code</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._sampling_identity</span><span class="w"> </span><span class="kn">import</span> <span class="n">fingerprint</span><span class="p">,</span> <span class="n">software_identity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sampling_identity</span><span class="w"> </span><span class="kn">import</span> <span class="n">IDENTITY_FORMAT</span><span class="p">,</span> <span class="n">fingerprint</span><span class="p">,</span> <span class="n">software_identity</span><span class="p">,</span> <span class="n">source_provenance</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Sampler"</span><span class="p">]</span>
@@ -518,108 +518,6 @@
     <span class="n">_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">_formatter</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">_handler</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-
-<span class="c1">############################################</span>
-<span class="c1"># # How to use blobs in emcee</span>
-<span class="c1"># </span>
-<span class="c1"># import emcee</span>
-<span class="c1"># import numpy as np</span>
-
-<span class="c1"># def log_prior(params):</span>
-<span class="c1">#     return -0.5 * np.sum(params**2)</span>
-
-<span class="c1"># def log_like(params):</span>
-<span class="c1">#     return -0.5 * np.sum((params / 0.1)**2)</span>
-
-<span class="c1"># def log_prob(params):</span>
-<span class="c1">#     lp = log_prior(params)</span>
-<span class="c1">#     if not np.isfinite(lp):</span>
-<span class="c1">#         return -np.inf, -np.inf, -np.inf</span>
-<span class="c1">#     ll = log_like(params)</span>
-<span class="c1">#     if not np.isfinite(ll):</span>
-<span class="c1">#         return lp, -np.inf, -np.inf</span>
-<span class="c1">#     return lp + ll, lp, np.mean(params)</span>
-
-<span class="c1"># coords = np.random.randn(32, 3)</span>
-<span class="c1"># nwalkers, ndim = coords.shape</span>
-
-<span class="c1"># # Here are the important lines</span>
-<span class="c1"># dtype = [("log_prior", float), ("mean", float)]</span>
-<span class="c1"># sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob,</span>
-<span class="c1">#                                 blobs_dtype=dtype)</span>
-
-<span class="c1"># sampler.run_mcmc(coords, 100)</span>
-
-<span class="c1"># blobs = sampler.get_blobs()</span>
-<span class="c1"># log_prior_samps = blobs["log_prior"]</span>
-<span class="c1"># mean_samps = blobs["mean"]</span>
-<span class="c1"># print(log_prior_samps.shape)</span>
-<span class="c1"># print(mean_samps.shape)</span>
-
-<span class="c1"># flat_blobs = sampler.get_blobs(flat=True)</span>
-<span class="c1"># flat_log_prior_samps = flat_blobs["log_prior"]</span>
-<span class="c1"># flat_mean_samps = flat_blobs["mean"]</span>
-<span class="c1"># print(flat_log_prior_samps.shape)</span>
-<span class="c1"># print(flat_mean_samps.shape)</span>
-
-<span class="c1">############################################</span>
-<span class="c1"># # How to use backends in emcee</span>
-<span class="c1"># import emcee</span>
-<span class="c1"># import numpy as np</span>
-
-<span class="c1"># np.random.seed(42)</span>
-
-<span class="c1"># # The definition of the log probability function</span>
-<span class="c1"># # We'll also use the "blobs" feature to track the "log prior" for each step</span>
-<span class="c1"># def log_prob(theta):</span>
-<span class="c1">#     log_prior = -0.5 * np.sum((theta - 1.0) ** 2 / 100.0)</span>
-<span class="c1">#     log_prob = -0.5 * np.sum(theta**2) + log_prior</span>
-<span class="c1">#     return log_prob, log_prior</span>
-
-
-<span class="c1"># # Initialize the walkers</span>
-<span class="c1"># coords = np.random.randn(32, 5)</span>
-<span class="c1"># nwalkers, ndim = coords.shape</span>
-
-<span class="c1"># # Set up the backend</span>
-<span class="c1"># # Don't forget to clear it in case the file already exists</span>
-<span class="c1"># filename = "tutorial.h5"</span>
-<span class="c1"># backend = emcee.backends.HDFBackend(filename)</span>
-<span class="c1"># backend.reset(nwalkers, ndim)</span>
-
-<span class="c1"># # Initialize the sampler</span>
-<span class="c1"># sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob, backend=backend)</span>
-
-<span class="c1"># max_n = 100000</span>
-
-<span class="c1"># # We'll track how the average autocorrelation time estimate changes</span>
-<span class="c1"># index = 0</span>
-<span class="c1"># autocorr = np.empty(max_n)</span>
-
-<span class="c1"># # This will be useful to testing convergence</span>
-<span class="c1"># old_tau = np.inf</span>
-
-<span class="c1"># # Now we'll sample for up to max_n steps</span>
-<span class="c1"># for sample in sampler.sample(coords, iterations=max_n, progress=True):</span>
-<span class="c1">#     # Only check convergence every 100 steps</span>
-<span class="c1">#     if sampler.iteration % 100:</span>
-<span class="c1">#         continue</span>
-
-<span class="c1">#     # Compute the autocorrelation time so far</span>
-<span class="c1">#     # Using tol=0 means that we'll always get an estimate even</span>
-<span class="c1">#     # if it isn't trustworthy</span>
-<span class="c1">#     tau = sampler.get_autocorr_time(tol=0)</span>
-<span class="c1">#     autocorr[index] = np.mean(tau)</span>
-<span class="c1">#     index += 1</span>
-
-<span class="c1">#     # Check convergence</span>
-<span class="c1">#     converged = np.all(tau * 100 &lt; sampler.iteration)</span>
-<span class="c1">#     converged &amp;= np.all(np.abs(old_tau - tau) / tau &lt; 0.01)</span>
-<span class="c1">#     if converged:</span>
-<span class="c1">#         break</span>
-<span class="c1">#     old_tau = tau</span>
-<span class="c1">############################################</span>
-
 
 <div class="viewcode-block" id="Sampler">
 <a class="viewcode-back" href="../../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler">[docs]</a>
@@ -725,12 +623,31 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_analysis_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identity</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"a"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
-            <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"jeanspy_analysis_identity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">identity</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="s2">"jeanspy_analysis_identity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">identity</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="s2">"jeanspy_identity_format"</span><span class="p">]</span> <span class="o">=</span> <span class="n">IDENTITY_FORMAT</span>
+            <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+                <span class="s2">"jeanspy_source_provenance"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">h5py</span><span class="o">.</span><span class="n">string_dtype</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">),</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_record_source_provenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="n">source_provenance</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"a"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s2">"jeanspy_source_provenance"</span><span class="p">]</span>
+            <span class="n">previous</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">asstr</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">previous</span><span class="p">[</span><span class="s2">"source_sha256"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">record</span><span class="p">[</span><span class="s2">"source_sha256"</span><span class="p">]:</span>
+                <span class="n">record</span><span class="p">[</span><span class="s2">"iteration"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"iteration"</span><span class="p">])</span>
+                <span class="n">history</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_analysis_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identity</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
-            <span class="n">stored</span> <span class="o">=</span> <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"jeanspy_analysis_identity"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">stored</span> <span class="o">!=</span> <span class="n">identity</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="n">handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+            <span class="n">stored</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"jeanspy_analysis_identity"</span><span class="p">)</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"jeanspy_identity_format"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">stored</span> <span class="o">!=</span> <span class="n">identity</span> <span class="ow">or</span> <span class="n">version</span> <span class="o">!=</span> <span class="n">IDENTITY_FORMAT</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Sampling analysis identity mismatch or missing legacy identity "</span>
                              <span class="s2">"(model, prior, data, schema, or solver). Use a new prefix or "</span>
                              <span class="s2">"explicitly reset to start a different analysis."</span><span class="p">)</span>
@@ -747,8 +664,6 @@
         <span class="k">if</span> <span class="n">p0_generator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself."</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># p0 = p0_generator(1)</span>
-            <span class="c1"># params = self.model.convert_params(p0[0])</span>
             <span class="n">p0</span> <span class="o">=</span> <span class="n">p0_generator</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
             <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">convert_params</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"p0: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">p0</span><span class="p">)</span>
@@ -764,7 +679,7 @@
 <div class="viewcode-block" id="Sampler.set_wrapper_function">
 <a class="viewcode-back" href="../../api/members/jeanspy.sampler.Sampler.set_wrapper_function.html#jeanspy.sampler.Sampler.set_wrapper_function">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_wrapper_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.</span>
+        <span class="c1"># NOTE: Here we define a global wrapper function for log_prob to accelerate the sampling.</span>
         <span class="c1"># Without the wrapper function, multiprocessing.pool will repeat the pickling/unpickling of the model</span>
         <span class="c1"># and it will be very slow.</span>
         <span class="c1"># Once we define the wrapper function, pool will only pickle/unpickle the wrapper function</span>
@@ -779,7 +694,7 @@
 <span class="sd">        """</span>
         <span class="k">global</span> <span class="n">log_prob_fn_wrapper</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">log_prob_fn_wrapper</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">""" wrapper function for log_prob to accelarate the sampling.</span>
+<span class="w">            </span><span class="sd">""" wrapper function for log_prob to accelerate the sampling.</span>
 <span class="sd">            """</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"log_prob_fn_wrapper defined."</span><span class="p">)</span></div>
@@ -815,7 +730,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">burn_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">p0_generator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Advance warmup and continue from its final ensemble.</span>
 
-<span class="sd">        Warmup draws remain in the backend for compatibility. Exclude them</span>
+<span class="sd">        Warmup draws remain in the backend. Exclude them</span>
 <span class="sd">        explicitly with get_chain(discard=...) when analyzing production draws.</span>
 <span class="sd">        The chain already samples the posterior and must not be weighted by</span>
 <span class="sd">        the posterior density a second time.</span>
@@ -837,6 +752,7 @@
                         <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"p:</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                         <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lnposterior(p):</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lnposterior</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_source_provenance</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span>
                               <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -911,37 +827,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_analysis_identity</span><span class="p">(</span><span class="n">identity</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_analysis_identity</span> <span class="o">=</span> <span class="n">identity</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_source_provenance</span><span class="p">()</span>
+
         <span class="c1"># Now we'll sample for up to  steps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"iteration: </span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">iteration</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i_loop</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">loops</span><span class="p">):</span>
             <span class="c1"># start mcmc sampling with self.sampler.run_mcmc and pool</span>
-            
-            <span class="c1"># initial_state = self.p0_generator(self.nwalkers) if self.backend.iteration == 0 else None</span>
-            <span class="c1"># # check if initial_state returns finite log_prob</span>
-            <span class="c1"># # if not, raise an error</span>
-            <span class="c1"># if (initial_state is not None) and (not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state]))):</span>
-            <span class="c1">#     mes = []</span>
-            <span class="c1">#     mes.append("Sampler: initial_state has non-finite log_prob")</span>
-            <span class="c1">#     for p in initial_state:</span>
-            <span class="c1">#         if not np.all(np.isfinite(self.model.lnposterior(p))):</span>
-            <span class="c1">#             mes.append(f"p:{p}")</span>
-            <span class="c1">#             mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")</span>
-            <span class="c1">#     # mes.append(f"initial_state:{initial_state}")</span>
-            <span class="c1">#     # mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")</span>
-            <span class="c1">#     raise RuntimeError("\n".join(mes))</span>
-            <span class="c1"># check if already converged</span>
-            <span class="c1"># if self.sampler.iteration &gt; 0:</span>
-            <span class="c1"># else:</span>
-            <span class="c1">#     tau = self.sampler.get_autocorr_time(tol=0)</span>
-            <span class="c1">#     converged = np.all(tau * 100 &lt; self.sampler.iteration)</span>
-            <span class="c1">#     converged &amp;= np.all(np.abs(old_tau - tau) / tau &lt; 0.01)</span>
-            <span class="c1">#     if converged:</span>
-            <span class="c1">#         print(f"Sampler: Already converged after {self.sampler.iteration} iterations.")</span>
-            <span class="c1">#         break</span>
-            <span class="c1">#     else:</span>
-            <span class="c1">#         print(f"Sampler: Not converged yet. tau:{tau}\titeration:{self.sampler.iteration}")</span>
-            <span class="c1">#         old_tau = tau</span>
-            <span class="c1"># run mcmc</span>
             <span class="n">initial_state</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">iteration</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">initial_state</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span><span class="n">iterations</span><span class="p">,</span>
                                     <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

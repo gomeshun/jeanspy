@@ -1,0 +1,8 @@
+﻿plummer\_nfw\_constant\_anisotropy\_model
+=========================================
+
+``jeanspy.model.plummer_nfw_constant_anisotropy_model``
+
+.. currentmodule:: jeanspy.model
+
+.. autofunction:: plummer_nfw_constant_anisotropy_model

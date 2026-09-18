@@ -1,9 +1,0 @@
-release_shared_memory
-=====================
-
-``jeanspy.model.SimpleDSphEstimationModel.release_shared_memory``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. automethod:: jeanspy.model.SimpleDSphEstimationModel.release_shared_memory
-   :no-index:

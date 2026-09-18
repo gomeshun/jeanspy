@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -512,7 +512,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_parameter_specs</span><span class="p">,</span> <span class="n">_photometry_coordinate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._axisymmetric_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_params</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._classical.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlatPriorModel</span><span class="p">,</span> <span class="n">PhotometryPriorModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlatPriorModel</span><span class="p">,</span> <span class="n">PhotometryPriorModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.axisymmetric</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisymmetricDSphModel</span><span class="p">,</span> <span class="n">InvalidAxisymmetricModelError</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"AxisymmetricKinematicData"</span><span class="p">,</span> <span class="s2">"AxisymmetricDSphEstimationModel"</span><span class="p">]</span>
@@ -702,8 +702,8 @@
         <span class="k">return</span> <span class="n">AxisymmetricKinematicData</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">inverse_temparature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""WBIC inverse temperature; historical spelling matches the sampler."""</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inverse_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the WBIC inverse temperature 1/log(N), requiring N &gt; 1."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_data</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"WBIC requires at least two observations"</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_data</span><span class="p">)</span>
@@ -868,7 +868,7 @@
 <span class="sd">        **Returns and shape.** Tuple using loglikelihood/log(N) plus the original</span>
 <span class="sd">        prior; requires N&gt;1.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posterior</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inverse_temparature</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posterior</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inverse_temperature</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AxisymmetricDSphEstimationModel.sample">

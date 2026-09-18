@@ -51,7 +51,7 @@ factor. It is not a spherical enclosed mass except when `Q=1`.
 
 ## Observation precision and sampled parameters
 
-`SimpleDSphEstimationModel(dtype=None)` stores observations in the common
+`SphericalDSphEstimationModel(dtype=None)` stores observations in the common
 floating dtype of the three input columns; integer-only data use float64.
 Pass `dtype=np.float32` or `dtype=np.float64` to choose explicitly. Shared
 buffers retain this dtype and reject a reset requiring a different dtype or

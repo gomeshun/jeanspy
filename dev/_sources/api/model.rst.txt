@@ -28,11 +28,11 @@ boundaries, and :doc:`../quickstart` for executable minimal examples.
    PhotometryPriorModel
    PlummerModel
    SersicModel
-   SimpleDSphEstimationModel
+   SphericalDSphEstimationModel
    StellarModel
    Uniform2dModel
    ZhaoModel
-   get_default_estimation_model
+   plummer_nfw_constant_anisotropy_model
    AxisymmetricDSphModel
    AxisymmetricDSphEstimationModel
    AxisymmetricKinematicData

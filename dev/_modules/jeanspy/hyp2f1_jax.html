@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -508,10 +508,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">jax.scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">gammaln</span><span class="p">,</span> <span class="n">gammasgn</span><span class="p">,</span> <span class="n">logsumexp</span>
 
 
-<div class="viewcode-block" id="GaussLegendre01">
-<a class="viewcode-back" href="../../api/generated/jeanspy.hyp2f1_jax.GaussLegendre01.html#jeanspy.hyp2f1_jax.GaussLegendre01">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">GaussLegendre01</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_GaussLegendre01</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""Store a fixed quadrature rule on the unit interval.</span>
 
 <span class="sd">    Notes</span>
@@ -535,11 +533,10 @@
 <span class="sd">    **Examples.** ``examples/docs_numerics.py``</span>
 <span class="sd">    """</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">w</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span></div>
+    <span class="n">w</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_gauss_legendre_01</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GaussLegendre01</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_gauss_legendre_01</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_GaussLegendre01</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Gauss-Legendre nodes/weights on [0, 1] as JAX arrays.</span>
 
 <span class="sd">    Notes</span>
@@ -551,17 +548,15 @@
     <span class="c1"># Map from [-1, 1] to [0, 1]</span>
     <span class="n">t</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="n">wt</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">w</span>
-    <span class="k">return</span> <span class="n">GaussLegendre01</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">w</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wt</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_GaussLegendre01</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">w</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wt</span><span class="p">))</span>
 
 
 <span class="n">_GAUSS_64</span> <span class="o">=</span> <span class="n">_gauss_legendre_01</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">_GAUSS_128</span> <span class="o">=</span> <span class="n">_gauss_legendre_01</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TanhSinh01">
-<a class="viewcode-back" href="../../api/generated/jeanspy.hyp2f1_jax.TanhSinh01.html#jeanspy.hyp2f1_jax.TanhSinh01">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">TanhSinh01</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_TanhSinh01</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""Store a fixed quadrature rule on the unit interval.</span>
 
 <span class="sd">    Notes</span>
@@ -585,11 +580,10 @@
 <span class="sd">    **Examples.** ``examples/docs_numerics.py``</span>
 <span class="sd">    """</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">w</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span></div>
+    <span class="n">w</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_tanh_sinh_01</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TanhSinh01</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_tanh_sinh_01</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_TanhSinh01</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Tanh-sinh quadrature nodes/weights on [0, 1] as JAX arrays.</span>
 
 <span class="sd">    This fixed quadrature handles endpoint singularities well, which are present in</span>
@@ -615,7 +609,7 @@
     <span class="c1"># Map from [-1,1] to [0,1]: y = (x+1)/2, dy = dx/2</span>
     <span class="n">y</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="n">wy</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">w</span>
-    <span class="k">return</span> <span class="n">TanhSinh01</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">w</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wy</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_TanhSinh01</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">w</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wy</span><span class="p">))</span>
 
 
 <span class="c1"># Default rule tuned for float32 robustness near w→1 and b≈1/2 (361 points).</span>
@@ -1144,6 +1138,10 @@
     <span class="n">series_val</span> <span class="o">=</span> <span class="n">hyp2f1_1b_3half_series</span><span class="p">(</span><span class="n">b_arr</span><span class="p">,</span> <span class="n">w_arr</span><span class="p">,</span> <span class="n">n_terms</span><span class="o">=</span><span class="n">n_terms</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">use_asym</span><span class="p">,</span> <span class="n">asym_val</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">use_quad</span><span class="p">,</span> <span class="n">quad_val</span><span class="p">,</span> <span class="n">series_val</span><span class="p">))</span></div>
 
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"hyp2f1_1b_d_series"</span><span class="p">,</span> <span class="s2">"hyp2f1_1b_3half_series"</span><span class="p">,</span>
+           <span class="s2">"hyp2f1_1b_3half_quad"</span><span class="p">,</span> <span class="s2">"hyp2f1_1b_3half_asymptotic"</span><span class="p">,</span> <span class="s2">"hyp2f1_1b_3half"</span><span class="p">]</span>
 </pre></div>
 
                 </article>

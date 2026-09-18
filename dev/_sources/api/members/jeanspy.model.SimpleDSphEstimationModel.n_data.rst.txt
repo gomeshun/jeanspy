@@ -1,9 +1,0 @@
-n_data
-======
-
-``jeanspy.model.SimpleDSphEstimationModel.n_data``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. autoattribute:: jeanspy.model.SimpleDSphEstimationModel.n_data
-   :no-index:

@@ -1,9 +1,0 @@
-lnlikelihood
-============
-
-``jeanspy.model.SimpleDSphEstimationModel.lnlikelihood``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. automethod:: jeanspy.model.SimpleDSphEstimationModel.lnlikelihood
-   :no-index:

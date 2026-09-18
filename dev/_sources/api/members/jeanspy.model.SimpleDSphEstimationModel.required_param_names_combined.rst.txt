@@ -1,9 +1,0 @@
-required_param_names_combined
-=============================
-
-``jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined``
-
-Class and construction: :doc:`SimpleDSphEstimationModel <../generated/jeanspy.model.SimpleDSphEstimationModel>`.
-
-.. autoattribute:: jeanspy.model.SimpleDSphEstimationModel.required_param_names_combined
-   :no-index:

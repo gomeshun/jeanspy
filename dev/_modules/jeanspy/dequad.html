@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-17"/>
+    <meta name="docbuild:last-update" content="2026-09-18"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -494,86 +494,41 @@
                 <article class="bd-article">
                   
   <h1>Source code for jeanspy.dequad</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">sinh</span><span class="p">,</span><span class="n">cosh</span><span class="p">,</span><span class="n">exp</span><span class="p">,</span><span class="n">log</span><span class="p">,</span><span class="n">pi</span><span class="p">,</span><span class="n">arange</span><span class="p">,</span><span class="n">isnan</span><span class="p">,</span><span class="n">isinf</span><span class="p">,</span><span class="n">float64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span><span class="p">,</span> <span class="n">wraps</span>
+<span></span><span class="sd">"""Double-exponential quadrature and reusable integration nodes."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">BUF_DEBUG</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"dequad"</span><span class="p">,</span> <span class="s2">"generate_x_w"</span><span class="p">]</span>
 
-<div class="viewcode-block" id="hashable">
-<a class="viewcode-back" href="../../api/generated/jeanspy.dequad.hashable.html#jeanspy.dequad.hashable">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">hashable</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""Test whether Python can hash an object.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    **Inputs and units.** x is any Python object.</span>
-
-<span class="sd">    **Returns and shape.** bool; catches TypeError from hash(x).</span>
-
-<span class="sd">    **Validity.** Hashability is not a check of array content identity.</span>
-
-<span class="sd">    **Errors.** Exceptions other than TypeError propagate.</span>
-
-<span class="sd">    **Backend.** Python host.</span>
-
-<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
-<span class="sd">    API.</span>
-
-<span class="sd">    **Examples.** hashable((1,2)) is True; hashable(np.array([1])) is False.</span>
-<span class="sd">    """</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_hashable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Whether an argument tuple can be used as a cache key."""</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="nb">hash</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="nb">hash</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">return</span> <span class="kc">False</span>
 
 
-<span class="c1"># 関数を Memoize するデコレータ.</span>
-<div class="viewcode-block" id="memorize">
-<a class="viewcode-back" href="../../api/generated/jeanspy.dequad.memorize.html#jeanspy.dequad.memorize">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">memorize</span><span class="p">(</span><span class="nb">callable</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""Cache a callable for hashable argument tuples.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    **Inputs and units.** callable is a Python function; the wrapper accepts its</span>
-<span class="sd">    positional/keyword arguments.</span>
-
-<span class="sd">    **Returns and shape.** Wrapped callable with an in-memory cache; unhashable</span>
-<span class="sd">    arguments bypass caching.</span>
-
-<span class="sd">    **Validity.** Pure functions only; key order follows supplied kwargs.</span>
-<span class="sd">    Mutable returned values are shared cached objects.</span>
-
-<span class="sd">    **Errors.** Original callable exceptions propagate.</span>
-
-<span class="sd">    **Backend.** Python host.</span>
-
-<span class="sd">    **Differentiation.** No physical-parameter automatic differentiation on this</span>
-<span class="sd">    API.</span>
-
-<span class="sd">    **Examples.** Used internally for quadrature nodes; use dequad for numerical</span>
-<span class="sd">    integration.</span>
-<span class="sd">    """</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_memoize</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Cache hashable calls; bypass the cache for unhashable arguments."""</span>
     <span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="nd">@wraps</span><span class="p">(</span><span class="nb">callable</span><span class="p">)</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">hashable</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_hashable</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
-            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">wrapper</span></div>
+    <span class="k">return</span> <span class="n">wrapper</span>
 
 
-<span class="c1">#@lru_cache(maxsize = 1)</span>
 <div class="viewcode-block" id="generate_x_w">
 <a class="viewcode-back" href="../../api/generated/jeanspy.dequad.generate_x_w.html#jeanspy.dequad.generate_x_w">[docs]</a>
-<span class="nd">@memorize</span>
+<span class="nd">@_memoize</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_x_w</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">xp</span><span class="o">=</span><span class="n">np</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""Construct nodes and weights for fixed double-exponential quadrature.</span>
 
@@ -603,7 +558,6 @@
 <span class="sd">    Hashable arguments reuse cached arrays; returned arrays must not be</span>
 <span class="sd">    mutated if that cache is to remain valid. See ``examples/docs_numerics.py``.</span>
 <span class="sd">    """</span>
-    <span class="c1">#print("generate_x_w in",a,b,width,mN,pN)</span>
     <span class="n">pi2</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
     
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">b</span><span class="p">)):</span>  <span class="c1"># a &lt; x &lt; inf</span>
@@ -717,27 +671,6 @@
         
     <span class="k">return</span> <span class="p">(</span><span class="n">wsfs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
-    
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
-    <span class="c1">#### demonstration and illustration ####</span>
-    
-    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-    
-    <span class="k">def</span><span class="w"> </span><span class="nf">debug</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
-        <span class="n">ns</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span>
-        <span class="n">errs</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">dequad</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">]</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">errs</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ns</span><span class="p">),</span><span class="n">errs</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
-        
-    <span class="n">debug</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-    <span class="n">debug</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-    <span class="n">debug</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-    <span class="n">debug</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-    
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># The plotted figure shows that n = 2**6~2**10 (64~1024) is good for the normal use</span>
 </pre></div>
 
                 </article>

@@ -7,7 +7,7 @@ AxisymmetricDSphEstimationModel members
    members/jeanspy.model.AxisymmetricDSphEstimationModel.blobs_dtype
    members/jeanspy.model.AxisymmetricDSphEstimationModel.convert_params
    members/jeanspy.model.AxisymmetricDSphEstimationModel.data
-   members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temparature
+   members/jeanspy.model.AxisymmetricDSphEstimationModel.inverse_temperature
    members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihood
    members/jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods
    members/jeanspy.model.AxisymmetricDSphEstimationModel.lnposterior

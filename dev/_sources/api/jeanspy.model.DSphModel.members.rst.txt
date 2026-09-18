@@ -12,8 +12,6 @@ DSphModel members
    members/jeanspy.model.DSphModel.sampling_identity
    members/jeanspy.model.DSphModel.sigmalos
    members/jeanspy.model.DSphModel.sigmalos2
-   members/jeanspy.model.DSphModel.sigmalos2_dequad
-   members/jeanspy.model.DSphModel.sigmalos_dequad
    members/jeanspy.model.DSphModel.sigmar2
    members/jeanspy.model.DSphModel.sigmat2
    members/jeanspy.model.DSphModel.update

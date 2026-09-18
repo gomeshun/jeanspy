@@ -1,0 +1,9 @@
+sample
+======
+
+``jeanspy.model.SphericalDSphEstimationModel.sample``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SphericalDSphEstimationModel.sample
+   :no-index:

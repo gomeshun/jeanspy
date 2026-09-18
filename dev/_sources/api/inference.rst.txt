@@ -10,8 +10,8 @@ NumPy/SciPy
    jeanspy.model.FittableModel
    jeanspy.model.FlatPriorModel
    jeanspy.model.PhotometryPriorModel
-   jeanspy.model.SimpleDSphEstimationModel
-   jeanspy.model.get_default_estimation_model
+   jeanspy.model.SphericalDSphEstimationModel
+   jeanspy.model.plummer_nfw_constant_anisotropy_model
    jeanspy.model.AxisymmetricDSphEstimationModel
    jeanspy.model.AxisymmetricKinematicData
 
