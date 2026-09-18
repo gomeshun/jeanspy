@@ -215,7 +215,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_classical.enclosure_mass(radii),
+                    model_classical.enclosed_mass(radii),
                     model_jax.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
                     label=f"NFW.enclosed_mass {params}",
                     rtol=case["mass_rtol"],
@@ -247,7 +247,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
                 )
                 _assert_allclose(
                     self,
-                    model_classical.enclosure_mass(radii),
+                    model_classical.enclosed_mass(radii),
                     model_jax.enclosed_mass(jnp.asarray(radii), params=params, method="analytic"),
                     label=f"Zhao.enclosed_mass {params}",
                     rtol=0.0,
@@ -400,7 +400,7 @@ class TestSharedModelMethodsConsistency(unittest.TestCase):
         }
         radii = np.geomspace(1.0, 1e4, 32)
 
-        classical = ZhaoClassical(**params).enclosure_mass(radii)
+        classical = ZhaoClassical(**params).enclosed_mass(radii)
         numpyro = ZhaoNumPyro().enclosed_mass(jnp.asarray(radii), params=params, method="analytic")
 
         _assert_all_finite(self, numpyro, label="Zhao NFW-limit enclosed_mass (numpyro)")
@@ -560,7 +560,7 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
                 classical_dsph = self._make_classical_dsph(params, case["anisotropy_kind"])
                 numpyro_dsph = self._make_numpyro_dsph(params, case["anisotropy_kind"])
 
-                classical_sigmalos2 = classical_dsph.sigmalos2_dequad(R_pc, n=2048, n_kernel=256)
+                classical_sigmalos2 = classical_dsph.sigmalos2(R_pc, n=2048, n_kernel=256)
                 numpyro_sigmalos2 = numpyro_dsph.sigmalos2(
                     jnp.asarray(R_pc),
                     params=params,
@@ -595,7 +595,7 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
         classical_dsph = self._make_classical_dsph(params, "baes")
         numpyro_dsph = self._make_numpyro_dsph(params, "baes")
 
-        classical_sigmalos2 = classical_dsph.sigmalos2_dequad(R_pc, n=1024, n_kernel=128)
+        classical_sigmalos2 = classical_dsph.sigmalos2(R_pc, n=1024, n_kernel=128)
         numpyro_sigmalos2 = numpyro_dsph.sigmalos2(
             jnp.asarray(R_pc),
             params=params,
@@ -627,7 +627,7 @@ class TestDSphConsistencyAgainstClassical(unittest.TestCase):
 
         with patch.object(
             classical_dsph,
-            "sigmalos2_dequad",
+            "_sigmalos2_dequad",
             return_value=np.array([1.0, 2.0]),
         ) as dequad:
             result = classical_dsph.sigmalos2(

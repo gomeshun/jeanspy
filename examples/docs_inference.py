@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import numpy as np
 import pandas as pd
-from jeanspy.model import get_default_estimation_model
+from jeanspy.model import plummer_nfw_constant_anisotropy_model
 from jeanspy.sampler import Sampler
 
 # numpy-inference-start
@@ -15,7 +15,7 @@ prior = pd.DataFrame(
     index=["vmem_kms", "log10_re_pc", "log10_rs_pc",
            "log10_rhos_Msunpc3", "log10_r_t_pc", "log10_one_minus_beta_ani"],
 )
-model = get_default_estimation_model(data, 2.3, .1, config=prior)
+model = plummer_nfw_constant_anisotropy_model(data, 2.3, .1, config=prior)
 center = np.array([0., 2.3, 3., -2., 4., 0.])
 
 def initial_state(n):

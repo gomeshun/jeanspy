@@ -47,7 +47,7 @@ class FittableModel(Model, metaclass=ABCMeta):
     log priors for emcee blobs. WBIC requires more than one observation.
 
     This NumPy/SciPy host interface does not support physical-parameter JAX
-    tracing. See SimpleDSphEstimationModel for the spherical kinematic target
+    tracing. See SphericalDSphEstimationModel for the spherical kinematic target
     and ``examples/docs_inference.py`` for a complete short storage example.
     """
 
@@ -84,7 +84,7 @@ class FittableModel(Model, metaclass=ABCMeta):
         raise NotImplementedError
 
     @cached_property
-    def inverse_temparature(self):
+    def inverse_temperature(self):
         """Return the WBIC inverse temperature ``1/log(N_data)``."""
         n_data = self.n_data if hasattr(self, "n_data") else len(self.data)
         if n_data <= 1:
@@ -206,7 +206,7 @@ class FittableModel(Model, metaclass=ABCMeta):
         lnl = -np.inf
         lnp_list = self._lnpriors(p, *args, **kwargs)
         if np.all([lnp > -np.inf for lnp in lnp_list]):
-            lnl = self._lnlikelihood(*args, **kwargs) * self.inverse_temparature
+            lnl = self._lnlikelihood(*args, **kwargs) * self.inverse_temperature
         result = (lnl + np.sum(lnp_list), lnl, *lnp_list)
         if np.isnan(result[0]):
             raise ValueError(
@@ -232,7 +232,7 @@ class FlatPriorModel(Model):
     -----
     **Inputs and units.** config is a pandas DataFrame indexed by ordered
     parameter names, with finite lower/upper columns, or a CSV path.
-    sample(size) uses NumPy's random state. ``generate_default_config_file``
+    sample(size) uses NumPy's random state. ``write_config_template``
     writes a CSV template.
 
     **Returns and shape.** A validated prior object; sample returns coordinates
@@ -365,7 +365,7 @@ class FlatPriorModel(Model):
         return 0.0 if np.all((lower <= p) & (p <= upper)) else -np.inf
 
     @staticmethod
-    def generate_default_config_file(fname, param_names, lower=np.nan, upper=np.nan):
+    def write_config_template(fname, param_names, lower=np.nan, upper=np.nan):
         """Write a template; unspecified bounds deliberately cannot be sampled."""
         df = pd.DataFrame({"lower": lower, "upper": upper}, index=param_names)
         df.to_csv(fname)
@@ -389,7 +389,7 @@ class PhotometryPriorModel(Model):
     estimation model.
 
     **Errors.** Invalid prior values are rejected when composing
-    SimpleDSphEstimationModel.
+    SphericalDSphEstimationModel.
 
     **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
 
@@ -448,21 +448,21 @@ class PhotometryPriorModel(Model):
 
 
 class DotDict(dict):
-    r"""Dictionary with attribute access retained for historical data access.
+    r"""Dictionary with attribute access to existing keys.
 
     Notes
     -----
     **Inputs and units.** An optional mapping plus keyword values; keys are
     strings and units belong to the stored values.
 
-    **Returns and shape.** Parameters.copy is shallow; deepcopy separates nested
-    values. Parameters.index and .values are lists, not NumPy arrays or dict
-    methods; ``to_series`` returns a pandas Series. DotDict follows dict
-    operations; assignment to an existing key through an attribute changes the
-    key.
+    **Returns and shape.** A dict subclass: mapping operations and keys()/values()
+    retain dict behavior. Reading an attribute falls back to an existing key;
+    assigning or deleting an attribute changes an existing key if present.
 
-    **Validity.** Container operations have no physical validation. DotDict new
-    attributes need not become keys.
+    **Validity.** Container operations have no physical validation. Assignment
+    to a new attribute creates an ordinary instance attribute, not a mapping key.
+    Use item assignment to insert keys. Dict method names take precedence over
+    attribute access to identically named keys.
 
     **Errors.** Missing mapping keys raise KeyError; missing attributes raise
     AttributeError.
@@ -472,7 +472,7 @@ class DotDict(dict):
     **Differentiation.** No physical-parameter automatic differentiation on this
     API.
 
-    **Examples.** Parameters({'``re_pc``': 300.}).``to_series``().
+    **Examples.** ``DotDict({"R_pc": [10., 20.]}).R_pc`` returns the stored list.
     """
 
     def __getattr__(self, key):
@@ -493,12 +493,12 @@ class DotDict(dict):
             super().__delattr__(key)
 
 
-class SimpleDSphEstimationModel(FittableModel, Model):
-    r"""Kinematics-only NumPy/SciPy dwarf-spheroidal estimation model.
+class SphericalDSphEstimationModel(FittableModel, Model):
+    r"""Spherical Jeans inference with a Gaussian LOS-velocity likelihood.
 
     Notes
     -----
-    **Inputs and units.** SimpleDSphEstimationModel composes DSphModel,
+    **Inputs and units.** SphericalDSphEstimationModel composes DSphModel,
     FlatPriorModel and PhotometryPriorModel. ``args_load_data=[data]`` supplies
     a DataFrame with ``R_pc``, ``vlos_kms`` and ``e_vlos_kms``;
     ``kwargs_load_data`` may contain shared=True. Parameter vectors follow
@@ -517,7 +517,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
     selects storage precision. Shared buffers use that same dtype and cannot
     change dtype on reset. Numerical solvers may promote arithmetic precision.
     ``vmem_prior_from_data`` defaults to False. WBIC uses
-    ``inverse_temparature = 1/log(N)`` and requires N>1. Shared data cannot be
+    ``inverse_temperature = 1/log(N)`` and requires N>1. Shared data cannot be
     resized.
 
     **Errors.** Invalid prior order/schema/data raise ValueError. FittableModel
@@ -562,7 +562,7 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         # Shared-memory handles and cached WBIC temperature are runtime state;
         # the observations themselves are hashed for shared and ordinary models.
         ignored = {"logger", "_parammap", "params", "submodels", "_data",
-                   "shared", "shared_shape", "buffer_size", "inverse_temparature",
+                   "shared", "shared_shape", "buffer_size", "inverse_temperature",
                    "shm_R_pc", "shm_vlos_kms", "shm_e_vlos_kms"}
         state = {k: v for k, v in vars(self).items() if k not in ignored}
         state["data"] = self.data
@@ -651,14 +651,14 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         self.data = data
         if self.vmem_prior_from_data:
             prior.data = updated_prior
-        self.__dict__.pop("inverse_temparature", None)
+        self.__dict__.pop("inverse_temperature", None)
 
     @property
     def shared_memory_basename(self):
         """Return the observation-buffer name for this instance, or None if unshared."""
         if not self.shared:
             return None
-        return f"SimpleDSphEstimationModel_{id(self)}"
+        return f"SphericalDSphEstimationModel_{id(self)}"
 
     @property
     def data(self):
@@ -864,11 +864,11 @@ class SimpleDSphEstimationModel(FittableModel, Model):
         )
 
 
-def get_default_estimation_model(
+def plummer_nfw_constant_anisotropy_model(
     data,
     photometry_prior_loc,
     photometry_prior_scale,
-    config="priorconfig.csv",
+    config,
     *,
     vmem_prior_from_data=False,
     dtype=None,
@@ -877,10 +877,11 @@ def get_default_estimation_model(
 
     ``config`` is a DataFrame or CSV in this order: vmem_kms, log10_re_pc,
     log10_rs_pc, log10_rhos_Msunpc3, log10_r_t_pc, log10_one_minus_beta_ani.
-    A missing CSV is created as an unfilled template, then raises ValueError.
+    The caller must supply config. A missing CSV raises FileNotFoundError;
+    this constructor never writes a prior template.
     Caller velocity bounds are preserved unless vmem_prior_from_data is True.
     The preset supplies explicit SamplingParameter objects for these names;
-    ``dtype`` follows SimpleDSphEstimationModel's observation-storage contract.
+    ``dtype`` follows SphericalDSphEstimationModel's observation-storage contract.
 
     Notes
     -----
@@ -888,14 +889,14 @@ def get_default_estimation_model(
     ordered prior DataFrame or CSV path; ``photometry_prior_loc``/scale specify
     the Gaussian in log10(``re_pc``).
 
-    **Returns and shape.** SimpleDSphEstimationModel with the standard
+    **Returns and shape.** SphericalDSphEstimationModel with the standard
     Plummer/NFW/constant-anisotropy components.
 
     **Validity.** A convenience constructor does not choose scientifically
     justified prior bounds for the caller.
 
-    **Errors.** Missing/invalid data or prior configuration raises; templates
-    must be completed first.
+    **Errors.** Missing CSV files raise FileNotFoundError. Invalid data or
+    prior bounds/order raise ValueError; omitted config raises TypeError.
 
     **Backend.** NumPy/SciPy CPU; stateful components, with no JAX tracing.
 
@@ -914,18 +915,11 @@ def get_default_estimation_model(
 
     names = ["vmem_kms", "log10_re_pc", "log10_rs_pc", "log10_rhos_Msunpc3",
              "log10_r_t_pc", "log10_one_minus_beta_ani"]
-    if isinstance(config, (str, os.PathLike)) and not os.path.exists(config):
-        FlatPriorModel.generate_default_config_file(
-            config,
-            names,
-        )
-        raise ValueError(f"Created prior template at {config}; supply explicit finite prior bounds before inference.")
-
     prior = FlatPriorModel(config=config)
     if prior.data.index.tolist() != names:
-        raise ValueError(f"Default model prior names/order must be {names}.")
+        raise ValueError(f"Plummer/NFW/constant-anisotropy prior names/order must be {names}.")
 
-    return SimpleDSphEstimationModel(
+    return SphericalDSphEstimationModel(
         args_load_data=[data],
         dtype=dtype,
         parameter_specs=[
@@ -953,6 +947,6 @@ __all__ = [
     "FittableModel",
     "FlatPriorModel",
     "PhotometryPriorModel",
-    "SimpleDSphEstimationModel",
-    "get_default_estimation_model",
+    "SphericalDSphEstimationModel",
+    "plummer_nfw_constant_anisotropy_model",
 ]

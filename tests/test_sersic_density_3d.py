@@ -263,9 +263,9 @@ def test_auto_negative_raises():
         m.density_3d(-1.0, method="auto")
 
 
-def test_density_3d_method_approx():
+def test_density_3d_method_lgm():
     m = SersicModel(re_pc=RE_PC, n=2.0)
-    assert m.density_3d(RE_PC, method="approx") == pytest.approx(
+    assert m.density_3d(RE_PC, method="lgm") == pytest.approx(
         m.density_3d_LGM(RE_PC), rel=1e-12
     )
 

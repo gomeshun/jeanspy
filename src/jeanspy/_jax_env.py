@@ -10,9 +10,9 @@ def configure_jax_environment() -> None:
         mapped_platform = "cuda" if requested_platform == "gpu" else requested_platform
         os.environ.setdefault("JAX_PLATFORMS", mapped_platform)
 
-    legacy_x64 = os.environ.get("JEANSPY_JAX_ENABLE_X64")
-    if legacy_x64 is not None:
-        os.environ.setdefault("JAX_ENABLE_X64", legacy_x64)
+    jeanspy_x64 = os.environ.get("JEANSPY_JAX_ENABLE_X64")
+    if jeanspy_x64 is not None:
+        os.environ.setdefault("JAX_ENABLE_X64", jeanspy_x64)
 
     os.environ.setdefault("JAX_ENABLE_X64", "false")
     os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")

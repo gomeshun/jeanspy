@@ -10,8 +10,8 @@ from scipy.stats import norm
 
 from jeanspy.model import (
     ConstantAnisotropyModel, DSphModel, FlatPriorModel, NFWModel,
-    PhotometryPriorModel, PlummerModel, SimpleDSphEstimationModel,
-    get_default_estimation_model,
+    PhotometryPriorModel, PlummerModel, SphericalDSphEstimationModel,
+    plummer_nfw_constant_anisotropy_model,
 )
 from jeanspy.sampler import Sampler
 
@@ -30,7 +30,7 @@ def _make_model(tmp_path, config_kind):
     data = pd.DataFrame({"R_pc": np.linspace(10., 300., 12),
                          "vlos_kms": np.linspace(-10., 10., 12),
                          "e_vlos_kms": np.full(12, 2.)})
-    return SimpleDSphEstimationModel(args_load_data=[data], parameter_specs=[
+    return SphericalDSphEstimationModel(args_load_data=[data], parameter_specs=[
             SamplingParameter("vmem_kms", "vmem_kms"),
             SamplingParameter("log10_re_pc", "re_pc", "pow10"),
             SamplingParameter("log10_rs_pc", "rs_pc", "pow10"),
@@ -54,12 +54,12 @@ def _initial_state(nwalkers):
     return center + np.random.default_rng(42).normal(0., .01, (nwalkers, 6))
 
 
-def test_classical_los_method_preserves_legacy_values_and_shapes(tmp_path):
+def test_numpy_los_method_preserves_values_and_shapes(tmp_path):
     model = _make_model(tmp_path, "dataframe")
     model.update(model.convert_params(_initial_state(None)))
     dsph = model["DSphModel"]
     for radii in (50., np.array([50., 100., 300.])):
-        reference = dsph.sigmalos2_dequad(radii, 64, 32, True)
+        reference = dsph._sigmalos2_dequad(radii, 64, 32, True)
         for options in ({}, {"method": "dequad"}):
             variance = dsph.sigmalos2(radii, 64, 32, True, **options)
             dispersion = dsph.sigmalos(radii, 64, 32, True, **options)
@@ -67,7 +67,7 @@ def test_classical_los_method_preserves_legacy_values_and_shapes(tmp_path):
             np.testing.assert_array_equal(variance, reference)
             np.testing.assert_array_equal(dispersion, np.sqrt(reference))
         np.testing.assert_array_equal(
-            dsph.sigmalos_dequad(radii, 64, 32, True), np.sqrt(reference)
+            dsph.sigmalos(radii, 64, 32, True), np.sqrt(reference)
         )
     for evaluate in (dsph.sigmalos2, dsph.sigmalos):
         with pytest.raises(ValueError, match="Unsupported LOS integration method"):
@@ -203,7 +203,7 @@ def test_default_model_samples_finite_posterior_and_restarts(tmp_path, classical
     if config_kind == "path":
         config = tmp_path / "prior.csv"
         classical_prior_config.to_csv(config)
-    model = get_default_estimation_model(_data(), 2.3, .1, config=config)
+    model = plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1, config=config)
     old_random = np.random.get_state()
     np.random.seed(53)
     try:
@@ -213,7 +213,7 @@ def test_default_model_samples_finite_posterior_and_restarts(tmp_path, classical
         sampler = Sampler(model, model.sample, nwalkers=16, prefix=f"{tmp_path}/")
         sampler.run_mcmc(4, 1, enable_convergence_check=False)
         chain = sampler.get_chain().copy()
-        reloaded = get_default_estimation_model(_data(), 2.3, .1, config=config)
+        reloaded = plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1, config=config)
         resumed = Sampler(reloaded, reloaded.sample, nwalkers=16, prefix=f"{tmp_path}/")
         resumed.run_mcmc(3, 1, enable_convergence_check=False)
         assert resumed.get_chain().shape == (7, 16, 6)
@@ -224,18 +224,14 @@ def test_default_model_samples_finite_posterior_and_restarts(tmp_path, classical
         np.random.set_state(old_random)
 
 
-def test_missing_prior_creates_correct_template_and_fails_early(tmp_path, classical_prior_config):
+def test_missing_prior_is_rejected_without_creating_files(tmp_path):
     path = tmp_path / "prior.csv"
-    with pytest.raises(ValueError, match="Created prior template"):
-        get_default_estimation_model(_data(), 2.3, .1, config=path)
-    template = pd.read_csv(path, index_col=0)
-    assert template.index.tolist() == classical_prior_config.index.tolist()
-    assert template.isna().all().all()
-    # Existing incomplete config is never overwritten on retry.
-    content = path.read_bytes()
-    with pytest.raises(ValueError, match="explicit finite prior bounds"):
-        get_default_estimation_model(_data(), 2.3, .1, config=path)
-    assert path.read_bytes() == content
+    with pytest.raises(FileNotFoundError):
+        plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1, config=path)
+    assert not path.exists()
+    with pytest.raises(TypeError, match="config"):
+        plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1)
+    assert not list(tmp_path.iterdir())
 
 
 @pytest.mark.parametrize("bad", ["missing", "extra", "order", "physical", "substring", "duplicate"])
@@ -254,26 +250,26 @@ def test_prior_schema_rejected_before_inference(classical_prior_config, bad):
     else:
         config.index = [config.index[0]] * len(config)
     with pytest.raises(ValueError, match="names"):
-        get_default_estimation_model(_data(), 2.3, .1, config=config)
+        plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1, config=config)
 
 
 @pytest.mark.parametrize("lower,upper", [(np.nan, 1.), (-np.inf, 1.), (0., np.inf), (1., 1.), (2., 1.)])
 def test_non_sampleable_bounds_fail_early(classical_prior_config, lower, upper):
     classical_prior_config.loc["vmem_kms"] = [lower, upper]
     with pytest.raises(ValueError, match="finite prior bounds"):
-        get_default_estimation_model(_data(), 2.3, .1, config=classical_prior_config)
+        plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1, config=classical_prior_config)
 
 
 def test_data_reset_preserves_explicit_priors_and_invalidates_wbic(classical_prior_config):
-    model = get_default_estimation_model(_data(12), 2.3, .1, config=classical_prior_config)
-    assert model.inverse_temparature == pytest.approx(1 / np.log(12))
+    model = plummer_nfw_constant_anisotropy_model(_data(12), 2.3, .1, config=classical_prior_config)
+    assert model.inverse_temperature == pytest.approx(1 / np.log(12))
     model.reset_data(_data(24).assign(vlos_kms=100.))
-    assert model.inverse_temparature == pytest.approx(1 / np.log(24))
+    assert model.inverse_temperature == pytest.approx(1 / np.log(24))
     pd.testing.assert_frame_equal(model["FlatPriorModel"].data, classical_prior_config)
 
 
 def test_empirical_velocity_bounds_stay_synchronized(classical_prior_config):
-    model = get_default_estimation_model(_data(), 2.3, .1, config=classical_prior_config,
+    model = plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1, config=classical_prior_config,
                                          vmem_prior_from_data=True)
     model.reset_data(_data().assign(vlos_kms=np.linspace(90., 110., 12)))
     prior = model["FlatPriorModel"]
@@ -292,7 +288,7 @@ def test_empirical_velocity_bounds_stay_synchronized(classical_prior_config):
 
 def test_truncated_photometry_samples_respect_flat_support(classical_prior_config):
     classical_prior_config.loc["log10_re_pc"] = [2.39, 2.40]
-    model = get_default_estimation_model(_data(), 2.3, .1, config=classical_prior_config)
+    model = plummer_nfw_constant_anisotropy_model(_data(), 2.3, .1, config=classical_prior_config)
     for size in (None, 200, (2, 3)):
         sampled = model.sample(size)
         assert ((sampled[..., 1] >= 2.39) & (sampled[..., 1] <= 2.40)).all()

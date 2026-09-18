@@ -66,7 +66,7 @@ def independent_isotropic_los(R):
 def test_classical_rejects_invalid_scalar_and_mixed_radii(radius):
     dsph = model(classical)
     for value in (radius, [50., radius, 300.]):
-        for evaluate in (dsph.sigmalos2, dsph.sigmalos, dsph.sigmalos2_dequad, dsph.sigmalos_dequad):
+        for evaluate in (dsph.sigmalos2, dsph.sigmalos, dsph._sigmalos2_dequad):
             with pytest.raises(ValueError, match="finite R_pc > 0"):
                 evaluate(value)
 

@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.constants import parsec
 
-from ._classical.jfactor import C_J, kg_eV, solar_mass_kg
+from ._numpy.jfactor import C_J, kg_eV, solar_mass_kg
 from .axisymmetric import AxisymmetricZhaoModel, _inclination, _positive, _rule
 
 __all__ = ["jfactor", "dfactor", "C_J", "C_D"]

@@ -612,7 +612,7 @@ class TestModelNumPyro(unittest.TestCase):
                         dm_mass_method="analytic",
                     )
                 )
-                s2_ref = np.array(dsph_ref.sigmalos2_dequad(R, n=1024, n_kernel=128))
+                s2_ref = np.array(dsph_ref.sigmalos2(R, n=1024, n_kernel=128))
 
                 self.assertTrue(np.isfinite(s2_jax).all())
                 self.assertTrue(np.isfinite(s2_ref).all())

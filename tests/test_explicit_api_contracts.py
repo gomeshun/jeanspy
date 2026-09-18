@@ -31,7 +31,7 @@ def observations(dtype=np.float64):
 
 
 def fit(config, data=None, **kwargs):
-    return model.get_default_estimation_model(
+    return model.plummer_nfw_constant_anisotropy_model(
         observations() if data is None else data, 2.3, .1, config=config, **kwargs)
 
 
@@ -172,7 +172,7 @@ def test_exponential_photometry_prior_is_on_half_light_radius(classical_prior_co
     specs = list(target.parameter_specs)
     specs[1] = SamplingParameter("log10_scale", "r_exp_pc", "pow10")
     prior = classical_prior_config.rename(index={"log10_re_pc": "log10_scale"})
-    target = model.SimpleDSphEstimationModel(
+    target = model.SphericalDSphEstimationModel(
         args_load_data=[observations()], parameter_specs=specs,
         submodels={"DSphModel": model.DSphModel(submodels=submodels),
                    "FlatPriorModel": model.FlatPriorModel(prior),

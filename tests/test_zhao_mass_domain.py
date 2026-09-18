@@ -69,7 +69,6 @@ def test_dehnen_closed_form_and_truncation(gamma):
         for model in (classical.ZhaoModel(**p), functional.ZhaoModel()):
             kw = {} if isinstance(model, classical.ZhaoModel) else {'params': p}
             np.testing.assert_allclose(model.enclosed_mass(radii, **kw), expected, rtol=1e-8)
-            np.testing.assert_allclose(model.enclosure_mass(radii, **kw), expected, rtol=1e-8)
             assert np.shape(model.enclosed_mass(1000., **kw)) == ()
 
 

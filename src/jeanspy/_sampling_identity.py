@@ -6,6 +6,8 @@ must expose that state through ``sampling_identity()``. Opaque objects fail
 closed instead of being identified by their memory address or repr.
 """
 
+import ast
+from bisect import bisect_left
 from collections.abc import Mapping
 from dataclasses import fields, is_dataclass
 import dis
@@ -16,6 +18,7 @@ import inspect
 import json
 from pathlib import Path
 import sys
+import textwrap
 import types
 
 import numpy as np
@@ -26,11 +29,65 @@ def _name(value):
     return f"{value.__module__}.{value.__qualname__}"
 
 
+IDENTITY_FORMAT = 2
+
+
+class _WithoutDocstrings(ast.NodeTransformer):
+    def _body(self, node):
+        self.generic_visit(node)
+        if (node.body and isinstance(node.body[0], ast.Expr)
+                and isinstance(node.body[0].value, ast.Constant)
+                and isinstance(node.body[0].value.value, str)):
+            node.body.pop(0)
+        return node
+
+    visit_Module = visit_ClassDef = visit_FunctionDef = visit_AsyncFunctionDef = _body
+
+
+def _source_structure(source):
+    """Canonical Python syntax, excluding comments, layout and docstrings only.
+
+    Executable string constants, defaults, annotations, imports and assertions
+    remain. Reflective models must declare any documentation they use as data
+    in sampling_identity(), just as they must declare external file contents.
+    """
+    tree = _WithoutDocstrings().visit(ast.parse(textwrap.dedent(source)))
+    return ast.dump(tree, annotate_fields=True, include_attributes=False)
+
+
+def _class_structure(cls):
+    try:
+        return _source_structure(inspect.getsource(cls))
+    except (OSError, TypeError):
+        return None
+
+
 def _code(code):
-    return [code.co_code.hex(), code.co_names, code.co_varnames,
+    # Record loaded constants by value, not by their table index. Adding or
+    # removing a docstring can renumber constants, even for ``return None``.
+    # A string actually returned by code remains part of the identity, including
+    # RETURN_CONST on Python 3.12. Never assume constant zero is documentation.
+    instructions = [i for i in dis.get_instructions(code)
+                    if i.opname not in {'NOP', 'EXTENDED_ARG'}]
+    offsets = [i.offset for i in instructions]
+    operations = []
+    for instruction in instructions:
+        if instruction.opcode in dis.hasconst:
+            value = instruction.argval
+            argument = _code(value) if isinstance(value, types.CodeType) else value
+        elif instruction.opcode in dis.hasjabs or instruction.opcode in dis.hasjrel:
+            argument = bisect_left(offsets, instruction.argval)
+        else:
+            argument = instruction.arg
+        operations.append([instruction.opname, argument])
+    exceptions = [[bisect_left(offsets, entry.start), bisect_left(offsets, entry.end),
+                   bisect_left(offsets, entry.target), entry.depth, entry.lasti]
+                  for entry in dis.Bytecode(code).exception_entries]
+    return [operations, code.co_names, code.co_varnames,
             code.co_freevars, code.co_cellvars, code.co_argcount,
-            code.co_posonlyargcount, code.co_kwonlyargcount, code.co_flags,
-            [_code(v) if isinstance(v, types.CodeType) else v for v in code.co_consts]]
+            code.co_posonlyargcount, code.co_kwonlyargcount,
+            code.co_flags & ~getattr(inspect, 'CO_HAS_DOCSTRING', 0),
+            exceptions]
 
 
 def _function_globals(function):
@@ -52,22 +109,19 @@ def _function_globals(function):
 def _declared_implementation(value):
     """Code identity without traversing state that an explicit provider owns."""
     if isinstance(value, types.FunctionType):
-        return [_name(value), _code(value.__code__)]
+        return [_name(value), _code(value.__code__), value.__defaults__, value.__kwdefaults__]
     cls = value if isinstance(value, type) else type(value)
     implementation = []
     for base in cls.__mro__:
         if base is object:
             continue
-        try:
-            source = inspect.getsource(base)
-        except (OSError, TypeError):
-            source = None
+        source = _class_structure(base)
         methods = {}
         for name, method in vars(base).items():
             if isinstance(method, (staticmethod, classmethod)):
                 method = method.__func__
             if isinstance(method, types.FunctionType):
-                methods[name] = _code(method.__code__)
+                methods[name] = [_code(method.__code__), method.__defaults__, method.__kwdefaults__]
         implementation.append([_name(base), source, methods])
     return implementation
 
@@ -145,17 +199,14 @@ class _Encoder:
             if library:
                 return ["type", _name(value)]
             if value.__module__.startswith('jeanspy.'):
-                # The complete package source is included by software_identity.
+                # Package computational syntax is included by software_identity.
                 state = {k: v for k, v in vars(value).items()
                          if not k.startswith('__') and isinstance(v, (str, bool, int, float, list, tuple, dict, type))}
                 return ["type", _name(value), self.encode(state)]
             members = {k: v for k, v in vars(value).items()
                        if (not k.startswith('__') or k == '__call__')
                        and not isinstance(v, (property, types.MemberDescriptorType))}
-            try:
-                source = inspect.getsource(value)
-            except (OSError, TypeError):
-                source = None
+            source = _class_structure(value)
             return ["type", _name(value), source, self.encode(value.__bases__), self.encode(members)]
         if isinstance(value, (staticmethod, classmethod)):
             return self.encode(value.__func__)
@@ -187,19 +238,34 @@ def fingerprint(value):
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
+def _source_manifest(*, computational):
+    root = Path(__file__).parent
+    paths = {*root.rglob('*.py'), *(p for p in (root / 'data').rglob('*') if p.is_file())}
+    manifest = {}
+    for path in sorted(paths):
+        content = path.read_bytes()
+        if computational and path.suffix == '.py':
+            content = _source_structure(content.decode('utf-8')).encode('utf-8')
+        manifest[path.relative_to(root).as_posix()] = hashlib.sha256(content).hexdigest()
+    return manifest
+
+
+def source_provenance():
+    """Record original source/data bytes separately from resume compatibility."""
+    manifest = _source_manifest(computational=False)
+    return {'source_sha256': fingerprint(manifest), 'files': manifest}
+
+
 def software_identity(*packages):
-    """Recheck source, data and dependency versions at persistence boundaries.
+    """Recheck computational syntax, data and dependencies at every boundary.
 
     Do not cache across calls: an editable checkout or installed dependency can
-    change between sampler runs within the same process.
+    change between sampler runs within the same process. Format 2 cannot resume
+    format-1 chains; full source bytes are retained separately as provenance.
     """
-    root = Path(__file__).parent
-    digest = hashlib.sha256()
-    for path in sorted([*root.rglob('*.py'), *root.glob('data/*.csv')]):
-        digest.update(str(path.relative_to(root)).encode())
-        digest.update(path.read_bytes())
     versions = {}
     for package in ('numpy', 'scipy', 'pandas', *packages):
         versions[package] = importlib.metadata.version(package)
-    return {'format': 1, 'jeanspy_source': digest.hexdigest(),
-            'python': tuple(sys.version_info[:2]), 'dependencies': versions}
+    return {'format': IDENTITY_FORMAT,
+            'jeanspy_computation': fingerprint(_source_manifest(computational=True)),
+            'python': tuple(sys.version_info[:3]), 'dependencies': versions}

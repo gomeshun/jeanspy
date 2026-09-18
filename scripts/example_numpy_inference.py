@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from jeanspy.model import get_default_estimation_model
+from jeanspy.model import plummer_nfw_constant_anisotropy_model
 from jeanspy.sampler import Sampler
 
 
@@ -32,7 +32,7 @@ def run(output_dir: Path):
     priors.to_csv(prior_path)
     data = pd.DataFrame(dict(R_pc=np.geomspace(10., 800., 32),
                              vlos_kms=np.zeros(32), e_vlos_kms=np.full(32, 2.)))
-    model = get_default_estimation_model(data, 2.3, .1, config=prior_path)
+    model = plummer_nfw_constant_anisotropy_model(data, 2.3, .1, config=prior_path)
     truth = np.array([0., 2.3, 3., -2., 4., 0.])
     model.update(model.convert_params(truth))
     sigma2 = model["DSphModel"].sigmalos2(data.R_pc.to_numpy())
@@ -43,7 +43,7 @@ def run(output_dir: Path):
     sampler = Sampler(model, model.sample, nwalkers=16, prefix=str(output_dir) + "/")
     sampler.run_mcmc(8, 1, enable_convergence_check=False)
     initial = sampler.get_chain().copy()
-    restored_model = get_default_estimation_model(data, 2.3, .1, config=prior_path)
+    restored_model = plummer_nfw_constant_anisotropy_model(data, 2.3, .1, config=prior_path)
     resumed = Sampler(restored_model, restored_model.sample, nwalkers=16, prefix=str(output_dir) + "/")
     resumed.run_mcmc(4, 1, enable_convergence_check=False)
     np.testing.assert_array_equal(initial, resumed.get_chain()[:8])

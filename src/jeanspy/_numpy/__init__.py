@@ -6,10 +6,10 @@ from .inference import (
     FittableModel,
     FlatPriorModel,
     PhotometryPriorModel,
-    SimpleDSphEstimationModel,
-    get_default_estimation_model,
+    SphericalDSphEstimationModel,
+    plummer_nfw_constant_anisotropy_model,
 )
-from .jfactor import C_J, _ullio2016_inner_weight, _ullio2016_weight
+from .jfactor import C_J
 from .profiles import (
     AnisotropyModel,
     BaesAnisotropyModel,
@@ -43,9 +43,9 @@ __all__ = [
     "Parameters",
     "PhotometryPriorModel",
     "PlummerModel",
-    "SimpleDSphEstimationModel",
+    "SphericalDSphEstimationModel",
     "StellarModel",
     "Uniform2dModel",
     "ZhaoModel",
-    "get_default_estimation_model",
+    "plummer_nfw_constant_anisotropy_model",
 ]

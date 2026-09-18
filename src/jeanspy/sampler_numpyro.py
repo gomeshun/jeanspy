@@ -27,7 +27,7 @@ from numpyro.infer import MCMC
 
 from .model_jax import DSphModel
 from ._axisymmetric_params import validate_param_names
-from ._sampling_identity import fingerprint, software_identity
+from ._sampling_identity import IDENTITY_FORMAT, fingerprint, software_identity, source_provenance
 
 
 logger = logging.getLogger(__name__)
@@ -701,7 +701,7 @@ class NumPyroSampler:
         self._futures_lock = Lock()
         self._chunk_index_lock = Lock()
         self._next_chunk_index = 0
-        self._analysis_identity: dict[str, str] | None = None
+        self._analysis_identity: dict[str, Any] | None = None
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.chunks_dir.mkdir(parents=True, exist_ok=True)
@@ -954,7 +954,8 @@ class NumPyroSampler:
             raise ValueError("Unverified in-memory MCMC state; construct a fresh MCMC instance "
                              "and use the sampler's verified checkpoint to resume")
         model_kwargs = {k: v for k, v in kwargs.items() if k not in {'extra_fields', 'init_params'}}
-        identity = {'target': self._target_fingerprint(), 'arguments': fingerprint((args, model_kwargs))}
+        identity = {'format': IDENTITY_FORMAT, 'target': self._target_fingerprint(),
+                    'arguments': fingerprint((args, model_kwargs))}
         metadata = self._read_metadata_file()
         if metadata is None:
             raise ValueError(
@@ -975,6 +976,18 @@ class NumPyroSampler:
             tmp_path.write_text(json.dumps(metadata, indent=2, sort_keys=True), encoding='utf-8')
             tmp_path.replace(self.metadata_path)
         self._analysis_identity = identity
+
+    def _record_source_provenance(self) -> None:
+        metadata = self._read_metadata_file()
+        record = source_provenance()
+        history = metadata.setdefault('source_provenance', [])
+        if not history or history[-1]['source_sha256'] != record['source_sha256']:
+            record['recorded_at'] = _utc_now_iso()
+            record['next_chunk_index'] = self._next_chunk_index
+            history.append(record)
+            tmp_path = self.metadata_path.with_suffix('.tmp')
+            tmp_path.write_text(json.dumps(metadata, indent=2, sort_keys=True), encoding='utf-8')
+            tmp_path.replace(self.metadata_path)
 
     def save_checkpoint(self) -> Path:
         r"""Save trusted NumPyro transition state.
@@ -1049,7 +1062,8 @@ class NumPyroSampler:
 
         identity = payload.get('analysis_identity')
         stored = (self._read_metadata_file() or {}).get('analysis_identity')
-        if (not identity or identity != stored or identity['target'] != self._target_fingerprint()
+        if (not identity or identity.get('format') != IDENTITY_FORMAT
+                or identity != stored or identity['target'] != self._target_fingerprint()
                 or (self._analysis_identity is not None and identity != self._analysis_identity)):
             raise ValueError("Checkpoint analysis identity mismatch; use a new output_dir for a different analysis")
         self._analysis_identity = identity
@@ -1289,6 +1303,7 @@ class NumPyroSampler:
         """
         self._bind_analysis(args, kwargs)
         resumed = self._prepare_resume_state(resume)
+        self._record_source_provenance()
         self.mcmc.run(rng_key, *args, **kwargs)
 
         checkpoint_path: Path | None = None

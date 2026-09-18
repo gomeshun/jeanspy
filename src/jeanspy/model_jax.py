@@ -140,8 +140,7 @@ def get_runtime_config() -> Dict[str, Any]:
     **Validity.** Changing precision after tracing can create a different
     numerical analysis and restart identity.
 
-    **Errors.** Unsupported legacy options are rejected rather than silently
-    changing device behavior.
+    **Errors.** Device initialization errors from JAX propagate.
 
     **Backend.** Host configuration of JAX.
 
@@ -172,7 +171,6 @@ def get_runtime_config() -> Dict[str, Any]:
 def configure_runtime(
     *,
     jax_enable_x64: Optional[bool] = None,
-    **legacy_kwargs: Any,
 ) -> Dict[str, Any]:
     r"""Update global runtime knobs used by model_jax.
 
@@ -192,8 +190,7 @@ def configure_runtime(
     **Validity.** Changing precision after tracing can create a different
     numerical analysis and restart identity.
 
-    **Errors.** Unsupported legacy options are rejected rather than silently
-    changing device behavior.
+    **Errors.** Unsupported keyword arguments raise TypeError.
 
     **Backend.** Host configuration of JAX.
 
@@ -201,16 +198,6 @@ def configure_runtime(
 
     **Examples.** ``examples/docs_jax_spherical.py``
     """
-    if legacy_kwargs:
-        unsupported = ", ".join(sorted(legacy_kwargs))
-        raise TypeError(
-            "Numerical runtime options are now per-call arguments. "
-            "Pass kernel_backend/n_kernel to ConstantAnisotropyModel.kernel() and "
-            "solver/jit/n_u/n_r/u_max/kernel_outer_transform/"
-            "kernel_backend/n_kernel to DSphModel.sigmalos2(). "
-            f"Unsupported configure_runtime keys: {unsupported}."
-        )
-
     if jax_enable_x64 is not None:
         jax.config.update("jax_enable_x64", bool(jax_enable_x64))
 
@@ -926,7 +913,7 @@ class DMModel(Model):
         Notes
         -----
         **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
-        dictionary. ``enclosed_mass``/``enclosure_mass`` select
+        dictionary. ``enclosed_mass`` accepts
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
         **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
@@ -960,22 +947,6 @@ class DMModel(Model):
                 f"method must be 'analytic', 'numeric', or 'auto', got {method!r}"
             )
 
-    def enclosure_mass(
-        self, r_pc: jnp.ndarray, method: str = "auto", *, params: Mapping[str, Any],
-        n_steps: Optional[int] = None,
-    ) -> jnp.ndarray:
-        r"""Compatibility spelling shared with the NumPy/SciPy backend.
-
-        Notes
-        -----
-        **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
-        dictionary. ``enclosed_mass``/``enclosure_mass`` select
-        method=auto/analytic/numeric; numerical methods accept ``n_steps``.
-
-        **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,
-        matching radius shape. Invalid dynamic proposals yield NaN.
-        """
-        return self.enclosed_mass(r_pc, method=method, params=params, n_steps=n_steps)
 
 
 class NFWModel(DMModel):
@@ -1296,7 +1267,7 @@ class ConstantAnisotropyModel(AnisotropyModel):
         u:
             Dimensionless radius ratio u=r/R (typically u>1).
         R_pc:
-            Kept for API compatibility; K(u) is independent of R in this model.
+            Accepted by the shared anisotropy interface; K(u) is independent of R.
         kernel_backend:
             ``'jax'`` uses the direct JAX quadrature kernel. ``'scipy'`` uses the
             SciPy hypergeometric formulation.
@@ -1601,7 +1572,7 @@ class DSphModel(Model):
 
         ``kernel_outer_transform='sqrtlog'`` uses ``log(u)=x^2``.  Since
         ``K(u) ~ sqrt(u-1)`` at the lower endpoint, the transformed integrand
-        is smooth in ``x``.  ``'log'`` retains the legacy uniform-log(u) grid.
+        is smooth in ``x``. ``'log'`` selects a uniform-log(u) grid.
 
         The default ``sqrtlog`` grid is tuned to a maximum relative-error target
         of ``1e-3`` on the documented Plummer+NFW dSph stress benchmark.  For

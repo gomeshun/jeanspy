@@ -5,14 +5,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from jeanspy.model import get_default_estimation_model
+from jeanspy.model import plummer_nfw_constant_anisotropy_model
 
 
 @pytest.fixture
 def shared_model(classical_prior_config):
     data = pd.DataFrame(dict(R_pc=[10., 20., 30.], vlos_kms=[-1., 0., 1.],
                              e_vlos_kms=[1., 2., 3.]))
-    model = get_default_estimation_model(data, 2.3, .1, config=classical_prior_config,
+    model = plummer_nfw_constant_anisotropy_model(data, 2.3, .1, config=classical_prior_config,
                                          vmem_prior_from_data=True)
     model.load_data(data, shared=True)
     try:
@@ -92,8 +92,8 @@ def test_existing_handle_size_mismatch_preserves_other_buffers(shared_model, siz
 def test_stale_attachment_failure_cleans_new_segments_and_restores_state(classical_prior_config, size):
     data = pd.DataFrame(dict(R_pc=[10., 20., 30.], vlos_kms=[-1., 0., 1.],
                              e_vlos_kms=[1., 2., 3.]))
-    model = get_default_estimation_model(data, 2.3, .1, config=classical_prior_config)
-    basename = f"SimpleDSphEstimationModel_{id(model)}"
+    model = plummer_nfw_constant_anisotropy_model(data, 2.3, .1, config=classical_prior_config)
+    basename = f"SphericalDSphEstimationModel_{id(model)}"
     stale = SharedMemory(name=basename + "_e_vlos_kms", create=True, size=size)
     old_bounds = model["FlatPriorModel"].data.copy()
     try:

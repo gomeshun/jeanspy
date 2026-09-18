@@ -10,7 +10,7 @@ from scipy.integrate import quad
 from scipy.interpolate import interp1d
 from scipy.special import gamma, gammainc
 
-from ._classical.profiles import StellarModel
+from ._numpy.profiles import StellarModel
 from ._sersic_deprojection import sp04_density
 
 
@@ -26,7 +26,7 @@ class SersicModel(StellarModel):
     -----
     **Inputs and units.** ``re_pc`` is projected half-light radius (pc); n is
     dimensionless Sersic index; ``deprojection_method`` is
-    auto/approx/vm20/vm20bis/numerical. Other constructor arguments follow
+    auto/lgm/vm20/vm20bis/numerical. Other constructor arguments follow
     Model.
 
     **Returns and shape.** ``density_2d`` and ``density_3d`` return pc^-2 and
@@ -60,7 +60,7 @@ class SersicModel(StellarModel):
 
     _VALID_DEPROJECTION_METHODS = (
         "auto",
-        "approx",
+        "lgm",
         "vm20",
         "vm20bis",
         "numerical",
@@ -98,8 +98,8 @@ class SersicModel(StellarModel):
         self.deprojection_method = deprojection_method
 
     @property
-    def b_approx(self):
-        """Return the historical approximation b_n = 2*n - 0.324.
+    def b_linear(self):
+        """Return the linear approximation b_n = 2*n - 0.324.
 
         This helper does not impose a validity interval and is not the tabulated
         b_n used by the normalized surface-density formula.
@@ -207,7 +207,7 @@ class SersicModel(StellarModel):
         return 1.0 - 0.6097 / n + 0.05463 / n**2
 
     @property
-    def norm_3d(self):
+    def lgm_norm_3d(self):
         """Return the LGM approximate deprojection normalization in pc^3.
 
         Uses the stored n, re_pc, b_CB and p_LGM. This is the LGM approximation
@@ -221,7 +221,7 @@ class SersicModel(StellarModel):
         return 4.0 * np.pi * re**3 * n * gamma(index) / b**index
 
     def density_3d_LGM(self, r_pc):
-        r"""Legacy Lima Neto--Gerbal--Márquez Sérsic deprojection.
+        r"""Lima Neto--Gerbal--Márquez Sérsic deprojection.
 
         Notes
         -----
@@ -231,8 +231,8 @@ class SersicModel(StellarModel):
         **Returns and shape.** Unit-integral tracer density in pc^-3 with input
         shape.
 
-        **Validity.** Approximate deprojection; it is not a general reference or
-        central-limit formula.
+        **Validity.** Requires 0.5 <= n <= 10 (otherwise ValueError).
+        This approximate deprojection is not a general central-limit formula.
         """
         n = float(self.params.n)
         if not (0.5 <= n <= 10.0):
@@ -242,7 +242,7 @@ class SersicModel(StellarModel):
         p = self.p_LGM
         b = self.b_CB
         x = np.asarray(r_pc) / self.params.re_pc
-        return x ** (-p) * np.exp(-b * x ** (1.0 / n)) / self.norm_3d
+        return x ** (-p) * np.exp(-b * x ** (1.0 / n)) / self.lgm_norm_3d
 
     def half_light_radius(self):
         r"""Return the projected half-light radius.
@@ -508,7 +508,9 @@ class SersicModel(StellarModel):
         Notes
         -----
         **Inputs and units.** ``r_pc`` is a scalar or NumPy array of intrinsic radii
-        in pc. SersicModel also accepts method.
+        in pc. method is auto/lgm/vm20/vm20bis/numerical; None uses the
+        constructor selection. ``lgm`` is the Lima Neto--Gerbal--Márquez
+        approximation (0.5 <= n <= 10), with normalization ``lgm_norm_3d``.
 
         **Returns and shape.** pc^-3 with input radius shape.
         """
@@ -520,7 +522,7 @@ class SersicModel(StellarModel):
             )
         if resolved == "auto":
             return self.density_3d_auto(r_pc)
-        if resolved == "approx":
+        if resolved == "lgm":
             return self.density_3d_LGM(r_pc)
         if resolved == "vm20":
             return self.density_3d_VM20(r_pc)

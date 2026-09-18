@@ -66,3 +66,21 @@ def test_missing_documentation_rejected(tmp_path, monkeypatch, missing):
     write_source(missing)
     with pytest.raises(ValueError, match="missing " + missing):
         module.check(distribution)
+
+
+@pytest.mark.parametrize('retired', ['jeanspy/_model_impl.py', 'jeanspy/_classical/__init__.py'])
+def test_stale_runtime_files_are_rejected(tmp_path, monkeypatch, retired):
+    source = tmp_path / 'source'
+    package = source / 'src/jeanspy'
+    package.mkdir(parents=True)
+    (package / '__init__.py').write_text('')
+    distribution = tmp_path / 'dist'
+    distribution.mkdir()
+    with zipfile.ZipFile(distribution / 'jeanspy.whl', 'w') as archive:
+        archive.writestr('jeanspy/__init__.py', '')
+        archive.writestr(retired, '# obsolete build cache\n')
+    with tarfile.open(distribution / 'jeanspy.tar.gz', 'w:gz'):
+        pass
+    monkeypatch.setattr(module, 'ROOT', source)
+    with pytest.raises(ValueError, match='Unexpected runtime files'):
+        module.check(distribution)

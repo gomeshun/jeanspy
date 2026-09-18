@@ -40,8 +40,7 @@ class DSphModel(Model):
     **Returns and shape.** sigmar2 and sigmat2 return intrinsic radial and
     one-component tangential variances in (km/s)^2. ``sigmalos2`` returns LOS
     variance arrays with input shape, or a scalar for scalar input.
-    ``sigmalos`` returns the corresponding dispersion in km/s. The older
-    ``sigmalos2_dequad`` and ``sigmalos_dequad`` names remain supported.
+    ``sigmalos`` returns the corresponding dispersion in km/s.
     ``integrand_sigmalos2(u, R_pc)`` has shape ``(N_R, N_u)``.
 
     **Validity.** Finite positive projected radii; no central-limit LOS solver.
@@ -166,7 +165,7 @@ class DSphModel(Model):
             raise ValueError("Nonfinite LOS integrand outside a zero-density tail or endpoint.")
         return value
 
-    def sigmalos2_dequad(
+    def _sigmalos2_dequad(
         self,
         R_pc,
         n=1024,
@@ -175,8 +174,7 @@ class DSphModel(Model):
     ):
         r"""Evaluate LOS variance with the double-exponential rule.
 
-        Retained for compatibility; new code can use
-        ``sigmalos2(R_pc, method="dequad")`` or simply ``sigmalos2(R_pc)``.
+        Internal implementation of ``sigmalos2(method="dequad")``.
         R=0 requires a separate model-dependent central limit and is rejected.
 
         Notes
@@ -217,32 +215,6 @@ class DSphModel(Model):
         if scalar_input:
             return np.asarray(value).reshape(-1)[0]
         return value
-
-    def sigmalos_dequad(
-        self,
-        R_pc,
-        n=1024,
-        n_kernel=128,
-        ignore_RuntimeWarning=True,
-    ):
-        r"""Return the LOS dispersion with the double-exponential rule.
-
-        Retained for compatibility; new code can use
-        ``sigmalos(R_pc, method="dequad")`` or simply ``sigmalos(R_pc)``.
-
-        Notes
-        -----
-        **Inputs and units.** ``R_pc`` is positive finite scalar or nonempty
-        one-dimensional pc array; n is the outer fixed-rule order and ``n_kernel``
-        the anisotropy-kernel order.
-
-        **Returns and shape.** LOS velocity dispersion in km/s, computed as the
-        square root of ``sigmalos2_dequad``; scalar for scalar input, otherwise
-        (N,).
-        """
-        return np.sqrt(
-            self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
-        )
 
     def sigmalos2(
         self,
@@ -292,7 +264,7 @@ class DSphModel(Model):
         """
         if method != "dequad":
             raise ValueError(f"Unsupported LOS integration method {method!r}; use 'dequad'.")
-        return self.sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
+        return self._sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
 
     def sigmalos(
         self,
