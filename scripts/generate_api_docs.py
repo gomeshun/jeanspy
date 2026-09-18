@@ -35,13 +35,9 @@ MODULES = {
 
 
 def exports(module):
-    if hasattr(module, "__all__"):
-        return list(module.__all__)
-    # Modules without __all__: include locally defined public callables only,
-    # never incidental imports such as numpy.exp or pathlib.Path.
-    return [name for name, obj in vars(module).items()
-            if not name.startswith("_") and callable(obj)
-            and getattr(obj, "__module__", None) == module.__name__]
+    if not hasattr(module, "__all__"):
+        raise ValueError(f"Public module {module.__name__} must define __all__")
+    return list(module.__all__)
 
 
 def source_documentation(module, name, obj):
@@ -137,7 +133,7 @@ def category_for(path):
     module, name = path.rsplit(".", 1)
     if "sampler" in module or "inference" in module or name in {
         "FittableModel", "FlatPriorModel", "PhotometryPriorModel",
-        "SimpleDSphEstimationModel", "get_default_estimation_model",
+        "SphericalDSphEstimationModel", "plummer_nfw_constant_anisotropy_model",
         "AxisymmetricDSphEstimationModel", "AxisymmetricKinematicData", "SamplingParameter",
     }:
         return "inference"

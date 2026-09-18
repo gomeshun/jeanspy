@@ -15,7 +15,7 @@ from jeanspy.model_jax import (
 
 
 class TestDMEnclosureMassConsistency(unittest.TestCase):
-    def _numerical_enclosure_mass(self, model: DMModel, r: float) -> float:
+    def _numerical_enclosed_mass(self, model: DMModel, r: float) -> float:
         r_upper = min(float(r), float(model.params.r_t_pc))
 
         def integrand(s):
@@ -26,13 +26,13 @@ class TestDMEnclosureMassConsistency(unittest.TestCase):
 
     def _assert_model_consistency(self, model: DMModel, radii: np.ndarray, rtol: float) -> None:
         for r in radii:
-            m_num = self._numerical_enclosure_mass(model, r)
-            m_ana = float(np.asarray(model.enclosure_mass(np.array([r])))[0])
+            m_num = self._numerical_enclosed_mass(model, r)
+            m_ana = float(np.asarray(model.enclosed_mass(np.array([r])))[0])
             self.assertTrue(np.isfinite(m_num))
             self.assertTrue(np.isfinite(m_ana))
             self.assertAlmostEqual(m_num, m_ana, delta=rtol * max(1.0, abs(m_num)))
 
-    def test_dm_subclasses_enclosure_mass_matches_integrated_density(self):
+    def test_dm_subclasses_enclosed_mass_matches_integrated_density(self):
         model_specs = [
             (
                 NFWModel(rs_pc=350.0, rhos_Msunpc3=0.08, r_t_pc=4000.0),
@@ -67,16 +67,16 @@ class TestDMEnclosureMassConsistency(unittest.TestCase):
 
         np.testing.assert_allclose(
             classical.enclosed_mass(radii),
-            classical.enclosure_mass(radii),
+            classical.enclosed_mass(radii),
             rtol=0.0,
             atol=0.0,
         )
         self.assertEqual(
             classical.enclosed_mass(100.0),
-            classical.enclosure_mass(100.0),
+            classical.enclosed_mass(100.0),
         )
         np.testing.assert_allclose(
-            numpyro.enclosure_mass(jnp.asarray(radii), params=params),
+            numpyro.enclosed_mass(jnp.asarray(radii), params=params),
             numpyro.enclosed_mass(jnp.asarray(radii), params=params),
             rtol=0.0,
             atol=0.0,

@@ -21,6 +21,14 @@ examples below. The old spellings are no longer supported.
 | JAX `sigmalos2(constant_kernel_backend=...)` | `sigmalos2(kernel_backend=...)`, selecting `jax` or `scipy` for constant anisotropy |
 | Constant-anisotropy `kernel(backend=...)` | `kernel(kernel_backend=...)` |
 | Axisymmetric example `--backend numpy/numpyro` | `--sampler emcee/numpyro` |
+| `get_default_estimation_model` | `plummer_nfw_constant_anisotropy_model`, with required `config` |
+| `SimpleDSphEstimationModel` | `SphericalDSphEstimationModel` for custom spherical compositions |
+| `FlatPriorModel.generate_default_config_file` | `FlatPriorModel.write_config_template` |
+| Sérsic `method="approx"` / `deprojection_method="approx"` | `"lgm"` (Lima Neto--Gerbal--Márquez) |
+| Sérsic `norm_3d` / `b_approx` | `lgm_norm_3d` / `b_linear` |
+| `enclosure_mass` | `enclosed_mass` in both backends |
+| `inverse_temparature` | `inverse_temperature` in both inference interfaces |
+| NumPy `sigmalos2_dequad` / `sigmalos_dequad` | `sigmalos2(..., method="dequad")` / `sigmalos(..., method="dequad")` |
 
 `jeanspy.sampler_numpyro` remains the NumPyro inference and storage module.
 `get_runtime_config()` now reports `sigmalos2_solver_default` and
@@ -48,11 +56,11 @@ parameter_specs = [
     SamplingParameter("log10_r_t_pc", "r_t_pc", "pow10"),
     SamplingParameter("log10_one_minus_beta_ani", "beta_ani", "one_minus_pow10"),
 ]
-# Pass these to SimpleDSphEstimationModel(parameter_specs=..., ...).
+# Pass these to SphericalDSphEstimationModel(parameter_specs=..., ...).
 # Prior-table row labels must match the sample_name values, in this order.
 ```
 
-The preset `get_default_estimation_model` supplies exactly these specifications.
+The preset `plummer_nfw_constant_anisotropy_model` supplies exactly these specifications.
 Rename its prior-table row `bfunc_beta_ani` to `log10_one_minus_beta_ani` without
 changing the numerical bounds. Those bounds are uniform in `log10(1-beta_ani)`.
 For custom compositions, coordinate labels can be arbitrary; the specifications
@@ -94,3 +102,48 @@ These changes alter the identity of a sampling target. Existing chains remain
 readable with their original metadata, but the modified package must use a new
 output directory rather than resume a chain created with the previous source.
 Retain the original checkout and environment to reproduce or resume that analysis.
+
+
+## Explicit presets and public utilities
+
+`plummer_nfw_constant_anisotropy_model(data, photometry_prior_loc,
+photometry_prior_scale, config)` composes Plummer light, NFW mass, constant
+anisotropy, Gaussian LOS velocities, uniform coordinate bounds and a Gaussian
+photometric prior in `log10(re_pc)`. A missing CSV raises `FileNotFoundError`
+without writing a file. Use `FlatPriorModel.write_config_template` explicitly
+if a blank prior table is wanted; complete its bounds before constructing a model.
+
+Private implementation imports are unsupported. The temporary `_model_impl`
+module has been removed and the NumPy/SciPy implementation is organized under
+`_numpy`; import supported classes from `jeanspy.model`.
+`dequad` and `generate_x_w` remain public. Memoization/hashability helpers and
+hypergeometric quadrature containers are private. API documentation now requires
+an explicit `__all__` in every public module, preventing incidental helper exports.
+
+## Resume compatibility and source provenance
+
+The identity format is now **2**. A new output location is required for every
+format-1 chain and for the API changes above. Preserve the original code and
+environment to continue those analyses; no old identity is silently replaced.
+
+Within format 2, edits to comments, code layout and docstrings do not by themselves
+invalidate a chain. The package comparison uses Python syntax with only those
+documentary elements removed. Runtime callable code, defaults and captured state,
+model parameters, observations, priors, coordinate order/transforms, solver and
+sampler settings, packaged data, Python/dependency versions, and JAX backend and
+precision are still checked. Adding/removing/renaming package modules also changes
+identity. Checks are recomputed at persistence boundaries, including repeated
+runs in the same process.
+
+Full source/data byte hashes remain recorded separately, with a new history entry
+when an accepted run uses changed bytes. NumPyro writes `source_provenance` in
+`metadata.json`; emcee stores JSON records in the `jeanspy_source_provenance`
+dataset of its HDF5 backend group, with the starting iteration for each record.
+These hashes document which files were present; compatibility is determined by
+the analysis identity, not by substituting provenance records.
+
+This guards accidental mismatches, not arbitrary Python side effects. Custom
+models must expose external/opaque state through `sampling_identity()`. If a
+model uses documentation or source text as computational input, include that text
+in its declared identity too. Preserve the matching files/environment for exact
+reproduction; a hash alone is not a source archive.

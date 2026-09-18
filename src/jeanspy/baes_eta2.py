@@ -5,9 +5,9 @@ For the Baes--van Hese profile
     beta(r) = [beta_0 + beta_inf (r/r_a)^2] / [1 + (r/r_a)^2],
 
 the line-of-sight Jeans kernel can be reduced analytically to Appell's
-hypergeometric function F1.  This module keeps that reduction separate from
-the generic numerical BAES implementation so that it can be validated before
-being promoted to the default runtime path.
+hypergeometric function F1.  Select ``DSphModel.sigmalos2(..., solver="kernel")`` to use this
+specialized kernel. ``solver="auto"`` selects the numerical Abel solver for
+all BaesAnisotropyModel subclasses, including this eta=2 specialization.
 """
 
 from __future__ import annotations
@@ -246,10 +246,12 @@ class BaesEta2AnisotropyModel(BaesAnisotropyModel):
 
         beta(r) = [beta_0 + beta_inf (r/r_a)^2] / [1 + (r/r_a)^2],
 
-    and admits the Appell-F1 LOS kernel implemented above.  The class is a
-    subclass of the generic JAX ``BaesAnisotropyModel`` so existing
-    ``DSphModel`` kernel plumbing (including ``n_kernel`` forwarding) works
-    unchanged.
+    and admits the Appell-F1 LOS kernel implemented above. Select
+    ``DSphModel.sigmalos2(..., solver="kernel", n_kernel=...)`` to use it.
+    The default ``solver="auto"`` selects Abel integration, as for every
+    BaesAnisotropyModel subclass; constructing this class alone does not
+    change that selection. ``n_kernel`` controls the specialized kernel
+    quadrature only when the kernel solver is selected.
 
     Notes
     -----

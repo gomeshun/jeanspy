@@ -16,7 +16,7 @@ from scipy.stats import norm, truncnorm
 
 from .parameters import _validate_parameter_specs, _photometry_coordinate
 from ._axisymmetric_params import resolve_params
-from ._classical.inference import FlatPriorModel, PhotometryPriorModel
+from ._numpy.inference import FlatPriorModel, PhotometryPriorModel
 from .axisymmetric import AxisymmetricDSphModel, InvalidAxisymmetricModelError
 
 __all__ = ["AxisymmetricKinematicData", "AxisymmetricDSphEstimationModel"]
@@ -195,8 +195,8 @@ class AxisymmetricDSphEstimationModel:
         return AxisymmetricKinematicData.from_data(self._data)
 
     @property
-    def inverse_temparature(self):
-        """WBIC inverse temperature; historical spelling matches the sampler."""
+    def inverse_temperature(self):
+        """Return the WBIC inverse temperature 1/log(N), requiring N > 1."""
         if self.n_data <= 1:
             raise ValueError("WBIC requires at least two observations")
         return 1 / np.log(self.n_data)
@@ -341,7 +341,7 @@ class AxisymmetricDSphEstimationModel:
         **Returns and shape.** Tuple using loglikelihood/log(N) plus the original
         prior; requires N>1.
         """
-        return self._posterior(p, self.inverse_temparature)
+        return self._posterior(p, self.inverse_temperature)
 
     def sample(self, size=None, *, rng=None, max_attempts=1000):
         """Draw feasible starting points from the priors, with bounded rejection.

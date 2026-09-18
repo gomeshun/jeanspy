@@ -140,7 +140,7 @@ JeansPy does not bundle an external dwarf-galaxy database. Observational data an
 
 ### NumPy/SciPy inference with emcee and explicit priors
 
-`get_default_estimation_model(data, photometry_prior_loc,
+`plummer_nfw_constant_anisotropy_model(data, photometry_prior_loc,
 photometry_prior_scale, config=...)` composes Plummer + NFW + constant
 anisotropy. Supply kinematic columns `R_pc`, `vlos_kms`, and `e_vlos_kms`
 and a DataFrame or CSV with finite `lower < upper` bounds in this order:
@@ -159,8 +159,10 @@ are explicitly supplied, with a positive finite scale. A uniform prior in
 these sampling coordinates is **not** uniform in physical radius/density or
 anisotropy. Choose bounds appropriate to your scientific analysis.
 
-A missing config path produces an **unfilled template and raises ValueError**.
-Fill it in before retrying; the library does not invent universal prior ranges.
+The required `config` is a prior DataFrame or an existing CSV path. A missing
+path raises **FileNotFoundError** without creating files. To write an unfilled
+template explicitly, use `FlatPriorModel.write_config_template(path, names)`;
+the library does not invent universal prior ranges.
 Duplicate, missing, misordered names and nonfinite/degenerate bounds fail
 before sampling. `model.sample(size)` draws within the finite support,
 including the truncated photometry prior, and can be passed directly as the
@@ -177,7 +179,7 @@ WBIC requires at least two observations; an ordinary likelihood can use one.
 `Sampler` checks the saved analysis identity before restarting or appending.
 Changing observations or priors requires a new output prefix, or an explicit
 `reset=True` to discard that backend's chain. `burn_in()` continues from the
-final warmup ensemble; its draws remain stored for compatibility. Exclude them
+final warmup ensemble; its draws remain stored. Exclude them
 with `get_chain(discard=n_warmup)` and the corresponding log-probability methods.
 
 Run the reproducible synthetic example, including persisted-chain restart:
@@ -211,8 +213,8 @@ j_spherical = dm.jfactor_spherical_aperture(dist_pc=30000.0, roi_deg=0.5)
 ```
 
 Annihilation luminosity imposes a stricter central-cusp condition than mass:
-Zhao J-factors require **`g < 1.5`**, even though enclosed mass exists for
-`g < 3`. Divergent cusps and failed quadratures raise `ValueError`; no implicit
+Zhao J-factors require **`gamma < 1.5`**, even though enclosed mass exists for
+`gamma < 3`. Divergent cusps and failed quadratures raise `ValueError`; no implicit
 central cutoff is introduced. NFW/Zhao profile scales must be finite and
 positive. The Evans NFW method uses a stable series around `R/rs=1`. It retains
 the historical infinite-line-of-sight approximation with the projected
@@ -252,7 +254,7 @@ backend-specific by design:
 | --- | --- | --- |
 | Model parameters | Values are supplied at construction and stored in `model.params`; `update()` changes them. | Values are supplied as a `params` mapping to each numerical method so JAX transformations can trace them. |
 | Density | `density_2d(R_pc)` and `density_3d(r_pc)` read the stored parameters. | `density_2d(R_pc, re_pc=...)` and `density_3d(r_pc, re_pc=...)` receive parameters explicitly. |
-| Enclosed mass | `enclosed_mass(r_pc)` is the common spelling; the existing `enclosure_mass(r_pc)` spelling remains supported. | `enclosed_mass(r_pc, params=..., method=...)` is canonical; `enclosure_mass(...)` is provided as a compatibility spelling. |
+| Enclosed mass | `enclosed_mass(r_pc)` | `enclosed_mass(r_pc, params=..., method=...)` |
 | Line-of-sight dispersion | `DSphModel.sigmalos2(...)` returns the NumPy/SciPy LOS variance; `sigmalos(...)` returns its square root. | `DSphModel.sigmalos2(..., solver="kernel"|"abel", ...)` uses a JAX-friendly fixed-grid solver. |
 | Numerical controls | Quadrature/grid resolution controls such as `n` and `n_kernel` are method arguments. | JIT, solver selection, grid sizes, and kernel solver are method arguments. |
 
@@ -267,7 +269,7 @@ numeric mass, and request `method="analytic"` or
 `dm_mass_method="analytic"` explicitly only when the closed form is desired
 without those Zhao shape-parameter gradients.
 
-Zhao mass supports `a > 0`, `g < 3`, finite `b` (including `b <= 3`),
+Zhao mass supports `a > 0`, `gamma < 3`, finite `b` (including `b <= 3`),
 positive finite scale radius/density, and positive truncation radius. The
 requested radius must be nonnegative and finite after truncation. Its numerical
 integral removes the central cusp with a power substitution and integrates the
@@ -383,7 +385,10 @@ Storage backend guidance:
 ### Safe restart contract
 
 Both samplers fingerprint the model, priors, observation contents, parameter
-schema, numerical configuration, package source, and relevant library versions.
+schema, numerical configuration, computational package syntax, and relevant
+library versions. Identity format 2 excludes comments, formatting and docstrings
+from package-code comparison. Executable constants, imports, defaults and
+assertions, packaged data files and dependency versions remain protected.
 NumPyro additionally records the model's call arguments, chain configuration,
 active CPU/GPU backend, and JAX precision settings, since solver defaults can
 depend on the backend.
@@ -396,13 +401,18 @@ the wrapper is not adopted automatically.
 
 Pre-identity checkpoints and emcee backends remain readable as historical
 results but cannot safely resume. Preserve them and start a new output location;
-do not copy metadata from another analysis to bypass the check. A dependency or
-source upgrade conservatively requires a new chain as well.
+do not copy metadata from another analysis to bypass the check. Format-1 chains
+also require their original checkout/environment to resume; no automatic
+conversion is performed. A dependency or computational source change requires
+a new chain. Documentation-only changes within format 2 can resume the same
+analysis. Every accepted run records the full source/data byte hashes separately:
+`source_provenance` in NumPyro metadata, and the `jeanspy_source_provenance`
+dataset in the emcee HDF5 group. Previous source records are retained.
 
 Ordinary NumPyro distributions, parameter specs, arrays, Python closures, and
 the supplied Jeans models are supported automatically. Custom models with
 hidden state (for example file contents, remote data, or opaque extension
-objects) must expose a `sampling_identity()` method returning a deterministic
+objects, or docstrings used as model data) must expose a `sampling_identity()` method returning a deterministic
 mapping of all target-defining state. This user-supplied contract must change
 whenever that state changes. The guard cannot infer arbitrary Python side
 effects. Treat low-level manual sample stores as user-supplied data.

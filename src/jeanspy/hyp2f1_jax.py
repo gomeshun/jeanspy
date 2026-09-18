@@ -13,7 +13,7 @@ from jax.scipy.special import gammaln, gammasgn, logsumexp
 
 
 @dataclass(frozen=True)
-class GaussLegendre01:
+class _GaussLegendre01:
     r"""Store a fixed quadrature rule on the unit interval.
 
     Notes
@@ -40,7 +40,7 @@ class GaussLegendre01:
     w: jnp.ndarray
 
 
-def _gauss_legendre_01(n: int) -> GaussLegendre01:
+def _gauss_legendre_01(n: int) -> _GaussLegendre01:
     """Gauss-Legendre nodes/weights on [0, 1] as JAX arrays.
 
     Notes
@@ -52,7 +52,7 @@ def _gauss_legendre_01(n: int) -> GaussLegendre01:
     # Map from [-1, 1] to [0, 1]
     t = 0.5 * (x + 1.0)
     wt = 0.5 * w
-    return GaussLegendre01(x=jnp.asarray(t), w=jnp.asarray(wt))
+    return _GaussLegendre01(x=jnp.asarray(t), w=jnp.asarray(wt))
 
 
 _GAUSS_64 = _gauss_legendre_01(64)
@@ -60,7 +60,7 @@ _GAUSS_128 = _gauss_legendre_01(128)
 
 
 @dataclass(frozen=True)
-class TanhSinh01:
+class _TanhSinh01:
     r"""Store a fixed quadrature rule on the unit interval.
 
     Notes
@@ -87,7 +87,7 @@ class TanhSinh01:
     w: jnp.ndarray
 
 
-def _tanh_sinh_01(*, n: int, h: float) -> TanhSinh01:
+def _tanh_sinh_01(*, n: int, h: float) -> _TanhSinh01:
     """Tanh-sinh quadrature nodes/weights on [0, 1] as JAX arrays.
 
     This fixed quadrature handles endpoint singularities well, which are present in
@@ -113,7 +113,7 @@ def _tanh_sinh_01(*, n: int, h: float) -> TanhSinh01:
     # Map from [-1,1] to [0,1]: y = (x+1)/2, dy = dx/2
     y = 0.5 * (x + 1.0)
     wy = 0.5 * w
-    return TanhSinh01(x=jnp.asarray(y), w=jnp.asarray(wy))
+    return _TanhSinh01(x=jnp.asarray(y), w=jnp.asarray(wy))
 
 
 # Default rule tuned for float32 robustness near w→1 and b≈1/2 (361 points).
@@ -627,3 +627,7 @@ def hyp2f1_1b_3half(
     quad_val = hyp2f1_1b_3half_quad(b_arr, w_arr, n_points=n_quad, quad_rule=quad_rule)
     series_val = hyp2f1_1b_3half_series(b_arr, w_arr, n_terms=n_terms)
     return jnp.where(use_asym, asym_val, jnp.where(use_quad, quad_val, series_val))
+
+
+__all__ = ["hyp2f1_1b_d_series", "hyp2f1_1b_3half_series",
+           "hyp2f1_1b_3half_quad", "hyp2f1_1b_3half_asymptotic", "hyp2f1_1b_3half"]

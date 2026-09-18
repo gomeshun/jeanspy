@@ -27,11 +27,11 @@ EXPECTED_PUBLIC_NAMES = {
     "PhotometryPriorModel",
     "PlummerModel",
     "SersicModel",
-    "SimpleDSphEstimationModel",
+    "SphericalDSphEstimationModel",
     "StellarModel",
     "Uniform2dModel",
     "ZhaoModel",
-    "get_default_estimation_model",
+    "plummer_nfw_constant_anisotropy_model",
 }
 
 
@@ -47,7 +47,7 @@ def test_public_model_api_is_explicit():
     assert not hasattr(model, "SharedMemory")
 
 
-def test_public_symbols_keep_historical_module_provenance():
+def test_public_symbols_use_the_supported_module_path():
     for name in EXPECTED_PUBLIC_NAMES:
         value = getattr(model, name)
         if hasattr(value, "__module__"):
@@ -72,14 +72,12 @@ def test_dotdict_missing_attribute_uses_requested_name():
         _ = values.missing
 
 
-def test_legacy_model_impl_is_only_a_compatibility_surface():
-    compat = importlib.import_module("jeanspy._model_impl")
-    assert compat.PlummerModel is model.PlummerModel
-    assert compat.NFWModel is model.NFWModel
-    assert compat.DSphModel is model.DSphModel
-    assert compat.SersicModel is model.SersicModel
+@pytest.mark.parametrize("name", ["jeanspy._model_impl", "jeanspy._classical"])
+def test_retired_internal_modules_are_removed(name):
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module(name)
 
 
-def test_ullio_private_helpers_remain_import_compatible():
-    assert callable(model._ullio2016_weight)
-    assert callable(model._ullio2016_inner_weight)
+def test_facade_does_not_reexport_private_factor_helpers():
+    assert not hasattr(model, "_ullio2016_weight")
+    assert not hasattr(model, "_ullio2016_inner_weight")

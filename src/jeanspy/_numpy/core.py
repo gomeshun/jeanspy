@@ -18,9 +18,8 @@ logger = logging.getLogger("jeanspy.model")
 class Parameters(MutableMapping):
     r"""Lightweight mapping used for stateful model parameters.
 
-    The container preserves the small subset of the historical ``pandas.Series``
-    surface used by JeansPy while supporting attribute access and predictable
-    shallow/deep copy semantics.
+    The container supports attribute access, conversion to ``pandas.Series``,
+    and predictable shallow/deep copy semantics.
 
     Notes
     -----
@@ -29,12 +28,10 @@ class Parameters(MutableMapping):
 
     **Returns and shape.** Parameters.copy is shallow; deepcopy separates nested
     values. Parameters.index and .values are lists, not NumPy arrays or dict
-    methods; ``to_series`` returns a pandas Series. DotDict follows dict
-    operations; assignment to an existing key through an attribute changes the
-    key.
+    methods; ``to_series`` returns a pandas Series. Attribute assignment updates
+    the named parameter.
 
-    **Validity.** Container operations have no physical validation. DotDict new
-    attributes need not become keys.
+    **Validity.** Container operations have no physical validation.
 
     **Errors.** Missing mapping keys raise KeyError; missing attributes raise
     AttributeError.

@@ -77,6 +77,12 @@ def check(directory: Path) -> list[dict]:
                 contents = {m.name.partition("/")[2]: archive.extractfile(m).read()
                             for m in members}
             expected = {"src/" + name: path for name, path in runtime.items()} | support
+        runtime_prefix = "jeanspy/" if artifact.suffix == ".whl" else "src/jeanspy/"
+        shipped_runtime = {name.removeprefix("src/") for name in contents
+                           if name.startswith(runtime_prefix)}
+        unexpected = shipped_runtime - runtime.keys()
+        if unexpected:
+            raise ValueError(f"Unexpected runtime files in {artifact.name}: {sorted(unexpected)}")
         for name in contents:
             parts = PurePosixPath(name).parts
             if (".." in parts or PurePosixPath(name).is_absolute()

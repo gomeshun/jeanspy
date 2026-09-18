@@ -1,15 +1,15 @@
 from typing import Union, Callable
+import json
+import h5py
 import pandas as pd
 import numpy as np
 import emcee
 import emcee.backends
-# import torch
 import logging
 from multiprocessing import Pool, cpu_count
 import itertools
 import os
-from pprint import pprint  # kept for comments above; no longer used in code
-from ._sampling_identity import fingerprint, software_identity
+from ._sampling_identity import IDENTITY_FORMAT, fingerprint, software_identity, source_provenance
 
 
 __all__ = ["Sampler"]
@@ -22,108 +22,6 @@ if not logger.handlers:
     _handler.setFormatter(_formatter)
     logger.addHandler(_handler)
 logger.setLevel(logging.INFO)
-
-############################################
-# # How to use blobs in emcee
-# 
-# import emcee
-# import numpy as np
-
-# def log_prior(params):
-#     return -0.5 * np.sum(params**2)
-
-# def log_like(params):
-#     return -0.5 * np.sum((params / 0.1)**2)
-
-# def log_prob(params):
-#     lp = log_prior(params)
-#     if not np.isfinite(lp):
-#         return -np.inf, -np.inf, -np.inf
-#     ll = log_like(params)
-#     if not np.isfinite(ll):
-#         return lp, -np.inf, -np.inf
-#     return lp + ll, lp, np.mean(params)
-
-# coords = np.random.randn(32, 3)
-# nwalkers, ndim = coords.shape
-
-# # Here are the important lines
-# dtype = [("log_prior", float), ("mean", float)]
-# sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob,
-#                                 blobs_dtype=dtype)
-
-# sampler.run_mcmc(coords, 100)
-
-# blobs = sampler.get_blobs()
-# log_prior_samps = blobs["log_prior"]
-# mean_samps = blobs["mean"]
-# print(log_prior_samps.shape)
-# print(mean_samps.shape)
-
-# flat_blobs = sampler.get_blobs(flat=True)
-# flat_log_prior_samps = flat_blobs["log_prior"]
-# flat_mean_samps = flat_blobs["mean"]
-# print(flat_log_prior_samps.shape)
-# print(flat_mean_samps.shape)
-
-############################################
-# # How to use backends in emcee
-# import emcee
-# import numpy as np
-
-# np.random.seed(42)
-
-# # The definition of the log probability function
-# # We'll also use the "blobs" feature to track the "log prior" for each step
-# def log_prob(theta):
-#     log_prior = -0.5 * np.sum((theta - 1.0) ** 2 / 100.0)
-#     log_prob = -0.5 * np.sum(theta**2) + log_prior
-#     return log_prob, log_prior
-
-
-# # Initialize the walkers
-# coords = np.random.randn(32, 5)
-# nwalkers, ndim = coords.shape
-
-# # Set up the backend
-# # Don't forget to clear it in case the file already exists
-# filename = "tutorial.h5"
-# backend = emcee.backends.HDFBackend(filename)
-# backend.reset(nwalkers, ndim)
-
-# # Initialize the sampler
-# sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob, backend=backend)
-
-# max_n = 100000
-
-# # We'll track how the average autocorrelation time estimate changes
-# index = 0
-# autocorr = np.empty(max_n)
-
-# # This will be useful to testing convergence
-# old_tau = np.inf
-
-# # Now we'll sample for up to max_n steps
-# for sample in sampler.sample(coords, iterations=max_n, progress=True):
-#     # Only check convergence every 100 steps
-#     if sampler.iteration % 100:
-#         continue
-
-#     # Compute the autocorrelation time so far
-#     # Using tol=0 means that we'll always get an estimate even
-#     # if it isn't trustworthy
-#     tau = sampler.get_autocorr_time(tol=0)
-#     autocorr[index] = np.mean(tau)
-#     index += 1
-
-#     # Check convergence
-#     converged = np.all(tau * 100 < sampler.iteration)
-#     converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
-#     if converged:
-#         break
-#     old_tau = tau
-############################################
-
 
 class Sampler:
     r"""wrapper class for emcee.EnsembleSampler
@@ -227,12 +125,31 @@ class Sampler:
 
     def _write_analysis_identity(self, identity):
         with self.backend.open("a") as handle:
-            handle[self.backend_name].attrs["jeanspy_analysis_identity"] = identity
+            attrs = handle[self.backend_name].attrs
+            attrs["jeanspy_analysis_identity"] = identity
+            attrs["jeanspy_identity_format"] = IDENTITY_FORMAT
+            handle[self.backend_name].create_dataset(
+                "jeanspy_source_provenance", shape=(0,), maxshape=(None,),
+                dtype=h5py.string_dtype(encoding="utf-8"),
+            )
+
+    def _record_source_provenance(self):
+        record = source_provenance()
+        with self.backend.open("a") as handle:
+            group = handle[self.backend_name]
+            history = group["jeanspy_source_provenance"]
+            previous = json.loads(history.asstr()[-1]) if len(history) else None
+            if previous is None or previous["source_sha256"] != record["source_sha256"]:
+                record["iteration"] = int(group.attrs["iteration"])
+                history.resize(len(history) + 1, axis=0)
+                history[-1] = json.dumps(record, sort_keys=True)
 
     def _check_analysis_identity(self, identity):
         with self.backend.open("r") as handle:
-            stored = handle[self.backend_name].attrs.get("jeanspy_analysis_identity")
-        if stored != identity:
+            attrs = handle[self.backend_name].attrs
+            stored = attrs.get("jeanspy_analysis_identity")
+            version = attrs.get("jeanspy_identity_format")
+        if stored != identity or version != IDENTITY_FORMAT:
             raise ValueError("Sampling analysis identity mismatch or missing legacy identity "
                              "(model, prior, data, schema, or solver). Use a new prefix or "
                              "explicitly reset to start a different analysis.")
@@ -247,8 +164,6 @@ class Sampler:
         if p0_generator is None:
             self.logger.info("p0_generator is None so we skip the conversion of p0. Please make sure to convert p0 properly by yourself.")
         else:
-            # p0 = p0_generator(1)
-            # params = self.model.convert_params(p0[0])
             p0 = p0_generator(None)
             params = self.model.convert_params(p0)
             self.logger.info("p0: %s", p0)
@@ -261,7 +176,7 @@ class Sampler:
             self.logger.info("sampling coordinates:\n%s", coordinates)
     
     def set_wrapper_function(self):
-        # NOTE: Here we define a global wrapper function for log_prob to accelarate the sampling.
+        # NOTE: Here we define a global wrapper function for log_prob to accelerate the sampling.
         # Without the wrapper function, multiprocessing.pool will repeat the pickling/unpickling of the model
         # and it will be very slow.
         # Once we define the wrapper function, pool will only pickle/unpickle the wrapper function
@@ -276,7 +191,7 @@ class Sampler:
         """
         global log_prob_fn_wrapper
         def log_prob_fn_wrapper(p):
-            """ wrapper function for log_prob to accelarate the sampling.
+            """ wrapper function for log_prob to accelerate the sampling.
             """
             return self.log_prob(p)
         self.logger.info("log_prob_fn_wrapper defined.")
@@ -306,7 +221,7 @@ class Sampler:
     def burn_in(self, nsteps, p0_generator, **kwargs):
         """Advance warmup and continue from its final ensemble.
 
-        Warmup draws remain in the backend for compatibility. Exclude them
+        Warmup draws remain in the backend. Exclude them
         explicitly with get_chain(discard=...) when analyzing production draws.
         The chain already samples the posterior and must not be weighted by
         the posterior density a second time.
@@ -328,6 +243,7 @@ class Sampler:
                         mes.append(f"p:{p}")
                         mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
                 raise RuntimeError("\n".join(mes))
+        self._record_source_provenance()
         self.sampler.run_mcmc(initial_state, nsteps,
                               progress=True,
                               **kwargs)
@@ -399,37 +315,12 @@ class Sampler:
             self._write_analysis_identity(identity)
             self._analysis_identity = identity
 
+        self._record_source_provenance()
+
         # Now we'll sample for up to  steps
         self.logger.info("iteration: %d", self.sampler.iteration)
         for i_loop in range(loops):
             # start mcmc sampling with self.sampler.run_mcmc and pool
-            
-            # initial_state = self.p0_generator(self.nwalkers) if self.backend.iteration == 0 else None
-            # # check if initial_state returns finite log_prob
-            # # if not, raise an error
-            # if (initial_state is not None) and (not np.all(np.isfinite([self.model.lnposterior(p) for p in initial_state]))):
-            #     mes = []
-            #     mes.append("Sampler: initial_state has non-finite log_prob")
-            #     for p in initial_state:
-            #         if not np.all(np.isfinite(self.model.lnposterior(p))):
-            #             mes.append(f"p:{p}")
-            #             mes.append(f"lnposterior(p):{self.model.lnposterior(p)}")
-            #     # mes.append(f"initial_state:{initial_state}")
-            #     # mes.append(f"lnposterior:{[self.model.lnposterior(p) for p in initial_state]}")
-            #     raise RuntimeError("\n".join(mes))
-            # check if already converged
-            # if self.sampler.iteration > 0:
-            # else:
-            #     tau = self.sampler.get_autocorr_time(tol=0)
-            #     converged = np.all(tau * 100 < self.sampler.iteration)
-            #     converged &= np.all(np.abs(old_tau - tau) / tau < 0.01)
-            #     if converged:
-            #         print(f"Sampler: Already converged after {self.sampler.iteration} iterations.")
-            #         break
-            #     else:
-            #         print(f"Sampler: Not converged yet. tau:{tau}\titeration:{self.sampler.iteration}")
-            #         old_tau = tau
-            # run mcmc
             initial_state = None if self.backend.iteration > 0 else initial_state
             self.sampler.run_mcmc(initial_state,iterations,
                                     progress=True,

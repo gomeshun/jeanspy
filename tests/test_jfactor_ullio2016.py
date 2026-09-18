@@ -1,3 +1,5 @@
+from jeanspy._numpy.jfactor import _ullio2016_inner_weight, _ullio2016_weight
+
 import numpy as np
 import pytest
 from scipy.integrate import quad
@@ -7,8 +9,6 @@ from jeanspy.model import (
     DMModel,
     NFWModel,
     ZhaoModel,
-    _ullio2016_inner_weight,
-    _ullio2016_weight,
 )
 
 

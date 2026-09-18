@@ -62,7 +62,7 @@ def test_data_are_detached_and_temperature_tracks_reset():
     data = m.data.as_kwargs()
     data["y_pc"][0] = 100.
     assert fingerprint(m) == before
-    np.testing.assert_allclose(m.inverse_temparature, 1/np.log(3))
+    np.testing.assert_allclose(m.inverse_temperature, 1/np.log(3))
     np.testing.assert_allclose(m.lnposterior_wbic([-1., 0.])[1],
                                m.lnlikelihood([-1., 0.])/np.log(3))
     m.reset_data({name: value[:1] for name, value in data.items()})

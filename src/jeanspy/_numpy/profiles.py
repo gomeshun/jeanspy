@@ -456,7 +456,7 @@ class DMModel(Model):
     Notes
     -----
     **Inputs and units.** Subclasses supply ``mass_density_3d`` and
-    ``enclosed_mass``/``enclosure_mass``. The base numerical J-factor methods
+    ``enclosed_mass``. The base numerical J-factor methods
     require scalar ``dist_pc``, ``roi_deg`` (cone half-angle in degrees) and
     ``r_t_pc``. NFW overrides the spherical-aperture approximation and also supplies an
     Evans formula; these analytic methods support broadcastable geometry.
@@ -495,21 +495,14 @@ class DMModel(Model):
         raise NotImplementedError
 
     def enclosed_mass(self, r_pc):
-        r"""Return mass enclosed within ``r_pc``.
+        """Return enclosed halo mass in Msun at radius r_pc in pc.
 
-        ``enclosure_mass`` is retained on concrete models for compatibility
-        with the original API.
-
-        Notes
-        -----
-        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array. This base
-        implementation delegates to ``enclosure_mass(r_pc)``; subclasses may
-        override it with additional integration options.
-
-        **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input
-        shape. ``enclosure_mass`` is the historical spelling.
+        Concrete profiles specify truncation and numerical integration options.
+        Output follows the input radius shape. This optional subclassing
+        interface raises NotImplementedError when mass is unavailable; a
+        density-only custom halo can still be used for J-factor calculations.
         """
-        return self.enclosure_mass(r_pc)
+        raise NotImplementedError
 
     def _validate_jfactor_inputs(
         self,
@@ -731,7 +724,7 @@ class ZhaoModel(DMModel):
 
     **Returns and shape.** ``mass_density_3d`` returns Msun/pc^3 with input
     shape; ``enclosed_mass`` returns Msun inside min(``r_pc``, ``r_t_pc``).
-    ``enclosure_mass`` is a historical alias. Density is zero outside ``r_t_pc``.
+    Density is zero outside ``r_t_pc``.
 
     **Validity.** Positive scales and cutoff; Zhao alpha>0 and gamma<3 for finite
     central mass; finite-radius mass does not require beta>3. Total untruncated
@@ -796,7 +789,7 @@ class ZhaoModel(DMModel):
         implementation accepts ``n_steps``.
 
         **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input
-        shape. ``enclosure_mass`` is the historical spelling.
+        shape.
         """
         params = {k: getattr(self.params, k) for k in self.required_param_names}
         if not np.all(_zhao_valid(np.asarray(r_pc), params, np)):
@@ -806,18 +799,6 @@ class ZhaoModel(DMModel):
             )
         return _zhao_mass(r_pc, params, xp=np, n_steps=n_steps)
 
-    def enclosure_mass(self, r_pc, *, n_steps=128):
-        r"""Evaluate halo mass inside a finite spherical radius.
-
-        Notes
-        -----
-        **Inputs and units.** ``r_pc`` in pc, scalar or NumPy array; the Zhao
-        implementation accepts ``n_steps``.
-
-        **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input
-        shape. ``enclosure_mass`` is the historical spelling.
-        """
-        return self.enclosed_mass(r_pc, n_steps=n_steps)
 
 
 class NFWModel(DMModel):
@@ -826,8 +807,7 @@ class NFWModel(DMModel):
     Parameters are ``rs_pc`` and ``r_t_pc`` in pc, and ``rhos_Msunpc3``
     in Msun/pc^3. Inside the cutoff, rho = rhos / (x*(1+x)**2), x=r/rs.
     ``mass_density_3d`` returns zero for r > r_t_pc and includes the cutoff
-    boundary. The central density diverges. ``enclosed_mass`` (also spelled
-    ``enclosure_mass``) gives the analytic mass inside min(r, r_t_pc), in Msun.
+    boundary. The central density diverges. ``enclosed_mass`` gives the analytic mass inside min(r, r_t_pc), in Msun.
     Scalar/array outputs follow the input radius shape.
 
     Scales must be positive, rs and rhos finite; an infinite cutoff is allowed
@@ -876,7 +856,7 @@ class NFWModel(DMModel):
             rho = rhos / x / (1.0 + x)**2
         return np.where(inside, rho, 0.0)
 
-    def enclosure_mass(self, r_pc):
+    def enclosed_mass(self, r_pc):
         r"""Evaluate analytic NFW mass inside a finite spherical radius.
 
         Notes
@@ -885,7 +865,7 @@ class NFWModel(DMModel):
         stored NFW scales and cutoff; no numerical-integration option is needed.
 
         **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input
-        shape. ``enclosure_mass`` is the historical spelling.
+        shape.
         """
         threshold = 1e-7
         rs_pc = self.params.rs_pc

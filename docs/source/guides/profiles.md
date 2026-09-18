@@ -20,6 +20,8 @@ three-dimensional exponential. Plummer and Sersic still accept `re_pc` directly.
 ## Sersic deprojection domains
 
 {meth}`~jeanspy.model.SersicModel.density_3d` selects the deprojection explicitly.
+The `lgm` selection uses the Lima Neto--Gerbal--Márquez approximation for
+$0.5\le n\le10$; its normalization is `lgm_norm_3d`, independently of `auto`.
 The VM20 approximation is restricted to $0.5\le n\le10$ and
 $10^{-3}\le r/r_e\le10^3$; VM20bis uses $0.5\le n\le3.4$ and
 $10^{-4}\le r/r_e\le10^3$. The default `auto` route selects VM20bis inside
@@ -35,7 +37,10 @@ The spherical implementations include
 {class}`~jeanspy.model.OsipkovMerrittModel` and
 {class}`~jeanspy.model.BaesAnisotropyModel`; consult their API entries for
 parameters and supported kernels. The [theory page](../theory.md)
-defines spherical and cylindrical anisotropy. The restriction $\beta<1$
+defines spherical and cylindrical anisotropy.
+For JAX `BaesEta2AnisotropyModel`, `solver="auto"` uses Abel integration.
+Select `solver="kernel"` to activate its specialized Appell-F1 kernel, controlled
+by `n_kernel`. The eta=2 specialization alone does not change solver selection. The restriction $\beta<1$
 alone does not establish the existence of a nonnegative distribution function.
 
 ## Halo cutoff conventions

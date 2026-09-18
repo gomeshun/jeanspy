@@ -165,7 +165,7 @@ def _worker(mode_name: str) -> None:
             new_dsph = make_new_dsph()
 
         R_pc = np.geomspace(max(0.1, params["re_pc"] * 0.05), params["re_pc"] * 5.0, 10).astype(np.float64)
-        ref = np.asarray(classical_dsph.sigmalos2_dequad(R_pc, n=n_classical, n_kernel=n_kernel), dtype=np.float64)
+        ref = np.asarray(classical_dsph.sigmalos2(R_pc, n=n_classical, n_kernel=n_kernel), dtype=np.float64)
         dtype = jnp.float64 if jax.config.read("jax_enable_x64") else jnp.float32
         params_jax = {key: jnp.asarray(value, dtype=dtype) for key, value in params.items()}
         r_pc_jax = jnp.asarray(R_pc, dtype=dtype)
@@ -255,7 +255,7 @@ def _worker(mode_name: str) -> None:
     classical_kernel_fn = lambda: classical_dsph["AnisotropyModel"].kernel(
         u_kernel_classical, R_kernel_classical
     )
-    classical_sig_fn = lambda: classical_dsph.sigmalos2_dequad(R_sig_np, n=1024, n_kernel=128)
+    classical_sig_fn = lambda: classical_dsph.sigmalos2(R_sig_np, n=1024, n_kernel=128)
     new_kernel_model = cast(Any, new_dsph.submodels["AnisotropyModel"])
     new_kernel_fn = lambda: new_kernel_model.kernel(
         u_kernel_jax,

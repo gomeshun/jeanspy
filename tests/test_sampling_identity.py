@@ -13,7 +13,7 @@ import pandas as pd
 import pytest
 
 from jeanspy._sampling_identity import fingerprint
-from jeanspy.model import get_default_estimation_model
+from jeanspy.model import plummer_nfw_constant_anisotropy_model
 from jeanspy.model_jax import DSphModel, PlummerModel, NFWModel, ConstantAnisotropyModel
 from jeanspy.sampler import Sampler
 from jeanspy.sampler_numpyro import NumPyroSampler, JeansLikelihoodModel, ParameterSpec
@@ -176,7 +176,7 @@ def test_emcee_changed_target_rejected_on_reopen_and_in_memory(tmp_path):
 
 def test_classical_identity_tracks_data_prior_and_not_sampled_coordinates(classical_prior_config):
     data = pd.DataFrame(dict(R_pc=[10., 20.], vlos_kms=[0., 1.], e_vlos_kms=[1., 1.]))
-    model = get_default_estimation_model(data, 2.3, .1, config=classical_prior_config)
+    model = plummer_nfw_constant_anisotropy_model(data, 2.3, .1, config=classical_prior_config)
     before = fingerprint(model)
     model.update(model.convert_params(np.array([0., 2.3, 3., -2., 4., 0.])))
     assert fingerprint(model) == before
@@ -203,9 +203,9 @@ def test_emcee_burn_in_continues_final_ensemble_without_reweighting(tmp_path, mo
 
 def test_wbic_rejects_single_observation(classical_prior_config):
     data = pd.DataFrame(dict(R_pc=[10.], vlos_kms=[0.], e_vlos_kms=[1.]))
-    model = get_default_estimation_model(data, 2.3, .1, config=classical_prior_config)
+    model = plummer_nfw_constant_anisotropy_model(data, 2.3, .1, config=classical_prior_config)
     with pytest.raises(ValueError, match='at least two'):
-        _ = model.inverse_temparature
+        _ = model.inverse_temperature
 
 
 def test_opaque_target_state_requires_explicit_identity():
@@ -276,3 +276,210 @@ def test_function_identity_provider_can_describe_external_state():
     assert fingerprint(model) == previous
     state['center'] = 2.
     assert fingerprint(model) != previous
+
+
+@pytest.fixture
+def editable_source(tmp_path, monkeypatch):
+    """Use an isolated package tree without editing the running test package."""
+    from jeanspy import _sampling_identity as identity
+    root = tmp_path / 'package'
+    root.mkdir()
+    source = root / '__init__.py'
+    source.write_text('"""Original documentation."""\nVALUE = 2\n')
+    (root / 'data').mkdir()
+    (root / 'data' / 'table.csv').write_text('value\n1\n')
+    monkeypatch.setattr(identity, '__file__', str(source))
+    return source
+
+
+def test_software_identity_separates_documentation_from_computation(editable_source, monkeypatch):
+    from jeanspy import _sampling_identity as identity
+    before = identity.software_identity('emcee')
+    provenance = identity.source_provenance()
+    editable_source.write_text('"""Revised documentation.\nMore explanation."""\n# comment\nVALUE  = (2)\n')
+    assert identity.software_identity('emcee') == before
+    assert identity.source_provenance() != provenance
+    editable_source.write_text('"""Revised documentation."""\nVALUE = 3\n')
+    assert identity.software_identity('emcee') != before
+    editable_source.write_text('VALUE = 2\n')
+    assert identity.software_identity('emcee') == before
+    data = editable_source.parent / 'data/table.csv'
+    data.write_text('value\n2\n')
+    assert identity.software_identity('emcee') != before
+    data.write_text('value\n1\n')
+    added = editable_source.parent / 'new_module.py'
+    added.write_text('"""New module."""\n')
+    assert identity.software_identity('emcee') != before
+    added.unlink()
+    real_version = identity.importlib.metadata.version
+    monkeypatch.setattr(identity.importlib.metadata, 'version',
+                        lambda name: 'changed' if name == 'numpy' else real_version(name))
+    assert identity.software_identity('emcee') != before
+
+
+@pytest.mark.parametrize('declared', [False, True])
+def test_custom_class_documentation_is_not_target_state(tmp_path, monkeypatch, declared):
+    import linecache
+    import sys
+    import types
+    module = types.ModuleType('identity_external_model')
+    module.__file__ = str(tmp_path / 'custom.py')
+    monkeypatch.setitem(sys.modules, module.__name__, module)
+
+    def load(doc, expression='x * 2', default='1'):
+        source = (f'class Target:\n    """{doc}"""\n'
+                  f'    def __call__(self, x={default}):\n        """{doc}"""\n'
+                  f'        return {expression}\n')
+        if declared:
+            source += '    def sampling_identity(self):\n        return {"state": 0}\n'
+        Path(module.__file__).write_text(source)
+        linecache.clearcache()
+        exec(compile(source, module.__file__, 'exec'), module.__dict__)
+        return module.Target()
+
+    before = fingerprint(load('Original'))
+    assert fingerprint(load('Rewritten\n    documentation')) == before
+    assert fingerprint(load('Rewritten', expression='x * 3')) != before
+    assert fingerprint(load('Rewritten', default='2')) != before
+
+
+def test_function_documentation_and_executable_strings_are_distinct():
+    def load(doc, expression='x * 2'):
+        namespace = {'__name__': 'identity_test'}
+        exec(f'def target(x=1):\n    """{doc}"""\n    return {expression}\n', namespace)
+        return namespace['target']
+    before = fingerprint(load('Original'))
+    assert fingerprint(load('Rewritten')) == before
+    assert fingerprint(load('Rewritten', expression='x * 3')) != before
+    assert fingerprint(load('same', expression='"same"')) != fingerprint(load('different', expression='"different"'))
+
+
+@pytest.mark.mcmc
+def test_emcee_documentation_change_resumes_with_source_history(tmp_path, editable_source):
+    (tmp_path / 'chain').mkdir()
+    prefix = str(tmp_path / 'chain') + '/'
+    sampler = Sampler(ToyModel(), initial, nwalkers=6, prefix=prefix)
+    sampler.run_mcmc(4, 1, enable_convergence_check=False)
+    chain = sampler.get_chain().copy()
+    with sampler.backend.open('r') as handle:
+        history = [json.loads(v) for v in handle[sampler.backend_name]['jeanspy_source_provenance'].asstr()]
+    editable_source.write_text('"""Updated documentation."""\nVALUE = 2\n')
+    resumed = Sampler(ToyModel(), initial, nwalkers=6, prefix=prefix)
+    resumed.run_mcmc(3, 1, enable_convergence_check=False)
+    np.testing.assert_array_equal(resumed.get_chain()[:4], chain)
+    assert resumed.get_chain().shape == (7, 6, 1)
+    with resumed.backend.open('r') as handle:
+        updated = [json.loads(v) for v in handle[resumed.backend_name]['jeanspy_source_provenance'].asstr()]
+    assert updated[:1] == history
+    assert len(updated) == 2 and updated[1]['iteration'] == 4
+    assert updated[0]['source_sha256'] != updated[1]['source_sha256']
+    editable_source.write_text('VALUE = 3\n')
+    before = snapshot(tmp_path / 'chain')
+    with pytest.raises(ValueError, match='identity mismatch'):
+        Sampler(ToyModel(), initial, nwalkers=6, prefix=prefix)
+    assert snapshot(tmp_path / 'chain') == before
+
+
+@pytest.mark.mcmc
+def test_numpyro_documentation_change_resumes_with_source_history(tmp_path, editable_source):
+    output = tmp_path / 'chain'
+    with NumPyroSampler(make_mcmc(), output_dir=output, async_writes=False) as first:
+        first.run(jax.random.PRNGKey(0), save_samples=False)
+    history = json.loads((output / 'metadata.json').read_text())['source_provenance']
+    editable_source.write_text('"""Updated documentation."""\nVALUE = 2\n')
+    with NumPyroSampler(make_mcmc(), output_dir=output, async_writes=False) as resumed:
+        resumed.load_checkpoint()
+        assert resumed.run(jax.random.PRNGKey(1), save_samples=False).resumed
+    updated = json.loads((output / 'metadata.json').read_text())['source_provenance']
+    assert updated[:1] == history
+    assert len(updated) == 2
+    assert updated[0]['source_sha256'] != updated[1]['source_sha256']
+    editable_source.write_text('VALUE = 3\n')
+    before = snapshot(output)
+    with NumPyroSampler(make_mcmc(), output_dir=output, async_writes=False) as changed:
+        with pytest.raises(ValueError, match='identity mismatch'):
+            changed.load_checkpoint()
+        with pytest.raises(ValueError, match='identity mismatch'):
+            changed.run(jax.random.PRNGKey(2), save_samples=False)
+    assert snapshot(output) == before
+
+
+def test_emcee_rejects_old_identity_format_without_mutating_output(tmp_path):
+    sampler = Sampler(ToyModel(), initial, nwalkers=6, prefix=str(tmp_path)+'/')
+    with sampler.backend.open('a') as handle:
+        handle[sampler.backend_name].attrs['jeanspy_identity_format'] = 1
+    before = snapshot(tmp_path)
+    with pytest.raises(ValueError, match='identity mismatch'):
+        Sampler(ToyModel(), initial, nwalkers=6, prefix=str(tmp_path)+'/')
+    assert snapshot(tmp_path) == before
+
+
+@pytest.mark.mcmc
+def test_numpyro_rejects_old_identity_format_without_mutating_output(tmp_path):
+    import pickle
+    with NumPyroSampler(make_mcmc(), output_dir=tmp_path, async_writes=False) as first:
+        first.run(jax.random.PRNGKey(0), save_samples=False)
+        metadata = json.loads(first.metadata_path.read_text())
+        metadata['analysis_identity']['format'] = 1
+        first.metadata_path.write_text(json.dumps(metadata))
+        payload = pickle.loads(first.checkpoint_path.read_bytes())
+        payload['analysis_identity']['format'] = 1
+        first.checkpoint_path.write_bytes(pickle.dumps(payload))
+    before = snapshot(tmp_path)
+    with NumPyroSampler(make_mcmc(), output_dir=tmp_path, async_writes=False) as sampler:
+        with pytest.raises(ValueError, match='identity mismatch'):
+            sampler.load_checkpoint()
+        with pytest.raises(ValueError, match='identity mismatch'):
+            sampler.run(jax.random.PRNGKey(1), save_samples=False)
+    assert snapshot(tmp_path) == before
+
+
+@pytest.mark.mcmc
+def test_emcee_multiple_loops_match_uninterrupted_transitions(tmp_path):
+    old_random = np.random.get_state()
+    chains = []
+    try:
+        for label, iterations, loops in [('split', 4, 2), ('uninterrupted', 8, 1)]:
+            directory = tmp_path / label
+            directory.mkdir()
+            np.random.seed(314159)
+            sampler = Sampler(ToyModel(), initial, nwalkers=6, prefix=str(directory)+'/')
+            sampler.run_mcmc(iterations, loops, enable_convergence_check=False)
+            chains.append(sampler.get_chain())
+        np.testing.assert_array_equal(*chains)
+    finally:
+        np.random.set_state(old_random)
+
+
+@pytest.mark.parametrize('body', ['pass', 'return None', 'return 2',
+                                  'try:\n        return 1/0\n    except ZeroDivisionError:\n        return None'])
+def test_adding_and_removing_function_docstrings_does_not_change_target(body):
+    values = []
+    for doc in ('', '    """Help."""\n', '    """More\n    help."""\n'):
+        namespace = {'__name__': 'identity_test'}
+        exec('def target():\n' + doc + '    ' + body + '\n', namespace)
+        values.append(fingerprint(namespace['target']))
+    assert len(set(values)) == 1
+
+
+def test_documentation_used_as_data_can_be_declared_explicitly():
+    def target():
+        """1.0"""
+        return float(target.__doc__)
+    target.sampling_identity = lambda: {'documentation_as_data': target.__doc__}
+    before = fingerprint(target)
+    target.__doc__ = '2.0'
+    assert fingerprint(target) != before
+
+
+def test_documentation_presence_flag_is_not_computational_state(monkeypatch):
+    import inspect
+    from jeanspy._sampling_identity import _code
+    def target():
+        return None
+    # Python 3.14 records docstring presence in a dedicated code flag.
+    flag = getattr(inspect, 'CO_HAS_DOCSTRING', 1 << 26)
+    monkeypatch.setattr(inspect, 'CO_HAS_DOCSTRING', flag, raising=False)
+    without = target.__code__.replace(co_flags=target.__code__.co_flags & ~flag)
+    with_doc = without.replace(co_flags=without.co_flags | flag)
+    assert _code(without) == _code(with_doc)

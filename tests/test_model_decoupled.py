@@ -53,9 +53,9 @@ def _make_kinematic_data(n=30, seed=42):
 
 
 def test_simple_dsph_estimation_model_explicit_data(tmp_path, classical_prior_config):
-    """SimpleDSphEstimationModel.load_data accepts a DataFrame directly."""
+    """SphericalDSphEstimationModel.load_data accepts a DataFrame directly."""
     from jeanspy.model import (
-        SimpleDSphEstimationModel,
+        SphericalDSphEstimationModel,
         DSphModel,
         PlummerModel,
         NFWModel,
@@ -74,7 +74,7 @@ def test_simple_dsph_estimation_model_explicit_data(tmp_path, classical_prior_co
     })
     classical_prior_config.to_csv(config_path)
 
-    mdl = SimpleDSphEstimationModel(
+    mdl = SphericalDSphEstimationModel(
         args_load_data=[data], parameter_specs=[
             SamplingParameter("vmem_kms", "vmem_kms"),
             SamplingParameter("log10_re_pc", "re_pc", "pow10"),
@@ -98,15 +98,15 @@ def test_simple_dsph_estimation_model_explicit_data(tmp_path, classical_prior_co
     assert "vlos_kms" in mdl.data
 
 
-def test_get_default_estimation_model(tmp_path, classical_prior_config):
-    """get_default_estimation_model uses explicit data and photometry prior."""
-    from jeanspy.model import get_default_estimation_model
+def test_plummer_nfw_constant_anisotropy_model(tmp_path, classical_prior_config):
+    """plummer_nfw_constant_anisotropy_model uses explicit data and photometry prior."""
+    from jeanspy.model import plummer_nfw_constant_anisotropy_model
 
     data = _make_kinematic_data()
     config_path = tmp_path / "priorconfig.csv"
     classical_prior_config.to_csv(config_path)
 
-    mdl = get_default_estimation_model(
+    mdl = plummer_nfw_constant_anisotropy_model(
         data=data,
         photometry_prior_loc=2.3,
         photometry_prior_scale=0.1,

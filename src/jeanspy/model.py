@@ -1,10 +1,10 @@
 """Public NumPy/SciPy model API.
 
-Implementation details live in :mod:`jeanspy._classical`; this module defines
-the intentionally supported import surface for the NumPy/SciPy backend.
+Compose stateful stellar, halo and anisotropy components and attach explicit
+likelihoods and priors for NumPy/SciPy inference.
 """
 
-from ._classical import (
+from ._numpy import (
     AnisotropyModel,
     BaesAnisotropyModel,
     C_J,
@@ -22,13 +22,11 @@ from ._classical import (
     Parameters,
     PhotometryPriorModel,
     PlummerModel,
-    SimpleDSphEstimationModel,
+    SphericalDSphEstimationModel,
     StellarModel,
     Uniform2dModel,
     ZhaoModel,
-    _ullio2016_inner_weight,
-    _ullio2016_weight,
-    get_default_estimation_model,
+    plummer_nfw_constant_anisotropy_model,
 )
 from .sersic import SersicModel
 
@@ -59,15 +57,15 @@ __all__ = [
     "PhotometryPriorModel",
     "PlummerModel",
     "SersicModel",
-    "SimpleDSphEstimationModel",
+    "SphericalDSphEstimationModel",
     "StellarModel",
     "Uniform2dModel",
     "ZhaoModel",
-    "get_default_estimation_model",
+    "plummer_nfw_constant_anisotropy_model",
 ]
 
 
-# Preserve the historical public provenance used by repr/pickle/introspection
+# Preserve the supported public provenance used by repr/pickle/introspection
 # while keeping implementation modules private.
 for _name in __all__:
     _value = globals()[_name]
@@ -76,8 +74,7 @@ for _name in __all__:
 
 del _name, _value
 
-# Additive axisymmetric API. Preserve the defining modules of the independent
-# forward/inference classes, including the public paths introduced in PR #63.
+# Re-export axisymmetric models while retaining their defining public modules.
 from .axisymmetric import AxisymmetricDSphModel
 from .axisymmetric_inference import AxisymmetricDSphEstimationModel, AxisymmetricKinematicData
 

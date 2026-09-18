@@ -1,75 +1,36 @@
-from numpy import sinh,cosh,exp,log,pi,arange,isnan,isinf,float64
-from functools import lru_cache, wraps
+"""Double-exponential quadrature and reusable integration nodes."""
+
+from functools import wraps
 import numpy as np
 import warnings
 
-DEBUG = False
-BUF_DEBUG = None
+__all__ = ["dequad", "generate_x_w"]
 
-def hashable(x):
-    r"""Test whether Python can hash an object.
 
-    Notes
-    -----
-    **Inputs and units.** x is any Python object.
-
-    **Returns and shape.** bool; catches TypeError from hash(x).
-
-    **Validity.** Hashability is not a check of array content identity.
-
-    **Errors.** Exceptions other than TypeError propagate.
-
-    **Backend.** Python host.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** hashable((1,2)) is True; hashable(np.array([1])) is False.
-    """
+def _is_hashable(value):
+    """Whether an argument tuple can be used as a cache key."""
     try:
-        hash(x)
+        hash(value)
         return True
     except TypeError:
         return False
 
-# 関数を Memoize するデコレータ.
-def memorize(callable):
-    r"""Cache a callable for hashable argument tuples.
 
-    Notes
-    -----
-    **Inputs and units.** callable is a Python function; the wrapper accepts its
-    positional/keyword arguments.
-
-    **Returns and shape.** Wrapped callable with an in-memory cache; unhashable
-    arguments bypass caching.
-
-    **Validity.** Pure functions only; key order follows supplied kwargs.
-    Mutable returned values are shared cached objects.
-
-    **Errors.** Original callable exceptions propagate.
-
-    **Backend.** Python host.
-
-    **Differentiation.** No physical-parameter automatic differentiation on this
-    API.
-
-    **Examples.** Used internally for quadrature nodes; use dequad for numerical
-    integration.
-    """
+def _memoize(function):
+    """Cache hashable calls; bypass the cache for unhashable arguments."""
     cache = {}
-    @wraps(callable)
+    @wraps(function)
     def wrapper(*args, **kwargs):
         key = args + tuple(kwargs.items())
-        if not hashable(key):
-            return callable(*args, **kwargs)
+        if not _is_hashable(key):
+            return function(*args, **kwargs)
         if key not in cache:
-            cache[key] = callable(*args, **kwargs)
+            cache[key] = function(*args, **kwargs)
         return cache[key]
     return wrapper
 
-#@lru_cache(maxsize = 1)
-@memorize
+
+@_memoize
 def generate_x_w(a,b,n,xp=np):
     r"""Construct nodes and weights for fixed double-exponential quadrature.
 
@@ -99,7 +60,6 @@ def generate_x_w(a,b,n,xp=np):
     Hashable arguments reuse cached arrays; returned arrays must not be
     mutated if that cache is to remain valid. See ``examples/docs_numerics.py``.
     """
-    #print("generate_x_w in",a,b,width,mN,pN)
     pi2 = xp.pi/2
     
     if np.all(np.isfinite(a)) and np.all(np.isinf(b)):  # a < x < inf
@@ -209,24 +169,3 @@ def dequad(func,a,b,n,
         print(wsfs)
         
     return (wsfs).sum(axis=axis)
-    
-
-if __name__ == "__main__":
-    #### demonstration and illustration ####
-    
-    import matplotlib.pyplot as plt
-    import numpy as np
-    
-    def debug(func,a,b):
-        ns = range(1,20)
-        errs = [np.abs(1-dequad(func,a,b,n=2**i)) for i in ns]
-        print(errs)
-        plt.plot(list(ns),errs)
-        plt.yscale("log")
-        
-    debug(lambda x: 1/np.sqrt(2*np.pi)*np.exp(-x**2/2),np.inf,np.inf)
-    debug(lambda x: 1/x**2,1,np.inf)
-    debug(lambda x: 2*np.exp(-x)*np.sin(x),0,np.inf)
-    debug(lambda x: 2*x,0,1)
-    
-    plt.show()  # The plotted figure shows that n = 2**6~2**10 (64~1024) is good for the normal use
