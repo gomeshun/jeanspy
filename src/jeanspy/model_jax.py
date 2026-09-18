@@ -913,7 +913,7 @@ class DMModel(Model):
         Notes
         -----
         **Inputs and units.** ``r_pc`` is scalar/array in pc; params is the physical
-        dictionary. ``enclosed_mass`` select
+        dictionary. ``enclosed_mass`` accepts
         method=auto/analytic/numeric; numerical methods accept ``n_steps``.
 
         **Returns and shape.** Mass in Msun within ``min(r_pc, r_t_pc)``,

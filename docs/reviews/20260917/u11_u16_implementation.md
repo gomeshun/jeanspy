@@ -92,3 +92,34 @@ Format 1以前のchainは元のcheckout・環境で再開する。新APIは新�
 
 2026-09-17の実装・検証完了時点では、変更はローカルの作業ツリーに保存し、
 commit・push・PR・公開・mergeは未実施だった。この記録はその時点の検証結果を示す。
+
+## PR #70 再レビュー — 2026-09-18
+
+[PR #70](https://github.com/gomeshun/jeanspy/pull/70) の初回headは
+`e5cb5fa8e17c03de5f18a948b9e55de112622723`、baseは上記 `e415ffd`。
+公開API、呼び出し元、移行ガイド、配布内容、両samplerの再開経路と拒否時の出力保持を再確認した。
+再レビューで次の残存箇所を修正した。
+
+- DSphModelのclass docstringにあった、削除済みLOS APIが引き続き使えるという説明を削除。
+- READMEのZhao有効域に残っていた `a` / `b` を `alpha` / `beta` に訂正。
+- 質量メソッドの旧alias比較が、改名によって自己比較になっていたテストを修正。
+  旧aliasの削除とNumPy/SciPy・JAX間の数値一致を検査し、float32でも通過した。
+- 密度のみを提供するcustom haloをJ-factorに使えることと、Jeans計算では質量が必要なことを
+  基底classの説明でも区別。JAX質量メソッドの引数説明の文法も訂正。
+
+初回headのCIは18成功、3件は公開・リリース専用ジョブの予定されたskip。
+ローカル再確認は65 passed、追加修正後の関連テストは51 passed / 2 subtests passed。
+追加のruntime変更はdocstringのみで、計算同一性は初回headと同じ、原本ハッシュのみが
+変わることを確認した。前節の555件は同じ計算コードに対する全体検証である。
+
+追加修正後、公開notebook 7件を新しいkernelで再実行し、保存出力の検査7件も合格。
+全26 Python source・lock・notebook codeのハッシュが一致し、error出力はない。
+実測時間を表示するbackend比較cell以外の出力は初回headと一致した。
+両Quickstartも `/tmp/jeanspy-pr70-review-quickstart/run-xtrxh2mb` で再生成・再開し、
+source/lock 32 filesと出力9 filesのハッシュを照合した。
+
+最初の制限付き環境ではJupyter用socketを作成できず、カーネル起動前に停止した。
+該当する今回の3ジョブのみを終了し、ローカル通信可能な環境で再実行した結果を上記に記録した。
+Sphinxも外部inventoryを取得可能な環境で `-W --keep-going` のHTML構築と5 doctestに合格。
+最終HTMLは583 pages / 308,374 local links / broken links 0、公開境界の混入0、
+dev/mainの表示チェックも合格した。

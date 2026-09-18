@@ -40,8 +40,7 @@ class DSphModel(Model):
     **Returns and shape.** sigmar2 and sigmat2 return intrinsic radial and
     one-component tangential variances in (km/s)^2. ``sigmalos2`` returns LOS
     variance arrays with input shape, or a scalar for scalar input.
-    ``sigmalos`` returns the corresponding dispersion in km/s. The older
-    ``sigmalos2_dequad`` and ``sigmalos_dequad`` names remain supported.
+    ``sigmalos`` returns the corresponding dispersion in km/s.
     ``integrand_sigmalos2(u, R_pc)`` has shape ``(N_R, N_u)``.
 
     **Validity.** Finite positive projected radii; no central-limit LOS solver.

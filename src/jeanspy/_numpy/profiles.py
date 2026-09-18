@@ -455,8 +455,8 @@ class DMModel(Model):
 
     Notes
     -----
-    **Inputs and units.** Subclasses supply ``mass_density_3d`` and
-    ``enclosed_mass``. The base numerical J-factor methods
+    **Inputs and units.** Subclasses supply ``mass_density_3d``; Jeans solvers
+    also require ``enclosed_mass``. The base numerical J-factor methods
     require scalar ``dist_pc``, ``roi_deg`` (cone half-angle in degrees) and
     ``r_t_pc``. NFW overrides the spherical-aperture approximation and also supplies an
     Evans formula; these analytic methods support broadcastable geometry.

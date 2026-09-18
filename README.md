@@ -269,7 +269,7 @@ numeric mass, and request `method="analytic"` or
 `dm_mass_method="analytic"` explicitly only when the closed form is desired
 without those Zhao shape-parameter gradients.
 
-Zhao mass supports `a > 0`, `gamma < 3`, finite `b` (including `b <= 3`),
+Zhao mass supports `alpha > 0`, `gamma < 3`, finite `beta` (including `beta <= 3`),
 positive finite scale radius/density, and positive truncation radius. The
 requested radius must be nonnegative and finite after truncation. Its numerical
 integral removes the central cusp with a power substitution and integrates the

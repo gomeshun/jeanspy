@@ -14,7 +14,7 @@ from jeanspy.model_jax import (
 )
 
 
-class TestDMEnclosureMassConsistency(unittest.TestCase):
+class TestDMEnclosedMassConsistency(unittest.TestCase):
     def _numerical_enclosed_mass(self, model: DMModel, r: float) -> float:
         r_upper = min(float(r), float(model.params.r_t_pc))
 
@@ -65,20 +65,12 @@ class TestDMEnclosureMassConsistency(unittest.TestCase):
         classical = NFWModel(**params)
         numpyro = NFWModelNumPyro()
 
-        np.testing.assert_allclose(
-            classical.enclosed_mass(radii),
-            classical.enclosed_mass(radii),
-            rtol=0.0,
-            atol=0.0,
-        )
-        self.assertEqual(
-            classical.enclosed_mass(100.0),
-            classical.enclosed_mass(100.0),
-        )
+        self.assertFalse(hasattr(classical, "enclosure_mass"))
+        self.assertFalse(hasattr(numpyro, "enclosure_mass"))
         np.testing.assert_allclose(
             numpyro.enclosed_mass(jnp.asarray(radii), params=params),
-            numpyro.enclosed_mass(jnp.asarray(radii), params=params),
-            rtol=0.0,
+            classical.enclosed_mass(radii),
+            rtol=2e-4,
             atol=0.0,
         )
 
