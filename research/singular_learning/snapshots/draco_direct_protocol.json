@@ -1,0 +1,304 @@
+{
+  "protocol_id": "joint-jeffreys-direct-marginal-48h-20260922-v2",
+  "created_utc": "2026-09-22T14:46:55.879515+00:00",
+  "author_request": "2026-09-22: relax the total execution budget to at most two days and parallelize or optimize within available resources.",
+  "budget": {
+    "prior_charged_seconds": 83628.90728242742,
+    "new_wall_allowance_seconds": 172800,
+    "started_utc": "2026-09-22T14:46:55.879515+00:00",
+    "hard_deadline_utc": "2026-09-24T14:46:55.879515+00:00",
+    "accounting": "New 48-hour wall-time allowance from the first numerical preflight of this campaign. Historical charged time is preserved and excluded. Benchmarks, simultaneous jobs, shutdown and reporting are inside this common clock; summed worker and CPU seconds are reported separately.",
+    "previous_ledger": "/tmp/jeanspy-science/validation/release/campaign/budget_ledger.json",
+    "previous_ledger_sha256": "99c1e3eac65ebc230f5e28456a60b34a2e7bcfc01d421f7f92f44cf2893bc88e",
+    "previous_ledger_unchanged": true
+  },
+  "baseline": {
+    "protocol_id": "joint-jeffreys-marginal-mixture-emcee-v1",
+    "frozen_utc": "2026-09-19T05:34:50.825846+00:00",
+    "scientific_target": {
+      "schema_version": 1,
+      "protocol_id": "joint-jeffreys-independent-nuts-v1",
+      "scope": "Two single-realization DF recovery examples; no coverage or calibration claim. beta_ani=-0.5 is a common generation choice; validate DF before sampling. Untruncated analytic halo density; potential tends to zero at infinity. Negligible stellar self gravity.",
+      "spherical": {
+        "sampled_priors": {
+          "log10_rhos_Msunpc3": [
+            -4.0,
+            4.0
+          ],
+          "log10_rs_pc": [
+            0.0,
+            5.0
+          ],
+          "a": [
+            0.5,
+            3.0
+          ],
+          "b": [
+            3.0,
+            10.0
+          ],
+          "g": [
+            0.0,
+            1.2
+          ],
+          "neglog10_one_minus_beta_ani": [
+            -1.0,
+            1.0
+          ],
+          "vmem_kms": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "fixed_params": {
+          "re_pc": 180.3017740859568,
+          "r_t_pc": "infinity"
+        },
+        "solver": {
+          "backend": "kernel",
+          "n_u": 128,
+          "n_kernel": 128,
+          "u_max": 100000.0,
+          "kernel_outer_transform": "sqrtlog",
+          "constant_kernel_backend": "jax",
+          "dm_mass_method": "numeric",
+          "dm_mass_n_steps": 128
+        },
+        "refined_solver": {
+          "backend": "kernel",
+          "n_u": 256,
+          "n_kernel": 256,
+          "u_max": 100000.0,
+          "kernel_outer_transform": "sqrtlog",
+          "constant_kernel_backend": "jax",
+          "dm_mass_method": "numeric",
+          "dm_mass_n_steps": 256
+        },
+        "parameter_mapping": "Same coordinates and rectangular support as original. The nonconstant density is the joint Jeffreys volume in these named coordinates, including the systemic-velocity information block."
+      },
+      "jeffreys": {
+        "source_protocol": "validation/release/jeffreys_reweight_protocol_v1.json",
+        "target": "conditional_joint_expected_Gaussian_Fisher_7D",
+        "formula": "log pi_J(theta)=logvolume[(partial log S_i / partial psi_j)/sqrt(2)] + 0.5 log sum_i(1/S_i); psi=first six coordinates; S_i=clip(sigma_los2_i,1e-12,1e12)+e_i^2",
+        "implementation": "Column-scaled reduced QR; restore column-scale determinant exactly. No jitter, pseudodeterminant or numerical-rank threshold in the target. AD includes derivatives of the Fisher matrix. Known radii and errors held fixed.",
+        "rank_reporting_threshold": 1e-12
+      }
+    },
+    "sources": {
+      "spherical-nfw-df": {
+        "uniform": {
+          "report": "/tmp/jeanspy-science/validation/release/campaign/nuts-spherical-nfw-df-gpu64-v1/report.json",
+          "report_sha256": "01cbdb390742cbe40035fae0df053428e982164606ce75fc443c6544580d2a15",
+          "samples": "/tmp/jeanspy-science/validation/release/campaign/nuts-spherical-nfw-df-gpu64-v1/samples.npz",
+          "samples_sha256": "61a5fa4d3bbbc6f23b37d3be98495c711106b22ff8ec5c3d5bb3fe7ba95988fc"
+        },
+        "jeffreys": {
+          "report": "/tmp/jeanspy-science/validation/release/campaign/nuts-jeffreys-nfw-gpu64-v1/report.json",
+          "report_sha256": "cf7b80d7941dbb264e44f002823224b2879c467d33017fc93cc437a2bd803d68",
+          "samples": "/tmp/jeanspy-science/validation/release/campaign/nuts-jeffreys-nfw-gpu64-v1/checkpoint-02.npz",
+          "samples_sha256": "83085894b6f60f4489b7b894a5a092d097c396a8cafbf529258a765a02cce17c"
+        }
+      },
+      "spherical-corednfw-df": {
+        "uniform": {
+          "report": "/tmp/jeanspy-science/validation/release/campaign/nuts-spherical-corednfw-df-gpu64-v1/report.json",
+          "report_sha256": "8d22f458e5bf4dd7c14aa4d4acf3fe3abf87f09abc442bd796f9cc3c0a8c4bd8",
+          "samples": "/tmp/jeanspy-science/validation/release/campaign/nuts-spherical-corednfw-df-gpu64-v1/checkpoint-05.npz",
+          "samples_sha256": "6078d7f07ee24204599a9db654c4d48ff75971a8ac795a004f5d8c674999c21f"
+        },
+        "jeffreys": {
+          "report": "/tmp/jeanspy-science/validation/release/campaign/nuts-jeffreys-corednfw-gpu64-v1/report.json",
+          "report_sha256": "204719560de9311b94beae5d63038e42a7ccb6257a71a9a1866a015179ede6aa",
+          "samples": "/tmp/jeanspy-science/validation/release/campaign/nuts-jeffreys-corednfw-gpu64-v1/checkpoint-02.npz",
+          "samples_sha256": "ecffcbdb92ef3ae45b04edb72882ca41dfaac76cfc14b4b3420858cf31e5d5a7"
+        }
+      }
+    },
+    "source_revision": "24c5b1c982c48e7a1ca587b36e5b09c278a80748",
+    "mocks": "validation/release/campaign/nfw-corednfw-mocks-v1-attempt3",
+    "output": "validation/release/campaign/jeffreys-marginal-mixture-20260919-v1",
+    "max_seconds": 1700,
+    "per_case_seconds": 680,
+    "validation_seconds": 120,
+    "summary_seconds_reserved": 160,
+    "remaining_of_author_six_hours_before": 1856.78861098527,
+    "cases": [
+      "spherical-nfw-df",
+      "spherical-corednfw-df"
+    ],
+    "seeds": [
+      2026091901,
+      2026091902
+    ],
+    "num_ensembles": 4,
+    "walkers": 24,
+    "warmup_steps": 400,
+    "samples_per_chunk": 200,
+    "maximum_chunks": 20,
+    "minimum_chunks": 2,
+    "required_consecutive_passes": 2,
+    "initialization": "Each independent ensemble draws equally from the preserved uniform and Jeffreys initial-point pools, using separate random seeds, then adds 0.01 prior-width jitter with reflection at bounds. Discard 400 new burn-in steps. Previous failed posteriors serve only as dispersed starting distributions and the mixture scaling estimate.",
+    "mixture_scale": "Median log joint Jeffreys density at 32 fixed evenly spaced source points, 16 from each old prior. Fixed before any new chain.",
+    "marginalization": "Exactly integrate systemic velocity on [-1000,1000] with the Gaussian likelihood; retain the systemic-velocity expected-information block in the Jeffreys density. Physical target remains the seven-coordinate prior; sampled coordinates are its six-dimensional marginal.",
+    "mixture": "q(psi) proportional to L_marginal(psi)*[1+exp(log_pi_J(psi)-c)] times the common uniform-coordinate density. Posterior ratios use w_U=expit(c-log_pi_J), w_J=expit(log_pi_J-c); normalize each across saved draws. No original draws are included in estimates.",
+    "diagnostics": {
+      "max_rank_split_rhat": 1.01,
+      "min_bulk_ess_nuts": 400,
+      "min_tail_ess_nuts": 400,
+      "max_nuts_divergences": 0,
+      "max_tree_depth_fraction": 0.01,
+      "max_mean_mcse_over_posterior_sd": 0.05,
+      "min_emcee_mean_effective_samples": 400,
+      "emcee_min_production_steps_per_tau": 50,
+      "max_fixed_point_log_density_difference_float64": 1e-06,
+      "max_fixed_point_log_density_difference_float32": 0.005,
+      "max_posterior_prediction_quadrature_relative_error": 0.005,
+      "emcee_min_batch_length_per_mean_tau": 2.0
+    },
+    "weighted_diagnostics": "20 batch means per independent ensemble for ratio-estimator influence. Require weight Kish fraction >=0.05 and mean MCSE/SD <=0.05 for all six coordinates and log density at 100 pc under both target priors, as well as all existing emcee gates. Two consecutive checkpoints required. Require each batch length >=2 times the estimated ratio-influence autocorrelation time.",
+    "numerical_gates": {
+      "marginal_integral_log_error": 1e-06,
+      "qr_svd_log_error": 0.01,
+      "min_scaled_singular_ratio": 1e-12,
+      "refined_log_prior_error": 0.05,
+      "refined_variance_relative": 0.005,
+      "reference_points_per_case": 16,
+      "refined_marginal_log_likelihood_error": 0.05
+    },
+    "reporting": "Both DF realizations; paired weighted distributions of gamma, density and finite-radius slope. No core/cusp threshold, calibration/coverage rate or effectiveness claim from failed diagnostics. Preserve numerical rank issues and every attempted configuration.",
+    "no_retry": "No time, seed, target or diagnostic changes after new posterior outcomes.",
+    "validation_seconds_note": "Nominal planning allowance, included in each case and the overall hard cap; no separate extension."
+  },
+  "baseline_protocol_sha256": "90944a312f42289cd6e2695b1cd3c8544a5159ace4cae2d1e92da223cbadb6b7",
+  "mock_manifest_sha256": "a30156688c4fa14c5a65bce0e2885d274a4edd7260180d0ad54ed624c4f2d2c1",
+  "output": "/tmp/jeanspy-jeffreys-20260918/validation/release/campaign/jeffreys-48h-20260922-v1",
+  "cases": [
+    "spherical-nfw-df",
+    "spherical-corednfw-df"
+  ],
+  "priors": [
+    "uniform",
+    "jeffreys"
+  ],
+  "num_ensembles": 4,
+  "walkers": 32,
+  "burnin_steps": 4000,
+  "samples_per_chunk": 1000,
+  "maximum_production_steps": 100000,
+  "checkpoint_steps": 100,
+  "minimum_chunks": 5,
+  "required_consecutive_passes": 2,
+  "moves": {
+    "DEMove": 0.8,
+    "DESnookerMove": 0.2
+  },
+  "initialization": "Independent deterministic seeds. Equal mixture of the two preserved source point pools, with 1 percent prior-width jitter and reflection. New burn-in; old samples excluded from all posterior estimates.",
+  "seeds": {
+    "spherical-nfw-df": 2026092200,
+    "spherical-corednfw-df": 2026092300
+  },
+  "diagnostics": {
+    "max_rank_split_rhat": 1.01,
+    "min_bulk_ess_nuts": 400,
+    "min_tail_ess_nuts": 400,
+    "max_nuts_divergences": 0,
+    "max_tree_depth_fraction": 0.01,
+    "max_mean_mcse_over_posterior_sd": 0.05,
+    "min_emcee_mean_effective_samples": 400,
+    "emcee_min_production_steps_per_tau": 50,
+    "max_fixed_point_log_density_difference_float64": 1e-06,
+    "max_fixed_point_log_density_difference_float32": 0.005,
+    "max_posterior_prediction_quadrature_relative_error": 0.005,
+    "emcee_min_batch_length_per_mean_tau": 2.0
+  },
+  "numerical_gates": {
+    "marginal_integral_log_error": 1e-06,
+    "qr_svd_log_error": 0.01,
+    "min_scaled_singular_ratio": 1e-12,
+    "refined_log_prior_error": 0.05,
+    "refined_variance_relative": 0.005,
+    "reference_points_per_case": 16,
+    "refined_marginal_log_likelihood_error": 0.05
+  },
+  "primary_quantities": [
+    "six sampled coordinates",
+    "log density at 10,100,300,1000 pc",
+    "slope at 10,100,300,1000 pc"
+  ],
+  "interpretation": "Two fixed DF realizations only. Convergence and numerical gates precede posterior comparison. No coverage/classification rate or general improvement claim. No new core/cusp decision threshold.",
+  "resources": {
+    "maximum_host_rss_gib": 64,
+    "maximum_gpu_gib": 18,
+    "minimum_disk_free_gib": 8,
+    "gpu_workers": 2,
+    "cpu_workers_maximum": 8
+  },
+  "execution_selection": "Choose CPU/GPU and map batch size from frozen-point timings before new sampling. No numerical precision, prior, likelihood, support, or quadrature changes.",
+  "stop_rule": "Two consecutive complete four-ensemble diagnostic passes after at least 5000 production steps, 100000 steps, resource ceiling, or common wall deadline; preserve all checkpoints and failures. Reserve final 1800 seconds for assessment.",
+  "supersedes_budget_only": {
+    "protocol": "/tmp/jeanspy-jeffreys-20260918/validation/release/jeffreys_48h_protocol_v1.json",
+    "sha256": "2df3f34e41509597e2e4891490f80f17fa7fb9cd9a04a5ea3cbe1ce688d2ef52",
+    "reason": "Explicit user correction: 48 new hours, excluding all previous computation."
+  },
+  "user_correction": "\u6642\u9593\u4e0a\u9650\u306f\u4eca\u307e\u3067\u306e\u8a08\u7b97\u6642\u9593\u3092\u542b\u3081\u305a\u65b0\u898f\u306b48\u6642\u9593",
+  "correction_recorded_utc": "2026-09-22T14:52:17.241943+00:00",
+  "execution": {
+    "jeffreys": {
+      "backend": "gpu",
+      "workers_per_case": 1,
+      "ensembles_per_worker": 4,
+      "batch_size": 8,
+      "affinities": [
+        "40-47",
+        "48-55"
+      ]
+    },
+    "uniform": {
+      "backend": "cpu",
+      "workers_per_case": 4,
+      "ensembles_per_worker": 1,
+      "batch_size": 4,
+      "affinities": [
+        "0-3",
+        "4-7",
+        "8-11",
+        "12-15",
+        "16-19",
+        "20-23",
+        "24-27",
+        "28-31"
+      ]
+    }
+  },
+  "preflight_evidence": {
+    "/tmp/jeanspy-jeffreys-20260918/validation/release/campaign/jeffreys-48h-20260922-v1/benchmark-cpu.json": "1fc0d60ff23290dbb0e8c6ef4396bedea88118aa817091701034c684ef9f19ed",
+    "/tmp/jeanspy-jeffreys-20260918/validation/release/campaign/jeffreys-48h-20260922-v1/benchmark-gpu.json": "9cd37ccdbaf4690a0dcaf46e9c0249f9cf89d5b796bc86990ee6790302b83a8f"
+  },
+  "cpu_gpu_equality": [
+    {
+      "case": "spherical-nfw-df",
+      "prior": "uniform",
+      "max_log_density_error": 1.1368683772161603e-13,
+      "passed": true
+    },
+    {
+      "case": "spherical-nfw-df",
+      "prior": "jeffreys",
+      "max_log_density_error": 1.000444171950221e-11,
+      "passed": true
+    },
+    {
+      "case": "spherical-corednfw-df",
+      "prior": "uniform",
+      "max_log_density_error": 2.2737367544323206e-13,
+      "passed": true
+    },
+    {
+      "case": "spherical-corednfw-df",
+      "prior": "jeffreys",
+      "max_log_density_error": 2.613284095787094e-07,
+      "passed": true
+    }
+  ],
+  "source_reference_for_moves": "https://emcee.readthedocs.io/en/stable/tutorials/moves/"
+}

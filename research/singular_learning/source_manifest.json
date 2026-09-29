@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-29T08:24:01.113490+00:00",
+  "scope": "Research plan and literature review only. No new inference, RLCT evaluation, or sample-size claim.",
+  "worktree": "/tmp/jeanspy-singular-learning-20260929",
+  "branch": "codex/singular-learning-theory",
+  "base_commit": "d28e0afd8fcb8223f9409ccf23ba6dc6d0f67b0c",
+  "origin": "git@github.com:gomeshun/jeanspy.git",
+  "remote_main_verified": "d28e0afd8fcb8223f9409ccf23ba6dc6d0f67b0c",
+  "github_snapshot": {
+    "open_prs": [],
+    "open_issues": [
+      {
+        "number": 52,
+        "title": "Add axisymmetric Jeans modeling following Hayashi & Chiba"
+      }
+    ],
+    "ci": "gh run list --branch main returned two older successful dependency graph runs, neither on the current base. No current-base CI conclusion inferred."
+  },
+  "paper_source_head": "eb748b0c3e7f347d5e39aa8d8922b512b026114c",
+  "paper_source_branch": "codex/segue1-results-20260929",
+  "protected_checkouts": [
+    {
+      "path": "/tmp/jeanspy-science/jeanspy_paper",
+      "head": "eb748b0c3e7f347d5e39aa8d8922b512b026114c",
+      "branch": "codex/segue1-results-20260929",
+      "status_text": "",
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/jeanspy-jeffreys-20260918",
+      "head": "56963865d196dcda7c99b9554fc68720b6bbf324",
+      "branch": "codex/jeffreys-core-cusp-rerun",
+      "status_text": "?? scripts/assess_jeffreys_48h.py\n?? scripts/check_jeffreys_48h.py\n?? scripts/jeffreys_48h_common.py\n?? scripts/run_jeffreys_48h_campaign.py\n?? scripts/run_jeffreys_48h_worker.py\n?? validation/release/campaign/jeffreys-48h-20260922-v1/\n?? validation/release/campaign/jeffreys-followup-20260918-v1-launch.json\n?? validation/release/campaign/jeffreys-followup-20260918-v1/\n?? validation/release/campaign/jeffreys-marginal-mixture-20260919-render-final-supervisor.json\n?? validation/release/campaign/jeffreys-marginal-mixture-20260919-render-supervisor.json\n?? validation/release/campaign/jeffreys-marginal-mixture-20260919-v1-supervisor.json\n?? validation/release/campaign/jeffreys-marginal-mixture-20260919-v1/\n?? validation/release/jeffreys_48h_protocol_v1.json\n?? validation/release/jeffreys_48h_protocol_v2.json",
+      "status_sha256": "98dd7b2873e23051f0d7bba00ce7847b365735144031f8a572866c33a0521af4"
+    },
+    {
+      "path": "/tmp/jeanspy-segue1-20260929",
+      "head": "56963865d196dcda7c99b9554fc68720b6bbf324",
+      "branch": "codex/segue1-core-cusp",
+      "status_text": "?? scripts/assess_jeffreys_48h.py\n?? scripts/benchmark_segue1.py\n?? scripts/benchmark_segue1_cpu.py\n?? scripts/check_jeffreys_48h.py\n?? scripts/jeffreys_48h_common.py\n?? scripts/launch_segue1.py\n?? scripts/preflight_segue1.py\n?? scripts/prepare_segue1.py\n?? scripts/prepare_segue1_run.py\n?? scripts/run_jeffreys_48h_campaign.py\n?? scripts/run_jeffreys_48h_worker.py\n?? scripts/segue1_fused_candidate.py\n?? scripts/segue1_reference.py\n?? scripts/smoke_segue1.py\n?? validation/release/SEGUE1_RUN_NOTES.md\n?? validation/release/campaign/segue1-direct-20260929-v1/\n?? validation/release/campaign/segue1-mocks-20260929-v1/\n?? validation/release/segue1_literature_addendum.md\n?? validation/release/segue1_mock_protocol_v1.json\n?? validation/release/segue1_run_protocol_draft.json\n?? validation/release/segue1_run_protocol_v1.json",
+      "status_sha256": "06c5b7918b48125535bd1f236ea793b54143ce26c11f804c13946452bf3e78f8"
+    },
+    {
+      "path": "/home/gomesu/.codex/worktrees/6721/jeanspy",
+      "head": "d4bace441fd4d1d5b39c11de68ff89e410542ffa",
+      "branch": "",
+      "status_text": "",
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_files": [
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/sections/methods.tex",
+      "snapshot": "snapshots/methods.tex",
+      "sha256": "23a171264029ab997d7d1a3e75ccdf56b81be857f88c68c41043e0f0269a9d65",
+      "bytes": 33523
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/sections/abstract.tex",
+      "snapshot": "snapshots/abstract.tex",
+      "sha256": "1f9ab56a0f91392881abe6c4844233c8ab17dc13db85765a042fccc5b378de9e",
+      "bytes": 1559
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/direct_20260924/protocol.json",
+      "snapshot": "snapshots/draco_direct_protocol.json",
+      "sha256": "e8c87642c327165e7c846f0cbe282f8fbdda22b013b1e7e832bc78c972a15402",
+      "bytes": 14246
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/direct_20260924/summary.json",
+      "snapshot": "snapshots/draco_direct_summary.json",
+      "sha256": "50eb2903613c93061247c7aa645a8f4df2d1636a16906c17ee03df34beb833f9",
+      "bytes": 88962
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/direct_20260924/mock_manifest.json",
+      "snapshot": "snapshots/draco_mock_manifest.json",
+      "sha256": "a30156688c4fa14c5a65bce0e2885d274a4edd7260180d0ad54ed624c4f2d2c1",
+      "bytes": 28063
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/segue1_20260929/segue1_mock_protocol_v1.json",
+      "snapshot": "snapshots/segue_mock_protocol.json",
+      "sha256": "34579d58de91a2848b6117d6d25842a68560e443ae88633ee7c4c2b3170920a6",
+      "bytes": 3782
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/segue1_20260929/campaign/protocol.json",
+      "snapshot": "snapshots/segue_direct_protocol.json",
+      "sha256": "c3b4438870ac22a3a1dc976749750e4aff5616ab791365af60bdd8be988dbd72",
+      "bytes": 8968
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/segue1_20260929/campaign/assessment/summary.json",
+      "snapshot": "snapshots/segue_original_summary.json",
+      "sha256": "a0e690fe5766a6b78b6cf4220bdc881b24f90db912ed141cf9c766cf794f454a",
+      "bytes": 90104
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/segue1_20260929/precision/REPORT.md",
+      "snapshot": "snapshots/segue_precision_report.md",
+      "sha256": "3f4270668fd1981e58b1954038e702f4bbbba9f3c836c0dc25068587452d0dae",
+      "bytes": 4654
+    },
+    {
+      "source": "/tmp/jeanspy-science/jeanspy_paper/analysis/segue1_20260929/precision/resolution.json",
+      "snapshot": "snapshots/segue_precision_resolution.json",
+      "sha256": "1d5dd4d941459d7bb7bd8f796eae10ac22ea4759c53ddbb46ebb0f01ff513406",
+      "bytes": 7501
+    }
+  ],
+  "base_code_files": [
+    {
+      "path": "src/jeanspy/model_jax.py",
+      "sha256": "355ba42ad16b2cadd00906679dd06ee12fd85fe4f1fc48630c779e68e4fabd64",
+      "bytes": 75518
+    },
+    {
+      "path": "src/jeanspy/_zhao.py",
+      "sha256": "699a0810d8cfdf1b5d2a9aad030a012b982640ca047ee07e7b72fc53201c590d",
+      "bytes": 3357
+    },
+    {
+      "path": "validation/zhao_derivative_stability/README.md",
+      "sha256": "5ec6e6518e8eb2c94313ed759e0648cb59d31e15e0a2e2c409614bb7973ec7c6",
+      "bytes": 7575
+    }
+  ],
+  "preservation": "Small source files copied byte for byte. Existing status labels and precision addendum are preserved separately. No raw chain, environment, submodule initialization, or production code copied or changed.",
+  "literature": "references.md records URLs and which portions were consulted."
+}

@@ -1,0 +1,199 @@
+{
+  "priors": [
+    "uniform",
+    "jeffreys"
+  ],
+  "num_ensembles": 4,
+  "walkers": 32,
+  "burnin_steps": 4000,
+  "samples_per_chunk": 1000,
+  "maximum_production_steps": 100000,
+  "checkpoint_steps": 100,
+  "minimum_chunks": 5,
+  "required_consecutive_passes": 2,
+  "moves": {
+    "DEMove": 0.8,
+    "DESnookerMove": 0.2
+  },
+  "diagnostics": {
+    "max_rank_split_rhat": 1.01,
+    "min_bulk_ess_nuts": 400,
+    "min_tail_ess_nuts": 400,
+    "max_nuts_divergences": 0,
+    "max_tree_depth_fraction": 0.01,
+    "max_mean_mcse_over_posterior_sd": 0.05,
+    "min_emcee_mean_effective_samples": 400,
+    "emcee_min_production_steps_per_tau": 50,
+    "max_fixed_point_log_density_difference_float64": 1e-06,
+    "max_fixed_point_log_density_difference_float32": 0.005,
+    "max_posterior_prediction_quadrature_relative_error": 0.005,
+    "emcee_min_batch_length_per_mean_tau": 2.0
+  },
+  "numerical_gates": {
+    "marginal_integral_log_error": 1e-06,
+    "qr_svd_log_error": 0.01,
+    "min_scaled_singular_ratio": 1e-12,
+    "refined_log_prior_error": 0.05,
+    "refined_variance_relative": 0.005,
+    "reference_points_per_case": 16,
+    "refined_marginal_log_likelihood_error": 0.05
+  },
+  "resources": {
+    "maximum_host_rss_gib": 64,
+    "maximum_gpu_gib": 18,
+    "minimum_disk_free_gib": 8,
+    "gpu_workers": 2,
+    "cpu_workers_maximum": 8
+  },
+  "stop_rule": "Two consecutive complete four-ensemble diagnostic passes after at least 5000 production steps, 100000 steps, resource ceiling, or common wall deadline; preserve all checkpoints and failures. Reserve final 1800 seconds for assessment.",
+  "protocol_id": "segue1-direct-20260929-v1",
+  "created_utc": "2026-09-29T02:05:21.011875+00:00",
+  "author_request": "Create Segue 1-like cusp/core mocks with 64 stars each, evaluate acceleration, run MCMC, report ETA. Author accepted rs=150 pc after literature verification.",
+  "cases": [
+    "spherical-segue1-nfw-df",
+    "spherical-segue1-core-df"
+  ],
+  "source_protocol": {
+    "path": "/tmp/jeanspy-jeffreys-20260918/validation/release/jeffreys_48h_protocol_v2.json",
+    "sha256": "e8c87642c327165e7c846f0cbe282f8fbdda22b013b1e7e832bc78c972a15402",
+    "scope": "Inherited numerical target, priors, samplers and diagnostic rules only; independent new mocks and campaign."
+  },
+  "output": "/tmp/jeanspy-segue1-20260929/validation/release/campaign/segue1-direct-20260929-v1",
+  "baseline": {
+    "scientific_target": {
+      "schema_version": 1,
+      "protocol_id": "segue1-joint-jeffreys-target-v1",
+      "scope": "Two single-realization DF recovery examples; no coverage or calibration claim. beta_ani=-0.5 is a common generation choice; validate DF before sampling. Untruncated analytic halo density; potential tends to zero at infinity. Negligible stellar self gravity.",
+      "spherical": {
+        "sampled_priors": {
+          "log10_rhos_Msunpc3": [
+            -4.0,
+            4.0
+          ],
+          "log10_rs_pc": [
+            0.0,
+            5.0
+          ],
+          "a": [
+            0.5,
+            3.0
+          ],
+          "b": [
+            3.0,
+            10.0
+          ],
+          "g": [
+            0.0,
+            1.2
+          ],
+          "neglog10_one_minus_beta_ani": [
+            -1.0,
+            1.0
+          ],
+          "vmem_kms": [
+            -1000.0,
+            1000.0
+          ]
+        },
+        "fixed_params": {
+          "re_pc": 29.0,
+          "r_t_pc": "infinity"
+        },
+        "solver": {
+          "backend": "kernel",
+          "n_u": 128,
+          "n_kernel": 128,
+          "u_max": 100000.0,
+          "kernel_outer_transform": "sqrtlog",
+          "constant_kernel_backend": "jax",
+          "dm_mass_method": "numeric",
+          "dm_mass_n_steps": 128
+        },
+        "refined_solver": {
+          "backend": "kernel",
+          "n_u": 256,
+          "n_kernel": 256,
+          "u_max": 100000.0,
+          "kernel_outer_transform": "sqrtlog",
+          "constant_kernel_backend": "jax",
+          "dm_mass_method": "numeric",
+          "dm_mass_n_steps": 256
+        },
+        "parameter_mapping": "Same coordinates and rectangular support as original. The nonconstant density is the joint Jeffreys volume in these named coordinates, including the systemic-velocity information block."
+      },
+      "jeffreys": {
+        "source_protocol": "validation/release/jeffreys_reweight_protocol_v1.json",
+        "target": "conditional_joint_expected_Gaussian_Fisher_7D",
+        "formula": "log pi_J(theta)=logvolume[(partial log S_i / partial psi_j)/sqrt(2)] + 0.5 log sum_i(1/S_i); psi=first six coordinates; S_i=clip(sigma_los2_i,1e-12,1e12)+e_i^2",
+        "implementation": "Column-scaled reduced QR with exact scale restoration, float64 automatic derivatives and JIT. No jitter, pseudodeterminant or rank cutoff in the target. Known radii and errors held fixed.",
+        "rank_reporting_threshold": 1e-12
+      }
+    },
+    "mocks": "validation/release/campaign/segue1-mocks-20260929-v1"
+  },
+  "mock_manifest_sha256": "043fa322b25a619499e4ff4da61b24ad9878a155ad3ae41bdd5c0815552722d6",
+  "budget": {
+    "started_utc": "2026-09-29T02:05:21.011875+00:00",
+    "hard_deadline_utc": "2026-09-30T02:05:21.011875+00:00",
+    "wall_allowance_seconds": 86400,
+    "reason": "Operational cap for this initial run, selected before sampling; not a user-specified budget. Stop earlier after two consecutive diagnostic passes, reserve 1800 seconds for final assessment. No old campaign is resumed."
+  },
+  "seeds": {
+    "spherical-segue1-nfw-df": 2026092911,
+    "spherical-segue1-core-df": 2026092921
+  },
+  "initialization": {
+    "method": "Each ensemble independently draws 512 candidates uniformly from the prior rectangle. Select 32 without replacement with log density tempered by 10; discard 4000 warmup. No truth or old posterior initialization.",
+    "candidate_count": 512,
+    "temperature": 10.0
+  },
+  "primary_quantities": [
+    "six sampled coordinates",
+    "log density at 1,10,30,87 pc",
+    "slope at 1,10,30,87 pc"
+  ],
+  "storage": "Every production transition retained in float64 HDF5 with lossless gzip level 1; warmup excluded. State and RNG checkpointed every 100 steps.",
+  "interpretation": "Two fixed 64-star Segue 1-like equilibrium DF catalogues. Prior sensitivity only; no repeated-mock calibration, binary/foreground model, or observed Segue 1 inference. gamma=0 interval boundary exclusion is not core rejection. Known fixed-point precision failures remain unresolved; results are exploratory even if selected-posterior diagnostics pass.",
+  "execution": {
+    "jeffreys": {
+      "backend": "gpu",
+      "workers_per_case": 1,
+      "ensembles_per_worker": 4,
+      "batch_size": 8,
+      "affinities": [
+        "56-59",
+        "60-63"
+      ]
+    },
+    "uniform": {
+      "backend": "cpu",
+      "workers_per_case": 4,
+      "ensembles_per_worker": 1,
+      "batch_size": 4,
+      "affinities": [
+        "64-67",
+        "68-71",
+        "72-75",
+        "76-79",
+        "80-83",
+        "84-87",
+        "88-91",
+        "92-95"
+      ]
+    }
+  },
+  "execution_selection": "Retain original float64 JIT kernels and 128-node quadrature. Auxiliary-output fusion did not improve both cases consistently; reducing all grids to 64 failed Jeffreys-density agreement. Preserve rejected benchmarks. Use GPU for Jeffreys and eight parallel CPU ensembles for uniform.",
+  "preflight_evidence": {
+    "/tmp/jeanspy-segue1-20260929/validation/release/campaign/segue1-direct-20260929-v1/preflight-accepted.json": "12de9bfc6f476b9704ccd0de7573e240844a9a8319427aca89aadd2cd8dcb564"
+  },
+  "preflight_scope": "CPU/GPU and batch agreement on fixed points, quadrature refinement and exact mu integration at generating points, then four end-to-end short chain/backend checks. Implementation checks, not convergence or all-support numerical certification. Repeat stronger selected-posterior checks after sampling.",
+  "literature_addendum": "/tmp/jeanspy-segue1-20260929/validation/release/segue1_literature_addendum.md",
+  "literature_addendum_sha256": "63d7f5fa4d5a6bf4aa484f0598c841589e5d4388567c47b2a354c27c676ddeef",
+  "preflight_disposition": {
+    "all_numerical_checks_passed": false,
+    "launch_as_exploratory": true,
+    "unresolved_points": "/tmp/jeanspy-segue1-20260929/validation/release/campaign/segue1-direct-20260929-v1/preflight-ill-conditioned-points.json",
+    "unresolved_points_sha256": "5699d8f06aebea7ad031a62b72c1e2ae04126173d9083721c1a48a6589f98ca0",
+    "reason": "Retain two failed CPU/GPU precision checks in highly degenerate prior-space points (max log-density difference 0.00195; log densities 95 and 148 below the best fixed point). This is not an integrated tail-mass bound. Do not alter support, impose a rank cutoff, relax numerical tolerances or claim numerical validation. A bounded exploratory run is useful; preserve failures and require posterior checks and explicit scientific review before using results."
+  }
+}

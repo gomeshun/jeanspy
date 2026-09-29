@@ -1,0 +1,225 @@
+{
+  "created_utc": "2026-09-29T07:09:34.960277+00:00",
+  "resolved_for_plots": true,
+  "unchanged_log_density_tolerance": 1e-06,
+  "unchanged_refinement_tolerance": 0.05,
+  "source_protocol_sha256": "c3b4438870ac22a3a1dc976749750e4aff5616ab791365af60bdd8be988dbd72",
+  "old_warning_preserved": "/tmp/jeanspy-segue1-20260929/validation/release/campaign/segue1-direct-20260929-v1/preflight-ill-conditioned-points.json",
+  "method": "Column-scaled singular ratio below 1e-7 selects binary128 arithmetic. No support cut, eigenvalue floor, jitter, or rank truncation. Same 128-node target, original 7D prior and finite systemic-velocity marginal.",
+  "fixed_points": {
+    "spherical-segue1-nfw-df": {
+      "count": 33,
+      "cpu_gpu_max_abs_difference": 4.914113560516853e-11,
+      "independent_reference_max_abs_difference": 4.794742380909156e-11,
+      "high_precision_indices": [
+        15,
+        17,
+        22,
+        26,
+        30,
+        31
+      ]
+    },
+    "spherical-segue1-core-df": {
+      "count": 33,
+      "cpu_gpu_max_abs_difference": 1.637623370243091e-10,
+      "independent_reference_max_abs_difference": 8.245137905760203e-11,
+      "high_precision_indices": [
+        20,
+        21,
+        23,
+        24,
+        25,
+        28
+      ]
+    }
+  },
+  "posterior_audit": {
+    "spherical-segue1-nfw-df__uniform": {
+      "gpu_recomputed_points": 8496,
+      "max_abs_gpu_vs_stored_log_density": 1.1368683772161603e-13,
+      "cpu_gpu_compared_points": 572,
+      "max_abs_cpu_gpu_log_density": 8.526512829121202e-14,
+      "minimum_scaled_singular_ratio": 1.0,
+      "high_precision_fallback_count": 0,
+      "empirical_weight_total_variation": 9.677913852257358e-15,
+      "empirical_weight_ess_fraction": 1.0000000000000002
+    },
+    "spherical-segue1-nfw-df__jeffreys": {
+      "gpu_recomputed_points": 8492,
+      "max_abs_gpu_vs_stored_log_density": 5.684341886080802e-14,
+      "cpu_gpu_compared_points": 562,
+      "max_abs_cpu_gpu_log_density": 4.263256414560601e-12,
+      "minimum_scaled_singular_ratio": 2.9702240330681275e-06,
+      "high_precision_fallback_count": 0,
+      "empirical_weight_total_variation": 1.16382164322415e-13,
+      "empirical_weight_ess_fraction": 1.0,
+      "independent_extended_reference_points": 32,
+      "independent_reference_max_abs_difference": 5.350386800273554e-12
+    },
+    "spherical-segue1-core-df__uniform": {
+      "gpu_recomputed_points": 8490,
+      "max_abs_gpu_vs_stored_log_density": 1.1368683772161603e-13,
+      "cpu_gpu_compared_points": 572,
+      "max_abs_cpu_gpu_log_density": 8.526512829121202e-14,
+      "minimum_scaled_singular_ratio": 1.0,
+      "high_precision_fallback_count": 0,
+      "empirical_weight_total_variation": 9.901151079572124e-15,
+      "empirical_weight_ess_fraction": 0.9999999999999998
+    },
+    "spherical-segue1-core-df__jeffreys": {
+      "gpu_recomputed_points": 8489,
+      "max_abs_gpu_vs_stored_log_density": 8.526512829121202e-14,
+      "cpu_gpu_compared_points": 570,
+      "max_abs_cpu_gpu_log_density": 3.865352482534945e-11,
+      "minimum_scaled_singular_ratio": 1.476919426230119e-06,
+      "high_precision_fallback_count": 0,
+      "empirical_weight_total_variation": 3.1070729756416116e-13,
+      "empirical_weight_ess_fraction": 0.9999999999999998,
+      "independent_extended_reference_points": 32,
+      "independent_reference_max_abs_difference": 3.001332515850663e-11
+    }
+  },
+  "scope": "Numerical warning resolution for these fixed catalogues and audited points, not all-support certification or repeated-mock calibration. Original campaign metadata and chains remain immutable. No new MCMC was run.",
+  "degenerate_reference_checks": {
+    "22": [
+      {
+        "n": 128,
+        "u_max": 100000.0,
+        "extended": true,
+        "values": [
+          -396.9884662550482,
+          -67.59631620214432,
+          -0.5702047838748378,
+          6.731469220482923,
+          1.3794169487907348e-07,
+          -329.3921500529039
+        ],
+        "delta_log_prior": 4.1386581983715587e-07,
+        "max_relative_variance": 0.0,
+        "seconds": 0.8406659727916121
+      },
+      {
+        "n": 256,
+        "u_max": 100000.0,
+        "extended": false,
+        "values": [
+          -396.9856693080442,
+          -67.59351925514055,
+          -0.5702047838748362,
+          6.731469220482893,
+          9.046260331512388e-23,
+          -329.3921500529037
+        ],
+        "delta_log_prior": 0.002797360869593035,
+        "max_relative_variance": 1.5432100042289676e-14,
+        "seconds": 42.09961780300364
+      },
+      {
+        "n": 256,
+        "u_max": 1000000.0,
+        "extended": true,
+        "values": [
+          -397.02022377349005,
+          -67.6280737205864,
+          -0.5702047838748384,
+          6.731469220482897,
+          5.2590142608777146e-08,
+          -329.3921500529037
+        ],
+        "delta_log_prior": -0.03175710457625769,
+        "max_relative_variance": 1.0103029524088925e-14,
+        "seconds": 3.379506853874773
+      },
+      {
+        "n": 512,
+        "u_max": 100000.0,
+        "extended": true,
+        "values": [
+          -396.98538881613894,
+          -67.59323876323515,
+          -0.570204783874837,
+          6.731469220482909,
+          1.18854174571692e-07,
+          -329.3921500529038
+        ],
+        "delta_log_prior": 0.0030778527749930618,
+        "max_relative_variance": 7.438494264988549e-15,
+        "seconds": 13.48164748493582
+      }
+    ],
+    "31": [
+      {
+        "n": 128,
+        "u_max": 100000.0,
+        "extended": true,
+        "values": [
+          -344.0118213069142,
+          -101.66217209254754,
+          -0.46670680579646817,
+          0.6254064504683572,
+          9.092956526624008e-09,
+          -242.34964921436668
+        ],
+        "delta_log_prior": 4.399531405852031e-08,
+        "max_relative_variance": 0.0,
+        "seconds": 0.8925587898120284
+      },
+      {
+        "n": 256,
+        "u_max": 100000.0,
+        "extended": false,
+        "values": [
+          -344.0118236604302,
+          -101.66217444606353,
+          -0.46670680579646817,
+          0.6254064504683572,
+          1.4450185677013084e-23,
+          -242.34964921436668
+        ],
+        "delta_log_prior": -2.3095206813650293e-06,
+        "max_relative_variance": 3.774758283725532e-15,
+        "seconds": 45.635420110076666
+      },
+      {
+        "n": 256,
+        "u_max": 1000000.0,
+        "extended": true,
+        "values": [
+          -344.01182365472283,
+          -101.66217444035611,
+          -0.46670680579646817,
+          0.6254064504683572,
+          1.2788874147184881e-08,
+          -242.34964921436668
+        ],
+        "delta_log_prior": -2.303813261050891e-06,
+        "max_relative_variance": 3.774758283725532e-15,
+        "seconds": 3.580066635273397
+      },
+      {
+        "n": 512,
+        "u_max": 100000.0,
+        "extended": true,
+        "values": [
+          -344.0118223186459,
+          -101.66217310427918,
+          -0.46670680579646817,
+          0.6254064504683572,
+          7.651401554009674e-09,
+          -242.34964921436668
+        ],
+        "delta_log_prior": -9.67736326629165e-07,
+        "max_relative_variance": 1.4432899320127035e-15,
+        "seconds": 14.258206591010094
+      }
+    ]
+  },
+  "totals": {
+    "fixed_points": 66,
+    "gpu_posterior_points": 33967,
+    "cpu_gpu_posterior_points": 2276,
+    "max_fixed_point_cpu_gpu_error": 1.637623370243091e-10,
+    "max_posterior_cpu_gpu_error": 3.865352482534945e-11
+  }
+}

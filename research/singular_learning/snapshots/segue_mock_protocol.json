@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "protocol_id": "segue1-core-cusp-df-20260929-v1",
+  "status": "frozen_before_generation",
+  "frozen_utc": "2026-09-29T01:47:33.940800+00:00",
+  "author_scope": "New Segue 1-like core/cusp mock comparison; 64 stars per catalogue explicitly selected by author. Halo rs is a controlled choice, not an observed Segue 1 halo fit.",
+  "agama_commit": "4e62db66e2934284013caf8b7dc97ce6156c1eae",
+  "units": {
+    "agama_setUnits": {
+      "mass": 1,
+      "length": 0.001,
+      "velocity": 1
+    }
+  },
+  "cases": [
+    {
+      "id": "spherical-segue1-nfw-df",
+      "g": 1.0,
+      "rhos_Msunpc3": 0.5818067986005723,
+      "seed": 2026092901,
+      "a": 1.0,
+      "b": 3.0,
+      "rs_pc": 150.0,
+      "re_pc": 29.0,
+      "beta_ani": -0.5,
+      "vmem_kms": 0.0,
+      "r_t_pc": "infinity"
+    },
+    {
+      "id": "spherical-segue1-core-df",
+      "g": 0.0,
+      "rhos_Msunpc3": 4.252132485426985,
+      "seed": 2026092902,
+      "a": 1.0,
+      "b": 3.0,
+      "rs_pc": 150.0,
+      "re_pc": 29.0,
+      "beta_ani": -0.5,
+      "vmem_kms": 0.0,
+      "r_t_pc": "infinity"
+    }
+  ],
+  "normalization": {
+    "rhalf_3d_pc": 37.838214768619096,
+    "mass_at_rhalf_Msun": 580000.0,
+    "method": "rho_s solved analytically for equal M at the common 3D Plummer half-light radius; same rs=150 pc."
+  },
+  "observations": {
+    "n_stars": 64,
+    "phase_space_pool_size": 32768,
+    "e_vlos_kms": 5.0,
+    "projected_radius_pc": [
+      0.0,
+      87.0
+    ],
+    "selection": "position only; random eligible pool subset; no velocity clipping"
+  },
+  "reference_checks": {
+    "radii_pc": [
+      0.1,
+      1.0,
+      3.0,
+      10.0,
+      29.0,
+      37.838214768619096,
+      67.0,
+      87.0,
+      150.0,
+      300.0
+    ],
+    "max_density_relative_error": 0.005,
+    "max_moment_relative_error": 0.01,
+    "max_force_relative_error": 0.001,
+    "raw_df_minimum": 0.0,
+    "analytic_df_grid": [
+      0.0001,
+      100000000.0,
+      1024
+    ],
+    "multipole": {
+      "gridSizeR": 256,
+      "lmax": 0,
+      "rmin": 1e-05,
+      "rmax": 1000000000.0
+    }
+  },
+  "generation_max_seconds": 1800,
+  "postprocess_max_seconds": 1800,
+  "scope": "Two single-realization DF recovery examples; no coverage or calibration claim. beta_ani=-0.5 is a common generation choice; validate DF before sampling. Untruncated analytic halo density; potential tends to zero at infinity. Negligible stellar self gravity.",
+  "sources": [
+    "https://arxiv.org/html/1007.4198",
+    "https://arxiv.org/html/1008.4585",
+    "https://arxiv.org/html/2207.10378"
+  ],
+  "literature_choices": {
+    "photometry": "Simon et al. 2011 / Martin et al. 2008 R_e=29 (+8,-5) pc; spherical Plummer approximation to reported radius. Not the 19.95 pc radius adopted in Horigome et al. 2022. No mixing of conventions.",
+    "mass": "Simon et al. 2011 section V.3: M_1/2=5.8 (+8.2,-3.1)e5 Msun at rounded 3D radius 38 pc; fixed central mass used at exact Plummer rhalf=37.84 pc.",
+    "velocity": "Binary-corrected intrinsic sigma=3.7 (+1.4,-1.1) km/s is a context check, not an additional exact normalization constraint.",
+    "errors": "Constant 5 km/s Gaussian error approximates median error used in Simon et al. 2011 Fig. 9 (floor 2.2 km/s). Idealized equal errors, not the empirical per-star uncertainty distribution.",
+    "selection": "64 true members; random positions R<=87 pc; based on reported outer member extent, not reproduction of actual completeness. No binary velocities or foregrounds.",
+    "halo_rs": "150 pc controlled choice, r_s/R_e=5.17 comparable to previous experiment; not a literature best fit. Both gamma=1 and gamma=0 targets share this scale.",
+    "anisotropy": "beta=-0.5 retained from previous controlled DF generator; not a Segue 1 measurement."
+  }
+}

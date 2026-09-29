@@ -1,0 +1,271 @@
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Scope and implementation provenance}
+\label{sec:scope}
+We distinguish a documented experimental baseline from the repeated-mock study needed to answer the scientific question. The baseline consists of two saved DF catalogues and frozen seven-parameter inference protocols. The equations and numerical implementation below describe the corresponding experimental code, retained in the science checkout at revision \code{24c5b1c}. The independent Jeffreys runs recorded revisions \code{8f3afcc} and \code{078956d}; their forward-model and Jeffreys-helper identities are recorded with the runs. The reproduction guide gives full identifiers and hashes. These are experiment-specific helpers, not a claim about the interface or defaults of a later \JeansPy{} release.
+
+The existing protocols provide concrete prior bounds, solver settings and sampling diagnostics. We report a bounded follow-up on these two Draco-like catalogues, including unsuccessful NUTS attempts and an ensemble-sampling comparison of the unchanged targets. A separately frozen Segue 1-like protocol adds one cored and one cusped 64-star catalogue on the same inference support. Together these four realizations form a prior-sensitivity study, not a completed calibration study. The repeated-catalogue design and decision rules remain open; the outstanding choices are collected in the author notes.
+
+\subsection{Spherical dynamical model}
+\label{sec:model}
+We assume a stationary, spherical, non-rotating stellar population in a dark-matter-dominated potential, neglecting stellar self-gravity. The normalized Plummer tracer \citep{plummer1911} has three-dimensional density and projected surface density
+\begin{align}
+ \nu(r)&=\frac{3}{4\pi R_{\rm e}^{3}}
+            \left(1+\frac{r^2}{R_{\rm e}^{2}}\right)^{-5/2},\\
+ \Sigma(R)&=\frac{1}{\pi R_{\rm e}^{2}}
+            \left(1+\frac{R^2}{R_{\rm e}^{2}}\right)^{-2}.
+ \label{eq:plummer}
+\end{align}
+Here $R_{\rm e}$ is the projected half-light radius; the three-dimensional half-light radius is $r_{1/2}=R_{\rm e}/\sqrt{2^{2/3}-1}$. Its normalization cancels from the projected dispersion.
+
+We use the double-power-law halo family \citep{zhao1996}
+\begin{align}
+ \rho(r)&=\rho_{\rm s}\,x^{-\gamma}
+             (1+x^\alpha)^{-(\beta_{\rm h}-\gamma)/\alpha},
+ \quad x=r/r_{\rm s},\label{eq:halo}\\
+ M(r)&=4\pi\int_0^r \rho(s)s^2\,\dd s.
+\end{align}
+The outer halo slope $\beta_{\rm h}$ is distinct from the constant stellar anisotropy
+\begin{equation}
+ \beta_{\rm a}=1-\frac{\sigma_\theta^2+\sigma_\phi^2}
+                         {2\sigma_r^2}.
+\end{equation}
+The baseline halo is untruncated. Although the $\beta_{\rm h}=3$ case has logarithmically divergent total mass, its potential can be set to zero at infinity. The relevant tracer-weighted Jeans integrals converge. The fitted parameter domain does not impose a separate DF-positivity constraint; a finite, positive Jeans moment alone does not establish that a non-negative stellar DF exists everywhere in that domain.
+
+The spherical Jeans equation is
+\begin{equation}
+ \frac{\dd(\nu\sigma_r^2)}{\dd r}
+   +\frac{2\beta_{\rm a}}{r}\nu\sigma_r^2
+   =-\nu\,\frac{GM(r)}{r^2}.
+ \label{eq:jeans}
+\end{equation}
+With $r^{2\beta_{\rm a}}\nu\sigma_r^2\rightarrow0$ at infinity, its solution and projection are
+\begin{align}
+ \nu(r)\sigma_r^2(r)
+  &=r^{-2\beta_{\rm a}}\int_r^\infty
+      \nu(s)GM(s)s^{2\beta_{\rm a}-2}\,\dd s,\label{eq:radial}\\
+ \Sigma(R)\sigma_{\los}^2(R)
+  &=2\int_R^\infty
+     \left(1-\beta_{\rm a}\frac{R^2}{r^2}\right)
+     \frac{\nu(r)\sigma_r^2(r)\,r}{\sqrt{r^2-R^2}}\,\dd r .
+ \label{eq:projection}
+\end{align}
+We use pc, $\Msun$ and $\kms$ consistently. Flattening, rotation, time dependence, membership contamination and binary motions are outside this baseline.
+
+\subsection{Direct integration and automatic differentiation}
+\label{sec:integration}
+\JeansPy{} evaluates the mass and projected second moment directly. For constant anisotropy, exchanging the integrations in equations~(\ref{eq:radial})--(\ref{eq:projection}) gives a kernel integral over $u=r/R$. The recorded JAX path evaluates the anisotropy kernel by Gauss--Legendre quadrature in the inner coordinate $\operatorname{arccosh}(r'/R)$. The outer integral uses a uniform grid in $\sqrt{\log u}$ and composite Simpson integration, with a final trapezoidal interval when required by the grid length. The numerical Zhao mass integral uses a cusp-regularizing change of variable and Gauss--Legendre quadrature; the halo shape parameters remain differentiable. The kernel code bounds the logarithm of its integrating-factor ratio to $[-80,80]$ before exponentiation. Its influence, like that of the variance guard below, must be checked against the continuous model over the parameter region used.
+
+The baseline settings are $n_u=128$ outer nodes, $n_{\rm kernel}=128$ kernel nodes and mass order 128. The refined configuration doubles all three to 256. Both use $u_{\max}=10^5$. This finite integration endpoint is a numerical approximation to the untruncated model, not a physical tidal radius. Increasing node counts at fixed $u_{\max}$ tests resolution, but does not test the neglected tail; a separate endpoint-convergence check is required wherever that tail could affect the comparison.
+
+JAX differentiates the discrete quadrature program \citep{jax2018}. Agreement of its derivatives with finite differences of that same program tests derivative consistency. Agreement with a more finely resolved calculation and an independent integral reference tests different issues: convergence towards the continuous Jeans solution and implementation accuracy. We therefore distinguish these checks rather than treating automatic differentiation as a proof of numerical accuracy. The archived reference machinery uses separate SciPy integrations of the radial and projected moments. The spherical experiment uses 64-bit arithmetic on the GPU, with CPU 64-bit evaluations as numerical references. The broader axisymmetric implementation is not part of the prior comparison described here.
+
+\subsection{Conditional velocity likelihood and common support}
+\label{sec:likelihood}
+For star $i$, let $R_i$, $v_i$ and $e_i$ denote its projected radius, measured line-of-sight velocity and known velocity standard error. Conditional on $\{R_i,e_i\}$, independent Gaussian velocities have log likelihood
+\begin{align}
+ \log L(\boldsymbol{\theta})
+  &=-\frac{1}{2}\sum_{i=1}^{N}
+    \left[\log(2\pi S_i)+\frac{(v_i-\mu)^2}{S_i}\right],\label{eq:likelihood}\\
+ S_i(\boldsymbol{\psi})
+  &=\sigma_{\los}^2(R_i;\boldsymbol{\psi})+e_i^2 .
+ \label{eq:variance}
+\end{align}
+Here $\mu$ is the systemic velocity and $\boldsymbol{\psi}$ contains the six structural and anisotropy coordinates in Table~\ref{tab:prior}. The seven-dimensional vector is $\boldsymbol{\theta}=(\boldsymbol{\psi},\mu)$. $R_{\rm e}=180.3017740859568\,\pc$ and the infinite halo truncation radius are fixed. The likelihood contains no term for the spatial distribution, surface photometry, proper motions or higher moments, and no membership mixture. The Fisher matrix below refers to precisely this conditional velocity experiment.
+
+For reproducibility, the archived numerical likelihood first rejects negative or non-finite predicted variances, then clips finite non-negative $\sigma_{\los}^2$ to $[10^{-12},10^{12}]\,(\kms)^2$ before adding $e_i^2$. The Fisher calculation uses this same clipped variance. This numerical guard is part of the implemented target, including its piecewise derivatives; claims about the smooth physical model require demonstrating that relevant posterior regions do not activate it.
+
+\begin{table}
+ \centering
+ \caption{Common support and coordinate-uniform reference prior, retained in the follow-up. All seven coordinates remain in the statistical model; the ensemble calculation analytically integrates $\mu$. $R_{\rm e}$ and halo truncation are fixed. Both priors use this same physical domain and the same likelihood-validity rules.}
+ \label{tab:prior}
+ \begin{tabular}{lc}
+  \toprule
+  Sampling coordinate & Interval\\
+  \midrule
+  $\log_{10}[\rho_{\rm s}/(\Msun\,\pc^{-3})]$ & $[-4,4]$\\
+  $\log_{10}(r_{\rm s}/\pc)$ & $[0,5]$\\
+  $\alpha$ & $[0.5,3]$\\
+  $\beta_{\rm h}$ & $[3,10]$\\
+  $\gamma$ & $[0,1.2]$\\
+  $\eta=-\log_{10}(1-\beta_{\rm a})$ & $[-1,1]$\\
+  $\mu/(\kms)$ & $[-1000,1000]$\\
+  \bottomrule
+ \end{tabular}
+\end{table}
+
+The reference prior has constant density with respect to $\dd\boldsymbol{\theta}$ inside this rectangle. In particular, it is uniform in logarithmic halo scales and in $\eta$, with $\beta_{\rm a}=1-10^{-\eta}$; it is not uniform in the corresponding physical coordinates. We compare it with a joint Jeffreys density evaluated in the same coordinates on the same support. The restriction to this domain is an explicit modelling choice for both priors, and remains relevant even when a density is coordinate invariant.
+
+\subsection{Joint expected Fisher information}
+\label{sec:fisher}
+We define the information by averaging score products over possible velocities drawn from equation~(\ref{eq:likelihood}), at fixed positions and errors:
+\begin{align}
+ I_{ab}(\boldsymbol{\theta})
+  &=\mathbb{E}_{\boldsymbol v\mid\boldsymbol{\theta},\boldsymbol R,\boldsymbol e}
+       \left[\partial_a\log L\,\partial_b\log L\right],\\
+ \pi_{\rm J}(\boldsymbol{\theta}\mid\boldsymbol R,\boldsymbol e)
+  &\propto \sqrt{\det I(\boldsymbol{\theta})}.
+ \label{eq:jeffreys}
+\end{align}
+This is the joint expected Jeffreys prior \citep{jeffreys1946,ghosh2011}. Neither the Hessian evaluated at the observed velocities nor an outer product of observed scores is substituted for this expectation. The observation design influences the prior through $\{R_i,e_i\}$; the realized velocities do not.
+
+Write $D_{ij}=\partial\log S_i/\partial\psi_j$. Gaussian second and fourth moments give
+\begin{equation}
+ I_{\psi\psi}=\frac{1}{2}D^{\mathsf T}D,\qquad
+ I_{\mu\mu}=\sum_i S_i^{-1},\qquad I_{\psi\mu}=0 .
+ \label{eq:fisherblocks}
+\end{equation}
+The zero cross block follows from the odd Gaussian moments, not from an assumption that systemic velocity is known. Thus
+\begin{equation}
+ \log\pi_{\rm J}
+   =\frac{1}{2}\log\det\!\left(\frac{D^{\mathsf T}D}{2}\right)
+      +\frac{1}{2}\log\sum_i S_i^{-1}+C .
+ \label{eq:logprior}
+\end{equation}
+Although this density is independent of $\mu$, its systemic-velocity factor depends on the structural parameters. Dropping that factor would define a different prior. $C$ is parameter independent and is unnecessary for posterior sampling. We do not claim an evaluated prior normalization or use it for model evidence.
+
+Under a smooth invertible reparameterization $\boldsymbol{\theta}=\boldsymbol{\theta}(\boldsymbol{\phi})$, with $T=\partial\boldsymbol{\theta}/\partial\boldsymbol{\phi}$,
+\begin{equation}
+ I_\phi=T^{\mathsf T}I_\theta T,\qquad
+ \pi_{\rm J,\phi}=\pi_{\rm J,\theta}|\det T|.
+ \label{eq:transformation}
+\end{equation}
+Computing $D$ in the named sampling coordinates already incorporates this transformation; no additional physical-coordinate Jacobian is then applied. Conversely, densities compared in different coordinates must include the Jacobian and describe the same physical domain. A product of individual log-uniform priors is generally not equation~(\ref{eq:jeffreys}).
+
+For numerical evaluation, define $A=D/\sqrt{2}$, column norms $c_j=\|A_{\cdot j}\|_2$ and $B=A\,\mathrm{diag}(c_j^{-1})$. A reduced QR decomposition $B=QR$ yields
+\begin{equation}
+ \frac{1}{2}\log\det(A^{\mathsf T}A)
+    =\sum_j\log|R_{jj}|+\sum_j\log c_j .
+ \label{eq:qr}
+\end{equation}
+The restored column scales preserve the intended density while avoiding explicit formation of a potentially ill-conditioned Gram determinant. This expression applies at finite, full-rank points. The implementation adds no diagonal jitter, eigenvalue floor, pseudodeterminant or rank truncation. Independent singular-value decomposition (SVD) checks the volume and reports the smallest-to-largest singular-value ratio of $B$; the recorded $10^{-12}$ reporting threshold is not an extra prior cutoff. Rank loss must be diagnosed, not silently converted into a regularized scientific target.
+
+NUTS requires the gradient of the complete log posterior, including $\log\pi_{\rm J}$. At smooth, nonsingular points,
+\begin{equation}
+ \partial_a\log\pi_{\rm J}
+   =\tfrac12\,\mathrm{tr}\!\left(I^{-1}\partial_a I\right).
+\end{equation}
+Because $I$ already contains first derivatives of $S_i$, this calculation involves second derivatives of the Jeans predictions. The experiment differentiates the QR-based expression automatically, rather than freezing the information matrix during a trajectory.
+
+\subsection{Numerical validation of the prior}
+\label{sec:numerics}
+The archived checks compare the analytic expectation in equation~(\ref{eq:fisherblocks}) with nine-node Gauss--Hermite integration of Gaussian score products, compare QR and SVD volume evaluations, and transform between physical and sampling coordinates using equation~(\ref{eq:transformation}). These checks target different possible errors in the prior construction.
+
+The independent-sampling preflight specifies, per catalogue, the generating point, three points at common fractions $0.3$, $0.5$ and $0.7$ across the prior intervals, and two saved reference-posterior points. The latter are evaluation points only and do not initialize the new chains. Central finite differences use $h_j=10^{-4}\max(1,|\theta_j|)$. The recorded maximum allowed log-prior gradient discrepancy is $0.005$, normalized componentwise by $\max(1,|\hbox{reference derivative}|)$. At support boundaries this tests a smooth extension of the log-prior expression, not the discontinuous truncation indicator. Earlier reweighting checks test the first derivatives entering $D$ separately.
+
+With the refined quadrature, the declared tolerances are $0.01$ for the normalized log-prior gradient difference and $0.05$ for the absolute log-prior difference. Independent NumPy/JAX log-prior evaluations have a $10^{-5}$ tolerance. Saved-point Jeffreys postprocessing specifies 32 reference points per case for precision checks and SVD diagnostics over all complete saved draws. A separate profile protocol selects 128 draws, with 16 refinement points and a $0.005$ relative-error tolerance for the forward predictions. Pointwise checks do not establish global full rank, integrability of the bounded prior, or adequate quadrature throughout an unexplored posterior. Their outcome must be reported separately from sampler diagnostics and scientific recovery.
+
+\subsection{Mock observations}
+\label{sec:mocks}
+The saved baseline comprises one NFW and one cored Zhao catalogue. The stellar size is Draco-like: we adopt $R_{\rm e}=10^{2.256}\,\pc=180.3017740859568\,\pc$ from the Draco entry in Table~2 of \citet{horigome2022cosmological}. This choice sets the Plummer tracer scale. The halo scale radius and density normalizations are controlled mock parameters, not a fit to Draco; the core normalization is adjusted to match the NFW enclosed mass at the common three-dimensional stellar half-light radius. Both have $r_{\rm s}=1000\,\pc$, $(\alpha,\beta_{\rm h})=(1,3)$, the fixed Plummer radius above, $\beta_{\rm a}=-0.5$ and $\mu=0$. Their inner slopes are $\gamma=1$ and $0$, respectively. The density normalizations are $0.03162277660168379$ and $0.24473093864656786\,\Msun\,\pc^{-3}$, chosen to give the same $M(r_{1/2})=8.2760493\times10^6\,\Msun$ at $r_{1/2}=235.2516293\,\pc$. The cored model is the $(1,3,0)$ Zhao profile; the historical file label \emph{corednfw} does not designate a separate coreNFW prescription.
+
+AGAMA \citep{vasiliev2019} constructs a spherical halo potential and a quasi-spherical tracer DF with the stated constant anisotropy (infinite anisotropy radius). Its sampled phase-space coordinates supply the stellar positions and velocities. The generator checks the unmodified DF for finite, non-negative values on a declared grid and compares density, force and second moments with references; such finite-grid checks are not a general proof of DF positivity. The implementation also accounts for the numerical gravitational-constant convention between the two codes.
+
+Each saved catalogue selects 256 stars at random from a pool of 32768, conditional only on $10\leq R/\pc\leq1500$. Independent Gaussian measurement errors with standard deviation $2\,\kms$ are added to the line-of-sight velocities. There is no velocity cut, outlier rejection or membership fitting, and all selected stars enter the likelihood. Generation seeds for NFW and core are 2026110201 and 2026110202. The full protocol and data hashes are retained for exact reproduction.
+
+The Segue 1-like pair uses $R_{\rm e}=29\,\pc$ and $M(r_{1/2})=5.8\times10^5\,\Msun$, motivated by \citet{simon2011segue}, with the mass imposed at the exact Plummer radius $r_{1/2}=37.8382\,\pc$. We set $r_s=150\,\pc$: the NFW template in Table~1 of \citet{ahnen2016combined} has distance 23 kpc and angular scale radius $0.36$ degrees, corresponding to about 145 pc. Our value is a rounded benchmark; reusing it for a core is a controlled assumption, not a literature measurement of a cored halo. With $(\alpha,\beta_{\rm h})=(1,3)$ and $\gamma=1$ or 0, the matched-mass normalizations are $0.5818067986$ and $4.2521324854\,\Msun\,\pc^{-3}$. Both retain $\beta_{\rm a}=-0.5$, $\mu=0$ and an untruncated halo. The scale radius is not an outer halo radius, and the radius of density slope $-2$ differs between these two profiles (150 and 300 pc).
+
+Each Segue catalogue randomly selects 64 true members from an independently generated 32768-star AGAMA pool, conditional on $0\leq R/\pc\leq87$, and adds Gaussian velocity errors of $5\,\kms$. Seeds are 2026092901 (NFW) and 2026092902 (core). The equal errors, constant anisotropy, spherical Plummer shape and sharp radial selection are experimental choices; the mock does not recreate the observed per-star errors or survey completeness. Binary velocities, foreground contamination, membership uncertainty and stellar self-gravity are omitted. The tracer radius is held fixed in inference. Changing this design from Draco changes size, mass, errors and radial selection as well as star count, so the cross-system comparison does not isolate the effect of sample size.
+
+An equilibrium DF catalogue is a dynamical realism test, not automatically a draw from the projected Gaussian likelihood: agreement of second moments does not make its entire line-of-sight velocity distribution Gaussian. The proposed evaluation therefore also requires likelihood-matched controls generated as
+\begin{equation}
+ v_i=\mu+\sqrt{\sigma_{\los}^2(R_i;\boldsymbol{\psi})+e_i^2}\,z_i,
+ \qquad z_i\sim\mathcal N(0,1).
+\end{equation}
+For fixed positions and errors, repeated velocity draws assess conditional calibration of the assumed model and prior. Repeatedly drawing positions as well assesses a different ensemble, in which the conditional Jeffreys prior changes with the observation design. These ensembles will be labelled separately. Their sizes, seed schedule, additional radial selections and generating-parameter grid have not been frozen for this paper. Neither these single-realization DF examples nor earlier lower-dimensional software checks suffice to measure seven-parameter coverage.
+
+\subsection{MCMC configuration and stopping rules}
+\label{sec:sampling}
+The archived comparison uses NumPyro's NUTS implementation \citep{hoffman2014,numpyro2019}. Uniform sampling sites supply the common bounds and a constant reference density; the joint Jeffreys log density is added as a factor for the alternative target. Both use four sequential chains, a dense adapted mass matrix and independent split random keys. Each chain starts with \code{init_to_uniform(radius=2)} in the sampler's unconstrained initialization space, without truth- or posterior-informed initialization. The Jeffreys runs use fresh adaptation and do not reuse coordinate-uniform chains as their posterior.
+
+\begin{table}
+ \centering
+ \caption{Frozen historical NUTS configurations. A draw cap does not imply that it was reached or that diagnostics passed. The different acceptance targets and time limits preclude treating these runs as a matched runtime comparison.}
+ \label{tab:nuts}
+ \small
+ \begin{tabular}{lcc}
+  \toprule
+  Setting & Uniform & Joint Jeffreys\\
+  \midrule
+  Chains & 4 & 4\\
+  Warm-up per chain & 1000 & 1000\\
+  Draws per saved chunk/chain & 500 & 500\\
+  Maximum chunks & 8 & 8\\
+  Target acceptance & 0.90 & 0.95\\
+  Maximum tree depth & 10 & 10\\
+  Time cap per catalogue & 7200 s & 10800 s\\
+  NFW seed & 2026110301 & 2026110501\\
+  Core seed & 2026110302 & 2026110502\\
+  \bottomrule
+ \end{tabular}
+\end{table}
+
+At every completed chunk, the declared gates require rank-normalized split $\widehat R\leq1.01$, bulk and tail effective sample sizes each at least 400, and Monte Carlo standard error of the mean divided by posterior standard deviation at most $0.05$ for every sampled coordinate. Tail ESS uses the $0.05$ and $0.95$ quantiles \citep{vehtari2021}. The sampler must also have zero divergences and a maximum-tree-depth fraction no greater than $0.01$, with saturation identified by a step count of at least $2^{10}-1$. Energy diagnostics are recorded without an additional frozen energy-based gate. Passing requires two consecutive checkpoints. Otherwise a run stops at eight chunks (at most 4000 production draws per chain) or its supervised time limit. Failed checkpoints and truncated runs are retained.
+
+The storage protocol writes synchronous \code{h5netcdf} output, records transition states, reconstructs the sampler between chunks and checks the saved prefix. Seeds, sampling identities, source hashes and environment metadata accompany the saved output. The retained environment records Python 3.12.13, JAX/JAXlib 0.9.1 and NumPyro 0.20.0; the reproduction guide lists the remaining versions. These details specify the historical baseline. Choices for the eventual repeated-mock campaign, including treatment of failures and any revised sampling budget, remain to be agreed before execution. Numerical derivative checks, completed execution and passing MCMC diagnostics are separate requirements; none establishes coverage or correct core--cusp decisions by itself.
+
+\subsection{Bounded follow-up and exact marginal mixture}
+\label{sec:mixture}
+The follow-up retains the model, data, bounds and quadrature above. It first attempts four vectorized NUTS chains with 1000 warm-up steps, target acceptance $0.99$, dense mass adaptation and maximum tree depth 10. The first requested production checkpoint is 250 draws per chain. The two Jeffreys fits each have an 8400-s cap; the core uniform fit has a 2700-s cap. The previously accepted NFW uniform reference is retained. Preflight, fitting and assessment share a six-hour allowance, within the existing cumulative campaign budget. These changes are computational settings, not a matched sampler benchmark.
+
+To obtain a prior comparison within the remaining allowance, we also use the affine-invariant ensemble sampler in emcee \citep{foremanmackey2013}. It evaluates the Fisher volume but does not require its gradient. We integrate the systemic velocity analytically while retaining its information block in the joint prior. Define
+\begin{align}
+ H(\boldsymbol\psi)&=\sum_i S_i^{-1},\\
+ \widehat\mu(\boldsymbol\psi)&=H^{-1}\sum_i v_i/S_i,\\
+ Z(\boldsymbol\psi)&=\Phi[(\mu_+-\widehat\mu)\sqrt H]\nonumber\\
+                 &\quad-\Phi[(\mu_--\widehat\mu)\sqrt H],
+\end{align}
+where $\Phi$ is the standard normal cumulative distribution and $\mu_\pm=\pm1000\,\kms$. The exact integral of the likelihood on the original support is
+\begin{equation}
+ L_{\rm m}(\boldsymbol\psi)=L(\boldsymbol\psi,\widehat\mu)
+                         \sqrt{2\pi/H}\,Z(\boldsymbol\psi).
+ \label{eq:marginal}
+\end{equation}
+The six sampled coordinates therefore describe the marginal of the original seven-dimensional model. They do not define a reduced physical model or a newly computed six-dimensional Jeffreys prior. In particular, the $\sqrt H$ factor in equation~(\ref{eq:logprior}) cancels the $H^{-1/2}$ factor from integrating $\mu$, while the shape-information volume and $Z$ remain. This local nuisance-volume cancellation does not cancel all volume effects among the structural parameters.
+
+One exploration per catalogue serves both priors. Let $j(\boldsymbol\psi)$ be the unnormalized joint Jeffreys density calculated by equation~(\ref{eq:logprior}), and let $u$ denote the constant density on the common rectangle. We sample
+\begin{equation}
+ q(\boldsymbol\psi)\propto L_{\rm m}(\boldsymbol\psi)\,u
+                          [1+e^{-c}j(\boldsymbol\psi)] .
+ \label{eq:mixture}
+\end{equation}
+The constant $c$ is fixed before new sampling as the median $\log j$ at 32 predetermined saved points, 16 from each historical prior run. Normalized weights derived from
+\begin{equation}
+ w_{\rm U}=\frac{1}{1+e^{-c}j},\qquad
+ w_{\rm J}=\frac{e^{-c}j}{1+e^{-c}j}
+ \label{eq:weights}
+\end{equation}
+recover expectations under each target. Both weights are bounded between zero and one. The two terms in equation~(\ref{eq:mixture}) need not have equal integrated probability; $c$ changes exploration efficiency, not either recovered posterior. This is a mixture calculation with importance weights, not two independently sampled posteriors. No historical draw is included in its estimates.
+
+We run four independent ensembles of 24 walkers using the default stretch move (scale 2). Each starts with equal numbers of points drawn from the two historical sample pools, independently perturbed by Gaussian noise of standard deviation $0.01$ times each prior width and reflected into the bounds. Four hundred new burn-in steps are discarded. Historical failed chains are used only as starting pools and to fix $c$; this initialization does not certify their correctness or discovery of unvisited modes. Base seeds are 2026091901 (NFW) and 2026091902 (core), with separately recorded offsets for initialization and transitions. Production is saved in balanced 200-step checkpoints, at most 20 per ensemble. Sampling stops after 680 s per catalogue, measured from setup and including burn-in; the subsequent point checks share the externally supervised overall cap of 1700 s. Caps, seeds and gates are frozen before the new samples are inspected.
+
+Diagnostics treat the four ensembles as independent, not the interacting walkers within one ensemble. The historical emcee gates require fixed-walker rank-split $\widehat R\leq1.01$ across ensembles, production length at least 50 estimated autocorrelation times, and mean MCSE/SD at most $0.05$ with effective sample size at least 400. MCSE uses 20 batches of the walker mean per ensemble; each batch must span at least twice its estimated autocorrelation time. For each target prior we additionally evaluate the ratio-estimator influence $w(f-\widehat{\mathbb E}f)/\overline w$, for all six coordinates and $\log_{10}\rho(100\,\pc)$. Its batch MCSE/SD must be at most $0.05$, with the same batch-length rule. The weight-only fraction $(\sum w)^2/(n\sum w^2)$ must exceed $0.05$; this is an overlap diagnostic and does not correct for chain autocorrelation. Passing requires two consecutive complete checkpoints. These finite-chain checks can detect problems but cannot prove global exploration.
+
+Before sampling, four fixed points per catalogue compare equation~(\ref{eq:marginal}) with independent one-dimensional quadrature of the original likelihood, and compare $\log j$ with the original seven-coordinate evaluator (absolute log tolerance $10^{-6}$). At the final complete checkpoint, 16 predetermined points test QR/SVD agreement, scaled singular-value ratios and quadrature refinement. The tolerances are $0.01$ for QR/SVD log differences, $10^{-12}$ for the reported singular-value ratio, $0.05$ for refined log-prior and marginal-log-likelihood differences, and $0.005$ for total-variance relative differences. These are checks at sampled points, not guarantees over the whole prior domain. The protocol, helper source, input hashes and every stopping record accompany the comparison.
+
+\subsection{Scientific assessment and remaining calibration}
+\label{sec:assessment}
+The primary comparison pairs the two priors on the same catalogue, likelihood, physical support and numerical accuracy. Both cored and cusped generating models are required, so an apparent increase in core assignments cannot count as improvement without examining false core assignments for cusps. We examine $\rho(r)$ and the finite-radius logarithmic slope,
+\begin{equation}
+ \gamma_{\rm eff}(r)\equiv-\frac{\dd\log\rho}{\dd\log r}
+ =\gamma+(\beta_{\rm h}-\gamma)\frac{x^\alpha}{1+x^\alpha},
+ \label{eq:slope}
+\end{equation}
+over stated radii, distinguishing interpolation within the stellar sample from central extrapolation. Repeated catalogues are needed to estimate bias, uncertainty width and interval coverage, with Monte Carlo uncertainty on the estimated rates. Pointwise profile coverage must be distinguished from simultaneous coverage across a radial range.
+
+A decision rule must allow core, cusp and inconclusive outcomes. Its finite-radius definition, posterior-probability thresholds and target error rates must be fixed before any new independent classification evaluation. We will report incorrect assignments in both directions, the inconclusive fraction, and the fraction that fails the declared sampling or numerical gates, with denominators stated explicitly. Conditional summaries among usable runs will not conceal failures in the full attempted ensemble.
+
+In the baseline prior, $\gamma=0$ lies on a boundary and carries no point mass. A continuous posterior's two-sided equal-tailed interval will generally exclude that endpoint even when the data are compatible with a core. Such exclusion is not a core-rejection criterion. The $\beta_{\rm h}=3$ generating value also lies at a support boundary. These facts motivate explicit finite-radius decisions and boundary-aware interpretation, not unannounced changes of prior support.
+
+If included, J-factors will be derived as the line-of-sight and solid-angle integral of $\rho^2$ at a specified distance and aperture, with any integration support declared \citep{evans2016}. They are a secondary propagation of density uncertainty, not a substitute for the primary recovery and classification tests. Apertures and any real-data application remain outside the frozen baseline.
+
+\subsection{Independent direct sampling of both priors}
+\label{sec:direct}
+The subsequent frozen 48-hour campaign retains these two catalogues, physical support and exact velocity integral. It samples the two targets $p_{\rm U}(\boldsymbol\psi\mid d)\propto L_m(\boldsymbol\psi)u(\boldsymbol\psi)$ and $p_{\rm J}(\boldsymbol\psi\mid d)\propto L_m(\boldsymbol\psi)j(\boldsymbol\psi)$ independently, without importance weights. The joint seven-coordinate information factor is retained; only six coordinates are sampled. Each of four targets uses four independent emcee ensembles of 32 interacting walkers, 4000 discarded warm-up steps, and a mixture of differential-evolution (0.8) and snooker (0.2) moves. Historical uniform and Jeffreys pools contribute equally to initialization, with 1 per cent prior-width jitter and reflection at bounds; their draws are excluded from all new estimates.
+
+Production is assessed every 1000 steps, after at least 5000 and at most 100000 steps. Every frozen gate must pass at two consecutive checkpoints: rank-normalized split $\widehat R\leq1.01$, length/autocorrelation ratio at least 50, mean ESS at least 400, mean MCSE/standard deviation at most 0.05, and valid batch lengths of at least twice the autocorrelation time. Diagnostics cover six sampling coordinates and log density and finite-radius slope at 10, 100, 300 and 1000 pc. The $\widehat R$ comparison uses walker 0 across the four independent ensembles, not interacting walkers as independent chains. Quantiles use the complete balanced production prefix. Passing these finite-run checks does not prove exploration of every mode or calibrate quantile Monte Carlo error.
+
+At 16 deterministic saved points per target, the assessment checks the exact velocity integral, doubled quadrature (128 to 256) and a tenfold outer endpoint; Jeffreys targets also receive QR/SVD and normalized-rank checks. These are local numerical tests. Uniform targets run on CPU and Jeffreys targets on GPU with different worker allocations, precluding a matched computational-speed comparison.
+
+The Segue campaign retains these targets, moves, four 32-walker ensembles, 4000-step warm-up and two-checkpoint stopping gates. Each ensemble independently draws 512 candidates uniformly within the prior rectangle and selects 32 without replacement using log-density weights tempered by a factor of 10; neither generating parameters nor historical posterior draws initialize it. Base sampling seeds are 2026092911 (NFW) and 2026092921 (core), with ensemble offsets retained in the protocol. Density and finite-radius-slope diagnostics use 1, 10, 30 and 87 pc, appropriate to the smaller stellar system. Uniform targets run on CPU and Jeffreys targets on GPU using float64, JIT-compiled predictions and derivatives. The precision addendum in Section~\ref{sec:segue-results} audits the completed samples separately from the immutable original assessment.
