@@ -1,0 +1,37 @@
+{
+  "arithmetic": "GCC __float128 / libquadmath; results rounded to binary64",
+  "numpy_version": "2.4.3",
+  "source_sha256": "c22bcbcbfc77624af9621923c6406af763311d41eecb926ef94b94e6cfeb337b",
+  "fixture_sha256": "f1427b8de9ae7251b31b6bf6e1326e84509bcebbd18a89870c23aa52108daf3b",
+  "rows": [
+    {
+      "case": "spherical-segue1-nfw-df",
+      "label": "prior-edge-22",
+      "log_prior": -67.59631661601014,
+      "difference_from_saved_reference": 0.0,
+      "householder_vs_reorthogonalized_qr": 4.795107865906122e-22
+    },
+    {
+      "case": "spherical-segue1-nfw-df",
+      "label": "prior-edge-31",
+      "log_prior": -101.66217213654285,
+      "difference_from_saved_reference": 0.0,
+      "householder_vs_reorthogonalized_qr": 1.1950977854049401e-23
+    },
+    {
+      "case": "spherical-segue1-nfw-df",
+      "label": "generating-truth",
+      "log_prior": -17.144615467415665,
+      "difference_from_saved_reference": 0.0,
+      "householder_vs_reorthogonalized_qr": 1.8704631619888835e-30
+    },
+    {
+      "case": "spherical-segue1-core-df",
+      "label": "generating-truth",
+      "log_prior": -13.667531608980278,
+      "difference_from_saved_reference": 0.0,
+      "householder_vs_reorthogonalized_qr": 3.235562306570556e-32
+    }
+  ],
+  "elapsed_seconds": 44.27143123559654
+}

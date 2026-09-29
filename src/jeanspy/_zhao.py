@@ -33,6 +33,8 @@ def enclosed_mass(r_pc, params, *, xp, n_steps=128):
     With p=3-gamma and y=x*u**(4/p), the inner density-volume integrand
     becomes proportional to u**3, even as gamma approaches 3 from below.
     No central cutoff is required. n_steps is the Gauss order per segment.
+    Below rs, the mass prefactor separates the physical radius from rs to
+    avoid cancellation in the scale derivative for weakly varying cores.
     Invalid dynamic inputs return NaN, including under JIT.
     """
     r = xp.asarray(r_pc)
@@ -46,7 +48,8 @@ def enclosed_mass(r_pc, params, *, xp, n_steps=128):
     rs = xp.where(rs > 0, rs, 1.0)
     alpha = xp.where(alpha > 0, alpha, 1.0)
     p = xp.where(gamma < 3, 3 - gamma, 1.0)
-    x = xp.where(valid & (r > 0), xp.minimum(r, rt) / rs, 1.0)
+    radius = xp.where(valid & (r > 0), xp.minimum(r, rt), rs)
+    x = radius / rs
     log_c = xp.log(xp.minimum(x, 1.0))[..., None]
     log_u = xp.log(u)
     q = (beta - gamma) / alpha
@@ -57,4 +60,17 @@ def enclosed_mass(r_pc, params, *, xp, n_steps=128):
     outer_shape = xp.exp(p * t - q * xp.logaddexp(0.0, alpha * t))
     outer = length * xp.sum(w * outer_shape, axis=-1)
     mass = 4 * xp.pi * rho * rs**3 * (inner + outer)
+    # Below rs, combine rs**3 * (r/rs)**(3-gamma) before AD. Otherwise
+    # the scale-radius derivative subtracts two order-one contributions
+    # even for a core, whose true derivative can be far below roundoff.
+    # Bound the inactive branch too: r can be much larger than rs.
+    inner_radius = xp.minimum(radius, rs)
+    # Keep the combined prefactor in log space: separate powers can overflow
+    # and underflow even when their product is representable for steep cusps.
+    inner_amplitude = xp.exp(p * xp.log(inner_radius) + gamma * xp.log(rs))
+    inner_mass = (
+        4 * xp.pi * rho * (4 / p) * inner_amplitude
+        * xp.sum(w * u**3 * inner_shape, axis=-1)
+    )
+    mass = xp.where(x < 1.0, inner_mass, mass)
     return xp.where(valid, xp.where(r == 0, 0.0, mass), xp.nan)
