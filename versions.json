@@ -3,6 +3,12 @@
     "name": "dev (development)",
     "version": "dev",
     "url": "https://gomeshun.github.io/jeanspy/dev/",
+    "preferred": false
+  },
+  {
+    "name": "v0.1.0 (stable)",
+    "version": "v0.1.0",
+    "url": "https://gomeshun.github.io/jeanspy/v0.1.0/",
     "preferred": true
   }
 ]

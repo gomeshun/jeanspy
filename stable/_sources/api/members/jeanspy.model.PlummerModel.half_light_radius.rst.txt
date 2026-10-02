@@ -1,0 +1,9 @@
+half_light_radius
+=================
+
+``jeanspy.model.PlummerModel.half_light_radius``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model.PlummerModel>`.
+
+.. automethod:: jeanspy.model.PlummerModel.half_light_radius
+   :no-index:

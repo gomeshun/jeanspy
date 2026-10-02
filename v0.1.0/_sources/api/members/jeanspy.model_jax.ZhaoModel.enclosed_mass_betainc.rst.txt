@@ -1,0 +1,9 @@
+enclosed_mass_betainc
+=====================
+
+``jeanspy.model_jax.ZhaoModel.enclosed_mass_betainc``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_jax.ZhaoModel>`.
+
+.. automethod:: jeanspy.model_jax.ZhaoModel.enclosed_mass_betainc
+   :no-index:

@@ -1,0 +1,30 @@
+SphericalDSphEstimationModel members
+====================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.SphericalDSphEstimationModel.blobs_dtype
+   members/jeanspy.model.SphericalDSphEstimationModel.convert_params
+   members/jeanspy.model.SphericalDSphEstimationModel.data
+   members/jeanspy.model.SphericalDSphEstimationModel.inverse_temperature
+   members/jeanspy.model.SphericalDSphEstimationModel.is_required_param_names
+   members/jeanspy.model.SphericalDSphEstimationModel.lnlikelihood
+   members/jeanspy.model.SphericalDSphEstimationModel.lnlikelihoods
+   members/jeanspy.model.SphericalDSphEstimationModel.lnposterior
+   members/jeanspy.model.SphericalDSphEstimationModel.lnposterior_wbic
+   members/jeanspy.model.SphericalDSphEstimationModel.lnpriors
+   members/jeanspy.model.SphericalDSphEstimationModel.load_data
+   members/jeanspy.model.SphericalDSphEstimationModel.n_data
+   members/jeanspy.model.SphericalDSphEstimationModel.ndim
+   members/jeanspy.model.SphericalDSphEstimationModel.p_names_lnprob
+   members/jeanspy.model.SphericalDSphEstimationModel.params_all
+   members/jeanspy.model.SphericalDSphEstimationModel.params_all_with_model_name
+   members/jeanspy.model.SphericalDSphEstimationModel.release_shared_memory
+   members/jeanspy.model.SphericalDSphEstimationModel.required_param_names_combined
+   members/jeanspy.model.SphericalDSphEstimationModel.reset_data
+   members/jeanspy.model.SphericalDSphEstimationModel.sample
+   members/jeanspy.model.SphericalDSphEstimationModel.sample_data
+   members/jeanspy.model.SphericalDSphEstimationModel.sampling_identity
+   members/jeanspy.model.SphericalDSphEstimationModel.shared_memory_basename
+   members/jeanspy.model.SphericalDSphEstimationModel.update

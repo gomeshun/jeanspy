@@ -1,0 +1,9 @@
+sample_parameters
+=================
+
+``jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters``
+
+Class and construction: :doc:`AxisymmetricJeansLikelihoodModel <../generated/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel>`.
+
+.. automethod:: jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters
+   :no-index:

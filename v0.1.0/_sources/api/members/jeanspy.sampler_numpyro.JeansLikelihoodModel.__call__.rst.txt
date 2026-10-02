@@ -1,0 +1,9 @@
+__call__
+========
+
+``jeanspy.sampler_numpyro.JeansLikelihoodModel.__call__``
+
+Class and construction: :doc:`JeansLikelihoodModel <../generated/jeanspy.sampler_numpyro.JeansLikelihoodModel>`.
+
+.. automethod:: jeanspy.sampler_numpyro.JeansLikelihoodModel.__call__
+   :no-index:

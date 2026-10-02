@@ -1,0 +1,15 @@
+AnisotropyModel members
+=======================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.AnisotropyModel.beta
+   members/jeanspy.model.AnisotropyModel.f
+   members/jeanspy.model.AnisotropyModel.is_required_param_names
+   members/jeanspy.model.AnisotropyModel.kernel
+   members/jeanspy.model.AnisotropyModel.params_all
+   members/jeanspy.model.AnisotropyModel.params_all_with_model_name
+   members/jeanspy.model.AnisotropyModel.required_param_names_combined
+   members/jeanspy.model.AnisotropyModel.sampling_identity
+   members/jeanspy.model.AnisotropyModel.update

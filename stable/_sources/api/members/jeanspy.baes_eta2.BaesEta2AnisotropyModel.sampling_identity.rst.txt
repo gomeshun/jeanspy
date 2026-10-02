@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.baes_eta2.BaesEta2AnisotropyModel.sampling_identity``
+
+Class and construction: :doc:`BaesEta2AnisotropyModel <../generated/jeanspy.baes_eta2.BaesEta2AnisotropyModel>`.
+
+.. automethod:: jeanspy.baes_eta2.BaesEta2AnisotropyModel.sampling_identity
+   :no-index:

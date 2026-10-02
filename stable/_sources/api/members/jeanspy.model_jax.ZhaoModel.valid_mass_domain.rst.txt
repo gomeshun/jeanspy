@@ -1,0 +1,9 @@
+valid_mass_domain
+=================
+
+``jeanspy.model_jax.ZhaoModel.valid_mass_domain``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_jax.ZhaoModel>`.
+
+.. automethod:: jeanspy.model_jax.ZhaoModel.valid_mass_domain
+   :no-index:

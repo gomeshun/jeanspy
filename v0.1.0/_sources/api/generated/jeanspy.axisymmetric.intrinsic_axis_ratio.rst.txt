@@ -1,0 +1,8 @@
+﻿intrinsic\_axis\_ratio
+======================
+
+``jeanspy.axisymmetric.intrinsic_axis_ratio``
+
+.. currentmodule:: jeanspy.axisymmetric
+
+.. autofunction:: intrinsic_axis_ratio

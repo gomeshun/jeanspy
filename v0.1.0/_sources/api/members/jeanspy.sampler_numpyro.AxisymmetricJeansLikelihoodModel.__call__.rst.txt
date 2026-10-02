@@ -1,0 +1,9 @@
+__call__
+========
+
+``jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.__call__``
+
+Class and construction: :doc:`AxisymmetricJeansLikelihoodModel <../generated/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel>`.
+
+.. automethod:: jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.__call__
+   :no-index:

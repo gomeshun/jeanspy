@@ -1,0 +1,9 @@
+reset_data
+==========
+
+``jeanspy.model.SphericalDSphEstimationModel.reset_data``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SphericalDSphEstimationModel.reset_data
+   :no-index:

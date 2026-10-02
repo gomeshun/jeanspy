@@ -1,0 +1,9 @@
+density_3d
+==========
+
+``jeanspy.model_jax.PlummerModel.density_3d``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model_jax.PlummerModel>`.
+
+.. automethod:: jeanspy.model_jax.PlummerModel.density_3d
+   :no-index:

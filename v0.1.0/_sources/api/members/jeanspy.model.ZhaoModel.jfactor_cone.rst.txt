@@ -1,0 +1,9 @@
+jfactor_cone
+============
+
+``jeanspy.model.ZhaoModel.jfactor_cone``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. automethod:: jeanspy.model.ZhaoModel.jfactor_cone
+   :no-index:

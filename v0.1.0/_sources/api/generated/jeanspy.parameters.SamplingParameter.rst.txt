@@ -1,0 +1,18 @@
+﻿SamplingParameter
+=================
+
+``jeanspy.parameters.SamplingParameter``
+
+
+See :doc:`methods and properties <../jeanspy.parameters.SamplingParameter.members>` for individual
+lookup pages, or the :doc:`alphabetical API dictionary <../all>` to search
+all classes. The full class contract and existing member anchors are retained below.
+
+
+.. currentmodule:: jeanspy.parameters
+
+.. autoclass:: SamplingParameter
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

@@ -1,0 +1,9 @@
+sample_parameters
+=================
+
+``jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters``
+
+Class and construction: :doc:`JeansLikelihoodModel <../generated/jeanspy.sampler_numpyro.JeansLikelihoodModel>`.
+
+.. automethod:: jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters
+   :no-index:

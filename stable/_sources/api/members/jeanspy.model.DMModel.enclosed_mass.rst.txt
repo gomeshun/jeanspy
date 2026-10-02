@@ -1,0 +1,9 @@
+enclosed_mass
+=============
+
+``jeanspy.model.DMModel.enclosed_mass``
+
+Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
+
+.. automethod:: jeanspy.model.DMModel.enclosed_mass
+   :no-index:

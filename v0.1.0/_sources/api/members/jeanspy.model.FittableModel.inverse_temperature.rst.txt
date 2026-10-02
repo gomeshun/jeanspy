@@ -1,0 +1,9 @@
+inverse_temperature
+===================
+
+``jeanspy.model.FittableModel.inverse_temperature``
+
+Class and construction: :doc:`FittableModel <../generated/jeanspy.model.FittableModel>`.
+
+.. autoattribute:: jeanspy.model.FittableModel.inverse_temperature
+   :no-index:

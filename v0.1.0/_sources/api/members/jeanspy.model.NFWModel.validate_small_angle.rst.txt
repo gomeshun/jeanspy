@@ -1,0 +1,9 @@
+validate_small_angle
+====================
+
+``jeanspy.model.NFWModel.validate_small_angle``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. automethod:: jeanspy.model.NFWModel.validate_small_angle
+   :no-index:

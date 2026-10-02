@@ -1,0 +1,9 @@
+params_all
+==========
+
+``jeanspy.model.FlatPriorModel.params_all``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. autoattribute:: jeanspy.model.FlatPriorModel.params_all
+   :no-index:

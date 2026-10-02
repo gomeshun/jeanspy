@@ -1,0 +1,9 @@
+half_light_radius
+=================
+
+``jeanspy.model.SersicModel.half_light_radius``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.half_light_radius
+   :no-index:

@@ -1,0 +1,9 @@
+pop
+===
+
+``jeanspy.model.Parameters.pop``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. automethod:: jeanspy.model.Parameters.pop
+   :no-index:

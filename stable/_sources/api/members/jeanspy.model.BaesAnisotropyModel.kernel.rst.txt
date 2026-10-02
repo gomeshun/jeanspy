@@ -1,0 +1,9 @@
+kernel
+======
+
+``jeanspy.model.BaesAnisotropyModel.kernel``
+
+Class and construction: :doc:`BaesAnisotropyModel <../generated/jeanspy.model.BaesAnisotropyModel>`.
+
+.. automethod:: jeanspy.model.BaesAnisotropyModel.kernel
+   :no-index:

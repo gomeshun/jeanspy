@@ -1,0 +1,45 @@
+NumPy/SciPy
+===========
+
+.. py:module:: jeanspy.model
+
+.. currentmodule:: jeanspy.model
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+.. autosummary::
+
+   AnisotropyModel
+   BaesAnisotropyModel
+   C_J
+   ConstantAnisotropyModel
+   DMModel
+   DSphModel
+   DotDict
+   ProjectedExponentialModel
+   FittableModel
+   FlatPriorModel
+   GMsun_m3s2
+   Model
+   NFWModel
+   OsipkovMerrittModel
+   Parameters
+   PhotometryPriorModel
+   PlummerModel
+   SersicModel
+   SphericalDSphEstimationModel
+   StellarModel
+   Uniform2dModel
+   ZhaoModel
+   plummer_nfw_constant_anisotropy_model
+   AxisymmetricDSphModel
+   AxisymmetricDSphEstimationModel
+   AxisymmetricKinematicData
+   AxisymmetricPlummerModel
+   AxisymmetricZhaoModel
+   AxisymmetricConstantAnisotropyModel
+   AxisymmetricStellarModel
+   AxisymmetricDMModel
+   AxisymmetricAnisotropyModel
+

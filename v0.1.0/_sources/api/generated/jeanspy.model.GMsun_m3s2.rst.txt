@@ -1,0 +1,6 @@
+﻿jeanspy.model.GMsun\_m3s2
+=========================
+
+.. currentmodule:: jeanspy.model
+
+.. autodata:: GMsun_m3s2

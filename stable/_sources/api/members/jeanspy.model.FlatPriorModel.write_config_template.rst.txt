@@ -1,0 +1,9 @@
+write_config_template
+=====================
+
+``jeanspy.model.FlatPriorModel.write_config_template``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.write_config_template
+   :no-index:

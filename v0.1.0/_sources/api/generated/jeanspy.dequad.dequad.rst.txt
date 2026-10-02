@@ -1,0 +1,8 @@
+﻿dequad
+======
+
+``jeanspy.dequad.dequad``
+
+.. currentmodule:: jeanspy.dequad
+
+.. autofunction:: dequad

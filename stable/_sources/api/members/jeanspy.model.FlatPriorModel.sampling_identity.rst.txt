@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.FlatPriorModel.sampling_identity``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.sampling_identity
+   :no-index:

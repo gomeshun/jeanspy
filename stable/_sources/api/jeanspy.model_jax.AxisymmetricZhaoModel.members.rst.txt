@@ -1,0 +1,9 @@
+AxisymmetricZhaoModel members
+=============================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_jax.AxisymmetricZhaoModel.enclosed_mass
+   members/jeanspy.model_jax.AxisymmetricZhaoModel.mass_density_3d
+   members/jeanspy.model_jax.AxisymmetricZhaoModel.potential_gradient

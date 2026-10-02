@@ -1,0 +1,9 @@
+get_last_sample
+===============
+
+``jeanspy.sampler.Sampler.get_last_sample``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.get_last_sample
+   :no-index:

@@ -1,0 +1,68 @@
+{
+  "python": "3.12.3",
+  "packages": {
+    "numpy": "2.4.3",
+    "scipy": "1.17.1",
+    "emcee": "3.1.6",
+    "jax": "0.9.1",
+    "numpyro": "0.20.0",
+    "arviz": "1.0.0",
+    "matplotlib": "3.10.8",
+    "corner": "2.2.3"
+  },
+  "environment": {
+    "JEANSPY_JAX_PLATFORM": "cpu",
+    "JEANSPY_JAX_ENABLE_X64": "true"
+  },
+  "source_sha256": {
+    "examples/docs_quickstart_data.py": "de17eb2a446b5a8c80a2dac6a2f29d6eaa5567c89e11e4027b986231ebde7e5b",
+    "examples/docs_quickstart_emcee.py": "c9178ca5c0948c0e7a2a05198c9a35c212bd8403586490ee0203f84f1e5877fc",
+    "examples/docs_quickstart_numpyro.py": "75de53f8bd70f554ac74b605c7d3dea261a9b05702570c4f9a3b806c79d56c5f",
+    "examples/docs_quickstart_plots.py": "0d4bbf53c5d98b1dbaa240b3a83849dfa5f9521602be83f35d347bec8ca3129b",
+    "scripts/run_quickstart.py": "c7a1e439e9a2f79ace84b7970a0ec35b3cb3cb274d68b9b515ebcef9769d150b",
+    "src/jeanspy/__init__.py": "61671d182af04c0056cfb8d273db499d8774694711506698dbe7dc4a63d3b403",
+    "src/jeanspy/_axisymmetric_components.py": "4b203c616c87e55182d105b37f9fa49e44fe1df6bc430ccccb09edc5cca42530",
+    "src/jeanspy/_axisymmetric_params.py": "85da8de45bf5ba8cd9a40a137f7ccf971f7ce9534f312ef49fcd33539a230802",
+    "src/jeanspy/_jax_env.py": "2ef46eaf5cbd8e72a0c17351490207c29586979082cabc87128c9bd16fc689a4",
+    "src/jeanspy/_numpy/__init__.py": "de2d19d61e00702f13996582369f6acbe92b74628e6f569f91c3215a53580117",
+    "src/jeanspy/_numpy/core.py": "d073c6409d5f8cf527947c1ddf3916cb39cef3f6d4e43173cad59d148e463296",
+    "src/jeanspy/_numpy/inference.py": "ab58728400b6e56189ffba9ee805d9edbf59ca13dfebe05498801592314552db",
+    "src/jeanspy/_numpy/jfactor.py": "823f58a66a615ba59e057022ce51e2adfab577c25a4ced2f2033304c2cbd6cfe",
+    "src/jeanspy/_numpy/profiles.py": "8af05c5741af179f8c509cc9acfd46b5989a920250077d6bd42d62d4f8327106",
+    "src/jeanspy/_numpy/solver.py": "b419796e2a912a46f65404cb5026ccb73799e1dbb8f80052f404148dd1f5ef3c",
+    "src/jeanspy/_sampling_identity.py": "b0e70b77e38f25e2148ab1f108a714512a8b6054405c846c3a41730b07081cec",
+    "src/jeanspy/_sersic_deprojection.py": "004c5566448698ecfe536096c3fc8d5c348a8d4e1610042763c77568c0f3d821",
+    "src/jeanspy/_zhao.py": "699a0810d8cfdf1b5d2a9aad030a012b982640ca047ee07e7b72fc53201c590d",
+    "src/jeanspy/axisymmetric.py": "683d67b91f8eb67e8d898eb23e6c8ca0e5c78020a65a7d05e183c19b076bd506",
+    "src/jeanspy/axisymmetric_factors.py": "754b256f7d3d43cc72571cde2b22bc9419917cf13b17342cd5f52406c4111336",
+    "src/jeanspy/axisymmetric_inference.py": "57078226b3643f8babda4d942b96ae546622da28802119d3d99ff6a0c5b45695",
+    "src/jeanspy/axisymmetric_jax.py": "de5f78937104ce7008242d55c321c8a3c6d9491f6aa25d4be3bdab8de076ed54",
+    "src/jeanspy/baes_eta2.py": "c274a16ca8c4b4d8d76ec30a2e705b5a5f6ce7659b31e31b5c685f92ab7a7ece",
+    "src/jeanspy/dequad.py": "6260e7ee2d8da12265573e86ff81ba0a3e8912df5fec8588a84bfda9d3b1133d",
+    "src/jeanspy/hyp2f1_jax.py": "03d8df3b48fcd9d418e289ea2ffaf174ffbdf14dffe483a150403c092bbaeea8",
+    "src/jeanspy/model.py": "72af25df8f34816f27d373fdecf41408c79eb505cb4cb52c830822d5d8f12f2b",
+    "src/jeanspy/model_jax.py": "355ba42ad16b2cadd00906679dd06ee12fd85fe4f1fc48630c779e68e4fabd64",
+    "src/jeanspy/parameters.py": "7760f4c85063105eb1328910867f3c57516f885dc577533bf9b91ac08a648cb2",
+    "src/jeanspy/sampler.py": "42ca0bbcef84b7c1620fd977d71810284a5d6abd70ff6047ae3175822d63f10e",
+    "src/jeanspy/sampler_numpyro.py": "ccd367d576bc55173d85939ad4bf7eeb8a44130d693f40ee56f4eade278c2195",
+    "src/jeanspy/sersic.py": "1cea4e4d28b44a7ffeac74e8083b570975ad5ce390ff3a0e668bfc3819c05826",
+    "uv.lock": "a30f366620e23a49d6d7466055223a761824454169d8fc0364c24ac25b626dc7"
+  },
+  "tooling": {
+    "runner_sha256": "29cb65a03660dc89cda1bb59f279df8315a37e730dd7c82dabc7b4d75e464b41",
+    "commit": "4092e53a23041182cb093d4c7d651c41f74c6e1a",
+    "example_timeout_seconds": 1800
+  },
+  "data_sha256": "6e77bfee9b7baec89da8c921faaf028ff9e822defc2c392dc70596f18418b73c",
+  "outputs_sha256": {
+    "emcee-autocorrelation.png": "5652de5951ada4fa32c84e0e44b0a0239ed1da036e771149f2445e57b225b98d",
+    "emcee-posterior.png": "002ed2cbf54d43c6e6e83a1fbe8416182dbeb3e7a2f744a83981de0b9540d3cf",
+    "emcee-trace.png": "91b6c75224267a9f6383ca22d90155da7680bafd11877a86b2ac636fd023bbc8",
+    "emcee.txt": "1e35b8c0e7d6adc4ba011c73f85a29d2e1e8d800e9f8daeb474520be34fc95f1",
+    "numpyro-autocorrelation.png": "724e3336e769d055fdb37a78ef19cd3248b735a34e815defff889c71e24bd80a",
+    "numpyro-posterior.png": "5cb6de80dba8cb67eb1e45f413024d25dc9156ce1e57d21476275a11ec8534eb",
+    "numpyro-trace.png": "04a816a7f9d8514bf779caceeaa4d2f16e89f99faa22056b0b3660aad11c5143",
+    "numpyro.txt": "7ff323867786fc150dc182e5e6207d69960a8b2ad65e639afa7dde83cc9ba614",
+    "observations.png": "cb3aa1dc33d432fb8fbf9e72b15922b97421b10af8481a233d58510b38dd3cd5"
+  }
+}

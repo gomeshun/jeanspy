@@ -1,0 +1,14 @@
+﻿SamplerRunResult
+================
+
+``jeanspy.sampler_numpyro.SamplerRunResult``
+
+
+
+.. currentmodule:: jeanspy.sampler_numpyro
+
+.. autoclass:: SamplerRunResult
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:

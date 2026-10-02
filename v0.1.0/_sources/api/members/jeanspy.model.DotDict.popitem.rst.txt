@@ -1,0 +1,9 @@
+popitem
+=======
+
+``jeanspy.model.DotDict.popitem``
+
+Class and construction: :doc:`DotDict <../generated/jeanspy.model.DotDict>`.
+
+.. automethod:: jeanspy.model.DotDict.popitem
+   :no-index:

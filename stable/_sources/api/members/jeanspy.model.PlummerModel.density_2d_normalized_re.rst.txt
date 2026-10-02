@@ -1,0 +1,9 @@
+density_2d_normalized_re
+========================
+
+``jeanspy.model.PlummerModel.density_2d_normalized_re``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model.PlummerModel>`.
+
+.. automethod:: jeanspy.model.PlummerModel.density_2d_normalized_re
+   :no-index:

@@ -1,0 +1,8 @@
+﻿hyp2f1\_1b\_3half\_asymptotic
+=============================
+
+``jeanspy.hyp2f1_jax.hyp2f1_1b_3half_asymptotic``
+
+.. currentmodule:: jeanspy.hyp2f1_jax
+
+.. autofunction:: hyp2f1_1b_3half_asymptotic

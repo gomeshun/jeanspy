@@ -1,0 +1,6 @@
+﻿jeanspy.model.C\_J
+==================
+
+.. currentmodule:: jeanspy.model
+
+.. autodata:: C_J

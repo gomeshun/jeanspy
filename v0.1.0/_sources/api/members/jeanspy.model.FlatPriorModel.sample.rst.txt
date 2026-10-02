@@ -1,0 +1,9 @@
+sample
+======
+
+``jeanspy.model.FlatPriorModel.sample``
+
+Class and construction: :doc:`FlatPriorModel <../generated/jeanspy.model.FlatPriorModel>`.
+
+.. automethod:: jeanspy.model.FlatPriorModel.sample
+   :no-index:

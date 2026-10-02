@@ -1,0 +1,9 @@
+lnpriors
+========
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphEstimationModel.lnpriors
+   :no-index:

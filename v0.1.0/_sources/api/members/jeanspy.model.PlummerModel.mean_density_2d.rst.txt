@@ -1,0 +1,9 @@
+mean_density_2d
+===============
+
+``jeanspy.model.PlummerModel.mean_density_2d``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model.PlummerModel>`.
+
+.. automethod:: jeanspy.model.PlummerModel.mean_density_2d
+   :no-index:

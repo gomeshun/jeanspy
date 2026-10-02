@@ -1,0 +1,9 @@
+density_3d_VM20bis
+==================
+
+``jeanspy.model.SersicModel.density_3d_VM20bis``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.density_3d_VM20bis
+   :no-index:

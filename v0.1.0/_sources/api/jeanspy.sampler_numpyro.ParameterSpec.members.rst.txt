@@ -1,0 +1,12 @@
+ParameterSpec members
+=====================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.sampler_numpyro.ParameterSpec.build_distribution
+   members/jeanspy.sampler_numpyro.ParameterSpec.exp
+   members/jeanspy.sampler_numpyro.ParameterSpec.pow10
+   members/jeanspy.sampler_numpyro.ParameterSpec.records_deterministic
+   members/jeanspy.sampler_numpyro.ParameterSpec.resolved_deterministic_name
+   members/jeanspy.sampler_numpyro.ParameterSpec.sample

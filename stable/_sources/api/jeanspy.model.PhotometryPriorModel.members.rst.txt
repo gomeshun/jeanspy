@@ -1,0 +1,14 @@
+PhotometryPriorModel members
+============================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.PhotometryPriorModel.is_required_param_names
+   members/jeanspy.model.PhotometryPriorModel.params_all
+   members/jeanspy.model.PhotometryPriorModel.params_all_with_model_name
+   members/jeanspy.model.PhotometryPriorModel.required_param_names_combined
+   members/jeanspy.model.PhotometryPriorModel.reset_prior
+   members/jeanspy.model.PhotometryPriorModel.sample
+   members/jeanspy.model.PhotometryPriorModel.sampling_identity
+   members/jeanspy.model.PhotometryPriorModel.update

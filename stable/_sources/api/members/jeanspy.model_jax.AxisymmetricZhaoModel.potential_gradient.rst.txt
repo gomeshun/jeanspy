@@ -1,0 +1,9 @@
+potential_gradient
+==================
+
+``jeanspy.model_jax.AxisymmetricZhaoModel.potential_gradient``
+
+Class and construction: :doc:`AxisymmetricZhaoModel <../generated/jeanspy.model_jax.AxisymmetricZhaoModel>`.
+
+.. automethod:: jeanspy.model_jax.AxisymmetricZhaoModel.potential_gradient
+   :no-index:

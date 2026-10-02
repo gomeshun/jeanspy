@@ -1,0 +1,9 @@
+clear_resume_state
+==================
+
+``jeanspy.sampler_numpyro.NumPyroSampler.clear_resume_state``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.clear_resume_state
+   :no-index:

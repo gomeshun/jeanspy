@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.ProjectedExponentialModel.sampling_identity``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. automethod:: jeanspy.model.ProjectedExponentialModel.sampling_identity
+   :no-index:

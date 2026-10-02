@@ -1,0 +1,21 @@
+ProjectedExponentialModel members
+=================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.ProjectedExponentialModel.cdf_R
+   members/jeanspy.model.ProjectedExponentialModel.density
+   members/jeanspy.model.ProjectedExponentialModel.density_2d
+   members/jeanspy.model.ProjectedExponentialModel.density_2d_truncated
+   members/jeanspy.model.ProjectedExponentialModel.density_3d
+   members/jeanspy.model.ProjectedExponentialModel.half_light_radius
+   members/jeanspy.model.ProjectedExponentialModel.is_required_param_names
+   members/jeanspy.model.ProjectedExponentialModel.logdensity_2d
+   members/jeanspy.model.ProjectedExponentialModel.mean_density_2d
+   members/jeanspy.model.ProjectedExponentialModel.params_all
+   members/jeanspy.model.ProjectedExponentialModel.params_all_with_model_name
+   members/jeanspy.model.ProjectedExponentialModel.re_pc
+   members/jeanspy.model.ProjectedExponentialModel.required_param_names_combined
+   members/jeanspy.model.ProjectedExponentialModel.sampling_identity
+   members/jeanspy.model.ProjectedExponentialModel.update

@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.PlummerModel.params_all_with_model_name``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model.PlummerModel>`.
+
+.. autoattribute:: jeanspy.model.PlummerModel.params_all_with_model_name
+   :no-index:

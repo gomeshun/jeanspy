@@ -1,0 +1,9 @@
+p_LGM
+=====
+
+``jeanspy.model.SersicModel.p_LGM``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. autoattribute:: jeanspy.model.SersicModel.p_LGM
+   :no-index:

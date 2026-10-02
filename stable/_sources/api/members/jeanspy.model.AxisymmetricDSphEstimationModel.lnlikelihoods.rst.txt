@@ -1,0 +1,9 @@
+lnlikelihoods
+=============
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphEstimationModel.lnlikelihoods
+   :no-index:

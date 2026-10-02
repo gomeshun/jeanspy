@@ -1,0 +1,9 @@
+jfactor_spherical_aperture
+==========================
+
+``jeanspy.model.ZhaoModel.jfactor_spherical_aperture``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. automethod:: jeanspy.model.ZhaoModel.jfactor_spherical_aperture
+   :no-index:

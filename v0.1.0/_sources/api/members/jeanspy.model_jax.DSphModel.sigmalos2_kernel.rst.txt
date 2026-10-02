@@ -1,0 +1,9 @@
+sigmalos2_kernel
+================
+
+``jeanspy.model_jax.DSphModel.sigmalos2_kernel``
+
+Class and construction: :doc:`DSphModel <../generated/jeanspy.model_jax.DSphModel>`.
+
+.. automethod:: jeanspy.model_jax.DSphModel.sigmalos2_kernel
+   :no-index:

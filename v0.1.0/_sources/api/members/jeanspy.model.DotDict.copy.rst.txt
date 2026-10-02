@@ -1,0 +1,9 @@
+copy
+====
+
+``jeanspy.model.DotDict.copy``
+
+Class and construction: :doc:`DotDict <../generated/jeanspy.model.DotDict>`.
+
+.. automethod:: jeanspy.model.DotDict.copy
+   :no-index:

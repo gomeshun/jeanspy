@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.SphericalDSphEstimationModel.update``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SphericalDSphEstimationModel.update
+   :no-index:

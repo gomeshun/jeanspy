@@ -1,0 +1,9 @@
+prior_names
+===========
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.prior_names``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.AxisymmetricDSphEstimationModel.prior_names
+   :no-index:

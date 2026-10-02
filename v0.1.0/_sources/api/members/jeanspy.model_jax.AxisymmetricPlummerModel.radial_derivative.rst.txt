@@ -1,0 +1,9 @@
+radial_derivative
+=================
+
+``jeanspy.model_jax.AxisymmetricPlummerModel.radial_derivative``
+
+Class and construction: :doc:`AxisymmetricPlummerModel <../generated/jeanspy.model_jax.AxisymmetricPlummerModel>`.
+
+.. automethod:: jeanspy.model_jax.AxisymmetricPlummerModel.radial_derivative
+   :no-index:

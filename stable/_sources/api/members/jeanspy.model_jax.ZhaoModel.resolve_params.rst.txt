@@ -1,0 +1,9 @@
+resolve_params
+==============
+
+``jeanspy.model_jax.ZhaoModel.resolve_params``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model_jax.ZhaoModel>`.
+
+.. automethod:: jeanspy.model_jax.ZhaoModel.resolve_params
+   :no-index:

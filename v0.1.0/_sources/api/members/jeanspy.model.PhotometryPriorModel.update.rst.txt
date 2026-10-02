@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.PhotometryPriorModel.update``
+
+Class and construction: :doc:`PhotometryPriorModel <../generated/jeanspy.model.PhotometryPriorModel>`.
+
+.. automethod:: jeanspy.model.PhotometryPriorModel.update
+   :no-index:

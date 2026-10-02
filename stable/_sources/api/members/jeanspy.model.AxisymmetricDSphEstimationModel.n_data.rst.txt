@@ -1,0 +1,9 @@
+n_data
+======
+
+``jeanspy.model.AxisymmetricDSphEstimationModel.n_data``
+
+Class and construction: :doc:`AxisymmetricDSphEstimationModel <../generated/jeanspy.model.AxisymmetricDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.AxisymmetricDSphEstimationModel.n_data
+   :no-index:

@@ -1,0 +1,9 @@
+release_shared_memory
+=====================
+
+``jeanspy.model.SphericalDSphEstimationModel.release_shared_memory``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SphericalDSphEstimationModel.release_shared_memory
+   :no-index:

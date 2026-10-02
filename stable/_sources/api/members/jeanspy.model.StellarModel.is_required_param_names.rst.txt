@@ -1,0 +1,9 @@
+is_required_param_names
+=======================
+
+``jeanspy.model.StellarModel.is_required_param_names``
+
+Class and construction: :doc:`StellarModel <../generated/jeanspy.model.StellarModel>`.
+
+.. automethod:: jeanspy.model.StellarModel.is_required_param_names
+   :no-index:

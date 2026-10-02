@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.ZhaoModel.params_all_with_model_name``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. autoattribute:: jeanspy.model.ZhaoModel.params_all_with_model_name
+   :no-index:

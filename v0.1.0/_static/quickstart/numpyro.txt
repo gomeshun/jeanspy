@@ -1,0 +1,11 @@
+First checkpoint saved: True
+Resumed from checkpoint: True
+Stored chunks: 2
+Stored samples per parameter: (2, 512)
+                    mean    sd eti89_lb eti89_ub  ess_bulk  ess_tail r_hat mcse_mean mcse_sd
+log10_rs_pc         3.16  0.51      2.3      3.9       334       384  1.00     0.029   0.018
+log10_rhos_Msunpc3  -1.5   0.8     -2.7   -0.062       232       379  1.00     0.053   0.038
+gamma               0.88  0.49     0.14      1.7       446       461  1.00     0.023   0.013
+beta_ani            0.24  0.43    -0.66     0.72       498       543  1.01     0.018   0.013
+vmem_kms            -0.2  1.57     -2.6      2.5       535       507  1.00     0.069   0.049
+Divergences: 0

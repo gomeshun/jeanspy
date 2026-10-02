@@ -1,0 +1,9 @@
+has_analytic_enclosed_mass
+==========================
+
+``jeanspy.model_jax.NFWModel.has_analytic_enclosed_mass``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model_jax.NFWModel>`.
+
+.. autoattribute:: jeanspy.model_jax.NFWModel.has_analytic_enclosed_mass
+   :no-index:

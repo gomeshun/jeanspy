@@ -1,0 +1,6 @@
+﻿jeanspy.axisymmetric\_factors.C\_J
+==================================
+
+.. currentmodule:: jeanspy.axisymmetric_factors
+
+.. autodata:: C_J

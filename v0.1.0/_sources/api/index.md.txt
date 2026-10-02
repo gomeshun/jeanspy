@@ -1,0 +1,32 @@
+# API reference
+
+Look up an API independently of the tutorials. Each public class,
+function and constant has its own entry; methods and properties also
+have individual lookup pages with their source documentation.
+
+**Find a name:** [Alphabetical API dictionary](all) (including class
+members and aliases), [import modules](modules), or the site search.
+
+**Browse by purpose:** choose a category and implementation below.
+
+| Category | Contents |
+| --- | --- |
+| [Core utilities](core) | Units, parameter containers, runtime settings and numerical helpers |
+| [Spherical models](spherical) | Stellar profiles, dark-matter halos, anisotropy and Jeans solvers |
+| [Axisymmetric models](axisymmetric-models) | Flattened components, projection, Jeans solvers and J/D factors |
+| [Statistical inference](inference) | Observations, priors, likelihoods, MCMC and storage |
+
+See also the [units and shape contract](../guides/contracts.md) and
+[Quickstart](../quickstart.ipynb). [Browse by import module](modules).
+
+```{toctree}
+:hidden:
+:maxdepth: 2
+
+core
+spherical
+axisymmetric-models
+inference
+all
+modules
+```

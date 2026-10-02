@@ -1,0 +1,9 @@
+integrand_sigmalos2
+===================
+
+``jeanspy.model.DSphModel.integrand_sigmalos2``
+
+Class and construction: :doc:`DSphModel <../generated/jeanspy.model.DSphModel>`.
+
+.. automethod:: jeanspy.model.DSphModel.integrand_sigmalos2
+   :no-index:

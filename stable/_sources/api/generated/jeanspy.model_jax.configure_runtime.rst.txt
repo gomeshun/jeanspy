@@ -1,0 +1,8 @@
+﻿configure\_runtime
+==================
+
+``jeanspy.model_jax.configure_runtime``
+
+.. currentmodule:: jeanspy.model_jax
+
+.. autofunction:: configure_runtime

@@ -1,0 +1,9 @@
+update
+======
+
+``jeanspy.model.ZhaoModel.update``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. automethod:: jeanspy.model.ZhaoModel.update
+   :no-index:

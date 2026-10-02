@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model_jax.BaesAnisotropyModel.sampling_identity``
+
+Class and construction: :doc:`BaesAnisotropyModel <../generated/jeanspy.model_jax.BaesAnisotropyModel>`.
+
+.. automethod:: jeanspy.model_jax.BaesAnisotropyModel.sampling_identity
+   :no-index:

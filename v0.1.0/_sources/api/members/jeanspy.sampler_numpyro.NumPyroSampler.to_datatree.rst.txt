@@ -1,0 +1,9 @@
+to_datatree
+===========
+
+``jeanspy.sampler_numpyro.NumPyroSampler.to_datatree``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.to_datatree
+   :no-index:

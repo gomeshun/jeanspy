@@ -1,0 +1,14 @@
+Spherical Sersic tracer
+=======================
+
+.. py:module:: jeanspy.sersic
+
+.. currentmodule:: jeanspy.sersic
+
+See :doc:`../guides/contracts` for units, shapes, domains and backend
+boundaries, and :doc:`../quickstart` for executable minimal examples.
+
+Aliases
+-------
+
+* ``jeanspy.sersic.SersicModel`` is :py:obj:`jeanspy.model.SersicModel`.

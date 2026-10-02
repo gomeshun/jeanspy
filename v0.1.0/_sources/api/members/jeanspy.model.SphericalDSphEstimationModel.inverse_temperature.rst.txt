@@ -1,0 +1,9 @@
+inverse_temperature
+===================
+
+``jeanspy.model.SphericalDSphEstimationModel.inverse_temperature``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SphericalDSphEstimationModel.inverse_temperature
+   :no-index:

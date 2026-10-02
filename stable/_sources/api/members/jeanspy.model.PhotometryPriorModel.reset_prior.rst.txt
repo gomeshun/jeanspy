@@ -1,0 +1,9 @@
+reset_prior
+===========
+
+``jeanspy.model.PhotometryPriorModel.reset_prior``
+
+Class and construction: :doc:`PhotometryPriorModel <../generated/jeanspy.model.PhotometryPriorModel>`.
+
+.. automethod:: jeanspy.model.PhotometryPriorModel.reset_prior
+   :no-index:

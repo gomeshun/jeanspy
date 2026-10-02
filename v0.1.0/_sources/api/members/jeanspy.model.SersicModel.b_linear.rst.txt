@@ -1,0 +1,9 @@
+b_linear
+========
+
+``jeanspy.model.SersicModel.b_linear``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. autoattribute:: jeanspy.model.SersicModel.b_linear
+   :no-index:

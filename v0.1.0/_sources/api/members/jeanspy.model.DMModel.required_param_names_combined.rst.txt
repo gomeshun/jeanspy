@@ -1,0 +1,9 @@
+required_param_names_combined
+=============================
+
+``jeanspy.model.DMModel.required_param_names_combined``
+
+Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
+
+.. autoattribute:: jeanspy.model.DMModel.required_param_names_combined
+   :no-index:

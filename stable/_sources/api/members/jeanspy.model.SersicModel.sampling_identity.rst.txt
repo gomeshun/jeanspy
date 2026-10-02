@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.SersicModel.sampling_identity``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.sampling_identity
+   :no-index:

@@ -1,0 +1,8 @@
+﻿generate\_x\_w
+==============
+
+``jeanspy.dequad.generate_x_w``
+
+.. currentmodule:: jeanspy.dequad
+
+.. autofunction:: generate_x_w

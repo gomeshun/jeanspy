@@ -1,0 +1,9 @@
+cdf_R
+=====
+
+``jeanspy.model.SersicModel.cdf_R``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.cdf_R
+   :no-index:

@@ -1,0 +1,8 @@
+﻿jfactor
+=======
+
+``jeanspy.axisymmetric_factors.jfactor``
+
+.. currentmodule:: jeanspy.axisymmetric_factors
+
+.. autofunction:: jfactor

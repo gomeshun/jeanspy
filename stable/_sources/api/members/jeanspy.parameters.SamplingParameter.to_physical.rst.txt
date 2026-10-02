@@ -1,0 +1,9 @@
+to_physical
+===========
+
+``jeanspy.parameters.SamplingParameter.to_physical``
+
+Class and construction: :doc:`SamplingParameter <../generated/jeanspy.parameters.SamplingParameter>`.
+
+.. automethod:: jeanspy.parameters.SamplingParameter.to_physical
+   :no-index:

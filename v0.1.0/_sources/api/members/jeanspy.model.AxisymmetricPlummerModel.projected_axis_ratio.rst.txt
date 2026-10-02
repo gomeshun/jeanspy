@@ -1,0 +1,9 @@
+projected_axis_ratio
+====================
+
+``jeanspy.model.AxisymmetricPlummerModel.projected_axis_ratio``
+
+Class and construction: :doc:`AxisymmetricPlummerModel <../generated/jeanspy.model.AxisymmetricPlummerModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricPlummerModel.projected_axis_ratio
+   :no-index:

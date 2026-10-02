@@ -1,0 +1,9 @@
+density_2d
+==========
+
+``jeanspy.model.ProjectedExponentialModel.density_2d``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. automethod:: jeanspy.model.ProjectedExponentialModel.density_2d
+   :no-index:

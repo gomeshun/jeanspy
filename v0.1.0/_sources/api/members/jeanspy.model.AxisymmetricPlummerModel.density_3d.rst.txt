@@ -1,0 +1,9 @@
+density_3d
+==========
+
+``jeanspy.model.AxisymmetricPlummerModel.density_3d``
+
+Class and construction: :doc:`AxisymmetricPlummerModel <../generated/jeanspy.model.AxisymmetricPlummerModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricPlummerModel.density_3d
+   :no-index:

@@ -1,0 +1,9 @@
+metadata_path
+=============
+
+``jeanspy.sampler_numpyro.NumPyroSampler.metadata_path``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. autoattribute:: jeanspy.sampler_numpyro.NumPyroSampler.metadata_path
+   :no-index:

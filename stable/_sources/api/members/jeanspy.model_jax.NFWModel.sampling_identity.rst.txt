@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model_jax.NFWModel.sampling_identity``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model_jax.NFWModel>`.
+
+.. automethod:: jeanspy.model_jax.NFWModel.sampling_identity
+   :no-index:

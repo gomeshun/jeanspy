@@ -1,0 +1,9 @@
+density
+=======
+
+``jeanspy.model.SersicModel.density``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.density
+   :no-index:

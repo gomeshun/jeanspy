@@ -1,0 +1,17 @@
+AxisymmetricDSphModel members
+=============================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.AxisymmetricDSphModel.density_3d
+   members/jeanspy.model.AxisymmetricDSphModel.dfactor
+   members/jeanspy.model.AxisymmetricDSphModel.enclosed_mass
+   members/jeanspy.model.AxisymmetricDSphModel.intrinsic_moments
+   members/jeanspy.model.AxisymmetricDSphModel.jfactor
+   members/jeanspy.model.AxisymmetricDSphModel.mass_density_3d
+   members/jeanspy.model.AxisymmetricDSphModel.physical_params
+   members/jeanspy.model.AxisymmetricDSphModel.potential_gradient
+   members/jeanspy.model.AxisymmetricDSphModel.sampling_identity
+   members/jeanspy.model.AxisymmetricDSphModel.sigmalos2
+   members/jeanspy.model.AxisymmetricDSphModel.surface_density

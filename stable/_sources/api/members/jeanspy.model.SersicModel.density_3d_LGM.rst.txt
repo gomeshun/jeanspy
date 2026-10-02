@@ -1,0 +1,9 @@
+density_3d_LGM
+==============
+
+``jeanspy.model.SersicModel.density_3d_LGM``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. automethod:: jeanspy.model.SersicModel.density_3d_LGM
+   :no-index:

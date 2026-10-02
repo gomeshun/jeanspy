@@ -1,0 +1,9 @@
+copy
+====
+
+``jeanspy.model.Parameters.copy``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. automethod:: jeanspy.model.Parameters.copy
+   :no-index:

@@ -1,0 +1,16 @@
+StellarModel members
+====================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.StellarModel.density
+   members/jeanspy.model.StellarModel.density_2d
+   members/jeanspy.model.StellarModel.density_2d_truncated
+   members/jeanspy.model.StellarModel.density_3d
+   members/jeanspy.model.StellarModel.is_required_param_names
+   members/jeanspy.model.StellarModel.params_all
+   members/jeanspy.model.StellarModel.params_all_with_model_name
+   members/jeanspy.model.StellarModel.required_param_names_combined
+   members/jeanspy.model.StellarModel.sampling_identity
+   members/jeanspy.model.StellarModel.update

@@ -1,0 +1,9 @@
+data
+====
+
+``jeanspy.model.SphericalDSphEstimationModel.data``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SphericalDSphEstimationModel.data
+   :no-index:

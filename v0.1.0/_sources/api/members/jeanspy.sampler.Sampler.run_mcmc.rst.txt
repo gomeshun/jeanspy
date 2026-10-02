@@ -1,0 +1,9 @@
+run_mcmc
+========
+
+``jeanspy.sampler.Sampler.run_mcmc``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.run_mcmc
+   :no-index:

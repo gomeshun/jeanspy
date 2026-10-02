@@ -1,0 +1,9 @@
+surface_density
+===============
+
+``jeanspy.model.AxisymmetricStellarModel.surface_density``
+
+Class and construction: :doc:`AxisymmetricStellarModel <../generated/jeanspy.model.AxisymmetricStellarModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricStellarModel.surface_density
+   :no-index:

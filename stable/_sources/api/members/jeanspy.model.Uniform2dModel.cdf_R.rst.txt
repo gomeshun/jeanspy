@@ -1,0 +1,9 @@
+cdf_R
+=====
+
+``jeanspy.model.Uniform2dModel.cdf_R``
+
+Class and construction: :doc:`Uniform2dModel <../generated/jeanspy.model.Uniform2dModel>`.
+
+.. automethod:: jeanspy.model.Uniform2dModel.cdf_R
+   :no-index:

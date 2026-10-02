@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.SphericalDSphEstimationModel.params_all_with_model_name``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SphericalDSphEstimationModel.params_all_with_model_name
+   :no-index:

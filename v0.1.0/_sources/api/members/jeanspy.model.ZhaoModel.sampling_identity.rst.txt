@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.ZhaoModel.sampling_identity``
+
+Class and construction: :doc:`ZhaoModel <../generated/jeanspy.model.ZhaoModel>`.
+
+.. automethod:: jeanspy.model.ZhaoModel.sampling_identity
+   :no-index:

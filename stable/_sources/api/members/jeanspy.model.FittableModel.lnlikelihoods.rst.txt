@@ -1,0 +1,9 @@
+lnlikelihoods
+=============
+
+``jeanspy.model.FittableModel.lnlikelihoods``
+
+Class and construction: :doc:`FittableModel <../generated/jeanspy.model.FittableModel>`.
+
+.. automethod:: jeanspy.model.FittableModel.lnlikelihoods
+   :no-index:

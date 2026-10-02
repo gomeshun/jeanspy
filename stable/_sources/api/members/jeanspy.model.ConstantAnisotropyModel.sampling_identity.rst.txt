@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.ConstantAnisotropyModel.sampling_identity``
+
+Class and construction: :doc:`ConstantAnisotropyModel <../generated/jeanspy.model.ConstantAnisotropyModel>`.
+
+.. automethod:: jeanspy.model.ConstantAnisotropyModel.sampling_identity
+   :no-index:

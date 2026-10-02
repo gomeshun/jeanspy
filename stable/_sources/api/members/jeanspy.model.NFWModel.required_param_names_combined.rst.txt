@@ -1,0 +1,9 @@
+required_param_names_combined
+=============================
+
+``jeanspy.model.NFWModel.required_param_names_combined``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. autoattribute:: jeanspy.model.NFWModel.required_param_names_combined
+   :no-index:

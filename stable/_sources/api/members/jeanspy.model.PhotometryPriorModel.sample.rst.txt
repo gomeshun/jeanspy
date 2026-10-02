@@ -1,0 +1,9 @@
+sample
+======
+
+``jeanspy.model.PhotometryPriorModel.sample``
+
+Class and construction: :doc:`PhotometryPriorModel <../generated/jeanspy.model.PhotometryPriorModel>`.
+
+.. automethod:: jeanspy.model.PhotometryPriorModel.sample
+   :no-index:

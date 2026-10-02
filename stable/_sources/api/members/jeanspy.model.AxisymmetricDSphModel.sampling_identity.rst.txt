@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.AxisymmetricDSphModel.sampling_identity``
+
+Class and construction: :doc:`AxisymmetricDSphModel <../generated/jeanspy.model.AxisymmetricDSphModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphModel.sampling_identity
+   :no-index:

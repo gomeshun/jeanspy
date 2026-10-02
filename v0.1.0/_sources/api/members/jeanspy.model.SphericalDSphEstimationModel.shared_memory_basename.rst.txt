@@ -1,0 +1,9 @@
+shared_memory_basename
+======================
+
+``jeanspy.model.SphericalDSphEstimationModel.shared_memory_basename``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. autoattribute:: jeanspy.model.SphericalDSphEstimationModel.shared_memory_basename
+   :no-index:

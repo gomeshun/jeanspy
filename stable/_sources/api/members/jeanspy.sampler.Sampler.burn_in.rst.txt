@@ -1,0 +1,9 @@
+burn_in
+=======
+
+``jeanspy.sampler.Sampler.burn_in``
+
+Class and construction: :doc:`Sampler <../generated/jeanspy.sampler.Sampler>`.
+
+.. automethod:: jeanspy.sampler.Sampler.burn_in
+   :no-index:

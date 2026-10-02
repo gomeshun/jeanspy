@@ -1,0 +1,9 @@
+jfactor_cone
+============
+
+``jeanspy.model.NFWModel.jfactor_cone``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. automethod:: jeanspy.model.NFWModel.jfactor_cone
+   :no-index:

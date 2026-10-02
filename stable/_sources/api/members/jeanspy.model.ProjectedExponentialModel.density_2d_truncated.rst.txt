@@ -1,0 +1,9 @@
+density_2d_truncated
+====================
+
+``jeanspy.model.ProjectedExponentialModel.density_2d_truncated``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. automethod:: jeanspy.model.ProjectedExponentialModel.density_2d_truncated
+   :no-index:

@@ -1,0 +1,9 @@
+required_param_names_combined
+=============================
+
+``jeanspy.model.SersicModel.required_param_names_combined``
+
+Class and construction: :doc:`SersicModel <../generated/jeanspy.model.SersicModel>`.
+
+.. autoattribute:: jeanspy.model.SersicModel.required_param_names_combined
+   :no-index:

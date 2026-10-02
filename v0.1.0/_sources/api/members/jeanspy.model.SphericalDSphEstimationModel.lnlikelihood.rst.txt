@@ -1,0 +1,9 @@
+lnlikelihood
+============
+
+``jeanspy.model.SphericalDSphEstimationModel.lnlikelihood``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SphericalDSphEstimationModel.lnlikelihood
+   :no-index:

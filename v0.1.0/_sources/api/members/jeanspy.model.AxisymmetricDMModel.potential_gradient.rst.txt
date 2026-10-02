@@ -1,0 +1,9 @@
+potential_gradient
+==================
+
+``jeanspy.model.AxisymmetricDMModel.potential_gradient``
+
+Class and construction: :doc:`AxisymmetricDMModel <../generated/jeanspy.model.AxisymmetricDMModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDMModel.potential_gradient
+   :no-index:

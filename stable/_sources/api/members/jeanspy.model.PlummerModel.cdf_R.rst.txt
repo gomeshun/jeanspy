@@ -1,0 +1,9 @@
+cdf_R
+=====
+
+``jeanspy.model.PlummerModel.cdf_R``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model.PlummerModel>`.
+
+.. automethod:: jeanspy.model.PlummerModel.cdf_R
+   :no-index:

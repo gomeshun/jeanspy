@@ -1,0 +1,17 @@
+DotDict members
+===============
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.DotDict.clear
+   members/jeanspy.model.DotDict.copy
+   members/jeanspy.model.DotDict.fromkeys
+   members/jeanspy.model.DotDict.get
+   members/jeanspy.model.DotDict.items
+   members/jeanspy.model.DotDict.keys
+   members/jeanspy.model.DotDict.pop
+   members/jeanspy.model.DotDict.popitem
+   members/jeanspy.model.DotDict.setdefault
+   members/jeanspy.model.DotDict.update
+   members/jeanspy.model.DotDict.values

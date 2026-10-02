@@ -1,0 +1,9 @@
+combine_trees
+=============
+
+``jeanspy.sampler_numpyro.NumPyroSampler.combine_trees``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.combine_trees
+   :no-index:

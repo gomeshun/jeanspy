@@ -1,0 +1,14 @@
+AxisymmetricDSphModel members
+=============================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_jax.AxisymmetricDSphModel.density_3d
+   members/jeanspy.model_jax.AxisymmetricDSphModel.enclosed_mass
+   members/jeanspy.model_jax.AxisymmetricDSphModel.intrinsic_moments
+   members/jeanspy.model_jax.AxisymmetricDSphModel.mass_density_3d
+   members/jeanspy.model_jax.AxisymmetricDSphModel.potential_gradient
+   members/jeanspy.model_jax.AxisymmetricDSphModel.sampling_identity
+   members/jeanspy.model_jax.AxisymmetricDSphModel.sigmalos2
+   members/jeanspy.model_jax.AxisymmetricDSphModel.surface_density

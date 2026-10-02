@@ -1,0 +1,9 @@
+popitem
+=======
+
+``jeanspy.model.Parameters.popitem``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. automethod:: jeanspy.model.Parameters.popitem
+   :no-index:

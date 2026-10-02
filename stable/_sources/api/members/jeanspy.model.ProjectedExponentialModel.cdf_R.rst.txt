@@ -1,0 +1,9 @@
+cdf_R
+=====
+
+``jeanspy.model.ProjectedExponentialModel.cdf_R``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. automethod:: jeanspy.model.ProjectedExponentialModel.cdf_R
+   :no-index:

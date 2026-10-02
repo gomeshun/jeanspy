@@ -1,0 +1,9 @@
+setdefault
+==========
+
+``jeanspy.model.Parameters.setdefault``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. automethod:: jeanspy.model.Parameters.setdefault
+   :no-index:

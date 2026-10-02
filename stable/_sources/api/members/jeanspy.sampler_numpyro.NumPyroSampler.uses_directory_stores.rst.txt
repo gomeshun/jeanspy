@@ -1,0 +1,9 @@
+uses_directory_stores
+=====================
+
+``jeanspy.sampler_numpyro.NumPyroSampler.uses_directory_stores``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. autoattribute:: jeanspy.sampler_numpyro.NumPyroSampler.uses_directory_stores
+   :no-index:

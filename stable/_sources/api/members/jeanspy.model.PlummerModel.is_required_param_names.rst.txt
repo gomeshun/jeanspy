@@ -1,0 +1,9 @@
+is_required_param_names
+=======================
+
+``jeanspy.model.PlummerModel.is_required_param_names``
+
+Class and construction: :doc:`PlummerModel <../generated/jeanspy.model.PlummerModel>`.
+
+.. automethod:: jeanspy.model.PlummerModel.is_required_param_names
+   :no-index:

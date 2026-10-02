@@ -1,0 +1,8 @@
+JeansLikelihoodModel members
+============================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.sampler_numpyro.JeansLikelihoodModel.__call__
+   members/jeanspy.sampler_numpyro.JeansLikelihoodModel.sample_parameters

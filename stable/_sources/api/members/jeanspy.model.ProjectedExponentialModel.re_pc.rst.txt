@@ -1,0 +1,9 @@
+re_pc
+=====
+
+``jeanspy.model.ProjectedExponentialModel.re_pc``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. autoattribute:: jeanspy.model.ProjectedExponentialModel.re_pc
+   :no-index:

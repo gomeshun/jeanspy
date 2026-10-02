@@ -1,0 +1,9 @@
+to_series
+=========
+
+``jeanspy.model.Parameters.to_series``
+
+Class and construction: :doc:`Parameters <../generated/jeanspy.model.Parameters>`.
+
+.. automethod:: jeanspy.model.Parameters.to_series
+   :no-index:

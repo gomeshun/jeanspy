@@ -1,0 +1,9 @@
+density_3d
+==========
+
+``jeanspy.model.StellarModel.density_3d``
+
+Class and construction: :doc:`StellarModel <../generated/jeanspy.model.StellarModel>`.
+
+.. automethod:: jeanspy.model.StellarModel.density_3d
+   :no-index:

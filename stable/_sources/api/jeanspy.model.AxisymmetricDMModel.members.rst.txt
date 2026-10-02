@@ -1,0 +1,9 @@
+AxisymmetricDMModel members
+===========================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.AxisymmetricDMModel.enclosed_mass
+   members/jeanspy.model.AxisymmetricDMModel.mass_density_3d
+   members/jeanspy.model.AxisymmetricDMModel.potential_gradient

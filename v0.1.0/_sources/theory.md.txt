@@ -1,0 +1,96 @@
+# Theory and numerical methods
+
+## Spherical Jeans equations
+
+For a steady, spherical, nonrotating collisionless tracer, define
+$\beta(r)=1-\sigma_\theta^2/\sigma_r^2$ with
+$\sigma_\theta^2=\sigma_\phi^2$. The second-moment equation is
+
+```{math}
+:label: spherical-jeans
+\frac{d(\nu\sigma_r^2)}{dr}+\frac{2\beta}{r}\nu\sigma_r^2
+=-\nu\frac{GM(r)}{r^2}.
+```
+
+The boundary condition is vanishing radial pressure at infinity. Projection
+gives
+
+```{math}
+\Sigma(R)\sigma_{\rm los}^2(R)=2\int_R^\infty
+\left(1-\beta(r)\frac{R^2}{r^2}\right)
+\frac{\nu(r)\sigma_r^2(r)r\,dr}{\sqrt{r^2-R^2}}.
+```
+
+See {ref}`References: Jeans equations <references-jeans-equations-and-axisymmetric-dynamics>`
+for the dynamical foundations. Both backends offer numerical controls for
+refining the line-of-sight integrals.
+The route, node counts and infinity transformation are part of the numerical
+model and must be recorded. Agreement of two backends is a consistency check;
+an analytic solution or independent integral supplies stronger validation.
+
+## Axisymmetric Jeans equations
+
+The Jeans equations follow from velocity moments of the collisionless
+Boltzmann equation. JeansPy uses cylindrical alignment and constant meridional
+anisotropy as formulated by Cappellari (2008), with spheroidal tracer and halo
+profiles used in dwarf-galaxy applications by Hayashi & Chiba (2012, 2015)
+and Hayashi et al. (2016). The earlier two-integral models and spheroidal force
+integrals are described by van der Marel et al. (1994); Binney & Tremaine (2008)
+provide the general dynamical background. See
+{ref}`References: Jeans equations and axisymmetric dynamics <references-jeans-equations-and-axisymmetric-dynamics>`.
+
+The stellar and halo axes coincide, cross moments vanish, and
+$\beta_z=1-\overline{v_z^2}/\overline{v_R^2}$
+is constant. With $P=\nu\overline{v_z^2}$,
+
+```{math}
+P(R,z)=\int_{|z|}^\infty\nu(R,z')\Phi_z(R,z')\,dz',\qquad
+\overline{v_R^2}=\frac{P}{(1-\beta_z)\nu},\qquad
+\overline{v_\phi^2}=\frac{P+R\,\partial_RP}{(1-\beta_z)\nu}+R\Phi_R.
+```
+
+Neither finite positive moments at observed positions nor successful MCMC
+prove that a positive distribution function exists everywhere. Rotation,
+tilted velocity ellipsoids, spatially varying cylindrical anisotropy,
+Satoh decomposition, triaxiality, stellar self-gravity, PSF convolution
+and spatial-bin averaging are outside the current axisymmetric model.
+
+### Spheroidal force and finite cutoff
+
+The homoeoidal force has `D(t)²=1+(Q²-1)t²`,
+`m(t)²=t²*(R²+z²/D(t)²)`, and
+
+$$
+\Phi_R=4\pi GQR\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)}\,dt,
+\qquad
+\Phi_z=4\pi GQz\int_0^{t_{\max}}\frac{\rho(m)t^2}{D(t)^3}\,dt.
+$$
+
+Without a cutoff, t_max=1. Outside a finite halo, m(t_max)=r_t.
+The analytic radial derivative includes the moving endpoint contribution
+`integrand(t_max)*dt_max/dR`; omitting it would give incorrect azimuthal
+moments outside the cutoff. The pressure boundary condition is P -> 0 at
+infinity, and stellar tracers continue outside the finite halo.
+
+The [axisymmetric geometry guide](guides/axisymmetric.md) defines the
+parameter domains and observer coordinates. See
+[numerical accuracy](guides/numerics.md#axisymmetric-quadrature) for quadrature
+settings and refinement.
+
+## Likelihood and interpretation
+
+The standard unbinned likelihood conditions on positions and independent
+Gaussian velocity errors. It approximates the velocity distribution by a
+Gaussian with the predicted second moment:
+
+```{math}
+\log L=\sum_i\log\mathcal N\!\left(v_i\mid v_{\rm sys},
+\sqrt{\sigma_{\rm los}^2(\boldsymbol x_i)+\epsilon_i^2}\right).
+```
+
+This does not imply that Jeans equations uniquely determine the full velocity
+distribution. Membership cuts, binaries, contaminants, equilibrium and the
+choice of tracer are scientific assumptions that require sensitivity checks.
+Priors are defined in the explicitly named sampling coordinates. A uniform
+prior in `log10_rs_pc` is log-uniform in physical radius; no extra Jacobian
+is added to redefine it as a uniform physical-radius prior.

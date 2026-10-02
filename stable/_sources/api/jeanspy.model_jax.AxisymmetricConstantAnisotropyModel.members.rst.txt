@@ -1,0 +1,7 @@
+AxisymmetricConstantAnisotropyModel members
+===========================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model_jax.AxisymmetricConstantAnisotropyModel.beta

@@ -1,0 +1,9 @@
+is_required_param_names
+=======================
+
+``jeanspy.model.ProjectedExponentialModel.is_required_param_names``
+
+Class and construction: :doc:`ProjectedExponentialModel <../generated/jeanspy.model.ProjectedExponentialModel>`.
+
+.. automethod:: jeanspy.model.ProjectedExponentialModel.is_required_param_names
+   :no-index:

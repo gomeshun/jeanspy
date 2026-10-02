@@ -1,0 +1,9 @@
+save_samples_chunk
+==================
+
+``jeanspy.sampler_numpyro.NumPyroSampler.save_samples_chunk``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.save_samples_chunk
+   :no-index:

@@ -1,0 +1,9 @@
+sigmalos2
+=========
+
+``jeanspy.model.AxisymmetricDSphModel.sigmalos2``
+
+Class and construction: :doc:`AxisymmetricDSphModel <../generated/jeanspy.model.AxisymmetricDSphModel>`.
+
+.. automethod:: jeanspy.model.AxisymmetricDSphModel.sigmalos2
+   :no-index:

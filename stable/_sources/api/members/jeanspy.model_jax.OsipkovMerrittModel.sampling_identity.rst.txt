@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model_jax.OsipkovMerrittModel.sampling_identity``
+
+Class and construction: :doc:`OsipkovMerrittModel <../generated/jeanspy.model_jax.OsipkovMerrittModel>`.
+
+.. automethod:: jeanspy.model_jax.OsipkovMerrittModel.sampling_identity
+   :no-index:

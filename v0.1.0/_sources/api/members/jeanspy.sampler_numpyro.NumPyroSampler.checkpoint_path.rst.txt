@@ -1,0 +1,9 @@
+checkpoint_path
+===============
+
+``jeanspy.sampler_numpyro.NumPyroSampler.checkpoint_path``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. autoattribute:: jeanspy.sampler_numpyro.NumPyroSampler.checkpoint_path
+   :no-index:

@@ -1,0 +1,9 @@
+AxisymmetricJeansLikelihoodModel members
+========================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.__call__
+   members/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sample_parameters
+   members/jeanspy.sampler_numpyro.AxisymmetricJeansLikelihoodModel.sampling_identity

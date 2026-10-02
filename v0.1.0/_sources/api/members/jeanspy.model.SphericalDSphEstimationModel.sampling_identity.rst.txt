@@ -1,0 +1,9 @@
+sampling_identity
+=================
+
+``jeanspy.model.SphericalDSphEstimationModel.sampling_identity``
+
+Class and construction: :doc:`SphericalDSphEstimationModel <../generated/jeanspy.model.SphericalDSphEstimationModel>`.
+
+.. automethod:: jeanspy.model.SphericalDSphEstimationModel.sampling_identity
+   :no-index:

@@ -1,0 +1,9 @@
+enclosed_mass
+=============
+
+``jeanspy.model.NFWModel.enclosed_mass``
+
+Class and construction: :doc:`NFWModel <../generated/jeanspy.model.NFWModel>`.
+
+.. automethod:: jeanspy.model.NFWModel.enclosed_mass
+   :no-index:

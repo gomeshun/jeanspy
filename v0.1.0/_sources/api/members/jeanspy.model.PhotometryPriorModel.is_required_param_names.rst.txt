@@ -1,0 +1,9 @@
+is_required_param_names
+=======================
+
+``jeanspy.model.PhotometryPriorModel.is_required_param_names``
+
+Class and construction: :doc:`PhotometryPriorModel <../generated/jeanspy.model.PhotometryPriorModel>`.
+
+.. automethod:: jeanspy.model.PhotometryPriorModel.is_required_param_names
+   :no-index:

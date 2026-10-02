@@ -1,0 +1,8 @@
+﻿baes\_eta2\_kernel\_jax
+=======================
+
+``jeanspy.baes_eta2.baes_eta2_kernel_jax``
+
+.. currentmodule:: jeanspy.baes_eta2
+
+.. autofunction:: baes_eta2_kernel_jax

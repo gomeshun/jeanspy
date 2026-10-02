@@ -1,0 +1,9 @@
+validate_small_angle
+====================
+
+``jeanspy.model.DMModel.validate_small_angle``
+
+Class and construction: :doc:`DMModel <../generated/jeanspy.model.DMModel>`.
+
+.. automethod:: jeanspy.model.DMModel.validate_small_angle
+   :no-index:

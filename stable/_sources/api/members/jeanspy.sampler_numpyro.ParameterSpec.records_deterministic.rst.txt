@@ -1,0 +1,9 @@
+records_deterministic
+=====================
+
+``jeanspy.sampler_numpyro.ParameterSpec.records_deterministic``
+
+Class and construction: :doc:`ParameterSpec <../generated/jeanspy.sampler_numpyro.ParameterSpec>`.
+
+.. autoattribute:: jeanspy.sampler_numpyro.ParameterSpec.records_deterministic
+   :no-index:

@@ -1,0 +1,1174 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Spherical analysis with saved posteriors &#8212; JeansPy documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/jeanspy.css?v=09cbd2f8" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/spherical';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '../versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.1.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://gomeshun.github.io/jeanspy/v0.1.0/tutorials/spherical.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Axisymmetric synthetic analysis" href="axisymmetric.html" />
+    <link rel="prev" title="6. Save and resume results" href="storage.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="v0.1.0" />
+    <meta name="docbuild:last-update" content="2026-10-02"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">JeansPy documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../guides/index.html">
+    Topic guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory and numerical methods
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../citing.html">
+    Citing JeansPy and its dependencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/gomeshun/jeanspy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="units.html">1. Units and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends.html">2. Choose a backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">3. Define and extend a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="predictions.html">4. Predict observables and generate mocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">5. Run MCMC and inspect the posterior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">6. Save and resume results</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Spherical analysis with saved posteriors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="axisymmetric.html">Axisymmetric synthetic analysis</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Spherical analysis with saved posteriors</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="spherical-analysis-with-saved-posteriors">
+<h1>Spherical analysis with saved posteriors<a class="headerlink" href="#spherical-analysis-with-saved-posteriors" title="Link to this heading">#</a></h1>
+<p>After the <a class="reference internal" href="index.html"><span class="std std-doc">step-by-step tutorials</span></a>, use this worked example to compare
+the complete NumPy/emcee and JAX/NumPyro storage workflows on the same data.
+Unlike the minimal Quickstart, these scripts include checkpoint restart and
+additional diagnostics.</p>
+<p>Build a <strong>Plummer + generalized NFW + constant anisotropy</strong> model, generate
+mock velocities, run MCMC, resume from disk, and inspect the saved posterior.
+The generalized NFW halo uses <code class="docutils literal notranslate"><span class="pre">ZhaoModel</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">a=1</span></code>, <code class="docutils literal notranslate"><span class="pre">b=3</span></code> and a sampled
+inner slope <code class="docutils literal notranslate"><span class="pre">gamma</span></code>. The small dataset lets the complete example run on a CPU.</p>
+<p>Install the package using the <a class="reference internal" href="../installation.html"><span class="std std-doc">installation guide</span></a>. The emcee
+example needs the <code class="docutils literal notranslate"><span class="pre">plotting</span></code> extra; the NumPyro example also needs
+<code class="docutils literal notranslate"><span class="pre">numpyro_cpu</span></code>. Run the scripts below from the source checkout. Use a new output
+directory for each example.</p>
+<section id="model-and-mock-observations">
+<h2>Model and mock observations<a class="headerlink" href="#model-and-mock-observations" title="Link to this heading">#</a></h2>
+<p>Both backends use the same 32 mock stars. Lengths are in pc, velocities in km/s,
+and halo densities in solar masses per cubic parsec. The Plummer tracer weights
+the kinematics and contributes no gravitational mass. The tracer scale, Zhao
+exponents <code class="docutils literal notranslate"><span class="pre">alpha=1,</span> <span class="pre">beta=3</span></code> and untruncated halo cutoff are fixed. The mock has <code class="docutils literal notranslate"><span class="pre">gamma=1</span></code>
+(standard NFW), while inference allows the inner slope to vary from 0 to 2.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span>
+
+<span class="c1"># This example fixes photometry and the outer halo shape, and fits five parameters.</span>
+<span class="n">true_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
+                   <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">truth_model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">],</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]),</span>
+    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">true_params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>
+                           <span class="p">(</span><span class="s2">"rs_pc"</span><span class="p">,</span> <span class="s2">"rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">,</span> <span class="s2">"beta"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"r_t_pc"</span><span class="p">)}),</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">]),</span>
+<span class="p">})</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">R_pc</span> <span class="o">=</span> <span class="n">true_params</span><span class="p">[</span><span class="s2">"re_pc"</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">u</span><span class="p">))</span>  <span class="c1"># Projected Plummer radii.</span>
+<span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">R_pc</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span>
+<span class="n">sigma2_true</span> <span class="o">=</span> <span class="n">truth_model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">vlos_kms</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">true_params</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sigma2_true</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">R_pc</span><span class="o">=</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="o">=</span><span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span><span class="o">=</span><span class="n">e_vlos_kms</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/observations.png"><img alt="Synthetic line-of-sight velocities versus projected radius with measurement error bars." src="../_images/observations.png" style="width: 640px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Mock observations generated by the code above, with random seed 123.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>We sample five parameters with the same uniform priors in both backends:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Sampling coordinate</p></th>
+<th class="head text-right"><p>Lower</p></th>
+<th class="head text-right"><p>Upper</p></th>
+<th class="head"><p>Physical meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log10_rs_pc</span></code></p></td>
+<td class="text-right"><p>1.5</p></td>
+<td class="text-right"><p>4.0</p></td>
+<td><p>Logarithm of the halo scale radius</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">log10_rhos_Msunpc3</span></code></p></td>
+<td class="text-right"><p>-3.0</p></td>
+<td class="text-right"><p>1.0</p></td>
+<td><p>Logarithm of the halo density scale</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gamma</span></code></p></td>
+<td class="text-right"><p>0.0</p></td>
+<td class="text-right"><p>2.0</p></td>
+<td><p>Inner halo density slope</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">beta_ani</span></code></p></td>
+<td class="text-right"><p>-1.0</p></td>
+<td class="text-right"><p>0.75</p></td>
+<td><p>Constant spherical anisotropy</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vmem_kms</span></code></p></td>
+<td class="text-right"><p>-50</p></td>
+<td class="text-right"><p>50</p></td>
+<td><p>Systemic velocity in km/s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The priors on the logarithms are log-uniform in the physical scales. These
+bounds illustrate this mock analysis; choose priors for the scientific problem
+being studied. With five parameters and only 32 stars, degeneracies and prior
+sensitivity are expected; see the <a class="reference internal" href="inference.html"><span class="std std-doc">MCMC notebook</span></a>. The standalone
+scripts share one mock dataset generated by the NumPy solver at <code class="docutils literal notranslate"><span class="pre">n=256</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_kernel=64</span></code>; the notebooks generate their own mocks with their displayed JAX
+settings, so their numerical outputs need not match these scripts exactly.</p>
+</section>
+<section id="sample-and-inspect-the-posterior">
+<h2>Sample and inspect the posterior<a class="headerlink" href="#sample-and-inspect-the-posterior" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="emcee" for="sd-tab-item-0">
+NumPy / SciPy / emcee</label><div class="sd-tab-content docutils">
+<p>Run the complete example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/docs_quickstart_emcee.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/jeanspy-emcee-example
+</pre></div>
+</div>
+<p><strong>Construct the model.</strong> NumPy/SciPy components store their physical parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_data</span><span class="p">,</span> <span class="n">plot_posterior</span>
+<span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"R_pc"</span><span class="p">,</span> <span class="s2">"vlos_kms"</span><span class="p">,</span> <span class="s2">"e_vlos_kms"</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">vmem_kms</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">),</span>
+    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
+                         <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(</span><span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">),</span>
+<span class="p">})</span>
+<span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><strong>Define the posterior, sample and resume.</strong> The Gaussian velocity likelihood
+adds the measurement-error variance to the Jeans prediction. The HDF5 backend
+stores the ensemble and its random state. Reopening that backend and passing
+<code class="docutils literal notranslate"><span class="pre">None</span></code> continues from the saved state. Keep the model, priors and observations
+identical when using this emcee interface; the JeansPy
+<a class="reference internal" href="../api/generated/jeanspy.sampler.Sampler.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">Sampler</span></code></span></a> adds analysis-identity
+checks for its supported estimation-model classes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample halo radius, density, inner slope, anisotropy and systemic velocity.</span>
+<span class="c1"># These illustrative priors are uniform in the named coordinates.</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+<span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.</span><span class="p">])</span>
+<span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">,</span> <span class="mf">50.</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">log_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">lower</span> <span class="o">&lt;</span> <span class="n">theta</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">theta</span> <span class="o">&lt;</span> <span class="n">upper</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">log_rs</span><span class="p">,</span> <span class="n">log_rho</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">theta</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rs_pc</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rs</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="n">log_rho</span><span class="p">,</span>
+                 <span class="n">gamma</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">vmem_kms</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_vlos_kms</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">variance</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">vlos_kms</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">variance</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">resume_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+    <span class="c1"># A new directory prevents an accidental reset of an existing analysis.</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"observations.csv"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
+               <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+    <span class="n">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">initial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+    <span class="n">walkers</span> <span class="o">=</span> <span class="n">initial</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)))</span> <span class="o">*</span> <span class="p">[</span><span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.5</span><span class="p">]</span>
+    <span class="n">backend</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">HDFBackend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"chain.h5"</span><span class="p">))</span>
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">log_probability</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+    <span class="n">sampler</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">walkers</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># resume-start</span>
+    <span class="c1"># Reopen the same target and data. None loads the stored walker/random state.</span>
+    <span class="n">restored_backend</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">HDFBackend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"chain.h5"</span><span class="p">))</span>
+    <span class="n">resumed</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">log_probability</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">restored_backend</span><span class="p">)</span>
+    <span class="n">resumed</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">resume_steps</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">restored_backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()[:</span><span class="n">num_steps</span><span class="p">],</span> <span class="n">first</span><span class="p">)</span>
+    <span class="c1"># resume-end</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">restored_backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">discard</span><span class="o">=</span><span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Stored chain shape:"</span><span class="p">,</span> <span class="n">restored_backend</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Warmup discarded:"</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Original stored draws preserved:"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Mean acceptance fraction:"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">resumed</span><span class="o">.</span><span class="n">acceptance_fraction</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Parameter                 16</span><span class="si">%      50%</span><span class="s2">      84%"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="p">[</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">24s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Short-run autocorrelation-time estimates:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">emcee</span><span class="o">.</span><span class="n">autocorr</span><span class="o">.</span><span class="n">integrated_time</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Walkers interact: no R-hat from this single ensemble."</span><span class="p">)</span>
+    <span class="n">plot_posterior</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">names</span><span class="p">,</span>
+                   <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">restored_backend</span><span class="o">.</span><span class="n">get_log_prob</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">restored_backend</span>
+</pre></div>
+</div>
+<p><strong>Recorded execution result.</strong> The first run stores 256 steps; the resumed run adds 128.
+The first 128 steps are discarded when plotting and summarizing this example.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Stored chain shape: (384, 16, 5)
+Warmup discarded: 128
+Original stored draws preserved: True
+Mean acceptance fraction: 0.418
+Parameter                 16%      50%      84%
+log10_rs_pc                 2.438    3.130    3.616
+log10_rhos_Msunpc3         -2.284   -1.432   -0.394
+gamma                       0.281    0.889    1.373
+beta_ani                   -0.455    0.184    0.637
+vmem_kms                   -1.630   -0.123    1.150
+Short-run autocorrelation-time estimates:
+[26.9 26.6 24.7 19.6 23.8]
+Walkers interact: no R-hat from this single ensemble.
+</pre></div>
+</div>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="../_images/emcee-trace.png"><img alt="Posterior histograms and stored emcee walker traces for five sampled parameters." src="../_images/emcee-trace.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Posterior histograms and walker traces. Dashed red lines mark the generating values.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="../_images/emcee-autocorrelation.png"><img alt="Autocorrelation versus lag for each of the five emcee sampling coordinates." src="../_images/emcee-autocorrelation.png" style="width: 640px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Mean autocorrelation across walkers. A short-chain estimate of its integrated
+time is exploratory; interacting walkers are not independent chains for R-hat.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id5">
+<a class="reference internal image-reference" href="../_images/emcee-posterior.png"><img alt="Marginal and pairwise emcee posterior distributions, with generating values and central 68 percent intervals." src="../_images/emcee-posterior.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The corner plot shows 68% and 95% enclosed-probability contours in each
+2-D marginal. The diagonal dashed lines mark 16%, 50% and 84% quantiles;
+black lines mark the generating values. Contours are estimated from smoothed
+histograms. A mock-data posterior need not peak at the generating value.</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="numpyro" for="sd-tab-item-1">
+JAX / NumPyro</label><div class="sd-tab-content docutils">
+<p>Run the complete example in double precision:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JEANSPY_JAX_PLATFORM</span><span class="o">=</span>cpu<span class="w"> </span><span class="nv">JEANSPY_JAX_ENABLE_X64</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+python<span class="w"> </span>examples/docs_quickstart_numpyro.py<span class="w"> </span>--output-dir<span class="w"> </span>/tmp/jeanspy-numpyro-example
+</pre></div>
+</div>
+<p><strong>Construct the model.</strong> JAX components receive physical parameters explicitly.
+Import the components from <code class="docutils literal notranslate"><span class="pre">jeanspy.model_jax</span></code> and the likelihood and
+sampler from <code class="docutils literal notranslate"><span class="pre">jeanspy.sampler_numpyro</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_PLATFORM"</span><span class="p">,</span> <span class="s2">"cpu"</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"JEANSPY_JAX_ENABLE_X64"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">)</span>
+
+<span class="c1"># Import JeansPy before JAX so its precision/device settings take effect.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model_jax</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DSphModel</span><span class="p">,</span> <span class="n">PlummerModel</span><span class="p">,</span> <span class="n">ZhaoModel</span><span class="p">,</span> <span class="n">ConstantAnisotropyModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler_numpyro</span><span class="w"> </span><span class="kn">import</span> <span class="n">JeansLikelihoodModel</span><span class="p">,</span> <span class="n">NumPyroSampler</span><span class="p">,</span> <span class="n">ParameterSpec</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span><span class="p">,</span> <span class="n">init_to_value</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">docs_quickstart_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_data</span><span class="p">,</span> <span class="n">plot_posterior</span>
+<span class="n">R_pc</span><span class="p">,</span> <span class="n">vlos_kms</span><span class="p">,</span> <span class="n">e_vlos_kms</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"R_pc"</span><span class="p">,</span> <span class="s2">"vlos_kms"</span><span class="p">,</span> <span class="s2">"e_vlos_kms"</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">DSphModel</span><span class="p">(</span><span class="n">submodels</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"StellarModel"</span><span class="p">:</span> <span class="n">PlummerModel</span><span class="p">(),</span>
+    <span class="s2">"DMModel"</span><span class="p">:</span> <span class="n">ZhaoModel</span><span class="p">(),</span>
+    <span class="s2">"AnisotropyModel"</span><span class="p">:</span> <span class="n">ConstantAnisotropyModel</span><span class="p">(),</span>
+<span class="p">})</span>
+<span class="n">fixed</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">re_pc</span><span class="o">=</span><span class="mf">200.</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">r_t_pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="n">rs_pc</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span> <span class="n">rhos_Msunpc3</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta_ani</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"kernel"</span><span class="p">,</span> <span class="n">n_u</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">n_kernel</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+               <span class="n">dm_mass_method</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">dm_mass_n_steps</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">sigma_kms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sigmalos2</span><span class="p">(</span><span class="n">R_pc</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><strong>Define priors and run NUTS.</strong> <code class="docutils literal notranslate"><span class="pre">ParameterSpec</span></code> associates sampling coordinates
+with their physical parameters. <code class="docutils literal notranslate"><span class="pre">NumPyroSampler</span></code> saves a checkpoint and a
+backend-native ArviZ chunk. A fresh sampler instance resumes without repeating
+warmup, after checking that the analysis and environment match the stored state.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">physical_parameters</span><span class="p">(</span><span class="n">sampled</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">fixed</span><span class="p">,</span> <span class="o">**</span><span class="n">sampled</span><span class="p">}</span>
+
+
+<span class="n">likelihood</span> <span class="o">=</span> <span class="n">JeansLikelihoodModel</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">),</span> <span class="n">param_name</span><span class="o">=</span><span class="s2">"rs_pc"</span><span class="p">),</span>
+     <span class="n">ParameterSpec</span><span class="o">.</span><span class="n">pow10</span><span class="p">(</span><span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
+                         <span class="n">param_name</span><span class="o">=</span><span class="s2">"rhos_Msunpc3"</span><span class="p">),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"gamma"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"beta_ani"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.75</span><span class="p">)),</span>
+     <span class="n">ParameterSpec</span><span class="p">(</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))],</span>
+    <span class="n">parameter_postprocess</span><span class="o">=</span><span class="n">physical_parameters</span><span class="p">,</span>
+    <span class="n">sigmalos2_kwargs</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build_mcmc</span><span class="p">(</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">):</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">likelihood</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">.85</span><span class="p">,</span>
+                  <span class="n">init_strategy</span><span class="o">=</span><span class="n">init_to_value</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">{</span>
+                      <span class="s2">"log10_rs_pc"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
+                      <span class="s2">"gamma"</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">:</span> <span class="mf">0.</span><span class="p">}))</span>
+    <span class="k">return</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="n">num_samples</span><span class="p">,</span>
+                <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">chain_method</span><span class="o">=</span><span class="s2">"sequential"</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">256</span><span class="p">):</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"observations.csv"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
+               <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+    <span class="n">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+    <span class="c1"># checkpoint-start</span>
+    <span class="k">with</span> <span class="n">NumPyroSampler</span><span class="p">(</span><span class="n">build_mcmc</span><span class="p">(</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">),</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+                         <span class="n">storage_backend</span><span class="o">=</span><span class="s2">"h5netcdf"</span><span class="p">,</span> <span class="n">async_writes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">first_sampler</span><span class="p">:</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">first_sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">original</span> <span class="o">=</span> <span class="n">first_sampler</span><span class="o">.</span><span class="n">load_samples</span><span class="p">()[</span><span class="s2">"posterior"</span><span class="p">]</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"First checkpoint saved:"</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">checkpoint_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">())</span>
+    <span class="c1"># A fresh sampler object restores the state and skips the completed warmup.</span>
+    <span class="k">with</span> <span class="n">NumPyroSampler</span><span class="p">(</span><span class="n">build_mcmc</span><span class="p">(</span><span class="n">num_warmup</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">),</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+                         <span class="n">storage_backend</span><span class="o">=</span><span class="s2">"h5netcdf"</span><span class="p">,</span> <span class="n">async_writes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">resumed_sampler</span><span class="p">:</span>
+        <span class="n">resumed</span> <span class="o">=</span> <span class="n">resumed_sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">idata</span> <span class="o">=</span> <span class="n">resumed_sampler</span><span class="o">.</span><span class="n">load_samples</span><span class="p">(</span><span class="n">combine</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">posterior</span> <span class="o">=</span> <span class="n">idata</span><span class="p">[</span><span class="s2">"posterior"</span><span class="p">]</span><span class="o">.</span><span class="n">ds</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Resumed from checkpoint:"</span><span class="p">,</span> <span class="n">resumed</span><span class="o">.</span><span class="n">resumed</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Stored chunks:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">resumed_sampler</span><span class="o">.</span><span class="n">list_chunk_paths</span><span class="p">()))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Stored samples per parameter:"</span><span class="p">,</span> <span class="n">posterior</span><span class="p">[</span><span class="s2">"beta_ani"</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">original</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">posterior</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_samples</span><span class="p">],</span>
+                                          <span class="n">original</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="c1"># checkpoint-end</span>
+        <span class="c1"># diagnostics-start</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"log10_rs_pc"</span><span class="p">,</span> <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">,</span> <span class="s2">"beta_ani"</span><span class="p">,</span> <span class="s2">"vmem_kms"</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Divergences:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">idata</span><span class="p">[</span><span class="s2">"sample_stats"</span><span class="p">][</span><span class="s2">"diverging"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+        <span class="n">chain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">posterior</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">plot_posterior</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">500.</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">)</span>
+        <span class="c1"># diagnostics-end</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">chain</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">idata</span>
+</pre></div>
+</div>
+<p><strong>Recorded execution result.</strong> Two chains run sequentially, each with 200 warmup steps
+and 256 posterior draws. Resuming adds another 256 draws per chain. The ArviZ
+summary and divergences below are calculated from the combined saved chunks.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>First checkpoint saved: True
+Resumed from checkpoint: True
+Stored chunks: 2
+Stored samples per parameter: (2, 512)
+                    mean    sd eti89_lb eti89_ub  ess_bulk  ess_tail r_hat mcse_mean mcse_sd
+log10_rs_pc         3.16  0.51      2.3      3.9       334       384  1.00     0.029   0.018
+log10_rhos_Msunpc3  -1.5   0.8     -2.7   -0.062       232       379  1.00     0.053   0.038
+gamma               0.88  0.49     0.14      1.7       446       461  1.00     0.023   0.013
+beta_ani            0.24  0.43    -0.66     0.72       498       543  1.01     0.018   0.013
+vmem_kms            -0.2  1.57     -2.6      2.5       535       507  1.00     0.069   0.049
+Divergences: 0
+</pre></div>
+</div>
+<figure class="align-default" id="id6">
+<a class="reference internal image-reference" href="../_images/numpyro-trace.png"><img alt="Posterior histograms and two stored NumPyro chain traces for five sampled parameters." src="../_images/numpyro-trace.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Posterior histograms and the two independent chain traces. Dashed red lines mark
+the generating values.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id7">
+<a class="reference internal image-reference" href="../_images/numpyro-autocorrelation.png"><img alt="Autocorrelation versus lag for each of the five NumPyro sampling coordinates." src="../_images/numpyro-autocorrelation.png" style="width: 640px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Mean autocorrelation across the two chains.</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id8">
+<a class="reference internal image-reference" href="../_images/numpyro-posterior.png"><img alt="Marginal and pairwise NumPyro posterior distributions, with generating values and central 68 percent intervals." src="../_images/numpyro-posterior.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Marginal and pairwise posterior distributions, with the same conventions as the
+emcee panels.</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+</div>
+<p>For rank-normalized R-hat, bulk/tail ESS, MCSE, BFMI, tree depth and locating
+NUTS divergences in a corner plot, follow the <a class="reference internal" href="inference.html"><span class="std std-doc">MCMC diagnostics tutorial</span></a>.</p>
+<p>The displayed outputs are retained from the execution identified by the
+<a class="reference download internal" download="" href="../_downloads/8ddf92071c38960be7887272071735f6/execution.json"><span class="xref download myst">metadata</span></a>; a documentation rebuild does
+not rerun them. These are short tutorial runs. Inspect chain mixing, effective sample sizes,
+R-hat for independent chains and divergences, and extend the analysis as needed.
+Good sampler diagnostics do not establish the physical adequacy of a Jeans
+model or the calibration of its intervals.</p>
+</section>
+<section id="plotting-and-saved-files">
+<h2>Plotting and saved files<a class="headerlink" href="#plotting-and-saved-files" title="Link to this heading">#</a></h2>
+<p>The figures use the posterior draws loaded from disk. The shared plotting
+function also makes the dimensional convention explicit:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Plotting code</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Plot the actual observations and stored posterior draws in the Quickstart."""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">corner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">emcee.autocorr</span><span class="w"> </span><span class="kn">import</span> <span class="n">function_1d</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Save the mock velocity observations, including measurement errors."""</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"R_pc"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">"vlos_kms"</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">"e_vlos_kms"</span><span class="p">],</span>
+                <span class="n">fmt</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">".6"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">"log"</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Projected radius [pc]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"LOS velocity [km/s]"</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"observations.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+
+<span class="c1"># plots-start</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">truth</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+    <span class="c1"># chain is (chain or walker, draw, parameter), after discarding warmup.</span>
+    <span class="c1"># emcee walkers interact; these panels do not treat them as independent chains.</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">1.8</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)),</span>
+                             <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">flat</span><span class="p">[:,</span> <span class="n">k</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#bb4430"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chain</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.45</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">.6</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#bb4430"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Posterior value"</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Stored draw after warmup"</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"trace.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="c1"># Explicit enclosed probabilities: the corner defaults use 2-D sigma radii.</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">corner</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">truths</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="n">truth_color</span><span class="o">=</span><span class="s2">"#242424"</span><span class="p">,</span>
+                        <span class="n">levels</span><span class="o">=</span><span class="p">(</span><span class="mf">.68</span><span class="p">,</span> <span class="mf">.95</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
+                        <span class="n">quantiles</span><span class="o">=</span><span class="p">(</span><span class="mf">.16</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.84</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#23558b"</span><span class="p">,</span>
+                        <span class="n">plot_density</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_contours</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">label_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"fontsize"</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"68</span><span class="si">% a</span><span class="s2">nd 95% 2-D posterior contours; black lines: true"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"posterior.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+        <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">function_1d</span><span class="p">(</span><span class="n">c</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">acf</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">acf</span><span class="p">))],</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"Lag [stored draws]"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Mean autocorrelation"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="s2">"small"</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"autocorrelation.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="c1"># plots-end</span>
+</pre></div>
+</div>
+</div>
+</details><p>Each output directory contains <code class="docutils literal notranslate"><span class="pre">observations.csv</span></code>, the three posterior figures
+and the mock-observation figure. The emcee directory contains <code class="docutils literal notranslate"><span class="pre">chain.h5</span></code>;
+the NumPyro directory contains <code class="docutils literal notranslate"><span class="pre">metadata.json</span></code>, <code class="docutils literal notranslate"><span class="pre">last_state.pkl</span></code> and two
+<code class="docutils literal notranslate"><span class="pre">chunks/*.nc</span></code> stores. See <a class="reference internal" href="storage.html"><span class="std std-doc">saving and resuming</span></a> for longer
+analyses and <a class="reference internal" href="../guides/axisymmetric.html"><span class="std std-doc">axisymmetric models</span></a> for flattened systems.</p>
+<p>The <a class="reference download internal" download="" href="../_downloads/8ddf92071c38960be7887272071735f6/execution.json"><span class="xref download myst">execution metadata</span></a> records package
+versions, source hashes and output hashes. To regenerate the displayed results
+from a checkout, run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">scripts/run_quickstart.py</span></code> in the locked docs
+environment. Ordinary documentation builds reuse these recorded outputs; the
+metadata identifies the source and environment used to produce them. Both
+workflows run again on a published GitHub release or a manual Documentation
+workflow run with <code class="docutils literal notranslate"><span class="pre">run_mcmc=true</span></code>.</p>
+<p><a id="classical-estimation-model-wrapper"></a></p>
+</section>
+<section id="numpy-scipy-estimation-model-wrapper">
+<span id="id1"></span><h2>NumPy/SciPy estimation-model wrapper<a class="headerlink" href="#numpy-scipy-estimation-model-wrapper" title="Link to this heading">#</a></h2>
+<p>The analysis above supplies its own log posterior to emcee. When using
+JeansPy estimation models, <a class="reference internal" href="../api/generated/jeanspy.sampler.Sampler.html#jeanspy.sampler.Sampler" title="jeanspy.sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a> adds HDF5
+storage and restart identity checks. Its <code class="docutils literal notranslate"><span class="pre">FlatPriorModel</span></code> uses an ordered
+table with finite <code class="docutils literal notranslate"><span class="pre">lower</span></code> and <code class="docutils literal notranslate"><span class="pre">upper</span></code> bounds. Spherical convenience models
+also use an explicit photometric prior on <code class="docutils literal notranslate"><span class="pre">log10_re_pc</span></code>; a systemic-velocity
+prior is not inferred from the velocities unless the caller explicitly
+requests the data-derived option.</p>
+<p>This separate example writes and resumes six steps in a temporary directory.
+Its autocorrelation estimate may be undefined because the chain is deliberately
+short. The wrapper still computes that diagnostic when early stopping is
+disabled; the example only exercises the storage workflow.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Short NumPy/SciPy and emcee save/restart workflow; these draws are not converged inference."""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tempfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemporaryDirectory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">plummer_nfw_constant_anisotropy_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jeanspy.sampler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sampler</span>
+
+<span class="c1"># numpy-inference-start</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"R_pc"</span><span class="p">:</span> <span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">,</span> <span class="mf">500.</span><span class="p">],</span>
+                     <span class="s2">"vlos_kms"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.</span><span class="p">],</span> <span class="s2">"e_vlos_kms"</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">})</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">"lower"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">.3</span><span class="p">],</span>
+     <span class="s2">"upper"</span><span class="p">:</span> <span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">.3</span><span class="p">]},</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"vmem_kms"</span><span class="p">,</span> <span class="s2">"log10_re_pc"</span><span class="p">,</span> <span class="s2">"log10_rs_pc"</span><span class="p">,</span>
+           <span class="s2">"log10_rhos_Msunpc3"</span><span class="p">,</span> <span class="s2">"log10_r_t_pc"</span><span class="p">,</span> <span class="s2">"log10_one_minus_beta_ani"</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">plummer_nfw_constant_anisotropy_model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+<span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">initial_state</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Sampler also checks the conversion of one parameter vector.</span>
+        <span class="k">return</span> <span class="n">center</span>
+    <span class="k">return</span> <span class="n">center</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">center</span><span class="p">)))</span>
+
+<span class="c1"># Use a persistent output directory for your own analysis. Here it is temporary.</span>
+<span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">directory</span><span class="p">:</span>
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">directory</span> <span class="o">+</span> <span class="s2">"/"</span><span class="p">)</span>
+    <span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">enable_convergence_check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">resumed</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">nwalkers</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">directory</span> <span class="o">+</span> <span class="s2">"/"</span><span class="p">)</span>
+    <span class="n">resumed</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">enable_convergence_check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">resumed</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">chain</span><span class="p">[:</span><span class="mi">4</span><span class="p">],</span> <span class="n">first</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">chain</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">resumed</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+<span class="c1"># Six steps only check this workflow. Do not report parameter estimates from it.</span>
+</pre></div>
+</div>
+<p>Choose the same likelihood and prior measure when comparing samplers. Keep
+raw draws and diagnostics when a stopping criterion fails; convergence and
+calibration need their own checks as discussed in the <a class="reference internal" href="inference.html"><span class="std std-doc">MCMC tutorial</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="storage.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">6. Save and resume results</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="axisymmetric.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Axisymmetric synthetic analysis</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-and-mock-observations">Model and mock observations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-and-inspect-the-posterior">Sample and inspect the posterior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-and-saved-files">Plotting and saved files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-scipy-estimation-model-wrapper">NumPy/SciPy estimation-model wrapper</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/spherical.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Shunichi Horigome.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

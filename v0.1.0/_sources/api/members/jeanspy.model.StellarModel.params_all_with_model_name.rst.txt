@@ -1,0 +1,9 @@
+params_all_with_model_name
+==========================
+
+``jeanspy.model.StellarModel.params_all_with_model_name``
+
+Class and construction: :doc:`StellarModel <../generated/jeanspy.model.StellarModel>`.
+
+.. autoattribute:: jeanspy.model.StellarModel.params_all_with_model_name
+   :no-index:

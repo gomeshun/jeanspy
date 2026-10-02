@@ -1,0 +1,9 @@
+flush
+=====
+
+``jeanspy.sampler_numpyro.NumPyroSampler.flush``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.flush
+   :no-index:

@@ -1,0 +1,7 @@
+AxisymmetricAnisotropyModel members
+===================================
+
+.. toctree::
+   :maxdepth: 1
+
+   members/jeanspy.model.AxisymmetricAnisotropyModel.beta

@@ -1,0 +1,9 @@
+run
+===
+
+``jeanspy.sampler_numpyro.NumPyroSampler.run``
+
+Class and construction: :doc:`NumPyroSampler <../generated/jeanspy.sampler_numpyro.NumPyroSampler>`.
+
+.. automethod:: jeanspy.sampler_numpyro.NumPyroSampler.run
+   :no-index:
