@@ -867,15 +867,32 @@ class NFWModel(DMModel):
         **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input
         shape.
         """
-        threshold = 1e-7
         rs_pc = self.params.rs_pc
         rhos = self.params.rhos_Msunpc3
         r_t_pc = self.params.r_t_pc
         r_pc_trunc = np.minimum(np.asarray(r_pc), r_t_pc)
         x = r_pc_trunc / rs_pc
+        prefactor = 4.0 * np.pi * rs_pc**3 * rhos
+        output_dtype = np.result_type(x, prefactor)
+        # Float32 rounding in either branch can reverse adjacent masses,
+        # including just above the series boundary. Round only the final
+        # mass back to the original dtype after higher-precision arithmetic.
+        x = x.astype(np.result_type(output_dtype, np.float64), copy=False)
         value = np.log1p(x) - x / (1.0 + x)
-        value = np.where(x < threshold, np.asarray(x) ** 2 / 2.0, value)
-        return 4.0 * np.pi * rs_pc**3 * rhos * value
+        # The direct subtraction loses significant digits for float32 radii.
+        # Sum log(1+x)-x/(1+x) through x**11 below 0.03. The relative
+        # remainder is bounded by (11/6)*(1+x)**2*x**10 < 1.15e-15.
+        # A much smaller switch increases cancellation in the direct branch;
+        # 0.03 balances truncation and float64 rounding (O(eps/x)).
+        # Bound the inactive branch to avoid overflow for large radii.
+        small = x < 0.03
+        xs = np.where(small, x, 0.0)
+        series = np.zeros_like(xs)
+        for k in range(11, 1, -1):
+            series = (-1.0)**k * (k-1.0)/k + xs*series
+        value = np.where(small, xs*xs*series, value)
+        mass = prefactor * value
+        return mass.astype(output_dtype, copy=False)
 
     def jfactor_spherical_aperture(self, dist_pc, roi_deg=0.5):
         r"""Evaluate the NFW spherical-aperture approximation analytically.

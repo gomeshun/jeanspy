@@ -405,13 +405,18 @@ class SersicModel(StellarModel):
             )
 
         def dsigma_dR(R):
-            return (
-                np.exp(-b * (R / re) ** (1.0 / n))
-                / norm2d
-                * (-b / n)
-                * (R / re) ** (1.0 / n - 1.0)
-                / re
-            )
+            # Evaluate the same derivative in log space. For n<0.5 the
+            # polynomial factor can overflow in the far tail even though
+            # its product with the exponential tends to zero. DE Jeans
+            # quadrature visits these radii for ordinary projected inputs.
+            if np.isposinf(R):
+                return 0.0
+            log_x = np.log(R) - np.log(re)
+            with np.errstate(over="ignore"):
+                cutoff = np.exp(np.log(b) + log_x/n)
+            log_magnitude = (np.log(b) - np.log(n) - np.log(norm2d)
+                             - np.log(re) + (1.0/n - 1.0)*log_x - cutoff)
+            return -np.exp(log_magnitude)
 
         def rho_scalar(r):
             if np.isnan(r):
