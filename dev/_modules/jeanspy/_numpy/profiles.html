@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-29"/>
+    <meta name="docbuild:last-update" content="2026-10-02"/>
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -1449,15 +1449,32 @@
 <span class="sd">        **Returns and shape.** Msun within min(``r_pc``,``r_t_pc``), with input</span>
 <span class="sd">        shape.</span>
 <span class="sd">        """</span>
-        <span class="n">threshold</span> <span class="o">=</span> <span class="mf">1e-7</span>
         <span class="n">rs_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rs_pc</span>
         <span class="n">rhos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rhos_Msunpc3</span>
         <span class="n">r_t_pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">r_t_pc</span>
         <span class="n">r_pc_trunc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_pc</span><span class="p">),</span> <span class="n">r_t_pc</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">r_pc_trunc</span> <span class="o">/</span> <span class="n">rs_pc</span>
+        <span class="n">prefactor</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rs_pc</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">rhos</span>
+        <span class="n">output_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prefactor</span><span class="p">)</span>
+        <span class="c1"># Float32 rounding in either branch can reverse adjacent masses,</span>
+        <span class="c1"># including just above the series boundary. Round only the final</span>
+        <span class="c1"># mass back to the original dtype after higher-precision arithmetic.</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">output_dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">rs_pc</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">rhos</span> <span class="o">*</span> <span class="n">value</span></div>
+        <span class="c1"># The direct subtraction loses significant digits for float32 radii.</span>
+        <span class="c1"># Sum log(1+x)-x/(1+x) through x**11 below 0.03. The relative</span>
+        <span class="c1"># remainder is bounded by (11/6)*(1+x)**2*x**10 &lt; 1.15e-15.</span>
+        <span class="c1"># A much smaller switch increases cancellation in the direct branch;</span>
+        <span class="c1"># 0.03 balances truncation and float64 rounding (O(eps/x)).</span>
+        <span class="c1"># Bound the inactive branch to avoid overflow for large radii.</span>
+        <span class="n">small</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mf">0.03</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">small</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">**</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="n">k</span> <span class="o">+</span> <span class="n">xs</span><span class="o">*</span><span class="n">series</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">small</span><span class="p">,</span> <span class="n">xs</span><span class="o">*</span><span class="n">xs</span><span class="o">*</span><span class="n">series</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">mass</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">output_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NFWModel.jfactor_spherical_aperture">

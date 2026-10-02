@@ -59,7 +59,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="dev" />
-    <meta name="docbuild:last-update" content="2026-09-29"/>
+    <meta name="docbuild:last-update" content="2026-10-02"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -927,13 +927,18 @@
             <span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">dsigma_dR</span><span class="p">(</span><span class="n">R</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">*</span> <span class="p">(</span><span class="n">R</span> <span class="o">/</span> <span class="n">re</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">n</span><span class="p">))</span>
-                <span class="o">/</span> <span class="n">norm2d</span>
-                <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
-                <span class="o">*</span> <span class="p">(</span><span class="n">R</span> <span class="o">/</span> <span class="n">re</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">n</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
-                <span class="o">/</span> <span class="n">re</span>
-            <span class="p">)</span>
+            <span class="c1"># Evaluate the same derivative in log space. For n&lt;0.5 the</span>
+            <span class="c1"># polynomial factor can overflow in the far tail even though</span>
+            <span class="c1"># its product with the exponential tends to zero. DE Jeans</span>
+            <span class="c1"># quadrature visits these radii for ordinary projected inputs.</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isposinf</span><span class="p">(</span><span class="n">R</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mf">0.0</span>
+            <span class="n">log_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">re</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">over</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+                <span class="n">cutoff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="n">log_x</span><span class="o">/</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">log_magnitude</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">norm2d</span><span class="p">)</span>
+                             <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">re</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">n</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="n">log_x</span> <span class="o">-</span> <span class="n">cutoff</span><span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_magnitude</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">rho_scalar</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
