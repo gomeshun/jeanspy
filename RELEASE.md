@@ -297,6 +297,35 @@ with different content. Review the version-specific preview before publishing.
 If documentation deployment fails after a successful package upload, repair
 that deployment without recreating or re-uploading the PyPI release.
 
+### Recover a failed release documentation build
+
+Merge the reviewed documentation-tooling fix first, then open the
+**Documentation** Actions workflow and choose **Run workflow** on `main`.
+Set `release_tag` to the existing published tag, for example `v0.1.0`.
+Leaving it empty retains the development-documentation behavior.
+
+The recovery validates the published GitHub Release, checks out that exact tag,
+and installs its locked environment. It always reruns the release MCMC checks,
+notebooks, and Quickstart examples, even if `run_mcmc` is left false. Draw counts,
+sampler settings, and the released package are unchanged. The Quickstart
+subprocess budget is 1800 seconds per backend; the documentation job remains
+bounded at 90 minutes. Partial stdout/stderr are retained when a backend times
+out.
+
+The repaired Quickstart runner is preserved separately from the workflow
+revision before the tag checkout. Its SHA-256, tooling commit, and time budget
+are recorded separately from the release-source hashes. The rendered source
+links and `build-info.json` continue to identify the released commit. The
+published Release's prerelease flag is preserved, including a stable-looking
+tag explicitly marked as a prerelease.
+
+Only a dispatch on `main` can deploy; a dispatch on another branch can validate
+the build without publishing it. Existing versioned documentation remains
+immutable: recovery does not overwrite a different already-published version.
+It neither creates/moves tags nor runs the PyPI publishing workflow. Rerunning
+the old failed release run would reuse its old workflow revision, so use this
+manual recovery after merging the fix instead.
+
 ## 6. If A Release Fails
 
 Do not reuse a different package build under a version that has already been published to PyPI; PyPI release files are immutable.

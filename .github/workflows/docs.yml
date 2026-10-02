@@ -12,6 +12,10 @@ on:
         description: Execute inference examples and regenerate Quickstart outputs
         type: boolean
         default: false
+      release_tag:
+        description: Rebuild documentation from an existing published release tag (main only to deploy)
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -21,7 +25,7 @@ jobs:
     name: Build English documentation and execute examples
     runs-on: ubuntu-latest
     # Release/manual builds also execute the generalized-NFW MCMC notebooks.
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       JEANSPY_JAX_PLATFORM: cpu
       JEANSPY_JAX_ENABLE_X64: "true"
@@ -29,13 +33,68 @@ jobs:
       MPLCONFIGDIR: /tmp/jeanspy-docs-mpl
       OPENBLAS_NUM_THREADS: "1"
       OMP_NUM_THREADS: "1"
-      PYTEST_ADDOPTS: ${{ (github.event_name == 'release' || inputs.run_mcmc) && '--run-mcmc' || '' }}
+      PYTEST_ADDOPTS: ${{ (github.event_name == 'release' || inputs.run_mcmc || inputs.release_tag) && '--run-mcmc' || '' }}
     outputs:
       version: ${{ steps.identity.outputs.version }}
       commit: ${{ steps.identity.outputs.commit }}
+      prerelease: ${{ steps.release.outputs.prerelease }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
+      - name: Preserve documentation runner from the workflow revision
+        run: |
+          cp scripts/run_quickstart.py "$RUNNER_TEMP/jeanspy-run-quickstart.py"
+          echo "JEANSPY_DOCS_TOOLING_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Validate published release identity
+        id: release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import urllib.parse
+          import urllib.request
+
+          tag = os.environ.get("RELEASE_TAG", "")
+          prerelease = False
+          target_commit = ""
+          if tag:
+              if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+(?:(?:a|b|rc)[0-9]+)?", tag):
+                  raise SystemExit("release_tag must be an explicit supported version tag")
+              if os.environ["GITHUB_EVENT_NAME"] == "release":
+                  release = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())["release"]
+              else:
+                  # JeansPy is public; this read introduces no token or new grant.
+                  url = (os.environ["GITHUB_API_URL"].rstrip("/") + "/repos/"
+                         + os.environ["GITHUB_REPOSITORY"] + "/releases/tags/"
+                         + urllib.parse.quote(tag, safe=""))
+                  request = urllib.request.Request(url, headers={
+                      "Accept": "application/vnd.github+json",
+                      "User-Agent": "jeanspy-documentation-recovery",
+                  })
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      release = json.load(response)
+              if (release.get("tag_name") != tag or release.get("draft", True)
+                      or not release.get("published_at")
+                      or not isinstance(release.get("prerelease"), bool)):
+                  raise SystemExit("An existing published GitHub Release matching release_tag is required")
+              prerelease = release["prerelease"]
+              target = release.get("target_commitish", "")
+              if re.fullmatch(r"[0-9a-f]{40}", target):
+                  target_commit = target
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"tag={tag}\nprerelease={str(prerelease).lower()}\n")
+              output.write(f"target_commit={target_commit}\n")
+          PY
+      - name: Check out the released source without changing its tag
+        if: steps.release.outputs.tag != ''
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ steps.release.outputs.tag }}
           persist-credentials: false
       - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
@@ -46,12 +105,18 @@ jobs:
       - name: Record source and documentation version
         id: identity
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_TARGET_COMMIT: ${{ steps.release.outputs.target_commit }}
         run: |
           DOCS_VERSION=dev
           DOCS_REF="$(git rev-parse HEAD)"
-          if [ "$GITHUB_EVENT_NAME" = release ]; then
+          if [ -n "$RELEASE_TAG" ]; then
             DOCS_VERSION="$RELEASE_TAG"
+            PACKAGE_VERSION="$(uv run --no-sync python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+            test "$RELEASE_TAG" = "v$PACKAGE_VERSION"
+            if [ -n "$RELEASE_TARGET_COMMIT" ]; then
+              test "$DOCS_REF" = "$RELEASE_TARGET_COMMIT"
+            fi
           fi
           echo "JEANSPY_DOCS_VERSION=$DOCS_VERSION" >> "$GITHUB_ENV"
           echo "JEANSPY_DOCS_REF=$DOCS_REF" >> "$GITHUB_ENV"
@@ -70,11 +135,14 @@ jobs:
           uv run --no-sync python scripts/run_doc_notebooks.py --check
           uv run --no-sync python scripts/run_doc_notebooks.py
       - name: Execute MCMC notebooks and refresh their displayed outputs
-        if: github.event_name == 'release' || inputs.run_mcmc
+        if: steps.release.outputs.tag != '' || inputs.run_mcmc
         run: uv run --no-sync python scripts/run_doc_notebooks.py --include-mcmc --write
       - name: Execute both Quickstart workflows and render their stored posteriors
-        if: github.event_name == 'release' || inputs.run_mcmc
-        run: uv run --no-sync python scripts/run_quickstart.py
+        if: steps.release.outputs.tag != '' || inputs.run_mcmc
+        run: >-
+          uv run --no-sync python "$RUNNER_TEMP/jeanspy-run-quickstart.py"
+          --source-root "$GITHUB_WORKSPACE" --example-timeout 1800
+          --tooling-commit "$JEANSPY_DOCS_TOOLING_COMMIT"
       - name: Build HTML with warnings as errors
         run: uv run --no-sync sphinx-build -W --keep-going -b html docs/source docs/_build/html
       - name: Check rendered version and installation commands
@@ -82,7 +150,7 @@ jobs:
           uv run --no-sync python scripts/check_docs_identity.py docs/_build/html
           --version "$JEANSPY_DOCS_VERSION" --source-ref "$JEANSPY_DOCS_REF"
       - name: Verify formal-version instructions before publication
-        if: github.event_name != 'release'
+        if: steps.release.outputs.tag == ''
         run: |
           PACKAGE_VERSION="$(uv run --no-sync python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
           JEANSPY_DOCS_VERSION="v$PACKAGE_VERSION" uv run --no-sync sphinx-build \
@@ -103,6 +171,15 @@ jobs:
             docs/_build/html/
             docs/api_inventory.json
           if-no-files-found: error
+      - name: Retain Quickstart failure logs without raw chains
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: documentation-quickstart-failure-logs
+          path: |
+            docs/_build/quickstart/run-*/*.stdout.txt
+            docs/_build/quickstart/run-*/*.stderr.txt
+          if-no-files-found: ignore
 
   publish:
     name: Publish versioned GitHub Pages documentation
@@ -146,7 +223,7 @@ jobs:
         env:
           DOCS_VERSION: ${{ needs.build.outputs.version }}
           SOURCE_COMMIT: ${{ needs.build.outputs.commit }}
-          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+          IS_PRERELEASE: ${{ needs.build.outputs.prerelease }}
         run: |
           EXTRA=()
           if [ "$IS_PRERELEASE" = true ]; then EXTRA+=(--prerelease); fi
