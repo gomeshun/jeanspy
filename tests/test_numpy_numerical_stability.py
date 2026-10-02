@@ -16,7 +16,8 @@ from jeanspy.model import (
 def test_nfw_small_radius_mass_matches_positive_integral(dtype):
     halo = NFWModel(rs_pc=1000., rhos_Msunpc3=.01, r_t_pc=10000.)
     radius = (1000*np.array([0., 1e-8, 1e-7, 1.19263525e-7, 1e-6,
-                            1e-5, 1e-4, 1e-3, 1e-2, .0999, .1, .1001,
+                            1e-5, 1e-4, 1e-3, 1e-2, .0299, .03, .0301,
+                            .0999, .1, .1001,
                             1., 10.])).astype(dtype)
     # M/(4*pi*rho_s*r_s^3) = x^2*integral_0^1 t/(1+x*t)^2 dt.
     # This independent integral never subtracts nearly equal terms.
@@ -26,7 +27,7 @@ def test_nfw_small_radius_mass_matches_positive_integral(dtype):
     expected *= 4*np.pi*.01*1000.**3
     actual = halo.enclosed_mass(radius)
     np.testing.assert_allclose(actual, expected,
-                               rtol=3e-6 if dtype == np.float32 else 3e-10,
+                               rtol=3e-6 if dtype == np.float32 else 5e-14,
                                atol=0.)
     assert actual[0] == 0.
     assert np.all(actual[1:] > 0.)
@@ -36,6 +37,51 @@ def test_float32_nfw_mass_is_increasing_near_old_series_boundary():
     halo = NFWModel(rs_pc=1000., rhos_Msunpc3=.01, r_t_pc=10000.)
     radii = np.geomspace(.0001, .1, 10000).astype(np.float32)
     assert np.all(np.diff(halo.enclosed_mass(radii)) > 0.)
+
+
+@pytest.mark.parametrize("scale_radius", [1., 1000.])
+@pytest.mark.parametrize("center", [.01, .03, .1, 1., 10.])
+def test_float32_nfw_mass_is_monotone_at_adjacent_radii(scale_radius, center):
+    halo = NFWModel(rs_pc=scale_radius, rhos_Msunpc3=.01,
+                    r_t_pc=100.*scale_radius)
+    # All 2001 consecutive float32 radii, not a coarse grid. Moving only
+    # x == 0.1 into the series leaves reversals in the direct branch nearby.
+    bits = np.float32(center*scale_radius).view(np.uint32)
+    radii = np.arange(int(bits)-1000, int(bits)+1001,
+                      dtype=np.uint32).view(np.float32)
+    actual = halo.enclosed_mass(radii)
+    assert actual.dtype == np.float32
+    assert np.all(np.diff(actual) >= 0.)
+    np.testing.assert_allclose(actual, halo.enclosed_mass(radii.astype(np.float64)),
+                               rtol=3e-7, atol=0.)
+
+
+def _legacy_nfw_result_dtype(halo, radius):
+    """Preserve NumPy-version-dependent scalar and parameter promotion."""
+    x = np.minimum(np.asarray(radius), halo.params.r_t_pc)/halo.params.rs_pc
+    value = np.where(x < .1, x*x/2., np.log1p(x)-x/(1.+x))
+    return np.asarray(4.*np.pi*halo.params.rs_pc**3
+                      * halo.params.rhos_Msunpc3*value).dtype
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_nfw_preserves_scalar_and_multidimensional_shapes_and_dtypes(dtype):
+    halo = NFWModel(rs_pc=1000., rhos_Msunpc3=.01, r_t_pc=10000.)
+    radius = dtype(100.)
+    radii = np.array([[50., 100.], [200., 300.]], dtype=dtype)
+    scalar = halo.enclosed_mass(radius)
+    matrix = halo.enclosed_mass(radii)
+    assert np.shape(scalar) == ()
+    assert np.asarray(scalar).dtype == _legacy_nfw_result_dtype(halo, radius)
+    assert matrix.shape == (2, 2)
+    assert matrix.dtype == _legacy_nfw_result_dtype(halo, radii)
+
+
+@pytest.mark.parametrize("density", [.01, np.float64(.01), np.longdouble(.01)])
+def test_nfw_preserves_mass_prefactor_dtype_promotion(density):
+    halo = NFWModel(rs_pc=1000., rhos_Msunpc3=density, r_t_pc=10000.)
+    radii = np.array([50., 100., 300.], dtype=np.float32)
+    assert halo.enclosed_mass(radii).dtype == _legacy_nfw_result_dtype(halo, radii)
 
 
 @pytest.mark.parametrize("index", [.2, .3, .49])
