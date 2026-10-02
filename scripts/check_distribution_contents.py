@@ -40,7 +40,7 @@ def check(directory: Path) -> list[dict]:
     support.update({p.relative_to(ROOT).as_posix(): p
                     for p in (ROOT / "docs/source/_static/quickstart").glob("*.txt")})
     support.update({name: ROOT / name for name in
-                    ["README.md", "RELEASE.md", "LICENSE", "pyproject.toml", "MANIFEST.in",
+                    ["README.md", "RELEASE.md", "LICENSE", "pyproject.toml", "MANIFEST.in", "uv.lock",
                      "validation/axisymmetric_jam_reference.json",
                      "validation/release/comparison.json",
                      "validation/release/references.json",

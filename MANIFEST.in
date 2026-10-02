@@ -1,4 +1,4 @@
-include LICENSE README.md RELEASE.md
+include LICENSE README.md RELEASE.md uv.lock
 recursive-include src/jeanspy/data *.csv
 recursive-include tests *.py
 recursive-include examples *.py

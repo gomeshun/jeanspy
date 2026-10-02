@@ -13,7 +13,7 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-@pytest.mark.parametrize("missing", ["docs/source/conf.py", "docs/source/references.bib",
+@pytest.mark.parametrize("missing", ["uv.lock", "docs/source/conf.py", "docs/source/references.bib",
                                      "docs/source/quickstart.ipynb",
                                      "docs/source/_templates/autosummary/class.rst",
                                      "docs/source/_static/validation/figure.svg",
@@ -31,7 +31,7 @@ spec.loader.exec_module(module)
 def test_missing_documentation_rejected(tmp_path, monkeypatch, missing):
     source = tmp_path / "source"
     names = ["src/jeanspy/__init__.py", "README.md", "RELEASE.md", "LICENSE",
-             "pyproject.toml", "MANIFEST.in", "validation/axisymmetric_jam_reference.json",
+             "pyproject.toml", "MANIFEST.in", "uv.lock", "validation/axisymmetric_jam_reference.json",
              "validation/release/jam9_protocol.json", "validation/release/jam9_plummer_v1.json",
              "validation/release/comparison.json", "validation/release/references.json",
              "validation/release/jam9_warning_diagnostic.md",
