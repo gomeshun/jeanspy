@@ -31,6 +31,7 @@ MODULES = {
     "baes_eta2": "Specialized Baes anisotropy kernels",
     "hyp2f1_jax": "JAX hypergeometric numerical helpers",
     "dequad": "Double-exponential integration helpers",
+    "mass_grid": "Spherical enclosed-mass quadrature",
 }
 
 

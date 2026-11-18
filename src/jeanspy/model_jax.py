@@ -17,7 +17,7 @@ import os
 import warnings
 
 from ._jax_env import configure_jax_environment
-from ._zhao import enclosed_mass as _zhao_mass, valid_domain as _zhao_valid
+from ._zhao import cumulative_mass, enclosed_mass as _zhao_mass, valid_domain as _zhao_valid
 
 configure_jax_environment()
 
@@ -939,12 +939,15 @@ class DMModel(Model):
                 raise NotImplementedError(
                     f"{self.__class__.__name__} does not have an analytic enclosed_mass implementation"
                 )
+        elif resolved_method == "cumulative" and isinstance(self, ZhaoModel):
+            return cumulative_mass(r_pc, params, xp=jnp, n_steps=128 if n_steps is None else n_steps)
         elif resolved_method == "numeric":
             numeric_kwargs = {} if n_steps is None else {"n_steps": n_steps}
             return self.enclosed_mass_numeric(r_pc, params=params, **numeric_kwargs)
         else:
             raise ValueError(
-                f"method must be 'analytic', 'numeric', or 'auto', got {method!r}"
+                f"Unsupported mass method {method!r} for {type(self).__name__}; "
+                "use auto, analytic, numeric, or cumulative (Zhao only)"
             )
 
 
@@ -1059,6 +1062,12 @@ class ZhaoModel(DMModel):
     finite-radius mass allows beta <= 3. Infinite r_t_pc is allowed at finite
     radii. Invalid dynamic domains yield NaN, except the valid central cusp
     can diverge in density. Unsupported method names raise ValueError.
+
+    Use ``enclosed_mass(..., method="cumulative")`` or
+    ``sigmalos2(..., dm_mass_method="cumulative")`` to share enclosed mass
+    across dense radius arrays. It integrates the central cusp once and
+    uses eight-node Gauss panels between neighbouring log radii; sparse
+    grids use the regularized pointwise quadrature.
 
     ``auto``/``numeric`` use cusp-regularized quadrature with n_steps and
     support JAX gradients in shape parameters. The explicit ``analytic``
@@ -1536,6 +1545,8 @@ class DSphModel(Model):
         dm: DMModel, dm_mass_method: str
     ) -> str:
         method_key = str(dm_mass_method).strip().lower()
+        if method_key == "cumulative" and isinstance(dm, ZhaoModel):
+            return method_key
         if method_key not in {"auto", "analytic", "numeric"}:
             raise ValueError(
                 "dm_mass_method must be 'auto', 'analytic', or 'numeric', "

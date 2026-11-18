@@ -187,3 +187,73 @@ def test_explicit_analytic_fallback_at_saturated_beta_argument(x64):
         p = params(rs_pc=1., rhos_Msunpc3=1., r_t_pc=1e7, alpha=5., beta=3.01, gamma=1.)
         result = functional.ZhaoModel().enclosed_mass(jnp.array(1e6), params=p, method='analytic')
         assert float(result) == pytest.approx(reference_mass(1e6, 5., 3.01, 1.), rel=5e-5)
+
+
+def test_cumulative_mass_grid_and_autodiff():
+    from jeanspy.mass_grid import SphericalMassGrid
+
+    with precision(True):
+        radii = np.geomspace(.001, 4000., 120)
+        radii = np.r_[radii[::-1], [0., radii[25], 1e5, np.inf]].reshape(4, 31)
+        p = params(rs_pc=20., gamma=2.95, r_t_pc=3000.)
+        m = functional.ZhaoModel()
+        expected = classical.ZhaoModel(**p).enclosed_mass(radii)
+        np.testing.assert_allclose(classical.ZhaoModel(**p).enclosed_mass(radii, method="cumulative"),
+                                   expected, rtol=2e-10)
+        evaluate = jax.jit(lambda r, pp: m.enclosed_mass(r, method="cumulative", params=pp))
+        np.testing.assert_allclose(evaluate(radii, p), expected, rtol=2e-10)
+        mixed = np.array([2., -1., 0., np.nan, 3.])
+        np.testing.assert_array_equal(np.isnan(evaluate(mixed, p)), [False, True, False, True, False])
+        for method in ("numeric", "cumulative"):
+            def logmass(s):
+                return jnp.log(m.enclosed_mass(jnp.geomspace(2., 20., 64),
+                                               method=method, params=dict(p, rs_pc=s, gamma=0.)))
+            actual = np.asarray(jax.jacfwd(logmass)(1e6))
+            if method == "numeric":
+                reference = actual
+            else:
+                np.testing.assert_allclose(actual, reference, rtol=2e-10)
+        grid = SphericalMassGrid(np.array([2., 1., 2., 3.]))
+        shell = np.stack([np.exp(grid.log_nodes), 2*np.exp(grid.log_nodes)], axis=-1)
+        np.testing.assert_allclose(grid.integrate([1., 2.], shell), [[2,4],[1,2],[2,4],[3,6]])
+        with pytest.raises(ValueError, match="positive"):
+            SphericalMassGrid([0., 1.])
+
+
+def test_cumulative_los_and_sparse_mass_fallback():
+    with precision(True):
+        p = dict(params(gamma=.7), re_pc=220., beta_ani=.2, vmem_kms=0.)
+        radii = np.geomspace(1., 100., 15)
+        for module in (classical, functional):
+            model = dsph(module, params(gamma=.7))
+            kw = dict(n=128) if module is classical else dict(params=p, n_u=128)
+            regular = model.sigmalos2(radii, **kw)
+            result = model.sigmalos2(radii, dm_mass_method="cumulative", **kw)
+            np.testing.assert_allclose(result, regular, rtol=2e-9)
+        sparse = np.array([1e-7, 1e5])
+        model = classical.ZhaoModel(**params())
+        np.testing.assert_array_equal(model.enclosed_mass(sparse, method="cumulative"),
+                                      model.enclosed_mass(sparse))
+
+
+@pytest.mark.parametrize("radii", [[10., 11.], [1., 1000.]])
+def test_cumulative_mixed_precision_uses_numeric_mass_dtype(radii):
+    with precision(True):
+        r = jnp.asarray(radii, dtype=jnp.float32)
+        model = functional.ZhaoModel()
+        p = params(rs_pc=100., rhos_Msunpc3=1., beta=3., gamma=jnp.float64(1.), r_t_pc=1000.)
+        expected = model.enclosed_mass(r, params=p, method="numeric")
+        evaluate = lambda radius, par: model.enclosed_mass(radius, params=par, method="cumulative")
+        for actual in (evaluate(r, p), jax.jit(evaluate)(r, p)):
+            assert actual.dtype == expected.dtype == jnp.float32
+            np.testing.assert_allclose(actual, expected, rtol=3e-6)
+
+
+def test_cumulative_python_zero_alpha_returns_nan():
+    with precision(True):
+        r = jnp.array([10., 11.], dtype=jnp.float32)
+        model = functional.ZhaoModel()
+        p = params(rs_pc=100., rhos_Msunpc3=1., alpha=0., beta=3., gamma=1., r_t_pc=1000.)
+        evaluate = lambda radius: model.enclosed_mass(radius, params=p, method="cumulative")
+        for actual in (evaluate(r), jax.jit(evaluate)(r)):
+            np.testing.assert_array_equal(actual, [jnp.nan, jnp.nan])
