@@ -1,20 +1,19 @@
 """Cusp-regularized Zhao mass quadrature, shared by NumPy and JAX."""
 
-from functools import lru_cache
 import operator
 
 import numpy as np
 
+from .mass_grid import SphericalMassGrid, _unit_rule
+
 PARAM_NAMES = ("rs_pc", "rhos_Msunpc3", "alpha", "beta", "gamma", "r_t_pc")
 
 
-@lru_cache(maxsize=16)
 def quadrature(n_steps):
     n = operator.index(n_steps)
     if n < 8:
         raise ValueError("n_steps must be an integer >= 8")
-    nodes, weights = np.polynomial.legendre.leggauss(n)
-    return (nodes + 1) / 2, weights / 2
+    return _unit_rule(n)
 
 
 def valid_domain(r, params, xp):
@@ -74,3 +73,40 @@ def enclosed_mass(r_pc, params, *, xp, n_steps=128):
     )
     mass = xp.where(x < 1.0, inner_mass, mass)
     return xp.where(valid, xp.where(r == 0, 0.0, mass), xp.nan)
+
+
+def cumulative_mass(r_pc, params, *, xp, n_steps=128):
+    """Use a cusp-regularized anchor and integrate adjacent physical shells."""
+    r = xp.asarray(r_pc)
+    if r.size < 2:
+        return enclosed_mass(r, params, xp=xp, n_steps=n_steps)
+    valid = valid_domain(r, params, xp)
+    positive = valid & (r > 0)
+    cut = xp.minimum(r, params["r_t_pc"])
+    first = xp.min(xp.where(positive, cut, xp.inf))
+    safe = xp.where(positive, cut, xp.where(xp.isfinite(first), first, 1.))
+    grid = SphericalMassGrid(safe, xp=xp)
+    alpha, beta, gamma = (params[k] for k in ("alpha", "beta", "gamma"))
+
+    def cumulative():
+        log_rs = xp.log(xp.asarray(params["rs_pc"]))
+        log_r = grid.log_nodes
+        transition = xp.logaddexp(0., alpha * (log_r - log_rs))
+        log_shell = (xp.log(4*xp.pi) + xp.log(xp.asarray(params["rhos_Msunpc3"]))
+                     + (3-gamma)*log_r + gamma*log_rs - (beta-gamma)/alpha*transition)
+        anchor = enclosed_mass(grid.first_radius, params, xp=xp, n_steps=n_steps)
+        mass = grid.integrate(anchor, xp.exp(log_shell))
+        return xp.where(valid, xp.where(r == 0, 0., mass), xp.nan)
+
+    def pointwise():
+        return enclosed_mass(r, params, xp=xp, n_steps=n_steps)
+
+    # Bound variation across an eight-node panel in both the power-law
+    # envelope and the transition. Sparse or sharply broken grids can still
+    # use the regularized independent integrations.
+    variation = xp.maximum(alpha, xp.maximum(xp.abs(3-beta), xp.abs(3-gamma)))
+    dense = grid.max_log_step * xp.maximum(1., variation) <= 2.
+    if xp is np:
+        return cumulative() if dense else pointwise()
+    from jax import lax
+    return lax.cond(dense, cumulative, pointwise)

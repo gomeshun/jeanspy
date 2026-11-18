@@ -9,7 +9,7 @@ from scipy.integrate import quad
 from scipy.special import hyp2f1, k0
 
 from ..dequad import dequad
-from .._zhao import enclosed_mass as _zhao_mass, valid_domain as _zhao_valid
+from .._zhao import cumulative_mass, enclosed_mass as _zhao_mass, valid_domain as _zhao_valid
 from .core import Model
 from .jfactor import C_J, _ullio2016_inner_weight, _ullio2016_weight
 
@@ -778,10 +778,13 @@ class ZhaoModel(DMModel):
             rho = rhos * x**(-gamma) * (1.0 + x**alpha)**(-(beta - gamma) / alpha)
         return np.where(inside, rho, 0.0)
 
-    def enclosed_mass(self, r_pc, *, n_steps=128):
+    def enclosed_mass(self, r_pc, *, n_steps=128, method="numeric"):
         r"""Finite-radius Zhao mass for alpha > 0 and gamma < 3, including beta <= 3.
 
         n_steps controls Gauss-Legendre nodes per regularized segment.
+        method="cumulative" shares the inner mass across a dense array of
+        radii, using eight-node log-radius panels and the regularized method
+        for sparse grids. The default "numeric" integrates each radius independently.
 
         Notes
         -----
@@ -797,6 +800,10 @@ class ZhaoModel(DMModel):
                 "Invalid Zhao mass domain: require positive scales, alpha > 0, "
                 "gamma < 3, finite slopes and nonnegative truncated radii"
             )
+        if method == "cumulative":
+            return cumulative_mass(r_pc, params, xp=np, n_steps=n_steps)
+        if method != "numeric":
+            raise ValueError("Zhao mass method must be numeric or cumulative")
         return _zhao_mass(r_pc, params, xp=np, n_steps=n_steps)
 
 

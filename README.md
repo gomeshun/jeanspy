@@ -269,6 +269,14 @@ numeric mass, and request `method="analytic"` or
 `dm_mass_method="analytic"` explicitly only when the closed form is desired
 without those Zhao shape-parameter gradients.
 
+For a Zhao halo evaluated on many radii, both spherical backends accept
+`dm_mass_method="cumulative"` in `sigmalos2` and `method="cumulative"` in
+`ZhaoModel.enclosed_mass`. This integrates the central cusp once and adds
+mass shells in radius order. Sparse grids fall back to the independent mass
+quadrature. For repeated integrations of a density and its derivatives on a
+fixed physical grid, `jeanspy.mass_grid.SphericalMassGrid` also exposes the
+panel nodes and cumulative integral.
+
 Zhao mass supports `alpha > 0`, `gamma < 3`, finite `beta` (including `beta <= 3`),
 positive finite scale radius/density, and positive truncation radius. The
 requested radius must be nonnegative and finite after truncation. Its numerical

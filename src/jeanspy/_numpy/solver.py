@@ -11,7 +11,7 @@ from scipy.constants import parsec
 
 from ..dequad import dequad
 from .core import Model
-from .profiles import AnisotropyModel, DMModel, StellarModel
+from .profiles import AnisotropyModel, DMModel, StellarModel, ZhaoModel
 
 
 GMsun_m3s2 = 1.32712440018e20
@@ -124,7 +124,7 @@ class DSphModel(Model):
         beta = self["AnisotropyModel"].beta(r_pc)
         return self.sigmar2(r_pc) * (1.0 - beta)
 
-    def integrand_sigmalos2(self, u, R_pc, n_kernel=128):
+    def integrand_sigmalos2(self, u, R_pc, n_kernel=128, *, dm_mass_method="auto"):
         r"""Return the LOS-dispersion integrand.
 
         The integration variable is :math:`u=r/R`, with domain
@@ -138,7 +138,12 @@ class DSphModel(Model):
         enclosed_mass = self["DMModel"].enclosed_mass
         kernel = self["AnisotropyModel"].kernel
         r = R_pc * u
-        mass = enclosed_mass(r)
+        if dm_mass_method == "auto":
+            mass = enclosed_mass(r)
+        elif dm_mass_method == "cumulative" and isinstance(self["DMModel"], ZhaoModel):
+            mass = enclosed_mass(r, method=dm_mass_method)
+        else:
+            raise ValueError("dm_mass_method must be auto or cumulative (Zhao only)")
         if not np.all(np.isfinite(mass) & (mass >= 0)):
             raise ValueError("Dark-matter enclosed mass must be finite and nonnegative")
 
@@ -171,6 +176,7 @@ class DSphModel(Model):
         n=1024,
         n_kernel=128,
         ignore_RuntimeWarning=True,
+        dm_mass_method="auto",
     ):
         r"""Evaluate LOS variance with the double-exponential rule.
 
@@ -190,7 +196,9 @@ class DSphModel(Model):
         R_array = _projected_radii(R_pc)
 
         def func(u):
-            return self.integrand_sigmalos2(u, R_array, n_kernel)
+            if dm_mass_method == "auto":
+                return self.integrand_sigmalos2(u, R_array, n_kernel)
+            return self.integrand_sigmalos2(u, R_array, n_kernel, dm_mass_method=dm_mass_method)
 
         with warnings.catch_warnings():
             if ignore_RuntimeWarning:
@@ -224,6 +232,7 @@ class DSphModel(Model):
         ignore_RuntimeWarning=True,
         *,
         method="dequad",
+        dm_mass_method="auto",
     ):
         r"""Return the LOS velocity variance using the selected integration method.
 
@@ -239,6 +248,8 @@ class DSphModel(Model):
         ignore_RuntimeWarning : bool, optional
             Suppress NumPy runtime warnings during integration, default true.
             Invalid integrands and nonfinite or negative variances still raise.
+        dm_mass_method : {"auto", "cumulative"}, keyword-only, optional
+            For Zhao halos, cumulative integrates adjacent mass shells jointly.
         method : {"dequad"}, keyword-only, optional
             Integration method. The fixed double-exponential rule is currently
             the only supported choice and remains the default.
@@ -264,7 +275,7 @@ class DSphModel(Model):
         """
         if method != "dequad":
             raise ValueError(f"Unsupported LOS integration method {method!r}; use 'dequad'.")
-        return self._sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning)
+        return self._sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning, dm_mass_method)
 
     def sigmalos(
         self,
@@ -274,6 +285,7 @@ class DSphModel(Model):
         ignore_RuntimeWarning=True,
         *,
         method="dequad",
+        dm_mass_method="auto",
     ):
         r"""Return the LOS velocity dispersion in km/s.
 
@@ -284,7 +296,8 @@ class DSphModel(Model):
         errors apply. This is a NumPy/SciPy calculation without JAX tracing.
         """
         return np.sqrt(
-            self.sigmalos2(R_pc, n, n_kernel, ignore_RuntimeWarning, method=method)
+            self.sigmalos2(R_pc, n, n_kernel, ignore_RuntimeWarning, method=method,
+                           dm_mass_method=dm_mass_method)
         )
 
 
