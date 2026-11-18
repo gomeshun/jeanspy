@@ -26,6 +26,12 @@ def valid_domain(r, params, xp):
     )
 
 
+def _mass_parameters(r, params, xp):
+    # The numerical mass API chooses precision from radius and scale radius.
+    dtype = xp.result_type(r, xp.asarray(params["rs_pc"]), 1.0)
+    return tuple(xp.asarray(params[name], dtype=dtype) for name in PARAM_NAMES)
+
+
 def enclosed_mass(r_pc, params, *, xp, n_steps=128):
     """Integrate separately below rs (power coordinate) and above rs (log).
 
@@ -37,11 +43,8 @@ def enclosed_mass(r_pc, params, *, xp, n_steps=128):
     Invalid dynamic inputs return NaN, including under JIT.
     """
     r = xp.asarray(r_pc)
-    dtype = xp.result_type(r, xp.asarray(params["rs_pc"]), 1.0)
-    u, w = (xp.asarray(v, dtype=dtype) for v in quadrature(operator.index(n_steps)))
-    rs, rho, alpha, beta, gamma, rt = (
-        xp.asarray(params[k], dtype=dtype) for k in PARAM_NAMES
-    )
+    rs, rho, alpha, beta, gamma, rt = _mass_parameters(r, params, xp)
+    u, w = (xp.asarray(v, dtype=rs.dtype) for v in quadrature(operator.index(n_steps)))
     valid = valid_domain(r, params, xp)
     # Safe placeholders keep inactive branches finite at zero/invalid inputs.
     rs = xp.where(rs > 0, rs, 1.0)
@@ -81,19 +84,21 @@ def cumulative_mass(r_pc, params, *, xp, n_steps=128):
     if r.size < 2:
         return enclosed_mass(r, params, xp=xp, n_steps=n_steps)
     valid = valid_domain(r, params, xp)
+    rs, rho, alpha, beta, gamma, rt = _mass_parameters(r, params, xp)
     positive = valid & (r > 0)
-    cut = xp.minimum(r, params["r_t_pc"])
+    cut = xp.minimum(xp.asarray(r, dtype=rs.dtype), rt)
     first = xp.min(xp.where(positive, cut, xp.inf))
     safe = xp.where(positive, cut, xp.where(xp.isfinite(first), first, 1.))
     grid = SphericalMassGrid(safe, xp=xp)
-    alpha, beta, gamma = (params[k] for k in ("alpha", "beta", "gamma"))
 
     def cumulative():
-        log_rs = xp.log(xp.asarray(params["rs_pc"]))
+        log_rs = xp.log(xp.where(rs > 0, rs, 1.))
+        log_rho = xp.log(xp.where(rho > 0, rho, 1.))
+        safe_alpha = xp.where(alpha > 0, alpha, 1.)
         log_r = grid.log_nodes
-        transition = xp.logaddexp(0., alpha * (log_r - log_rs))
-        log_shell = (xp.log(4*xp.pi) + xp.log(xp.asarray(params["rhos_Msunpc3"]))
-                     + (3-gamma)*log_r + gamma*log_rs - (beta-gamma)/alpha*transition)
+        transition = xp.logaddexp(0., safe_alpha * (log_r - log_rs))
+        log_shell = (xp.log(xp.asarray(4*xp.pi, dtype=rs.dtype)) + log_rho
+                     + (3-gamma)*log_r + gamma*log_rs - (beta-gamma)/safe_alpha*transition)
         anchor = enclosed_mass(grid.first_radius, params, xp=xp, n_steps=n_steps)
         mass = grid.integrate(anchor, xp.exp(log_shell))
         return xp.where(valid, xp.where(r == 0, 0., mass), xp.nan)

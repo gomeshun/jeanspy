@@ -234,3 +234,26 @@ def test_cumulative_los_and_sparse_mass_fallback():
         model = classical.ZhaoModel(**params())
         np.testing.assert_array_equal(model.enclosed_mass(sparse, method="cumulative"),
                                       model.enclosed_mass(sparse))
+
+
+@pytest.mark.parametrize("radii", [[10., 11.], [1., 1000.]])
+def test_cumulative_mixed_precision_uses_numeric_mass_dtype(radii):
+    with precision(True):
+        r = jnp.asarray(radii, dtype=jnp.float32)
+        model = functional.ZhaoModel()
+        p = params(rs_pc=100., rhos_Msunpc3=1., beta=3., gamma=jnp.float64(1.), r_t_pc=1000.)
+        expected = model.enclosed_mass(r, params=p, method="numeric")
+        evaluate = lambda radius, par: model.enclosed_mass(radius, params=par, method="cumulative")
+        for actual in (evaluate(r, p), jax.jit(evaluate)(r, p)):
+            assert actual.dtype == expected.dtype == jnp.float32
+            np.testing.assert_allclose(actual, expected, rtol=3e-6)
+
+
+def test_cumulative_python_zero_alpha_returns_nan():
+    with precision(True):
+        r = jnp.array([10., 11.], dtype=jnp.float32)
+        model = functional.ZhaoModel()
+        p = params(rs_pc=100., rhos_Msunpc3=1., alpha=0., beta=3., gamma=1., r_t_pc=1000.)
+        evaluate = lambda radius: model.enclosed_mass(radius, params=p, method="cumulative")
+        for actual in (evaluate(r), jax.jit(evaluate)(r)):
+            np.testing.assert_array_equal(actual, [jnp.nan, jnp.nan])
