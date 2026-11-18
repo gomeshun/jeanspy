@@ -4,6 +4,8 @@ import operator
 
 import numpy as np
 
+__all__ = ["SphericalMassGrid"]
+
 
 @lru_cache(maxsize=32)
 def _unit_rule(order):
@@ -19,9 +21,9 @@ class SphericalMassGrid:
 
     Radii may repeat and have any shape. Supply the enclosed mass at the
     smallest radius separately so the central cusp can use its own quadrature.
-    At `log_nodes`, evaluate dM/dln(r) = 4*pi*r**3*rho(r). Additional trailing
+    At ``log_nodes``, evaluate dM/dln(r) = 4*pi*r**3*rho(r). Additional trailing
     axes can carry integrands such as derivatives at fixed physical radius.
-    `integrate` returns the values in the input radius order and shape.
+    ``integrate`` returns the values in the input radius order and shape.
     The panel order controls accuracy across gaps in radius. Increase it and
     check convergence for sparse grids or rapidly changing density profiles.
 
