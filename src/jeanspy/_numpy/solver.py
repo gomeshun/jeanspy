@@ -195,10 +195,10 @@ class DSphModel(Model):
         scalar_input = np.ndim(R_pc) == 0
         R_array = _projected_radii(R_pc)
 
+        mass_options = {} if dm_mass_method == "auto" else {"dm_mass_method": dm_mass_method}
+
         def func(u):
-            if dm_mass_method == "auto":
-                return self.integrand_sigmalos2(u, R_array, n_kernel)
-            return self.integrand_sigmalos2(u, R_array, n_kernel, dm_mass_method=dm_mass_method)
+            return self.integrand_sigmalos2(u, R_array, n_kernel, **mass_options)
 
         with warnings.catch_warnings():
             if ignore_RuntimeWarning:
@@ -275,7 +275,8 @@ class DSphModel(Model):
         """
         if method != "dequad":
             raise ValueError(f"Unsupported LOS integration method {method!r}; use 'dequad'.")
-        return self._sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning, dm_mass_method)
+        mass_options = {} if dm_mass_method == "auto" else {"dm_mass_method": dm_mass_method}
+        return self._sigmalos2_dequad(R_pc, n, n_kernel, ignore_RuntimeWarning, **mass_options)
 
     def sigmalos(
         self,
@@ -295,9 +296,9 @@ class DSphModel(Model):
         and currently the only supported choice. The same validity checks and
         errors apply. This is a NumPy/SciPy calculation without JAX tracing.
         """
+        mass_options = {} if dm_mass_method == "auto" else {"dm_mass_method": dm_mass_method}
         return np.sqrt(
-            self.sigmalos2(R_pc, n, n_kernel, ignore_RuntimeWarning, method=method,
-                           dm_mass_method=dm_mass_method)
+            self.sigmalos2(R_pc, n, n_kernel, ignore_RuntimeWarning, method=method, **mass_options)
         )
 
 
